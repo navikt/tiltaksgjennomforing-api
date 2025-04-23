@@ -39,7 +39,7 @@ public class AktivitetsplanAdminController {
 
         Integer deltakerId = deltakerIder.stream().findFirst().orElseThrow(RessursFinnesIkkeException::new);
         UUID aktivitetsplanId = aktivitetArenaAclClient.getAktivitetsId(deltakerId);
-        hendelseAktivitetsplanClient.putAktivietsplanId(avtaleId, aktivitetsplanId, true);
+        hendelseAktivitetsplanClient.putAktivitetsplanId(avtaleId, aktivitetsplanId, true);
     }
 
     /*
@@ -59,7 +59,7 @@ public class AktivitetsplanAdminController {
     @PostMapping("/avtale/{avtaleId}/generer-ny-id")
     public void genererNyId(@PathVariable UUID avtaleId) {
         avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        hendelseAktivitetsplanClient.putAktivietsplanId(avtaleId, UUID.randomUUID(), true);
+        hendelseAktivitetsplanClient.putAktivitetsplanId(avtaleId, UUID.randomUUID(), true);
     }
 
 }
