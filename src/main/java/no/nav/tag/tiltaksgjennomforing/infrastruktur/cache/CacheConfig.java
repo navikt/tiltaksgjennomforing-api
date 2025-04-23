@@ -28,6 +28,7 @@ public class CacheConfig {
                 caffMan.registerCustomCache(cache.getName(), Caffeine.newBuilder()
                         .expireAfterWrite(Duration.ofMinutes(cache.getExpiryInMinutes()))
                         .maximumSize(cache.getMaximumSize())
+                        .recordStats()
                         .build()));
         return caffMan;
     }
