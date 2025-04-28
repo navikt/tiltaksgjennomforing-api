@@ -57,25 +57,7 @@ public class TestDataGenerator {
         return avtaler;
     }
     public static String genererTilfeldigGyldigBedriftNr(){
-        int num1 = (int) Math.floor(Math.random()*10);
-        int num2 = (int) Math.floor(Math.random()*10);
-        int num3 = (int) Math.floor(Math.random()*10);
-        int num4 = (int) Math.floor(Math.random()*10);
-        int num5 = (int) Math.floor(Math.random()*10);
-        int num6 = (int) Math.floor(Math.random()*10);
-        int num7 = (int) Math.floor(Math.random()*10);
-        int num8 = (int) Math.floor(Math.random()*10);
-
-        // vekt: 3 2 7 6 5 4 3 2
-        var weighted = num1*3 + num2*2 + num3*7 + num4*6 + num5*5 + num6*4 + num7*3 + num8*2;
-        var remainder = weighted % 11;
-        var contr = 11 - remainder;
-
-        if (contr == 11)
-            contr = 0;
-        if (contr == 10)
-            return null; // feil orgnr
-        else
-            return "" + num1 + num2 + num3 + num4 + num5 + num6 + num7 + num8 + contr; // valid orgnr
+        List<String> bedriftNrFraWiremock = List.of("999999999", "910712307", "910712314", "910712306");
+        return bedriftNrFraWiremock.get((int) (Math.random() * bedriftNrFraWiremock.size())); // Tilfeldig valg av bedriftNr
     }
 }
