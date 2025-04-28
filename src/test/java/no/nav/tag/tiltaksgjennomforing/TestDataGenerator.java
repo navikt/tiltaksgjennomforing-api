@@ -23,6 +23,7 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enVtaoAvtaleGodkje
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enVtaoAvtaleGodkjentAvVeilederAvslåttePerioderSomMåFølgesOpp;
 
 public class TestDataGenerator {
+    private final static List<String> BEDRIFT_NR_FRA_WIREMOCK = List.of("999999999", "910712307", "910712314", "910712306");
     public static List<Avtale> genererAvtaler(int antall){
         List<Avtale> avtaler = new ArrayList<>();
         IntStream.range(0, antall).forEach(i -> {
@@ -56,8 +57,8 @@ public class TestDataGenerator {
         });
         return avtaler;
     }
-    public static String genererTilfeldigGyldigBedriftNr(){
-        List<String> bedriftNrFraWiremock = List.of("999999999", "910712307", "910712314", "910712306");
-        return bedriftNrFraWiremock.get((int) (Math.random() * bedriftNrFraWiremock.size())); // Tilfeldig valg av bedriftNr
+     private static String genererTilfeldigGyldigBedriftNr(){
+        long tilfeldigIndex = Math.round(Math.random() * (BEDRIFT_NR_FRA_WIREMOCK.size() - 1));
+        return BEDRIFT_NR_FRA_WIREMOCK.get((int) tilfeldigIndex); // Tilfeldig valg av bedriftNr
     }
 }
