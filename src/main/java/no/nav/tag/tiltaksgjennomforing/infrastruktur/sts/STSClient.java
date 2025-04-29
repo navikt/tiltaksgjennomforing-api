@@ -17,8 +17,8 @@ class STSClient {
     private final RestTemplate noAuthRestTemplate;
     private final String stsUriString;
 
-    public STSClient(StsProperties stsProperties) {
-        this.noAuthRestTemplate = new RestTemplateBuilder()
+    public STSClient(StsProperties stsProperties, RestTemplateBuilder restTemplateBuilder) {
+        this.noAuthRestTemplate = restTemplateBuilder
             .basicAuthentication(stsProperties.getUsername(), stsProperties.getPassword())
             .build();
         this.stsUriString = UriComponentsBuilder.fromUri(stsProperties.getRestUri())
