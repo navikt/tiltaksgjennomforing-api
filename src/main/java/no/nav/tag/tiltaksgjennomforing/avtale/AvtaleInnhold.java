@@ -13,7 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -125,10 +124,6 @@ public class AvtaleInnhold {
     private List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift = new ArrayList<>();
     private String inkluderingstilskuddBegrunnelse;
 
-    // VTAO
-    @OneToOne(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Vtao vtao;
-
     @JsonProperty
     public Integer inkluderingstilskuddTotalBeløp() {
         return inkluderingstilskuddsutgift.stream()
@@ -189,29 +184,18 @@ public class AvtaleInnhold {
                 .journalpostId(null)
                 .versjon(versjon + 1)
                 .innholdType(innholdType)
-                .vtao(kopiAvVtao())
                 .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
-        if (nyVersjon.getVtao() != null) {
-            nyVersjon.getVtao().setAvtaleInnhold(nyVersjon);
-        }
         nyVersjon.getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(nyVersjon));
         return nyVersjon;
     }
 
     private List<Maal> kopiAvMål() {
-        return maal.stream().map(m -> new Maal(m)).collect(Collectors.toList());
-    }
-
-    private Vtao kopiAvVtao() {
-        if (vtao != null) {
-            return new Vtao(vtao);
-        }
-        return null;
+        return maal.stream().map(Maal::new).collect(Collectors.toList());
     }
 
     private List<Inkluderingstilskuddsutgift> kopiAvInkluderingstilskuddsutgifer() {
-        return inkluderingstilskuddsutgift.stream().map(i -> new Inkluderingstilskuddsutgift(i)).collect(Collectors.toList());
+        return inkluderingstilskuddsutgift.stream().map(Inkluderingstilskuddsutgift::new).collect(Collectors.toList());
     }
 
     void endreAvtale(EndreAvtale nyAvtale) {
@@ -266,11 +250,6 @@ public class AvtaleInnhold {
         setArbeidsgiverEtternavn(endreKontaktInformasjon.getArbeidsgiverEtternavn());
         setArbeidsgiverTlf(endreKontaktInformasjon.getArbeidsgiverTlf());
         setRefusjonKontaktperson(endreKontaktInformasjon.getRefusjonKontaktperson());
-        if (endreKontaktInformasjon.getVtao() != null) {
-            getVtao().setFadderFornavn(endreKontaktInformasjon.getVtao().fadderFornavn());
-            getVtao().setFadderEtternavn(endreKontaktInformasjon.getVtao().fadderEtternavn());
-            getVtao().setFadderTlf(endreKontaktInformasjon.getVtao().fadderTlf());
-        }
     }
 
     public void endreStillingsInfo(EndreStillingsbeskrivelse endreStillingsbeskrivelse) {
