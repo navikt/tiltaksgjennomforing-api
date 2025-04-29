@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.orgenhet;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -10,10 +11,11 @@ import java.util.Map;
 @Service
 public class EregService {
     private final String baseUrl;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
-    public EregService(EregProperties eregProperties) {
+    public EregService(EregProperties eregProperties, RestTemplateBuilder restTemplateBuilder) {
         this.baseUrl = eregProperties.getUri().toString();
+        this.restTemplate = restTemplateBuilder.build();
     }
 
     public Organisasjon hentVirksomhet(BedriftNr bedriftNr) {
