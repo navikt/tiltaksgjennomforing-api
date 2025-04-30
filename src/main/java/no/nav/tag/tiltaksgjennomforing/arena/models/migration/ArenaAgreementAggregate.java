@@ -93,6 +93,9 @@ public class ArenaAgreementAggregate {
         return getFnr().map(fnr -> findSluttdato().map(fnr::erOver72ÅrFraSluttDato).orElse(true)).orElse(true);
     }
 
+    public boolean isDeltakerOver67AarFraSluttDato() {
+        return getFnr().map(fnr -> findSluttdato().map(fnr::erOver67ÅrFraSluttDato).orElse(true)).orElse(true);
+    }
     public boolean isSluttdatoIDagEllerFremtiden() {
         return findSluttdato().map(sluttdato -> sluttdato.isAfter(LocalDate.now().minusDays(1))).orElse(true);
     }
