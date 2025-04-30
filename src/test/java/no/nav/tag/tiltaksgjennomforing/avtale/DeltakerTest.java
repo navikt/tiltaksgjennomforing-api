@@ -56,4 +56,48 @@ public class DeltakerTest {
 
         Now.resetClock();
     }
+
+    @Test
+    public void deltaker_alder_ikke_eldre_enn_67_for_VTAO_avtale_godkjent_for_veileder_og_deltaker() {
+        Now.fixedDate(LocalDate.of(2025, 1, 9));
+        Avtale avtale = Avtale.opprett(
+            new OpprettAvtale(
+                new Fnr("01095726670"),
+                TestData.etBedriftNr(),
+                Tiltakstype.VTAO
+            ), Avtaleopphav.VEILEDER, TestData.enNavIdent()
+        );
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
+        endreAvtale.setStartDato(LocalDate.of(2025, 1, 9));
+        endreAvtale.setSluttDato(LocalDate.of(2025, 3, 30));
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        assertFeilkode(
+            Feilkode.DELTAKER_67_AAR,
+            () -> avtale.godkjennForVeilederOgDeltaker(TestData.enNavIdent(), TestData.enGodkjentPaVegneGrunn())
+        );
+
+        Now.resetClock();
+    }
+
+    @Test
+    public void deltaker_alder_ikke_eldre_enn_67_for_VTAO_avtale_godkjent_av_veileder() {
+        Now.fixedDate(LocalDate.of(2025, 1, 9));
+        Avtale avtale = Avtale.opprett(
+            new OpprettAvtale(
+                new Fnr("01095726670"),
+                TestData.etBedriftNr(),
+                Tiltakstype.VTAO
+            ), Avtaleopphav.VEILEDER, TestData.enNavIdent()
+        );
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
+        endreAvtale.setStartDato(LocalDate.of(2025, 1, 9));
+        endreAvtale.setSluttDato(LocalDate.of(2025, 3, 30));
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        avtale.godkjennForDeltaker(avtale.getDeltakerFnr());
+        assertFeilkode(Feilkode.DELTAKER_67_AAR, () -> avtale.godkjennForVeileder(TestData.enNavIdent()));
+
+        Now.resetClock();
+    }
 }
