@@ -3,21 +3,29 @@ package no.nav.tag.tiltaksgjennomforing.avtale.admin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.api.Unprotected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgangsattributter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAvRolle;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.tag.tiltaksgjennomforing.varsel.Varsel;
+import no.nav.tag.tiltaksgjennomforing.varsel.VarselFactory;
+import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -55,6 +63,7 @@ public class AdminController {
     private final VeilarboppfolgingService veilarboppfolgingService;
     private final TilgangskontrollService tilgangskontrollService;
     private final PersondataService persondataService;
+    private final VarselRepository varselRepository;
 
     @PostMapping("reberegn")
     public void reberegnLønnstilskudd(@RequestBody List<UUID> avtaleIder) {
@@ -311,4 +320,22 @@ public class AdminController {
         );
     }
 
+    @PostMapping("/oppdaterte-avtalekrav")
+    @Transactional
+    public void oppdaterteAvtalekrav() {
+        log.info("Oppdaterer avtalekrav ...");
+        var avtaler = avtaleRepository.findAllByGjeldendeInnhold_GodkjentAvArbeidsgiverNotNullAndStatusIn(
+            List.of(Status.GJENNOMFØRES, Status.MANGLER_GODKJENNING, Status.AVSLUTTET)
+        );
+        log.info("Fant {} avtaler som det skal sendes varslinger på", avtaler.size());
+        List<Varsel> varsler = avtaler.stream().map(this::lagHendelse).toList();
+
+        varselRepository.saveAll(varsler);
+        log.info("lagret {} varsler", varsler.size());
+    }
+
+    private Varsel lagHendelse(Avtale avtale) {
+        VarselFactory factory = new VarselFactory(avtale, AvtaleHendelseUtførtAvRolle.SYSTEM, Identifikator.SYSTEM, HendelseType.OPPDATERTE_AVTALEKRAV);
+        return factory.arbeidsgiver();
+    }
 }
