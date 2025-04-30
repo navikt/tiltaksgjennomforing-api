@@ -3,6 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging;
 import com.google.common.hash.Hashing;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
@@ -61,8 +63,12 @@ public class VeilarboppfolgingService {
     }
 
     public Oppfølgingsstatus hentOgSjekkOppfolgingstatus(Avtale avtale) {
-        Oppfølgingsstatus oppfølgingStatus = hentOppfolgingsstatus(avtale.getDeltakerFnr().asString());
-        if (avtale.getTiltakstype().isSommerjobb()) {
+        return hentOgSjekkOppfolgingstatus(avtale.getDeltakerFnr(), avtale.getTiltakstype());
+    }
+
+    public Oppfølgingsstatus hentOgSjekkOppfolgingstatus(Fnr fnr, Tiltakstype tiltakstype) {
+        Oppfølgingsstatus oppfølgingStatus = hentOppfolgingsstatus(fnr.asString());
+        if (tiltakstype.isSommerjobb()) {
             return oppfølgingStatus;
         }
 
@@ -70,17 +76,17 @@ public class VeilarboppfolgingService {
             throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET);
         }
 
-        if (avtale.getTiltakstype().isMidlerTidiglonnstilskuddEllerSommerjobbEllerMentor() &&
+        if (tiltakstype.isMidlerTidiglonnstilskuddEllerSommerjobbEllerMentor() &&
             !oppfølgingStatus.getKvalifiseringsgruppe().isKvalifisererTilMidlertidiglonnstilskuddOgSommerjobbOgMentor()) {
             throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_MIDLERTIDIG_LONNTILSKUDD_OG_SOMMERJOBB_FEIL);
         }
 
-        if (avtale.getTiltakstype().isVariglonnstilskudd() &&
+        if (tiltakstype.isVariglonnstilskudd() &&
             !oppfølgingStatus.getKvalifiseringsgruppe().isKvalifisererTilVariglonnstilskudd()) {
             throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_VARIG_LONNTILSKUDD_FEIL);
         }
 
-        if (avtale.getTiltakstype().isVTAO() &&
+        if (tiltakstype.isVTAO() &&
             !oppfølgingStatus.getKvalifiseringsgruppe().isKvalifisererTilVTAO()) {
             throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_VTAO_FEIL);
         }

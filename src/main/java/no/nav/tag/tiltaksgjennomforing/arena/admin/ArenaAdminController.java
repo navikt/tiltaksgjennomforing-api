@@ -3,9 +3,12 @@ package no.nav.tag.tiltaksgjennomforing.arena.admin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltaksgjennomforingIdDeltakerIdOgFnr;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaTiltakgjennomforingRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import org.springframework.data.domain.PageRequest;
@@ -28,9 +31,10 @@ import java.util.stream.Collectors;
 public class ArenaAdminController {
     private final ArenaTiltakgjennomforingRepository tiltakgjennomforingRepository;
     private final EregService eregService;
+    private final VeilarboppfolgingService veilarboppfolgingService;
 
     @GetMapping("/tiltak/{tiltakstype}/sjekk-ereg")
-    public Map<String, ?> sjekkOppfolgingsstatus(
+    public Map<String, ?> sjekkEreg(
         @PathVariable String tiltakstype,
         @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
         @RequestParam(value = "size", required = false, defaultValue = "1000") Integer size
@@ -65,5 +69,44 @@ public class ArenaAdminController {
         );
     }
 
+    @GetMapping("/tiltak/{tiltakstype}/sjekk-oppfolging")
+    public Map<String, ?> sjekkOppfolgingsstatus(
+        @PathVariable String tiltakstype,
+        @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+        @RequestParam(value = "size", required = false, defaultValue = "1000") Integer size
+    ) {
+        Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size));
+        ArenaTiltakskode tiltakskode = ArenaTiltakskode.parse(tiltakstype);
+
+        Map<Integer, Optional<String>> enheter = tiltakgjennomforingRepository
+            .findFnrByTiltakskode(ArenaTiltakskode.parse(tiltakstype), pageable)
+            .stream()
+            .collect(Collectors.toMap(
+                ArenaTiltaksgjennomforingIdDeltakerIdOgFnr::getDeltakerId,
+                arenaTiltaksgjennomforingIdDeltakerIdOgFnr -> {
+                    try {
+                        veilarboppfolgingService.hentOgSjekkOppfolgingstatus(
+                            Fnr.av(arenaTiltaksgjennomforingIdDeltakerIdOgFnr.getFnr()),
+                            tiltakskode.getTiltakstype()
+                        );
+                        return Optional.empty();
+                    } catch (Exception e) {
+                        if (e instanceof FeilkodeException) {
+                            return Optional.of(((FeilkodeException) e).getFeilkode().name());
+                        }
+                        return Optional.of(e.getMessage());
+                    }
+                },
+                (first, second) -> first.isPresent() ? first : second
+            ));
+
+        return Map.of(
+            "totalt", enheter.size(),
+            "gjennomfort", enheter.values().stream().filter(Optional::isEmpty).count(),
+            "failet", enheter.entrySet().stream()
+                .filter(entry -> entry.getValue().isPresent())
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().get()))
+        );
+    }
 
 }
