@@ -24,8 +24,6 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -222,13 +220,7 @@ public class ArenaAgreementProcessingService {
                     .stillingprosent(agreementAggregate.getProsentDeltid().orElse(null))
                     .handling(EndreAvtaleArena.Handling.map(action));
 
-                if (agreementAggregate.getTiltakskode()
-                    .getTiltakstype()
-                    .isVTAO() && agreementAggregate.isDeltakerOver67AarFraSluttDato()) {
-                    throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
-                }
-
-                if (!agreementAggregate.isSluttdatoBeforeStartdato() && !agreementAggregate.isDeltakerOver72AarFraSluttDato()) {
+                if (!agreementAggregate.isSluttdatoBeforeStartdato() && !agreementAggregate.isDeltakerForGammelPaaSluttDato()) {
                     endreAvtaleBuilder.sluttdato(agreementAggregate.findSluttdato().orElse(null));
                 }
 
@@ -316,12 +308,7 @@ public class ArenaAgreementProcessingService {
         agreementAggregate.getAntallDagerPrUke().ifPresent(avtaleinnhold::setAntallDagerPerUke);
         agreementAggregate.getProsentDeltid().ifPresent(avtaleinnhold::setStillingprosent);
         agreementAggregate.findStartdato().ifPresent(avtaleinnhold::setStartDato);
-        if (agreementAggregate.getTiltakskode()
-            .getTiltakstype()
-            .isVTAO() && agreementAggregate.isDeltakerOver67AarFraSluttDato()) {
-            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
-        }
-        if (!agreementAggregate.isSluttdatoBeforeStartdato() && !agreementAggregate.isDeltakerOver72AarFraSluttDato()) {
+        if (!agreementAggregate.isSluttdatoBeforeStartdato() && !agreementAggregate.isDeltakerForGammelPaaSluttDato()) {
             agreementAggregate.findSluttdato().ifPresent(avtaleinnhold::setSluttDato);
         }
 

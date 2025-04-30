@@ -89,13 +89,13 @@ public class ArenaAgreementAggregate {
             .orElse(true);
     }
 
-    public boolean isDeltakerOver72AarFraSluttDato() {
+    public boolean isDeltakerForGammelPaaSluttDato() {
+        if (tiltakskode.getTiltakstype().isVTAO()) {
+            return getFnr().map(fnr -> findSluttdato().map(fnr::erOver67ÅrFraSluttDato).orElse(true)).orElse(true);
+        }
         return getFnr().map(fnr -> findSluttdato().map(fnr::erOver72ÅrFraSluttDato).orElse(true)).orElse(true);
     }
 
-    public boolean isDeltakerOver67AarFraSluttDato() {
-        return getFnr().map(fnr -> findSluttdato().map(fnr::erOver67ÅrFraSluttDato).orElse(true)).orElse(true);
-    }
     public boolean isSluttdatoIDagEllerFremtiden() {
         return findSluttdato().map(sluttdato -> sluttdato.isAfter(LocalDate.now().minusDays(1))).orElse(true);
     }
