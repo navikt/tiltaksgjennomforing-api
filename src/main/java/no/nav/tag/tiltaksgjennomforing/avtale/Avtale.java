@@ -630,12 +630,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (this.getTiltakstype() == Tiltakstype.SOMMERJOBB &&
             this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
             throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
-        } else if (this.getTiltakstype() == Tiltakstype.VTAO && this.getDeltakerFnr()
-            .erOver67ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
-            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
         } else if (this.getTiltakstype() != Tiltakstype.SOMMERJOBB && this.getDeltakerFnr()
             .erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
             throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
+        }
+        if (this.getTiltakstype() == Tiltakstype.VTAO && this.getDeltakerFnr()
+            .erOver67ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
+            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
         }
 
         LocalDateTime tidspunkt = Now.localDateTime();
@@ -672,12 +673,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
         if (this.getTiltakstype() == Tiltakstype.MENTOR && !erGodkjentTaushetserklæringAvMentor()) {
             throw new FeilkodeException(Feilkode.MENTOR_MÅ_SIGNERE_TAUSHETSERKLÆRING);
-        } else if (this.getTiltakstype() == Tiltakstype.VTAO && this.getDeltakerFnr()
-            .erOver67ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
-            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
         } else if (this.getTiltakstype() != Tiltakstype.SOMMERJOBB && this.getDeltakerFnr()
             .erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
             throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
+        }
+        if (this.getTiltakstype() == Tiltakstype.VTAO && this.getDeltakerFnr()
+            .erOver67ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
+            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
         }
 
         paVegneAvGrunn.valgtMinstEnGrunn();
