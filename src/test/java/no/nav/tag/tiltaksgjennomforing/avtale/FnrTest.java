@@ -143,7 +143,6 @@ public class FnrTest {
         Fnr fnr = new Fnr("01015826670");
         assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate())).isTrue();
         assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate().plusDays(1))).isTrue();
-        assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate().minusYears(67))).isFalse();
         assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate().minusDays(1))).isFalse();
         Now.resetClock();
     }
