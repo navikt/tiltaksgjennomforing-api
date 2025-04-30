@@ -136,4 +136,14 @@ public class FnrTest {
         assertThat(new Fnr("00000000000").hashCode()).isEqualTo(new Fnr("00000000000").hashCode());
         assertThat(new Fnr("12345678910").hashCode()).isEqualTo(new Fnr("12345678910").hashCode());
     }
+
+    @Test
+    public void er67Aar() {
+        Now.fixedDate(LocalDate.of(2025, 1, 1));
+        Fnr fnr = new Fnr("01015826670");
+        assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate())).isTrue();
+        assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate().plusDays(1))).isTrue();
+        assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate().minusDays(1))).isFalse();
+        Now.resetClock();
+    }
 }

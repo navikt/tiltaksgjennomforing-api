@@ -634,6 +634,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             .erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
             throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
         }
+        if (this.getTiltakstype() == Tiltakstype.VTAO && this.getDeltakerFnr()
+            .erOver67ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
+            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
+        }
 
         LocalDateTime tidspunkt = Now.localDateTime();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
@@ -672,6 +676,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         } else if (this.getTiltakstype() != Tiltakstype.SOMMERJOBB && this.getDeltakerFnr()
             .erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
             throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
+        }
+        if (this.getTiltakstype() == Tiltakstype.VTAO && this.getDeltakerFnr()
+            .erOver67ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
+            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
         }
 
         paVegneAvGrunn.valgtMinstEnGrunn();

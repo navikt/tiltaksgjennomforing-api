@@ -220,7 +220,7 @@ public class ArenaAgreementProcessingService {
                     .stillingprosent(agreementAggregate.getProsentDeltid().orElse(null))
                     .handling(EndreAvtaleArena.Handling.map(action));
 
-                if (!agreementAggregate.isSluttdatoBeforeStartdato() && !agreementAggregate.isDeltakerOver72AarFraSluttDato()) {
+                if (!agreementAggregate.isSluttdatoBeforeStartdato() && !agreementAggregate.isDeltakerForGammelPaaSluttDato()) {
                     endreAvtaleBuilder.sluttdato(agreementAggregate.findSluttdato().orElse(null));
                 }
 
@@ -308,7 +308,7 @@ public class ArenaAgreementProcessingService {
         agreementAggregate.getAntallDagerPrUke().ifPresent(avtaleinnhold::setAntallDagerPerUke);
         agreementAggregate.getProsentDeltid().ifPresent(avtaleinnhold::setStillingprosent);
         agreementAggregate.findStartdato().ifPresent(avtaleinnhold::setStartDato);
-        if (!agreementAggregate.isSluttdatoBeforeStartdato() && !agreementAggregate.isDeltakerOver72AarFraSluttDato()) {
+        if (!agreementAggregate.isSluttdatoBeforeStartdato() && !agreementAggregate.isDeltakerForGammelPaaSluttDato()) {
             agreementAggregate.findSluttdato().ifPresent(avtaleinnhold::setSluttDato);
         }
 
