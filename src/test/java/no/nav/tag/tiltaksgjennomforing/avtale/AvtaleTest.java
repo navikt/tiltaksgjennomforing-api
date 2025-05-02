@@ -15,6 +15,8 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -1330,7 +1332,8 @@ public class AvtaleTest {
             mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
-            mock(FeatureToggleService.class)
+            mock(FeatureToggleService.class),
+            mock(EregService.class)
         );
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.endreAvtale(Now.instant(), TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.ARBEIDSGIVER);
@@ -1547,6 +1550,7 @@ public class AvtaleTest {
 
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
+        EregService eregService  = mock(EregService.class);
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
@@ -1558,12 +1562,14 @@ public class AvtaleTest {
                 mock(SlettemerkeProperties.class),
                 TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
-                mock(FeatureToggleService.class)
+                mock(FeatureToggleService.class),
+                eregService
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+        when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
 
         veileder.endreAvtale(
                 Now.instant(),
@@ -1586,6 +1592,7 @@ public class AvtaleTest {
 
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
+        EregService eregService  = mock(EregService.class);
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
@@ -1597,12 +1604,14 @@ public class AvtaleTest {
                 mock(SlettemerkeProperties.class),
                 TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
-                mock(FeatureToggleService.class)
+                mock(FeatureToggleService.class),
+                eregService
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+        when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
 
         deltaker.godkjennAvtale(Now.instant(), avtale);
         arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
@@ -1632,7 +1641,8 @@ public class AvtaleTest {
             mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
-            mock(FeatureToggleService.class)
+            mock(FeatureToggleService.class),
+            mock(EregService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -1697,6 +1707,7 @@ public class AvtaleTest {
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
+        EregService eregService  = mock(EregService.class);
 
         Veileder veileder = new Veileder(
             avtale.getVeilederNavIdent(),
@@ -1708,10 +1719,12 @@ public class AvtaleTest {
             mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
-            mock(FeatureToggleService.class)
+            mock(FeatureToggleService.class),
+            eregService
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+        when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
 
         deltaker.godkjennAvtale(Now.instant(), avtale);
         arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
@@ -1729,6 +1742,7 @@ public class AvtaleTest {
 
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
+        EregService eregService  = mock(EregService.class);
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
@@ -1740,12 +1754,14 @@ public class AvtaleTest {
                 mock(SlettemerkeProperties.class),
                 TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
-                mock(FeatureToggleService.class)
+                mock(FeatureToggleService.class),
+                eregService
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+        when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
 
         deltaker.godkjennAvtale(Now.instant(), avtale);
         arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
@@ -1773,6 +1789,7 @@ public class AvtaleTest {
 
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
+        EregService eregService = mock(EregService.class);
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
@@ -1784,11 +1801,13 @@ public class AvtaleTest {
                 mock(SlettemerkeProperties.class),
                 TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
-                mock(FeatureToggleService.class)
+                mock(FeatureToggleService.class),
+                eregService
         );
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+        when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
 
         deltaker.godkjennAvtale(Now.instant(), avtale);
         arbeidsgiver.godkjennAvtale(Now.instant(), avtale);

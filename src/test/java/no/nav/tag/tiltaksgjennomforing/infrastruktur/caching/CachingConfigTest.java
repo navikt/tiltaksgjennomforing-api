@@ -19,6 +19,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.Veilarboppfolging
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FakeUnleash;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Assertions;
@@ -162,7 +163,8 @@ public class CachingConfigTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleServiceMock
+                featureToggleServiceMock,
+                mock(EregService.class)
         );
         when(mockTilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
 

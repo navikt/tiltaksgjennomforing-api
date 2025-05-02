@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.Veilarboppfolging
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditConsoleLogger;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
@@ -41,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -91,7 +93,8 @@ public class AvtaleApiTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleService
+                featureToggleService,
+                mock(EregService.class)
         );
         when(tilgangskontrollService.hentSkrivetilgang(veileder,avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of());
