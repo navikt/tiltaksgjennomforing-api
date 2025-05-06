@@ -160,9 +160,9 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     void godkjennForAvtalepart(Avtale avtale) {
-        this.sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
-        this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
-        this.sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
+        sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
+        sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
+        sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
@@ -172,9 +172,10 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Avtale avtale) {
-        sjekkTilgang(avtale);
+        super.sjekkTilgang(avtale);
         sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
-        this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
+        sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
+        sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
 
@@ -183,8 +184,9 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             Avtale avtale
     ) {
         super.sjekkTilgang(avtale);
-        this.sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
-        this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
+        sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
+        sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
+        sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
         avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn);
     }
 
@@ -193,8 +195,9 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             Avtale avtale
     ) {
         super.sjekkTilgang(avtale);
-        this.sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
-        this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
+        sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
+        sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
+        sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
         avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(getIdentifikator(), paVegneAvDeltakerOgArbeidsgiverGrunn);
     }
 
