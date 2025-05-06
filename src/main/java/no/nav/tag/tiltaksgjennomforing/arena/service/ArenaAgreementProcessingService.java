@@ -315,6 +315,13 @@ public class ArenaAgreementProcessingService {
         agreementAggregate.findStartdato().ifPresent(avtaleinnhold::setStartDato);
         if (!agreementAggregate.isSluttdatoBeforeStartdato() && !agreementAggregate.isDeltakerForGammelPaaSluttDato()) {
             agreementAggregate.findSluttdato().ifPresent(avtaleinnhold::setSluttDato);
+        } else {
+            log.info(
+                "Setter ikke sluttdato på avtalen. {}",
+                agreementAggregate.isSluttdatoBeforeStartdato() ?
+                    "Sluttdato er før startdato" :
+                    "Deltaker er for gammel på sluttdato"
+            );
         }
 
         avtale.setGodkjentForEtterregistrering(true);
