@@ -28,6 +28,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.stereotype.Component;
 
@@ -52,6 +53,7 @@ public class InnloggingService {
     private final VeilarboppfolgingService veilarboppfolgingService;
     private final ArbeidsgiverTokenStrategyFactory arbeidsgiverTokenStrategyFactory;
     private final FeatureToggleService featureToggleService;
+    private final EregService eregService;
 
     public Avtalepart hentAvtalepart(Avtalerolle avtalerolle) {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
@@ -74,7 +76,8 @@ public class InnloggingService {
                 altinnOrganisasjoner,
                 tilganger,
                 persondataService,
-                norg2Client
+                norg2Client,
+                eregService
             );
         }
         if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.VEILEDER) {
@@ -91,7 +94,8 @@ public class InnloggingService {
                 slettemerkeProperties,
                 adGruppeTilganger,
                 veilarboppfolgingService,
-                featureToggleService
+                featureToggleService,
+                eregService
             );
         }
         if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.BESLUTTER) {

@@ -9,6 +9,8 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.Page;
@@ -19,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -30,19 +33,22 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     private final Set<AltinnReportee> altinnOrganisasjoner;
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
+    private final EregService eregService;
 
     public Arbeidsgiver(
             Fnr identifikator,
             Set<AltinnReportee> altinnOrganisasjoner,
             Map<BedriftNr, Collection<Tiltakstype>> tilganger,
             PersondataService persondataService,
-            Norg2Client norg2Client
+            Norg2Client norg2Client,
+            EregService eregService
     ) {
         super(identifikator);
         this.altinnOrganisasjoner = altinnOrganisasjoner;
         this.tilganger = tilganger;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
+        this.eregService = eregService;
     }
 
     private static boolean avbruttForMerEnn12UkerSiden(Avtale avtale) {
@@ -231,14 +237,21 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
         Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.ARBEIDSGIVER);
         avtale.leggTilDeltakerNavn(persondataService.hentNavn(avtale.getDeltakerFnr()));
+        sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
         leggEnheterVedOpprettelseAvAvtale(avtale);
 
         return avtale;
     }
 
-    protected void leggEnheterVedOpprettelseAvAvtale(Avtale avtale) {
+    private void leggEnheterVedOpprettelseAvAvtale(Avtale avtale) {
         super.hentGeoEnhetFraNorg2(avtale, norg2Client, persondataService);
         super.hentOppfølgingsenhetNavnFraNorg2(avtale, norg2Client);
+    }
+
+    private void sjekkOmBedriftErGyldigOgOppdaterNavn(Avtale avtale) {
+        Optional.ofNullable(eregService.hentVirksomhet(avtale.getBedriftNr()))
+            .map(Organisasjon::getBedriftNavn)
+            .ifPresent(avtale::leggTilBedriftNavn);
     }
 
     @Override

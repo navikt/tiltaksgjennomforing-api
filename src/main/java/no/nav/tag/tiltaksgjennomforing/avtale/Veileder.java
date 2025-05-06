@@ -22,6 +22,8 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.logging.SecureLog;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -35,6 +37,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -54,6 +57,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     private final VeilarboppfolgingService veilarboppfolgingService;
     private final UUID azureOid;
     private final FeatureToggleService featureToggleService;
+    private final EregService eregService;
 
     public Veileder(
             NavIdent identifikator,
@@ -65,7 +69,8 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             SlettemerkeProperties slettemerkeProperties,
             AdGruppeTilganger adGruppeTilganger,
             VeilarboppfolgingService veilarboppfolgingService,
-            FeatureToggleService featureToggleService
+            FeatureToggleService featureToggleService,
+            EregService eregService
     ) {
 
         super(identifikator);
@@ -78,6 +83,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         this.adGruppeTilganger = adGruppeTilganger;
         this.veilarboppfolgingService = veilarboppfolgingService;
         this.featureToggleService = featureToggleService;
+        this.eregService = eregService;
     }
 
     @Override
@@ -156,6 +162,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     void godkjennForAvtalepart(Avtale avtale) {
         this.sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
+        this.sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
@@ -279,7 +286,8 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         this.sjekkOgBlokkereKode6(opprettAvtale.getDeltakerFnr());
         Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.VEILEDER, getIdentifikator());
         avtale.leggTilDeltakerNavn(persondataService.hentNavn(avtale.getDeltakerFnr()));
-        leggTilEnheter(avtale);
+        this.sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
+        this.leggTilEnheter(avtale);
         return avtale;
     }
 
@@ -289,7 +297,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         }
     }
 
-    protected void leggTilEnheter(Avtale avtale) {
+    private void leggTilEnheter(Avtale avtale) {
         super.hentGeoEnhetFraNorg2(avtale, norg2Client, persondataService);
         this.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
         this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
@@ -318,7 +326,13 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
     }
 
-    protected void settOppfølgingsStatus(Avtale avtale, Oppfølgingsstatus oppfølgingsstatus) {
+    private void sjekkOmBedriftErGyldigOgOppdaterNavn(Avtale avtale) {
+        Optional.ofNullable(eregService.hentVirksomhet(avtale.getBedriftNr()))
+                .map(Organisasjon::getBedriftNavn)
+                .ifPresent(avtale::leggTilBedriftNavn);
+    }
+
+    private void settOppfølgingsStatus(Avtale avtale, Oppfølgingsstatus oppfølgingsstatus) {
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
         avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
         avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
