@@ -1080,9 +1080,14 @@ public class TestData {
         return EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build();
     }
 
-    public static Avtale enArbeidstreningAvtaleGodkjentAvVeileder() {
+    public static Avtale enArbeidstreningAvtaleMedAltUtfylt() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleLønnstilskuddFelter(), Avtalerolle.VEILEDER);
+        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER);
+        return avtale;
+    }
+
+    public static Avtale enArbeidstreningAvtaleGodkjentAvVeileder() {
+        Avtale avtale = enArbeidstreningAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
