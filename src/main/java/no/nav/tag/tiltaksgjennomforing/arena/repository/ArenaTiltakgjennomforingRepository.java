@@ -19,6 +19,7 @@ public interface ArenaTiltakgjennomforingRepository extends JpaRepository<ArenaT
           AND atg.tiltakgjennomforingId = atd.tiltakgjennomforingId
           AND atd.deltakerstatuskode IN ('GJENN', 'TILBUD')
           AND atg.tiltakskode = :tiltakskode
+        ORDER BY atd.tiltakgjennomforingId
     """)
     List<String> findVirksomhetsnummerByTiltakskode(ArenaTiltakskode tiltakskode, Pageable pageable);
 
@@ -33,6 +34,7 @@ public interface ArenaTiltakgjennomforingRepository extends JpaRepository<ArenaT
           AND atg.tiltakgjennomforingId = atd.tiltakgjennomforingId
           AND atd.deltakerstatuskode IN ('GJENN', 'TILBUD')
           AND atg.tiltakskode = :tiltakskode
+        ORDER BY atd.tiltakdeltakerId
     """)
     List<ArenaTiltaksgjennomforingIdDeltakerIdOgFnr> findFnrByTiltakskode(ArenaTiltakskode tiltakskode, Pageable pageable);
 }

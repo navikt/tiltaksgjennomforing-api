@@ -634,21 +634,43 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             .erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
             throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
         }
+        if (this.getTiltakstype() == Tiltakstype.VTAO && this.getDeltakerFnr()
+            .erOver67ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
+            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
+        }
 
         LocalDateTime tidspunkt = Now.localDateTime();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
-        if (!tiltakstype.skalBesluttes()) {
-            avtaleInngått(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
-        }
+        inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         gjeldendeInnhold.setIkrafttredelsestidspunkt(tidspunkt);
         utforEndring(new GodkjentAvVeileder(this, utfortAv));
     }
 
-    private void avtaleInngått(LocalDateTime tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
-        gjeldendeInnhold.setAvtaleInngått(tidspunkt);
-        oppdaterKreverOppfolgingFom();
-        utforEndring(new AvtaleInngått(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utførtAvRolle), utførtAv));
+    private void inngåAvtale(LocalDateTime tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
+        if (!utførtAvRolle.erInternBruker()) {
+            throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_INNGAA_AVTALE);
+        }
+        if (erAvtaleInngått()) {
+            throw new FeilkodeException(Feilkode.AVTALE_ER_ALLEREDE_INNGAATT);
+        }
+        if (utførtAvRolle.erBeslutter() || !tiltakstype.skalBesluttes() || erAlleTilskuddsperioderBehandletIArena()) {
+            gjeldendeInnhold.setAvtaleInngått(tidspunkt);
+            oppdaterKreverOppfolgingFom();
+            utforEndring(new AvtaleInngått(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utførtAvRolle), utførtAv));
+        }
+    }
+
+    private boolean erAlleTilskuddsperioderBehandletIArena() {
+        if (Avtaleopphav.ARENA != opphav) {
+            return false;
+        }
+        if (tilskuddPeriode.isEmpty()) {
+            return false;
+        }
+        return tilskuddPeriode.stream().allMatch(periode ->
+            TilskuddPeriodeStatus.BEHANDLET_I_ARENA == periode.getStatus()
+        );
     }
 
     void godkjennForVeilederOgDeltaker(NavIdent utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn) {
@@ -673,6 +695,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             .erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
             throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
         }
+        if (this.getTiltakstype() == Tiltakstype.VTAO && this.getDeltakerFnr()
+            .erOver67ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
+            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
+        }
 
         paVegneAvGrunn.valgtMinstEnGrunn();
         LocalDateTime tidspunkt = Now.localDateTime();
@@ -682,9 +708,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold.setGodkjentPaVegneGrunn(paVegneAvGrunn);
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         gjeldendeInnhold.setIkrafttredelsestidspunkt(tidspunkt);
-        if (!tiltakstype.skalBesluttes()) {
-            avtaleInngått(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
-        }
+        inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         utforEndring(new GodkjentPaVegneAvDeltaker(this, utfortAv));
     }
 
@@ -718,9 +742,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold.setGodkjentPaVegneAvArbeidsgiverGrunn(godkjentPaVegneAvArbeidsgiverGrunn);
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         gjeldendeInnhold.setIkrafttredelsestidspunkt(tidspunkt);
-        if (!tiltakstype.skalBesluttes()) {
-            avtaleInngått(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
-        }
+        inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         utforEndring(new GodkjentPaVegneAvArbeidsgiver(this, utfortAv));
     }
 
@@ -758,9 +780,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold.setGodkjentPaVegneAvArbeidsgiverGrunn(paVegneAvDeltakerOgArbeidsgiverGrunn.getGodkjentPaVegneAvArbeidsgiverGrunn());
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         gjeldendeInnhold.setIkrafttredelsestidspunkt(tidspunkt);
-        if (!tiltakstype.skalBesluttes()) {
-            avtaleInngått(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
-        }
+        inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         utforEndring(new GodkjentPaVegneAvDeltakerOgArbeidsgiver(this, utfortAv));
     }
 
@@ -925,7 +945,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (!erAvtaleInngått()) {
             LocalDateTime tidspunkt = Now.localDateTime();
             godkjennForBeslutter(tidspunkt, beslutter);
-            avtaleInngått(tidspunkt, Avtalerolle.BESLUTTER, beslutter);
+            inngåAvtale(tidspunkt, Avtalerolle.BESLUTTER, beslutter);
         }
         utforEndring(new TilskuddsperiodeGodkjent(this, gjeldendePeriode, beslutter, resendingsnummer));
     }

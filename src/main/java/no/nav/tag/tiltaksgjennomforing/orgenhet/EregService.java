@@ -1,27 +1,30 @@
 package no.nav.tag.tiltaksgjennomforing.orgenhet;
 
-import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
+import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class EregService {
-    private final EregProperties eregProperties;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final String baseUrl;
+    private final RestTemplate restTemplate;
+
+    public EregService(EregProperties eregProperties, RestTemplateBuilder restTemplateBuilder) {
+        this.baseUrl = eregProperties.getUri().toString();
+        this.restTemplate = restTemplateBuilder.build();
+    }
 
     public Organisasjon hentVirksomhet(BedriftNr bedriftNr) {
-        URI uri = UriComponentsBuilder.fromUri(eregProperties.getUri())
-                .pathSegment(bedriftNr.asString())
-                .build()
-                .toUri();
         try {
-            EregEnhet eregEnhet = restTemplate.getForObject(uri, EregEnhet.class);
+            EregEnhet eregEnhet = restTemplate.getForObject(
+                baseUrl + "/{bedriftNr}",
+                EregEnhet.class,
+                Map.of("bedriftNr", bedriftNr.asString())
+            );
             if ("JuridiskEnhet".equals(eregEnhet.type())) {
                 throw new EnhetErJuridiskException();
             }

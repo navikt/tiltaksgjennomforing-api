@@ -8,12 +8,12 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 class StsConfiguration {
     @Bean
-    public RestTemplate stsRestTemplate(STSClient stsClient) {
-        return new RestTemplateBuilder()
-                .additionalInterceptors((request, body, execution) -> {
-                    request.getHeaders().setBearerAuth(stsClient.hentSTSToken().getAccessToken());
-                    return execution.execute(request, body);
-                })
-                .build();
+    public RestTemplate stsRestTemplate(STSClient stsClient, RestTemplateBuilder restTemplateBuilder) {
+        return restTemplateBuilder
+            .additionalInterceptors((request, body, execution) -> {
+                request.getHeaders().setBearerAuth(stsClient.hentSTSToken().getAccessToken());
+                return execution.execute(request, body);
+            })
+            .build();
     }
 }

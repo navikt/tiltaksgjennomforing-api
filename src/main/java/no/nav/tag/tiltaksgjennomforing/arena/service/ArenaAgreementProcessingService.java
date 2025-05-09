@@ -19,6 +19,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtaleArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
@@ -220,7 +221,7 @@ public class ArenaAgreementProcessingService {
                     .stillingprosent(agreementAggregate.getProsentDeltid().orElse(null))
                     .handling(EndreAvtaleArena.Handling.map(action));
 
-                if (!agreementAggregate.isSluttdatoBeforeStartdato() && !agreementAggregate.isDeltakerOver72AarFraSluttDato()) {
+                if (!agreementAggregate.isSluttdatoBeforeStartdato() && !agreementAggregate.isDeltakerForGammelPaaSluttDato()) {
                     endreAvtaleBuilder.sluttdato(agreementAggregate.findSluttdato().orElse(null));
                 }
 
@@ -286,8 +287,9 @@ public class ArenaAgreementProcessingService {
 
         Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.ARENA);
 
-        Organisasjon org = eregService.hentVirksomhet(avtale.getBedriftNr());
-        avtale.leggTilBedriftNavn(org.getBedriftNavn());
+        getVirksomhetFromEreg(avtale.getBedriftNr()).ifPresent(
+            (org) -> avtale.leggTilBedriftNavn(org.getBedriftNavn())
+        );
         avtale.leggTilDeltakerNavn(persondataService.hentNavn(deltakerFnr));
 
         getGeoEnhetFromNorg2(deltakerFnr).ifPresent((norg2GeoResponse) -> {
@@ -295,7 +297,10 @@ public class ArenaAgreementProcessingService {
             avtale.setEnhetsnavnGeografisk(norg2GeoResponse.getNavn());
         });
 
-        getOppfolgingsstatusFromVeilarbarena(avtale.getDeltakerFnr()).ifPresent((status) -> {
+        getOppfolgingsstatusFromVeilarboppfolging(
+            avtale.getDeltakerFnr(),
+            agreementAggregate.getTiltakskode().getTiltakstype()
+        ).ifPresent((status) -> {
             avtale.setEnhetOppfolging(status.getOppfolgingsenhet());
             avtale.setKvalifiseringsgruppe(status.getKvalifiseringsgruppe());
             avtale.setFormidlingsgruppe(status.getFormidlingsgruppe());
@@ -308,8 +313,15 @@ public class ArenaAgreementProcessingService {
         agreementAggregate.getAntallDagerPrUke().ifPresent(avtaleinnhold::setAntallDagerPerUke);
         agreementAggregate.getProsentDeltid().ifPresent(avtaleinnhold::setStillingprosent);
         agreementAggregate.findStartdato().ifPresent(avtaleinnhold::setStartDato);
-        if (!agreementAggregate.isSluttdatoBeforeStartdato() && !agreementAggregate.isDeltakerOver72AarFraSluttDato()) {
+        if (!agreementAggregate.isSluttdatoBeforeStartdato() && !agreementAggregate.isDeltakerForGammelPaaSluttDato()) {
             agreementAggregate.findSluttdato().ifPresent(avtaleinnhold::setSluttDato);
+        } else {
+            log.info(
+                "Setter ikke sluttdato på avtalen. {}",
+                agreementAggregate.isSluttdatoBeforeStartdato() ?
+                    "Sluttdato er før startdato" :
+                    "Deltaker er for gammel på sluttdato"
+            );
         }
 
         avtale.setGodkjentForEtterregistrering(true);
@@ -323,8 +335,36 @@ public class ArenaAgreementProcessingService {
         return persondataService.hentGeografiskTilknytning(fnr).map(norg2Client::hentGeografiskEnhet);
     }
 
-    private Optional<Oppfølgingsstatus> getOppfolgingsstatusFromVeilarbarena(Fnr fnr) {
-        return Optional.ofNullable(veilarboppfolgingService.hentOppfolgingsstatus(fnr.asString()));
+    private Optional<Organisasjon> getVirksomhetFromEreg(BedriftNr bedriftNr) {
+        if (featureToggleService.isEnabled(FeatureToggle.ARENA_EREG_SJEKK)) {
+            return Optional.ofNullable(eregService.hentVirksomhet(bedriftNr));
+        }
+
+        try {
+            return Optional.ofNullable(eregService.hentVirksomhet(bedriftNr));
+        } catch (Exception e) {
+            log.info(
+                "ARENA_EREG_SJEKK toggle er skrudd av. Ignorer derfor feil fra E-Reg med melding: " +
+                e.getMessage()
+            );
+            return Optional.empty();
+        }
+    }
+
+    private Optional<Oppfølgingsstatus> getOppfolgingsstatusFromVeilarboppfolging(Fnr fnr, Tiltakstype tiltakstype) {
+        if (featureToggleService.isEnabled(FeatureToggle.ARENA_OPPFOLGING_SJEKK)) {
+            return Optional.ofNullable(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(fnr, tiltakstype));
+        }
+
+        try {
+            return Optional.ofNullable(veilarboppfolgingService.hentOppfolgingsstatus(fnr.asString()));
+        } catch (Exception e) {
+            log.info(
+                "ARENA_OPPFOLGING_SJEKK toggle er skrudd av. Ignorer derfor feil på oppfølging med melding: " +
+                e.getMessage()
+            );
+            return Optional.empty();
+        }
     }
 
     private Optional<String> getOppfolgingsenhetnavnFromNorg2(String oppfolgingsenhet) {
@@ -334,7 +374,7 @@ public class ArenaAgreementProcessingService {
 
     private void transferAktivitetsplankort(Avtale avtale, Integer deltakerId) {
         UUID aktivitetsplanId = aktivitetArenaAclClient.getAktivitetsId(deltakerId);
-        hendelseAktivitetsplanClient.putAktivietsplanId(avtale.getId(), aktivitetsplanId);
+        hendelseAktivitetsplanClient.putAktivitetsplanId(avtale.getId(), aktivitetsplanId);
     }
 
     private Optional<ArenaMigrationAction> validate(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {

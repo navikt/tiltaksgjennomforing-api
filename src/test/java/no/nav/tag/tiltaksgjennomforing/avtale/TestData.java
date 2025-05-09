@@ -20,6 +20,8 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.sporingslogg.Sporingslogg;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
@@ -155,18 +157,6 @@ public class TestData {
     public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet() {
         Avtale avtale = enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
         setOppfølgingPåAvtale(avtale);
-        return avtale;
-    }
-
-    public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhetOgGeografiskEnhet() {
-        Avtale avtale = enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
-        setOppfølgingOgGeografiskPåAvtale(avtale);
-        return avtale;
-    }
-
-    public static Avtale enArbeidstreningsAvtaleMedGittAvtaleNr() {
-        Avtale avtale = enArbeidstreningAvtale();
-        avtale.setAvtaleNr(ET_AVTALENR);
         return avtale;
     }
 
@@ -804,7 +794,7 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
-        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), null, null);
+        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), null, null, null);
     }
 
     public static Mentor enMentor(Avtale avtale) {
@@ -818,7 +808,9 @@ public class TestData {
                 , Map.of(avtale.getBedriftNr(),
                 List.of(Tiltakstype.values())),
                 null,
-                null);
+                null,
+                null
+        );
     }
 
     public static Fnr etFodselsnummer() {
@@ -873,6 +865,7 @@ public class TestData {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
         PersondataService persondataService  = mock(PersondataService.class);
+        EregService eregService  = mock(EregService.class);
 
         var veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
@@ -884,12 +877,13 @@ public class TestData {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleService
+                featureToggleService,
+                eregService
         );
         when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
-
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         when(persondataService.hentNavn(any(Fnr.class))).thenReturn(Navn.TOMT_NAVN);
+        when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
 
         when(
             tilgangskontrollService.harSkrivetilgangTilKandidat(
@@ -1043,7 +1037,8 @@ public class TestData {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleService
+                featureToggleService,
+                mock(EregService.class)
         );
         when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
@@ -1063,7 +1058,8 @@ public class TestData {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
-                featureToggleService
+                featureToggleService,
+                mock(EregService.class)
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,
@@ -1084,9 +1080,14 @@ public class TestData {
         return EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build();
     }
 
-    public static Avtale enArbeidstreningAvtaleGodkjentAvVeileder() {
+    public static Avtale enArbeidstreningAvtaleMedAltUtfylt() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleLønnstilskuddFelter(), Avtalerolle.VEILEDER);
+        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER);
+        return avtale;
+    }
+
+    public static Avtale enArbeidstreningAvtaleGodkjentAvVeileder() {
+        Avtale avtale = enArbeidstreningAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());

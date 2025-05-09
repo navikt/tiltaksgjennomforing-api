@@ -5,6 +5,8 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
@@ -46,11 +48,13 @@ public class ArbeidsgiverTest {
 
         PersondataService persondataService = mock(PersondataService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
+        EregService eregService  = mock(EregService.class);
 
-        final Norg2GeoResponse navEnhet = new Norg2GeoResponse("Nav Grorud", "0411");
+        Norg2GeoResponse navEnhet = new Norg2GeoResponse("Nav Grorud", "0411");
         when(norg2Client.hentGeografiskEnhet(any())).thenReturn(navEnhet);
         when(persondataService.hentNavn(any())).thenReturn(new Navn("Donald", "", "Duck"));
         when(persondataService.hentGeografiskTilknytning(any())).thenReturn(Optional.of("0904"));
+        when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
 
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 TestData.etFodselsnummer(),
@@ -67,7 +71,9 @@ public class ArbeidsgiverTest {
                 ),
                 Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
                 persondataService,
-                norg2Client);
+                norg2Client,
+                eregService
+        );
 
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
         assertThat(avtale.getOpphav()).isEqualTo(Avtaleopphav.ARBEIDSGIVER);
@@ -84,6 +90,7 @@ public class ArbeidsgiverTest {
                 null,
                 null,
                 null,
+                null,
                 null
         );
         assertThatThrownBy(
@@ -95,6 +102,7 @@ public class ArbeidsgiverTest {
     public void endreAvtale_validererTilDato() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
+                null,
                 null,
                 null,
                 null,

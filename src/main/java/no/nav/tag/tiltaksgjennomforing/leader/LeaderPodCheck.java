@@ -61,8 +61,8 @@ public class LeaderPodCheck {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(List.of(MediaType.ALL));
         var entity = new HttpEntity<>(headers);
-        ResponseEntity responseEntity = restTemplate.exchange(electorPath, HttpMethod.GET, entity, String.class);
-        return objectMapper.readValue((String) responseEntity.getBody(), Elector.class);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(electorPath, HttpMethod.GET, entity, String.class);
+        return objectMapper.readValue(responseEntity.getBody(), Elector.class);
     }
 
     @Data
