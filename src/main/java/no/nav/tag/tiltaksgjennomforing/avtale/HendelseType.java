@@ -59,7 +59,9 @@ public enum HendelseType {
     UTLOPER_OM_24_TIMER("Avtale vil automatisk slettes i dag dersom det ikke foretas noen endringer innen kl 23:59"),
     OPPFØLGING_AV_TILTAK_KREVES("Oppfølging av tiltaket kreves"),
     OPPFØLGING_AV_TILTAK_UTFØRT("Oppfølging av tiltaket utført"),
-    PATCH("Patching av avtalehendelse");
+    PATCH("Patching av avtalehendelse"),
+    OPPDATERTE_AVTALEKRAV("Avtalekrav for arbeidsgiver er oppdatert");
+
 
     private final String tekst;
 }

@@ -28,3 +28,8 @@ Cookie: io.nais.wonderwall.session=<SESSION_ID>
     "AVTALE-ID-HER"
   ]
 }
+
+### Lage nye oppdaterte krav for arbeidsgivere
+POST http://localhost:8080/tiltaksgjennomforing-api/utvikler-admin/oppdaterte-avtalekrav
+Content-Type: application/json
+

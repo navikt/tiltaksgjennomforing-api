@@ -229,4 +229,6 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
           AND a.status IN ('GJENNOMFØRES', 'AVSLUTTET', 'PÅBEGYNT', 'MANGLER_GODKJENNING', 'KLAR_FOR_OPPSTART')
     """)
     List<Avtale> findByDeltakerFnr(Fnr deltakerFnr);
+
+    List<Avtale> findAllByGjeldendeInnhold_GodkjentAvArbeidsgiverNotNullAndStatusIn(List<Status> statuser);
 }
