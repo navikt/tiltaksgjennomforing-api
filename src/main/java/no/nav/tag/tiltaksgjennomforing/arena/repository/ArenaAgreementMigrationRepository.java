@@ -2,11 +2,14 @@ package no.nav.tag.tiltaksgjennomforing.arena.repository;
 
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggregate;
+import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementErrorCount;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigration;
+import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigrationCount;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -50,6 +53,19 @@ public interface ArenaAgreementMigrationRepository extends JpaRepository<ArenaAg
     List<ArenaAgreementAggregate> findMigrationAgreementAggregates(ArenaTiltakskode tiltakskode);
 
     @Query("""
+        SELECT count(*)
+        FROM ArenaTiltakgjennomforing atg
+        FULL OUTER JOIN ArenaTiltakdeltaker atd ON atd.tiltakgjennomforingId = atg.tiltakgjennomforingId
+        LEFT JOIN ArenaOrdsFnr aof ON atd.personId = aof.personId
+        LEFT JOIN ArenaOrdsArbeidsgiver aoa ON atg.arbgivIdArrangor = aoa.arbgivIdArrangor
+        WHERE atg.tiltakskode = :tiltakskode AND (
+              atg.tiltakgjennomforingId NOT IN (SELECT tiltakgjennomforingId FROM ArenaAgreementMigration) OR
+              atd.tiltakdeltakerId NOT IN (SELECT tiltakdeltakerId FROM ArenaAgreementMigration)
+        )
+    """)
+    long countMigrationAgreementAggregates(ArenaTiltakskode tiltakskode);
+
+    @Query("""
         SELECT a
         FROM Avtale a
         WHERE a.tiltakstype = :tiltakstype
@@ -65,4 +81,27 @@ public interface ArenaAgreementMigrationRepository extends JpaRepository<ArenaAg
     """)
     List<Integer> findTiltakdeltakerIdFromAvtaleId(UUID avtaleId);
 
+    @Query("""
+        SELECT aam.status as status, aam.action as action, COUNT(aam) as count
+        FROM ArenaAgreementMigration aam
+        WHERE aam.tiltakstype = :tiltakskode
+        GROUP BY aam.status, aam.action
+        ORDER BY aam.status, aam.action
+    """)
+    List<ArenaAgreementMigrationCount> getStatistics(ArenaTiltakskode tiltakskode);
+
+    @Query("""
+        SELECT aam.error, count(aam)
+        FROM ArenaAgreementMigration aam
+        WHERE aam.tiltakstype = :tiltakskode AND aam.status = 'FAILED'
+        GROUP BY aam.error
+        ORDER BY aam.error
+    """)
+    List<ArenaAgreementErrorCount> findMigrationErrors(ArenaTiltakskode tiltakskode);
+
+    @Modifying
+    @Query("""
+        DELETE FROM ArenaAgreementMigration aam WHERE aam.tiltakstype = :tiltakskode and aam.status = 'FAILED'
+    """)
+    void reset(ArenaTiltakskode tiltakskode);
 }
