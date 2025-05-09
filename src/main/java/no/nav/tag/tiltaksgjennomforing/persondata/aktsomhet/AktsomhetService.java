@@ -1,14 +1,15 @@
 package no.nav.tag.tiltaksgjennomforing.persondata.aktsomhet;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 @Service
 public class AktsomhetService {
@@ -27,14 +28,16 @@ public class AktsomhetService {
             switch (avtalerolle) {
                 case BESLUTTER, VEILEDER -> {
                     Avtalepart avtalepart = innloggingService.hentAvtalepart(avtalerolle);
-                    return Optional.ofNullable(avtalepart.hentAvtale(avtaleRepository, avtaleId))
+                    return avtaleRepository.findById(avtaleId)
+                        .filter(harTilgangTilAvtalen(avtalepart))
                         .map(avtale -> Aktsomhet.intern(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())))
                         .orElse(Aktsomhet.tom());
                 }
                 case ARBEIDSGIVER, MENTOR -> {
                     Avtalepart avtalepart = innloggingService.hentAvtalepart(avtalerolle);
-                    return Optional.ofNullable(avtalepart.hentAvtale(avtaleRepository, avtaleId))
+                    return avtaleRepository.findById(avtaleId)
                         .filter(avtale -> !avtale.erUfordelt())
+                        .filter(harTilgangTilAvtalen(avtalepart))
                         .map(avtale -> Aktsomhet.ekstern(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())))
                         .orElse(Aktsomhet.tom());
                 }
@@ -45,5 +48,16 @@ public class AktsomhetService {
         } catch (Exception e) {
             return Aktsomhet.tom();
         }
+    }
+
+    private Predicate<Avtale> harTilgangTilAvtalen(Avtalepart avtalepart) {
+        return avtale -> {
+            try {
+                avtalepart.sjekkTilgang(avtale);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        };
     }
 }
