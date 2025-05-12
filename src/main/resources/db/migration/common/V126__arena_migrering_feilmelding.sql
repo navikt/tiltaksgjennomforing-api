@@ -1,0 +1,1 @@
+ALTER TABLE arena_event ADD COLUMN error VARCHAR;

@@ -35,4 +35,5 @@ public class ArenaAgreementMigration {
     @Enumerated(EnumType.STRING)
     @Convert(converter = ArenaTiltakskode.Convert.class)
     private ArenaTiltakskode tiltakstype;
+    private String error;
 }
