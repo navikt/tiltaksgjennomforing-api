@@ -1345,10 +1345,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     public void forkortAvtale(LocalDate nySluttDato, ForkortetGrunn forkortetGrunn, NavIdent utførtAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 
-        if (!erGodkjentAvVeileder()) {
+        boolean isPabegyntArenaAvtale = !erGodkjentAvVeileder() && Avtaleopphav.ARENA == opphav;
+        if (!isPabegyntArenaAvtale && !erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_IKKE_GODKJENT_AVTALE);
         }
-        if (!nySluttDato.isBefore(gjeldendeInnhold.getSluttDato())) {
+        if (!isPabegyntArenaAvtale && !nySluttDato.isBefore(gjeldendeInnhold.getSluttDato())) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_ETTER_SLUTTDATO);
+        }
+        if (isPabegyntArenaAvtale && nySluttDato.isAfter(LocalDate.now())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_ETTER_SLUTTDATO);
         }
         // Kan ikke forkorte før en utbetalt/sendtkrav tilskuddsperiode
