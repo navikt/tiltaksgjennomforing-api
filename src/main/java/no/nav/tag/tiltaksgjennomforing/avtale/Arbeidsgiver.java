@@ -20,7 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -56,24 +55,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
         this.eregService = eregService;
-    }
-
-    private static boolean avbruttForMerEnn12UkerSiden(Avtale avtale) {
-        return avtale.isAvbrutt() && avtale.getSistEndret()
-            .plus(84, ChronoUnit.DAYS)
-            .isBefore(Now.instant());
-    }
-
-    private static boolean annullertForMerEnn12UkerSiden(Avtale avtale) {
-        return avtale.getAnnullertTidspunkt() != null && avtale.getAnnullertTidspunkt()
-            .plus(84, ChronoUnit.DAYS)
-            .isBefore(Now.instant());
-    }
-
-    private static boolean sluttdatoPassertMedMerEnn12Uker(Avtale avtale) {
-        return avtale.erGodkjentAvVeileder() && avtale.getGjeldendeInnhold()
-            .getSluttDato().plusWeeks(12)
-            .isBefore(Now.localDate());
     }
 
     private static Avtale fjernAvbruttGrunn(Avtale avtale) {
@@ -168,19 +149,19 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                     );
                 }
 
-                if (sluttdatoPassertMedMerEnn12Uker(avtale)) {
+                if (avtale.harSluttdatoPassertMedMerEnn12Uker()) {
                     return new Tilgang.Avvis(
                         Avslagskode.SLUTTDATO_PASSERT,
                         "Sluttdato har passert med mer enn 12 uker"
                     );
                 }
-                if (avbruttForMerEnn12UkerSiden(avtale)) {
+                if (avtale.erAvbruttForMerEnn12UkerSiden()) {
                     return new Tilgang.Avvis(
                         Avslagskode.UTGATT,
                         "Avbrutt for mer enn 12 uker siden"
                     );
                 }
-                if (annullertForMerEnn12UkerSiden(avtale)) {
+                if (avtale.erAnnullertForMerEnn12UkerSiden()) {
                     return new Tilgang.Avvis(
                         Avslagskode.UTGATT,
                         "Annullert for mer enn 12 uker siden"
