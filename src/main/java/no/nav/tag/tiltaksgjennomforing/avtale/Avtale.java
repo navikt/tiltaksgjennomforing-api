@@ -883,7 +883,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         NavIdent gammelNavIdent = this.getVeilederNavIdent();
         this.setVeilederNavIdent(nyNavIdent);
         getGjeldendeInnhold().reberegnLønnstilskudd();
-        if (gammelNavIdent == null) {
+        if (gammelNavIdent == null && opphav != Avtaleopphav.ARENA) {
             nyeTilskuddsperioder();
             utforEndring(new AvtaleOpprettetAvArbeidsgiverErFordelt(this));
         } else {
