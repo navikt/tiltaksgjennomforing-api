@@ -103,6 +103,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
@@ -1692,5 +1693,23 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     protected LonnstilskuddAvtaleBeregningStrategy hentBeregningStrategi() {
         return this.lonnstilskuddAvtaleBeregningStrategy.updateAndGet(strategy -> strategy == null ? TilskuddsperioderBeregningStrategyFactory.create(
             tiltakstype) : strategy);
+    }
+
+    public boolean erAvbruttForMerEnn12UkerSiden() {
+        return this.isAvbrutt() && this.getSistEndret()
+            .plus(84, ChronoUnit.DAYS)
+            .isBefore(Now.instant());
+    }
+
+    public boolean harSluttdatoPassertMedMerEnn12Uker() {
+        return this.erGodkjentAvVeileder() && this.getGjeldendeInnhold()
+            .getSluttDato().plusWeeks(12)
+            .isBefore(Now.localDate());
+    }
+
+    public boolean erAnnullertForMerEnn12UkerSiden() {
+        return this.getAnnullertTidspunkt() != null && this.getAnnullertTidspunkt()
+            .plus(84, ChronoUnit.DAYS)
+            .isBefore(Now.instant());
     }
 }
