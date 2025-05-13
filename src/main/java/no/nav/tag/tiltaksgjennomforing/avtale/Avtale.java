@@ -35,7 +35,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiverErFordelt;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleFordelt;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleSlettemerket;
@@ -883,9 +883,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         NavIdent gammelNavIdent = this.getVeilederNavIdent();
         this.setVeilederNavIdent(nyNavIdent);
         getGjeldendeInnhold().reberegnLønnstilskudd();
-        if (gammelNavIdent == null && opphav != Avtaleopphav.ARENA) {
+        if (gammelNavIdent == null && opphav == Avtaleopphav.ARENA) {
+            utforEndring(new AvtaleFordelt(this));
+        } else if (gammelNavIdent == null) {
             nyeTilskuddsperioder();
-            utforEndring(new AvtaleOpprettetAvArbeidsgiverErFordelt(this));
+            utforEndring(new AvtaleFordelt(this));
         } else {
             utforEndring(new AvtaleNyVeileder(this, gammelNavIdent));
         }
