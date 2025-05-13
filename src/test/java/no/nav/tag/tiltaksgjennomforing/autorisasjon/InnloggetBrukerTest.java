@@ -17,6 +17,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
@@ -83,7 +84,8 @@ public class InnloggetBrukerTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleService
+                featureToggleService,
+                mock(EregService.class)
         );
 
         assertThat(veileder.harTilgangTilAvtale(avtale).erTillat()).isTrue();
@@ -103,7 +105,8 @@ public class InnloggetBrukerTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleService
+                featureToggleService,
+                mock(EregService.class)
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,
@@ -125,7 +128,8 @@ public class InnloggetBrukerTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleService
+                featureToggleService,
+                mock(EregService.class)
         );
         when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
         assertThat(veileder.harTilgangTilAvtale(avtale).erTillat()).isTrue();
@@ -143,7 +147,8 @@ public class InnloggetBrukerTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleService
+                featureToggleService,
+                mock(EregService.class)
         );
         when(tilgangskontrollService.hentSkrivetilgang(
                 veileder,
@@ -156,12 +161,14 @@ public class InnloggetBrukerTest {
     @Test
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avtale() {
         assertThat(
-                new Arbeidsgiver(TestData.etFodselsnummer(),
+                new Arbeidsgiver(
+                        TestData.etFodselsnummer(),
                         Set.of(),
                         Map.of(),
                         List.of(),
                         persondataService,
-                    null
+                        null,
+                        null
                 ).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
     }
@@ -181,7 +188,8 @@ public class InnloggetBrukerTest {
                         new SlettemerkeProperties(),
                         TestData.INGEN_AD_GRUPPER,
                         veilarboppfolgingService,
-                        featureToggleService
+                        featureToggleService,
+                        mock(EregService.class)
                 ).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
     }
@@ -201,7 +209,8 @@ public class InnloggetBrukerTest {
                         new SlettemerkeProperties(),
                         TestData.INGEN_AD_GRUPPER,
                         veilarboppfolgingService,
-                        featureToggleService
+                        featureToggleService,
+                        mock(EregService.class)
                 ).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
     }
@@ -210,13 +219,15 @@ public class InnloggetBrukerTest {
     public void harTilgang__ikkepart_selvbetjeningsbruker_skal_ikke_ha_tilgang() {
         when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
         assertThat(
-                new Arbeidsgiver(
-                        new Fnr("00000000001"),
-                        Set.of(),
-                        Map.of(),
-                        List.of(),
-                        persondataService,
-                        null).harTilgangTilAvtale(avtale).erTillat()
+            new Arbeidsgiver(
+                new Fnr("00000000001"),
+                Set.of(),
+                Map.of(),
+                List.of(),
+                persondataService,
+                null,
+                null
+            ).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
     }
 
@@ -228,9 +239,10 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-            List.of(),
-            persondataService,
-            null
+                List.of(),
+                persondataService,
+                null,
+                null
         );
         assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isTrue();
     }
@@ -245,7 +257,8 @@ public class InnloggetBrukerTest {
                 tilganger,
                 List.of(),
                 persondataService,
-            null
+                null,
+                null
         );
         avtale.setAvbrutt(true);
         avtale.setSistEndret(Now.instant().minus(84, ChronoUnit.DAYS).minusMillis(100));
@@ -263,7 +276,8 @@ public class InnloggetBrukerTest {
                 tilganger,
                 List.of(),
                 persondataService,
-            null
+                null,
+                null
         );
         assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isFalse();
     }
@@ -271,18 +285,6 @@ public class InnloggetBrukerTest {
     @Test
     public void harTilgang__arbeidsgiver_skal_ha_tilgang_til_avsluttet_avtale_eldre_enn_12_uker_når_ikke_godkjent_av_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        Veileder veileder = new Veileder(
-            avtale.getVeilederNavIdent(),
-            null,
-            tilgangskontrollService,
-            persondataService,
-            norg2Client,
-            Collections.emptySet(),
-            new SlettemerkeProperties(),
-            TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
-            featureToggleService
-        );
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
@@ -291,7 +293,8 @@ public class InnloggetBrukerTest {
                 tilganger,
                 List.of(),
                 persondataService,
-            null
+                null,
+                null
         );
 
         assertThat(arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isTrue();
@@ -307,7 +310,8 @@ public class InnloggetBrukerTest {
                 tilganger,
                 List.of(),
                 persondataService,
-            null
+                null,
+                null
         );
         assertThat(arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isFalse();
     }

@@ -10,33 +10,29 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
-
 @Slf4j
 @Component
 class STSClient {
 
     private final RestTemplate noAuthRestTemplate;
-    private final URI stsUri;
+    private final String stsUriString;
 
-    public STSClient(StsProperties stsProperties) {
-        this.noAuthRestTemplate = new RestTemplateBuilder()
-                .basicAuthentication(stsProperties.getUsername(), stsProperties.getPassword())
-                .build();
-        this.stsUri = stsProperties.getRestUri();
+    public STSClient(StsProperties stsProperties, RestTemplateBuilder restTemplateBuilder) {
+        this.noAuthRestTemplate = restTemplateBuilder
+            .basicAuthentication(stsProperties.getUsername(), stsProperties.getPassword())
+            .build();
+        this.stsUriString = UriComponentsBuilder.fromUri(stsProperties.getRestUri())
+            .queryParam("grant_type", "client_credentials")
+            .queryParam("scope", "openid")
+            .toUriString();
     }
 
     public STSToken hentSTSToken() {
-        String uriString = UriComponentsBuilder.fromUri(stsUri)
-                .queryParam("grant_type", "client_credentials")
-                .queryParam("scope", "openid")
-                .toUriString();
-
         return noAuthRestTemplate.exchange(
-                uriString,
-                HttpMethod.GET,
-                getRequestEntity(),
-                STSToken.class
+            stsUriString,
+            HttpMethod.GET,
+            getRequestEntity(),
+            STSToken.class
         ).getBody();
 
     }

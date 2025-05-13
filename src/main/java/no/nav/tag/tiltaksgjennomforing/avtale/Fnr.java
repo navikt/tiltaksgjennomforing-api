@@ -65,18 +65,18 @@ public class Fnr extends Identifikator {
         return this.fødselsdato().isBefore(opprettetTidspunkt.minusYears(30));
     }
 
-    public boolean erOver67ÅrFraSluttDato(LocalDate sluttDato) {
-        if (NULL_FNR.equals(this)) {
-            return false;
-        }
-        return this.fødselsdato().isBefore(sluttDato.minusYears(67).plusDays(1));
-    }
-
     public boolean erOver72ÅrFraSluttDato(LocalDate sluttDato) {
         if (NULL_FNR.equals(this)) {
             return false;
         }
         return this.fødselsdato().isBefore(sluttDato.minusYears(72).plusDays(1));
+    }
+
+    public boolean erOver67ÅrFraSluttDato(LocalDate sluttDato) {
+        if (NULL_FNR.equals(this)) {
+            return false;
+        }
+        return this.fødselsdato().isBefore(sluttDato.minusYears(67).plusDays(1));
     }
 
     public boolean erDNummer() {

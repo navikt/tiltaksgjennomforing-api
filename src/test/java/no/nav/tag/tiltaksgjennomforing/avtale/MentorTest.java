@@ -11,6 +11,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.Veilarboppfolging
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
@@ -148,7 +149,8 @@ public class MentorTest {
             mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
-            mock(FeatureToggleService.class)
+            mock(FeatureToggleService.class),
+            mock(EregService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -176,7 +178,8 @@ public class MentorTest {
             mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
-            mock(FeatureToggleService.class)
+            mock(FeatureToggleService.class),
+            mock(EregService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -213,7 +216,8 @@ public class MentorTest {
             mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
-            mock(FeatureToggleService.class)
+            mock(FeatureToggleService.class),
+            mock(EregService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());

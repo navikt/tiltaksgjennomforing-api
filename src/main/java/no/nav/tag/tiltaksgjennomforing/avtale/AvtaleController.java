@@ -20,7 +20,6 @@ import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogging;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.EventType;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.Utfall;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
-import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.aktsomhet.Aktsomhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.aktsomhet.AktsomhetService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
@@ -68,7 +67,6 @@ public class AvtaleController {
     private final AvtaleInnholdRepository avtaleInnholdRepository;
     private final ArenaRyddeAvtaleRepository arenaRyddeAvtaleRepository;
     private final InnloggingService innloggingService;
-    private final EregService eregService;
     private final Norg2Client norg2Client;
     private final KontoregisterService kontoregisterService;
     private final DokgenService dokgenService;
@@ -386,7 +384,6 @@ public class AvtaleController {
 
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
-        avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
@@ -446,8 +443,6 @@ public class AvtaleController {
 
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
-        avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
-
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
@@ -471,7 +466,6 @@ public class AvtaleController {
         if (avtale == null) {
             throw new RuntimeException("Opprett Mentor fant ingen avtale å behandle.");
         }
-        avtale.leggTilBedriftNavn(eregService.hentVirksomhet(opprettMentorAvtale.getBedriftNr()).getBedriftNavn());
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();

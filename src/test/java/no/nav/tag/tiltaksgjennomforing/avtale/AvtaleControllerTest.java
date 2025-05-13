@@ -130,7 +130,8 @@ public class AvtaleControllerTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleServiceMock
+                featureToggleServiceMock,
+                mock(EregService.class)
             );
         værInnloggetSom(
             veileder
@@ -161,7 +162,8 @@ public class AvtaleControllerTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleServiceMock
+                featureToggleServiceMock,
+                mock(EregService.class)
         );
         værInnloggetSom(veileder);
         Avtale exampleAvtale = Avtale.builder()
@@ -205,7 +207,8 @@ public class AvtaleControllerTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleServiceMock
+                featureToggleServiceMock,
+                mock(EregService.class)
         );
         værInnloggetSom(veileder);
 
@@ -245,7 +248,8 @@ public class AvtaleControllerTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleServiceMock
+                featureToggleServiceMock,
+                mock(EregService.class)
         );
         værInnloggetSom(veileder);
 
@@ -275,6 +279,7 @@ public class AvtaleControllerTest {
                         Map.of(),
                         List.of(),
                         persondataService,
+                        null,
                         null
                 )
         );
@@ -288,9 +293,11 @@ public class AvtaleControllerTest {
     public void opprettAvtaleSkalReturnereCreatedOgOpprettetLokasjon() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
 
-        final NavIdent navIdent = new NavIdent("Z123456");
-        final NavEnhet navEnhet = TestData.ENHET_OPPFØLGING;
-        final OpprettAvtale opprettAvtale = new OpprettAvtale(
+        EregService eregService  = mock(EregService.class);
+
+        NavIdent navIdent = new NavIdent("Z123456");
+        NavEnhet navEnhet = TestData.ENHET_OPPFØLGING;
+        OpprettAvtale opprettAvtale = new OpprettAvtale(
                 avtale.getDeltakerFnr(),
                 avtale.getBedriftNr(),
                 Tiltakstype.ARBEIDSTRENING
@@ -305,9 +312,12 @@ public class AvtaleControllerTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleServiceMock
+                featureToggleServiceMock,
+                eregService
         );
+
         værInnloggetSom(veileder);
+        when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
         when(
                 eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(
@@ -368,7 +378,8 @@ public class AvtaleControllerTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleServiceMock
+                featureToggleServiceMock,
+                mock(EregService.class)
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
@@ -446,7 +457,8 @@ public class AvtaleControllerTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleServiceMock
+                featureToggleServiceMock,
+                mock(EregService.class)
         );
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
@@ -475,7 +487,8 @@ public class AvtaleControllerTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleServiceMock
+                featureToggleServiceMock,
+                mock(EregService.class)
         );
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
@@ -504,7 +517,8 @@ public class AvtaleControllerTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleServiceMock
+                featureToggleServiceMock,
+                mock(EregService.class)
         );
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
@@ -525,6 +539,7 @@ public class AvtaleControllerTest {
                 TestData.etFodselsnummer(),
                 Set.of(),
                 Map.of(),
+                null,
                 null,
                 null,
                 null
@@ -589,7 +604,8 @@ public class AvtaleControllerTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleServiceMock
+                featureToggleServiceMock,
+                mock(EregService.class)
         );
         værInnloggetSom(veileder);
         when(kontoregisterService.hentKontonummer(anyString())).thenReturn("990983666");
@@ -623,7 +639,8 @@ public class AvtaleControllerTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleServiceMock
+                featureToggleServiceMock,
+                mock(EregService.class)
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
@@ -655,7 +672,8 @@ public class AvtaleControllerTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleServiceMock
+                featureToggleServiceMock,
+                mock(EregService.class)
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.hentSkrivetilgang(

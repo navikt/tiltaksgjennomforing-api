@@ -5,29 +5,22 @@ import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Tiltakstatuskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 
-import java.time.LocalDate;
-
 public enum ArenaMigrationAction {
     GJENOPPRETT,
     OPPRETT,
     OPPDATER,
     IGNORER,
     ANNULLER,
-    AVSLUTT,
-    KODE_6,
-    FNR_STEMMER_IKKE,
-    VIRKSOMHETSNUMMER_STEMMER_IKKE,
-    MANGLER_FNR,
-    MANGLER_VIRKSOMHETSNUMMER;
+    AVSLUTT;
 
     public static ArenaMigrationAction map(ArenaAgreementAggregate agreementAggregate) {
         Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
-        boolean isSluttdatoIDagEllerFremtiden = agreementAggregate.findSluttdato()
-            .map(sluttdato -> sluttdato.isAfter(LocalDate.now().minusDays(1))).orElse(false);
+        boolean isSluttdatoIDagEllerFremtiden = agreementAggregate.isSluttdatoIDagEllerFremtiden();
 
         if (agreementAggregate.isDublett()) {
             return IGNORER;
         }
+
         return switch (deltakerstatuskode) {
             case GJENN, TILBUD -> isSluttdatoIDagEllerFremtiden ? OPPRETT : IGNORER;
             case null, default -> IGNORER;
@@ -42,8 +35,7 @@ public enum ArenaMigrationAction {
         Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
         Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
         boolean isFeilregistrert = avtale.isFeilregistrert();
-        boolean isSluttdatoIDagEllerFremtiden = agreementAggregate.findSluttdato()
-            .map(sluttdato -> sluttdato.isAfter(LocalDate.now().minusDays(1))).orElse(false);
+        boolean isSluttdatoIDagEllerFremtiden = agreementAggregate.isSluttdatoIDagEllerFremtiden();
 
         if (agreementAggregate.isDublett()) {
             return IGNORER;

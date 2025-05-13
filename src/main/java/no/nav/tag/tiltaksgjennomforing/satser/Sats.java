@@ -28,6 +28,14 @@ public class Sats {
             )
     ));
 
+    /**
+     * Singleton for å hente ut VTAO-sats for en gitt dato.
+     * <p>
+     * <b>OBS:</b> Når man legger til sats for et nytt år, så vil ikke eksisterende
+     * tilskuddsperioder få oppdatert beløpene sine. Kall admin-endepunktet
+     * <code>oppdater-tilskuddsperiode-belop-vtao</code> når ny sats er lagt til
+     * og deployet.
+     */
     public static final Sats VTAO_SATS = new Sats(List.of(
             new SatsPeriodeData(
                     7_067,

@@ -20,6 +20,8 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.sporingslogg.Sporingslogg;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
@@ -158,18 +160,6 @@ public class TestData {
         return avtale;
     }
 
-    public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhetOgGeografiskEnhet() {
-        Avtale avtale = enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
-        setOppfølgingOgGeografiskPåAvtale(avtale);
-        return avtale;
-    }
-
-    public static Avtale enArbeidstreningsAvtaleMedGittAvtaleNr() {
-        Avtale avtale = enArbeidstreningAvtale();
-        avtale.setAvtaleNr(ET_AVTALENR);
-        return avtale;
-    }
-
     public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet() {
         Avtale avtale = enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
         setGeografiskPåAvtale(avtale);
@@ -179,6 +169,13 @@ public class TestData {
     public static Avtale enAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.opprett(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), Avtaleopphav.VEILEDER, veilderNavIdent);
+        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER);
+        return avtale;
+    }
+
+    public static Avtale enVtaoArenaAvtaleMedAltUtfylt() {
+        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        Avtale avtale = Avtale.opprett(lagOpprettAvtale(Tiltakstype.VTAO), Avtaleopphav.ARENA, veilderNavIdent);
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER);
         return avtale;
     }
@@ -228,8 +225,28 @@ public class TestData {
         return avtale;
     }
 
+    public static Avtale enVtaoRyddeAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate startDato, LocalDate sluttDato) {
+        Avtale avtale = TestData.enVtaoAvtaleMedAltUtfylt();
+        avtale.setArenaRyddeAvtale(new ArenaRyddeAvtale());
+        setOppfølgingOgGeografiskPåAvtale(avtale);
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter();
+        endring.setStartDato(startDato);
+        endring.setSluttDato(sluttDato);
+        avtale.setGodkjentForEtterregistrering(true);
+        avtale.endreAvtale(Now.instant(), endring, Avtalerolle.VEILEDER);
+        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        avtale.godkjennForDeltaker(TestData.enIdentifikator());
+        avtale.godkjennForVeileder(TestData.enNavIdent());
+        return avtale;
+    }
+
     public static Avtale enMidlertidigLonnstilskuddAvtaleMedAltUtfylt() {
         return enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+    }
+
+    public static Avtale enVtaoAvtaleMedAltUtfylt() {
+        return enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VTAO);
     }
 
     public static Avtale enSommerjobbLonnstilskuddAvtaleMedAltUtfylt(int lonnstilskuddProsent) {
@@ -590,7 +607,6 @@ public class TestData {
     public static EndreAvtale endringPåAlleVTAOFelter() {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreKontaktInfo(endreAvtale);
-        endreFadderInfo(endreAvtale);
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
@@ -605,17 +621,6 @@ public class TestData {
         endreAvtale.setHarFamilietilknytning(false);
         return endreAvtale;
     }
-
-    public static EndreAvtale endreFadderInfo(EndreAvtale endreAvtale) {
-        var vtao = new VtaoFelter(
-                "Frank",
-                "Fadder",
-                "12345678"
-        );
-        endreAvtale.setVtao(vtao);
-        return endreAvtale;
-    }
-
 
     public static Avtale enLonnstilskuddAvtaleMedAltUtfyltMedGodkjentForEtterregistrering(LocalDate avtaleStart, LocalDate avtaleSlutt) {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
@@ -651,7 +656,7 @@ public class TestData {
     public static EndreInkluderingstilskudd endringMedNyeInkluderingstilskudd(List<Inkluderingstilskuddsutgift> eksisterendeUtgifter) {
         EndreInkluderingstilskudd endreInkluderingstilskudd = new EndreInkluderingstilskudd();
         endreInkluderingstilskudd.getInkluderingstilskuddsutgift().addAll(eksisterendeUtgifter);
-        endreInkluderingstilskudd.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgiftUtenId(13337, InkluderingstilskuddsutgiftType.PROGRAMVARE));
+        endreInkluderingstilskudd.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift(13337, InkluderingstilskuddsutgiftType.PROGRAMVARE));
         return endreInkluderingstilskudd;
     }
 
@@ -791,7 +796,7 @@ public class TestData {
     public static Arbeidsgiver enArbeidsgiver() {
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
-        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), List.of(), persondataService, null);
+        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), List.of(), persondataService, null, null);
     }
 
     public static Mentor enMentor(Avtale avtale) {
@@ -810,7 +815,9 @@ public class TestData {
                 List.of(Tiltakstype.values())),
                 List.of(),
                 persondataService,
-                null);
+                null,
+                null
+        );
     }
 
     public static Fnr etFodselsnummer() {
@@ -865,6 +872,7 @@ public class TestData {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
         PersondataService persondataService  = mock(PersondataService.class);
+        EregService eregService  = mock(EregService.class);
 
         var veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
@@ -876,12 +884,13 @@ public class TestData {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleService
+                featureToggleService,
+                eregService
         );
         when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
-
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         when(persondataService.hentNavn(any(Fnr.class))).thenReturn(Navn.TOMT_NAVN);
+        when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
 
         when(
             tilgangskontrollService.harSkrivetilgangTilKandidat(
@@ -930,14 +939,6 @@ public class TestData {
     }
 
     public static Inkluderingstilskuddsutgift enInkluderingstilskuddsutgift(Integer beløp, InkluderingstilskuddsutgiftType type) {
-        Inkluderingstilskuddsutgift i = new Inkluderingstilskuddsutgift();
-        i.setId(UUID.randomUUID());
-        i.setBeløp(beløp);
-        i.setType(type);
-        return i;
-    }
-
-    public static Inkluderingstilskuddsutgift enInkluderingstilskuddsutgiftUtenId(Integer beløp, InkluderingstilskuddsutgiftType type) {
         Inkluderingstilskuddsutgift i = new Inkluderingstilskuddsutgift();
         i.setBeløp(beløp);
         i.setType(type);
@@ -994,8 +995,8 @@ public class TestData {
                         avtale.getGjeldendeInnhold().getArbeidsgiverFornavn(),
                         avtale.getGjeldendeInnhold().getArbeidsgiverEtternavn(),
                         avtale.getGjeldendeInnhold().getArbeidsgiverTlf(),
-                        new RefusjonKontaktperson("Atle", "Jørgensen", "12345678", true),
-                        null),
+                        new RefusjonKontaktperson("Atle", "Jørgensen", "12345678", true)
+                ),
                 TestData.enNavIdent());
         return avtale;
     }
@@ -1043,7 +1044,8 @@ public class TestData {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleService
+                featureToggleService,
+                mock(EregService.class)
         );
         when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
@@ -1063,7 +1065,8 @@ public class TestData {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
-                featureToggleService
+                featureToggleService,
+                mock(EregService.class)
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,
@@ -1084,9 +1087,14 @@ public class TestData {
         return EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build();
     }
 
-    public static Avtale enArbeidstreningAvtaleGodkjentAvVeileder() {
+    public static Avtale enArbeidstreningAvtaleMedAltUtfylt() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleLønnstilskuddFelter(), Avtalerolle.VEILEDER);
+        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER);
+        return avtale;
+    }
+
+    public static Avtale enArbeidstreningAvtaleGodkjentAvVeileder() {
+        Avtale avtale = enArbeidstreningAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());

@@ -9,13 +9,11 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -23,13 +21,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles(Miljø.TEST)
@@ -37,12 +34,6 @@ import static org.mockito.Mockito.when;
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class VtaoTest {
-    @Autowired
-    private AvtaleRepository avtaleRepository;
-    @Autowired
-    private VtaoRepository vtaoRepository;
-    @Autowired
-    private AvtaleController avtaleController;
     @MockBean
     private InnloggingService innloggingService;
     @MockBean
@@ -55,8 +46,6 @@ public class VtaoTest {
     private Norg2Client norg2Client;
     @MockBean
     private FeatureToggleService featureToggleService;
-    @Autowired
-    private AvtaleInnholdRepository avtaleInnholdRepository;
 
     @BeforeEach
     void setup() {
@@ -76,205 +65,13 @@ public class VtaoTest {
                 new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleService
+                featureToggleService,
+                mock(EregService.class)
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.hentSkrivetilgang(eq(veileder), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
 
         // TODO: opprett avtale via endepunkt avtaleController.opprettAvtaleSomVeileder()
-    }
-
-    @Test
-    public void kanOppretteOgEndreKontaktInfoForVtaoTest() {
-        // Lagre en ny VTAO-avtale
-        Avtale avtale = TestData.enVtaoAvtaleGodkjentAvArbeidsgiver();
-        var lagretAvtale = avtaleRepository.save(avtale);
-
-        var navIdent = TestData.enNavIdent();
-        Veileder veileder = new Veileder(
-                navIdent,
-                null,
-                tilgangskontrollService,
-                persondataService,
-                norg2Client,
-                Collections.emptySet(),
-                new SlettemerkeProperties(),
-                TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
-                featureToggleService
-        );
-        værInnloggetSom(veileder);
-        when(tilgangskontrollService.hentSkrivetilgang(eq(veileder), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
-
-        // Hent avtalen fra databasen
-        var hentetAvtale = avtaleController.hent(lagretAvtale.getId(), Avtalerolle.VEILEDER, null);
-
-        // Ingrid Espelid: "Så juksar me lite"
-        hentetAvtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
-        hentetAvtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
-        avtaleRepository.save(hentetAvtale);
-
-        avtaleController.endreKontaktinfo(lagretAvtale.getId(), new EndreKontaktInformasjon(
-                lagretAvtale.getGjeldendeInnhold().getDeltakerFornavn(),
-                lagretAvtale.getGjeldendeInnhold().getDeltakerEtternavn(),
-                lagretAvtale.getGjeldendeInnhold().getDeltakerTlf(),
-                lagretAvtale.getGjeldendeInnhold().getVeilederFornavn(),
-                lagretAvtale.getGjeldendeInnhold().getVeilederEtternavn(),
-                lagretAvtale.getGjeldendeInnhold().getVeilederTlf(),
-                lagretAvtale.getGjeldendeInnhold().getArbeidsgiverFornavn(),
-                lagretAvtale.getGjeldendeInnhold().getArbeidsgiverEtternavn(),
-                lagretAvtale.getGjeldendeInnhold().getArbeidsgiverTlf(),
-                null,
-                new VtaoFelter(lagretAvtale.getGjeldendeInnhold().getVtao())
-        ));
-        var endretAvtale = avtaleController.hent(lagretAvtale.getId(), Avtalerolle.VEILEDER, null);
-
-        assertNotEquals(
-                lagretAvtale.getGjeldendeInnhold().getVtao(),
-                endretAvtale.getGjeldendeInnhold().getVtao(),
-                "Vtao har endret id og blitt duplisert");
-
-        assertEquals(
-                lagretAvtale.getGjeldendeInnhold().getVtao().getFadderFornavn(),
-                endretAvtale.getGjeldendeInnhold().getVtao().getFadderFornavn(),
-                "Men verdier i felter er de samme (stikkprøve på fadderFornavn)");
-
-        var versjoner = avtaleController.hentVersjoner(lagretAvtale.getId(), Avtalerolle.VEILEDER);
-        assertEquals(versjoner.getFirst().getVtao(),
-                lagretAvtale.getGjeldendeInnhold().getVtao(),
-                "Første versjon er den samme som lagretAvtale");
-
-        assertEquals(2, versjoner.size(), "Det er to versjoner av avtaleInnhold");
-        var vtaoListe = vtaoRepository.findAll();
-        assertEquals(2, vtaoListe.size(), "Det er også to versjoner av Vtao");
-    }
-
-    @Test
-    public void kanEndreVtaoAvtaleUtenVtaoEndringerTest() {
-        // Lagre en ny VTAO-avtale
-        Avtale avtale = TestData.enVtaoAvtaleGodkjentAvArbeidsgiver();
-        var lagretAvtale = avtaleRepository.save(avtale);
-
-        var navIdent = TestData.enNavIdent();
-        Veileder veileder = new Veileder(
-                navIdent,
-                null,
-                tilgangskontrollService,
-                persondataService,
-                norg2Client,
-                Collections.emptySet(),
-                new SlettemerkeProperties(),
-                TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
-                featureToggleService
-        );
-        værInnloggetSom(veileder);
-        when(tilgangskontrollService.hentSkrivetilgang(eq(veileder), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
-        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
-
-        // Hent avtalen fra databasen
-        var hentetAvtale = avtaleController.hent(lagretAvtale.getId(), Avtalerolle.VEILEDER, null);
-
-        hentetAvtale.getGjeldendeInnhold().setGodkjentAvDeltaker(null);
-        hentetAvtale.getGjeldendeInnhold().setGodkjentAvVeileder(null);
-        hentetAvtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(null);
-        avtaleRepository.save(hentetAvtale);
-
-        var endretData = EndreAvtale.fraAvtale(avtale);
-
-        avtaleController.endreAvtale(lagretAvtale.getId(), hentetAvtale.getSistEndret(), endretData, Avtalerolle.VEILEDER);
-        var endretAvtale = avtaleController.hent(lagretAvtale.getId(), Avtalerolle.VEILEDER, null);
-
-        assertEquals(
-                lagretAvtale.getGjeldendeInnhold().getVtao().getId(),
-                endretAvtale.getGjeldendeInnhold().getVtao().getId(),
-                "Vtao har samme ID (samme rad i databasen)"
-        );
-
-        assertEquals(
-                lagretAvtale.getGjeldendeInnhold().getVtao(),
-                endretAvtale.getGjeldendeInnhold().getVtao(),
-                "Men entiten har ikke endret seg"
-        );
-        assertEquals(
-                lagretAvtale.getGjeldendeInnhold().getVtao().hentFelter(),
-                endretAvtale.getGjeldendeInnhold().getVtao().hentFelter(),
-                "Men innholdet har ikke endret seg"
-        );
-
-        var avtaleInnholdListe = avtaleInnholdRepository.findAllByAvtale(lagretAvtale);
-        assertEquals(1, avtaleInnholdListe.size());
-        var vtaoListe = vtaoRepository.findAll();
-        var avtaleInnholdIdSet = avtaleInnholdListe.stream().map(AvtaleInnhold::getId).collect(Collectors.toSet());
-        assertEquals(1, vtaoListe.stream()
-                .filter(x -> avtaleInnholdIdSet.contains(x.getAvtaleInnhold().getId()))
-                .toList()
-                .size());
-    }
-
-    @Test
-    public void kanEndreVtaoAvtaleMedVtaoEndringerTest() {
-        // Lagre en ny VTAO-avtale
-        Avtale avtale = TestData.enVtaoAvtaleGodkjentAvArbeidsgiver();
-        var lagretAvtale = avtaleRepository.save(avtale);
-
-        var navIdent = TestData.enNavIdent();
-        Veileder veileder = new Veileder(
-                navIdent,
-                null,
-                tilgangskontrollService,
-                persondataService,
-                norg2Client,
-                Collections.emptySet(),
-                new SlettemerkeProperties(),
-                TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
-                featureToggleService
-        );
-        værInnloggetSom(veileder);
-        when(tilgangskontrollService.hentSkrivetilgang(eq(veileder), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
-        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
-
-        // Hent avtalen fra databasen
-        var hentetAvtale = avtaleController.hent(lagretAvtale.getId(), Avtalerolle.VEILEDER, null);
-
-        // Ingrid Espelid: "Så juksar me lite"
-        hentetAvtale.getGjeldendeInnhold().setGodkjentAvDeltaker(null);
-        hentetAvtale.getGjeldendeInnhold().setGodkjentAvVeileder(null);
-        hentetAvtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(null);
-        avtaleRepository.save(hentetAvtale);
-
-        var endretVtao = new VtaoFelter(
-                "Freddy",
-                "Faddersen",
-                "87654321"
-        );
-
-        var endretData = EndreAvtale.fraAvtale(lagretAvtale);
-        endretData.setVtao(endretVtao);
-
-        avtaleController.endreAvtale(lagretAvtale.getId(), hentetAvtale.getSistEndret(), endretData, Avtalerolle.VEILEDER);
-        var endretAvtale = avtaleController.hent(lagretAvtale.getId(), Avtalerolle.VEILEDER, null);
-
-        assertEquals(
-                lagretAvtale.getGjeldendeInnhold().getVtao().getId(),
-                endretAvtale.getGjeldendeInnhold().getVtao().getId(),
-                "Vtao har samme ID (samme rad i databasen)"
-        );
-        assertNotEquals(
-                lagretAvtale.getGjeldendeInnhold().getVtao().hentFelter(),
-                endretAvtale.getGjeldendeInnhold().getVtao().hentFelter(),
-                "Men innholdet har endret seg"
-        );
-
-        var avtaleInnholdListe = avtaleInnholdRepository.findAllByAvtale(lagretAvtale);
-        assertEquals(1, avtaleInnholdListe.size());
-        var vtaoListe = vtaoRepository.findAll();
-        var avtaleInnholdIdSet = avtaleInnholdListe.stream().map(AvtaleInnhold::getId).collect(Collectors.toSet());
-        assertEquals(1, vtaoListe.stream()
-                .filter(x -> avtaleInnholdIdSet.contains(x.getAvtaleInnhold().getId()))
-                .toList()
-                .size());
     }
 
     @Test

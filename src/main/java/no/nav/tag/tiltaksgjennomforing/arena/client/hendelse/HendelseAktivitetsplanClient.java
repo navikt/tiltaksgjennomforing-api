@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Component
@@ -23,12 +24,12 @@ public class HendelseAktivitetsplanClient {
         this.restTemplate = azureRestTemplate;
     }
 
-    public void putAktivietsplanId(UUID avtaleId, UUID aktivitetsplanId) {
-        putAktivietsplanId(avtaleId, aktivitetsplanId, false);
+    public void putAktivitetsplanId(UUID avtaleId, UUID aktivitetsplanId) {
+        putAktivitetsplanId(avtaleId, aktivitetsplanId, false);
     }
 
-    public void putAktivietsplanId(UUID avtaleId, UUID aktivitetsplanId, boolean resendSisteMelding) {
-        HendelseAktivietsplanIdRequest request = new HendelseAktivietsplanIdRequest(
+    public void putAktivitetsplanId(UUID avtaleId, UUID aktivitetsplanId, boolean resendSisteMelding) {
+        HendelseAktivitetsplanIdRequest request = new HendelseAktivitetsplanIdRequest(
             aktivitetsplanId,
             resendSisteMelding
         );
@@ -38,10 +39,11 @@ public class HendelseAktivitetsplanClient {
 
         try {
             restTemplate.put(
-                baseUrl + "/tiltak-hendelse-aktivitetsplan/api/avtale/" + avtaleId.toString() + "/aktivitetsplan-id",
-                new HttpEntity<>(request, headers)
+                baseUrl + "/tiltak-hendelse-aktivitetsplan/api/avtale/{avtaleId}/aktivitetsplan-id",
+                new HttpEntity<>(request, headers),
+                Map.of("avtaleId", avtaleId.toString())
             );
-        } catch(RestClientException e) {
+        } catch (RestClientException e) {
             throw new RuntimeException(
                 "Klarte ikke å oppdatere aktivitetsplan id i tiltak-hendelse-aktivitetsplan for avtale: " + avtaleId,
                 e
@@ -55,10 +57,11 @@ public class HendelseAktivitetsplanClient {
 
         try {
             restTemplate.postForLocation(
-                baseUrl + "/tiltak-hendelse-aktivitetsplan/api/avtale/" + avtaleId.toString() + "/send-siste-melding",
-                new HttpEntity<>(null, headers)
+                baseUrl + "/tiltak-hendelse-aktivitetsplan/api/avtale/{avtaleId}/send-siste-melding",
+                new HttpEntity<>(null, headers),
+                Map.of("avtaleId", avtaleId.toString())
             );
-        } catch(RestClientException e) {
+        } catch (RestClientException e) {
             throw new RuntimeException(
                 "Feil ved ny sending av aktivitetsplanmelding for avtale: " + avtaleId,
                 e
