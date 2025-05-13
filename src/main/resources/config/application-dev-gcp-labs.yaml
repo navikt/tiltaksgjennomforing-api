@@ -53,6 +53,8 @@ tiltaksgjennomforing:
     arbtreningServiceEdition: 1
     vtaoServiceCode: 5516
     vtaoServiceEdition: 6
+    adressesperreServiceCode: 5516
+    adressesperreServiceEdition: 7
     altinnApiKey: foo
     apiGwApiKey: foo
   ereg:

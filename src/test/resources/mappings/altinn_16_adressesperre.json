@@ -1,0 +1,142 @@
+{
+  "mappings": [
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",
+        "queryParameters": {
+          "subject": {
+            "equalTo": "16021877674"
+          },
+          "serviceCode": {
+            "equalTo": "5516"
+          },
+          "serviceEdition": {
+            "matches": "1|2|3|4|5|6"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [
+          {
+            "Name": "Bedrift du ikke har tilgang til adressesperre i ❌",
+            "Type": "Business",
+            "OrganizationNumber": "910825585",
+            "OrganizationForm": "BEDR",
+            "Status": "Active",
+            "ParentOrganizationNumber": "212381632"
+          },
+          {
+            "Name": "Adressesperre Lukket ❌",
+            "Type": "Enterprise",
+            "OrganizationNumber": "212381632",
+            "OrganizationForm": "AS",
+            "Status": "Active"
+          }
+        ],
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",
+        "queryParameters": {
+          "subject": {
+            "equalTo": "16021877674"
+          },
+          "serviceCode": {
+            "equalTo": "5516"
+          },
+          "serviceEdition": {
+            "matches": "3|4|5|6|7"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [
+          {
+            "Name": "Bedrif du har tilgang til adressesperre i ✅",
+            "Type": "Business",
+            "OrganizationNumber": "910712233",
+            "OrganizationForm": "BEDR",
+            "Status": "Active",
+            "ParentOrganizationNumber": "910825836"
+          },
+          {
+            "Name": "Adressesperre åpen ✅",
+            "Type": "Enterprise",
+            "OrganizationNumber": "910825836",
+            "OrganizationForm": "AS",
+            "Status": "Active"
+          }
+        ],
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",
+        "queryParameters": {
+          "subject": {
+            "equalTo": "16021877674"
+          },
+          "serviceCode": {
+            "absent": true
+          },
+          "serviceEdition": {
+            "absent": true
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [
+          {
+            "Name": "Bedrif du har tilgang til adressesperre i ✅",
+            "Type": "Business",
+            "OrganizationNumber": "910712233",
+            "OrganizationForm": "BEDR",
+            "Status": "Active",
+            "ParentOrganizationNumber": "910825836"
+          },
+          {
+            "Name": "Adressesperre åpen ✅",
+            "Type": "Enterprise",
+            "OrganizationNumber": "910825836",
+            "OrganizationForm": "AS",
+            "Status": "Active"
+          },
+          {
+            "Name": "Bedrif du ikke har tilgang til adressesperre i ❌",
+            "Type": "Business",
+            "OrganizationNumber": "910825585",
+            "OrganizationForm": "BEDR",
+            "Status": "Active",
+            "ParentOrganizationNumber": "212381632"
+          },
+          {
+            "Name": "Adressesperre Lukket ❌",
+            "Type": "Enterprise",
+            "OrganizationNumber": "212381632",
+            "OrganizationForm": "AS",
+            "Status": "Active"
+          }
+        ],
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}
