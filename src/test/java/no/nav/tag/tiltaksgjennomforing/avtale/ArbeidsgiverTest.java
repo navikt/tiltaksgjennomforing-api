@@ -153,6 +153,9 @@ public class ArbeidsgiverTest {
 
         Norg2Client norg2Client = mock(Norg2Client.class);
 
+        EregService eregService  = mock(EregService.class);
+        when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
+
         List<BedriftNr> adressesperreTilganger = List.of(TestData.etBedriftNr());
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 null,
@@ -161,7 +164,7 @@ public class ArbeidsgiverTest {
                 adressesperreTilganger,
                 persondataService,
                 norg2Client,
-                null
+                eregService
         );
         OpprettAvtale opprettAvtale = new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING);
         arbeidsgiver.opprettAvtale(opprettAvtale);
