@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 
 public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecificationExecutor {
@@ -230,5 +231,5 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     """)
     List<Avtale> findByDeltakerFnr(Fnr deltakerFnr);
 
-    List<Avtale> findAllByGjeldendeInnhold_GodkjentAvArbeidsgiverNotNullAndStatusIn(List<Status> statuser);
+    Stream<Avtale> findAllByGjeldendeInnhold_GodkjentAvArbeidsgiverNotNullAndStatusIn(List<Status> statuser);
 }

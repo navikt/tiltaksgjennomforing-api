@@ -39,9 +39,6 @@ public class AdminService {
         var avtaler = avtaleRepository.findAllByGjeldendeInnhold_GodkjentAvArbeidsgiverNotNullAndStatusIn(
             List.of(Status.GJENNOMFØRES, Status.MANGLER_GODKJENNING, Status.AVSLUTTET)
         );
-        log.info("Fant {} avtaler som det skal sendes varslinger på", avtaler.size());
-
-        List<Varsel> nyeVarsler = new ArrayList<>();
 
         avtaler.forEach(avtale -> {
             List<Varsel> arbeidsgiverVarsler = varselRepository.findAllByAvtaleIdAndMottaker(
@@ -65,12 +62,11 @@ public class AdminService {
                 if (antallSendt.get() % 100 == 0) {
                     log.info("Opprettet varsel for avtalekrav for {} avtaler", antallSendt.get());
                 }
-                nyeVarsler.add(nyttVarselForAvtale);
+                varselRepository.save(nyttVarselForAvtale);
             }
         });
 
-        varselRepository.saveAll(nyeVarsler);
-        log.info("Lagret {} varsler, hoppet over {} avtaler", nyeVarsler.size(), antallIgnorert.get());
+        log.info("Lagret {} varsler, hoppet over {} avtaler", antallSendt.get(), antallIgnorert.get());
     }
 
     private Varsel lagHendelse(Avtale avtale) {
