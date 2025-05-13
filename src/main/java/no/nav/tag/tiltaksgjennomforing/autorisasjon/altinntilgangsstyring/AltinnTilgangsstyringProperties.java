@@ -29,4 +29,6 @@ public class AltinnTilgangsstyringProperties {
     private Integer mentorServiceEdition;
     private Integer vtaoServiceCode;
     private Integer vtaoServiceEdition;
+    private Integer adressesperreServiceCode;
+    private Integer adressesperreServiceEdition;
 }

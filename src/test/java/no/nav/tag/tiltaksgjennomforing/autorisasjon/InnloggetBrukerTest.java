@@ -21,6 +21,7 @@ import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,6 +29,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -62,6 +64,8 @@ public class InnloggetBrukerTest {
         kontoregisterService = mock(KontoregisterService.class);
         veilarboppfolgingService = mock(VeilarboppfolgingService.class);
         avtaleRepository = mock(AvtaleRepository.class);
+
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
     }
 
     @Test
@@ -163,7 +167,8 @@ public class InnloggetBrukerTest {
                         TestData.etFodselsnummer(),
                         Set.of(),
                         Map.of(),
-                        null,
+                        List.of(),
+                        persondataService,
                         null,
                         null
                 ).harTilgangTilAvtale(avtale).erTillat()
@@ -220,7 +225,8 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000001"),
                 Set.of(),
                 Map.of(),
-                null,
+                List.of(),
+                persondataService,
                 null,
                 null
             ).harTilgangTilAvtale(avtale).erTillat()
@@ -235,7 +241,8 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-                null,
+                List.of(),
+                persondataService,
                 null,
                 null
         );
@@ -250,7 +257,8 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-                null,
+                List.of(),
+                persondataService,
                 null,
                 null
         );
@@ -268,7 +276,8 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-                null,
+                List.of(),
+                persondataService,
                 null,
                 null
         );
@@ -312,7 +321,8 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-                null,
+                List.of(),
+                persondataService,
                 null,
                 null
         );
@@ -328,7 +338,8 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-                null,
+                List.of(),
+                persondataService,
                 null,
                 null
         );

@@ -4,6 +4,6 @@ import lombok.Value;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 
 @Value
-public class AvtaleOpprettetAvArbeidsgiverErFordelt {
+public class AvtaleFordelt {
     Avtale avtale;
 }

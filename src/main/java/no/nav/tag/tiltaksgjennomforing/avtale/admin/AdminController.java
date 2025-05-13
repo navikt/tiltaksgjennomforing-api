@@ -55,6 +55,7 @@ public class AdminController {
     private final VeilarboppfolgingService veilarboppfolgingService;
     private final TilgangskontrollService tilgangskontrollService;
     private final PersondataService persondataService;
+    private final AdminService adminService;
 
     @PostMapping("reberegn")
     public void reberegnLønnstilskudd(@RequestBody List<UUID> avtaleIder) {
@@ -309,6 +310,11 @@ public class AdminController {
             "gjeldendeSide", pagable.getNumber(),
             "avtaler", avtalerMedDiskresjon
         );
+    }
+
+    @PostMapping("/oppdaterte-avtalekrav")
+    public void oppdaterteAvtalekrav() {
+        adminService.oppdaterteAvtalekrav();
     }
 
 }
