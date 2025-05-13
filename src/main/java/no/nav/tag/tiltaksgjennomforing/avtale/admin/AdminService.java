@@ -53,10 +53,12 @@ public class AdminService {
 
             if (harAlleredeAvtalekravVarsel) {
                 var ignorerte = antallIgnorert.getAndIncrement();
-                log.info(
-                    "Fant avtale som allerede har avtalekrav-varsel, ignorerer. Foreløpig {} ignorerte",
-                    ignorerte
-                );
+                if (ignorerte % 100 == 0) {
+                    log.info(
+                        "Fant avtale som allerede har avtalekrav-varsel, ignorerer. Foreløpig {} ignorerte",
+                        ignorerte
+                    );
+                }
             } else {
                 var nyttVarselForAvtale = lagHendelse(avtale);
                 antallSendt.getAndIncrement();
