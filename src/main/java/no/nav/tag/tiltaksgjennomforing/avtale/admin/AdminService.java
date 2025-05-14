@@ -38,6 +38,7 @@ public class AdminService {
     public void oppdaterteAvtalekrav(LocalDateTime avtalekravDato) {
         AtomicInteger antallBehandlet = new AtomicInteger(0);
         AtomicInteger antallSendt = new AtomicInteger();
+        AtomicInteger antallSomIkkeSkalBehandles = new AtomicInteger();
         AtomicInteger antallIgnorertPgaEksisterendeVarsel = new AtomicInteger();
 
         log.info("Oppdaterer avtalekrav...");
@@ -45,6 +46,7 @@ public class AdminService {
         try (Stream<Avtale> avtaler = avtaleRepository.streamAllByStatusIn(avtalekravStatuser)) {
             avtaler.forEach(avtale -> {
                 var avtaleGodkjentAvArbeidsgiver = avtale.getGjeldendeInnhold().getGodkjentAvArbeidsgiver();
+
                 boolean eldreEnn12UkerOgAvsluttet = avtale.getGjeldendeInnhold()
                     .getSluttDato()
                     .isBefore(Now.localDate().minusWeeks(12))
@@ -57,6 +59,7 @@ public class AdminService {
                     && !eldreEnn12UkerOgAvsluttet;
 
                 if (!skalBehandles) {
+                    antallSomIkkeSkalBehandles.getAndIncrement();
                     return;
                 }
 
@@ -79,16 +82,24 @@ public class AdminService {
                     varselRepository.save(nyttVarselForAvtale);
                 }
 
-                var antallBehandletTeller = antallBehandlet.getAndIncrement();
+                var antallBehandletTeller = antallBehandlet.incrementAndGet();
                 if (antallBehandletTeller % 100 == 0) {
-                    log.info("Behandlet {} avtaler", antallBehandletTeller);
+                    log.info(
+                        "Så langt behandlet {} avtaler, antall som ikke skal behandles: {}. Ignorert pga eksisterende varsel {}",
+                        antallBehandletTeller,
+                        antallSomIkkeSkalBehandles.get(),
+                        antallIgnorertPgaEksisterendeVarsel.get()
+                    );
                 }
             });
 
+            var ignorertPgaEksisterendeVarsel = antallIgnorertPgaEksisterendeVarsel.get();
             log.info(
-                "Lagret {} varsler, hoppet over {} avtaler",
+                "Behandlet {} avtaler. Lagret {} varsler, hoppet over {} avtaler ({} med eksisterende varsel)",
+                antallBehandlet.get(),
                 antallSendt.get(),
-                antallIgnorertPgaEksisterendeVarsel.get()
+                ignorertPgaEksisterendeVarsel + antallSomIkkeSkalBehandles.get(),
+                ignorertPgaEksisterendeVarsel
             );
         }
     }
