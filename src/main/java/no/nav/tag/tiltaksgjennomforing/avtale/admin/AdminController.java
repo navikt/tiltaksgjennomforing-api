@@ -313,8 +313,8 @@ public class AdminController {
     }
 
     @PostMapping("/oppdaterte-avtalekrav")
-    public void oppdaterteAvtalekrav() {
-        adminService.oppdaterteAvtalekrav();
+    public void oppdaterteAvtalekrav(@RequestBody AvtaleKravRequest avtaleKravRequest) {
+        adminService.oppdaterteAvtalekrav(avtaleKravRequest.avtaleKravTidspunkt());
     }
 
 }
