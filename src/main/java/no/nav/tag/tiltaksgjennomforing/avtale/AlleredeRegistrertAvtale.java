@@ -15,6 +15,17 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AlleredeRegistrertAvtale {
+    private static final List<Tiltakstype> TILTAK_SOM_KAN_KOMBINERES = List.of(
+        Tiltakstype.INKLUDERINGSTILSKUDD,
+        Tiltakstype.MENTOR
+    );
+    private static final List<Tiltakstype> TILTAK_SOM_IKKE_KAN_KOMBINERES = List.of(
+        Tiltakstype.SOMMERJOBB,
+        Tiltakstype.ARBEIDSTRENING,
+        Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
+        Tiltakstype.VARIG_LONNSTILSKUDD,
+        Tiltakstype.VTAO
+    );
 
     private UUID id;
     private Integer avtaleNr;
@@ -57,15 +68,11 @@ public class AlleredeRegistrertAvtale {
             List<Avtale> alleAvtalerPaaDeltaker,
             Tiltakstype tiltakstype
     ) {
-        if (List.of(Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.MENTOR).contains(tiltakstype)) {
-            return filtrerAvtaler(alleAvtalerPaaDeltaker.stream().filter(avtale -> avtale.getTiltakstype().equals(tiltakstype)));
+        if (TILTAK_SOM_KAN_KOMBINERES.contains(tiltakstype)) {
+            return filtrerAvtaler(alleAvtalerPaaDeltaker.stream()
+                .filter(avtale -> avtale.getTiltakstype().equals(tiltakstype)));
         }
-        return filtrerAvtaler(alleAvtalerPaaDeltaker.stream().filter(avtale -> List.of(
-                Tiltakstype.SOMMERJOBB,
-                Tiltakstype.ARBEIDSTRENING,
-                Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
-                Tiltakstype.VARIG_LONNSTILSKUDD,
-                Tiltakstype.VTAO
-        ).contains(avtale.getTiltakstype())));
+        return filtrerAvtaler(alleAvtalerPaaDeltaker.stream()
+            .filter(avtale -> TILTAK_SOM_IKKE_KAN_KOMBINERES.contains(avtale.getTiltakstype())));
     }
 }
