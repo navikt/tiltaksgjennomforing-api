@@ -57,14 +57,15 @@ public class AlleredeRegistrertAvtale {
             List<Avtale> alleAvtalerPaaDeltaker,
             Tiltakstype tiltakstype
     ) {
-        if(List.of(Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.MENTOR).contains(tiltakstype)) {
+        if (List.of(Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.MENTOR).contains(tiltakstype)) {
             return filtrerAvtaler(alleAvtalerPaaDeltaker.stream().filter(avtale -> avtale.getTiltakstype().equals(tiltakstype)));
         }
         return filtrerAvtaler(alleAvtalerPaaDeltaker.stream().filter(avtale -> List.of(
                 Tiltakstype.SOMMERJOBB,
                 Tiltakstype.ARBEIDSTRENING,
                 Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
-                Tiltakstype.VARIG_LONNSTILSKUDD
+                Tiltakstype.VARIG_LONNSTILSKUDD,
+                Tiltakstype.VTAO
         ).contains(avtale.getTiltakstype())));
     }
 }
