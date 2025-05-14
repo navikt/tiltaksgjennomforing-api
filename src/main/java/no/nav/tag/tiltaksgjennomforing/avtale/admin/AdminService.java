@@ -54,7 +54,7 @@ public class AdminService {
                     // arbeidsgiver godkjente før vi endret avtalekravene
                     && avtaleGodkjentAvArbeidsgiver.isBefore(avtalekravDato)
                     // trenger ikke varsle om endringer i krav på avtaler som er eldre enn 12 uker
-                    && eldreEnn12UkerOgAvsluttet;
+                    && !eldreEnn12UkerOgAvsluttet;
 
                 if (!skalBehandles) {
                     return;
