@@ -36,7 +36,7 @@ tiltaksgjennomforing:
     enabled: false
     fake-url: http://tiltak-refusjon-api-labs/fake-kafka
   altinn-tilgangsstyring:
-    uri: http://tiltaksgjennomforing-wiremock/altinn-tilgangsstyring
+    uri: http://localhost:8090/altinn-tilgangsstyring
     proxyUri: http://heh:9090/
     beOmRettighetBaseUrl: https://arbeidsgiver-q.nav.no/min-side-arbeidsgiver/?fragment=be-om-tilgang
     ltsMidlertidigServiceCode: 5516
@@ -58,27 +58,27 @@ tiltaksgjennomforing:
     altinnApiKey: foo
     apiGwApiKey: foo
   ereg:
-    uri: http://tiltaksgjennomforing-wiremock/ereg
+    uri: http://localhost:8090/ereg
   sts:
     username: foo
     password: bar
-    rest-uri: http://tiltaksgjennomforing-wiremock/sts/sts/token
+    rest-uri: http://localhost:8090/sts/sts/token
   axsys:
-    uri: http://tiltaksgjennomforing-wiremock/axsys
+    uri: http://localhost:8090/axsys
   oppgave:
-    oppgave-uri: http://tiltaksgjennomforing-wiremock/api/v1/oppgaver
+    oppgave-uri: http://localhost:8090/api/v1/oppgaver
   veilarboppfolging:
-    url: http://tiltaksgjennomforing-wiremock
+    url: http://localhost:8090
   norg2:
     geografisk:
-      url: http://tiltaksgjennomforing-wiremock/norg2/api/v1/enhet/navkontor/
+      url: http://localhost:8090/norg2/api/v1/enhet/navkontor/
     enhet:
-      url: http://tiltaksgjennomforing-wiremock/norg2/api/v1/enhet/
+      url: http://localhost:8090/norg2/api/v1/enhet/
   consumer:
     system:
       id: testsystem
   persondata:
-    uri: http://tiltaksgjennomforing-wiremock/persondata
+    uri: http://localhost:8090/persondata
   dokgen:
     uri: http://tiltak-dokgen/template/tiltak-avtale/create-pdf
   notifikasjoner:
@@ -90,10 +90,10 @@ tiltaksgjennomforing:
       tiltakdeltaker-endret-topic: 'teamarenanais.aapen-arena-tiltakdeltakerendret-v1-q2'
       tiltakgjennomforing-endret-topic: 'teamarenanais.aapen-arena-tiltakgjennomforingendret-v1-q2'
     ords:
-      url: http://tiltaksgjennomforing-wiremock/arena-ords
+      url: http://localhost:8090/arena-ords
       client-id: client
       client-secret: secret
     aktivitet-acl:
-      url: http://tiltaksgjennomforing-wiremock/aktivitet-arena-acl
+      url: http://localhost:8090/aktivitet-arena-acl
 
 ELECTOR_PATH: null
