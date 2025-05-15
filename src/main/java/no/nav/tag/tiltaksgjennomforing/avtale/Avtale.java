@@ -28,6 +28,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.ArbeidsgiversGodkjenningOpp
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleFordelt;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvArena;
@@ -35,7 +36,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleFordelt;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleSlettemerket;
@@ -340,7 +340,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
         EndreAvtaleArena.Handling action = endreAvtaleArena.getHandling();
         if (EndreAvtaleArena.Handling.OPPDATER == action && endreAvtaleArena.compareTo(this) == 0) {
-            log.info("Endringer fra Arena er lik innholdet i avtalen. Beholder avtalen uendret.");
+            log.atInfo()
+                .addKeyValue("avtaleId", getId().toString())
+                .log("Endringer fra Arena er lik innholdet i avtalen. Beholder avtalen uendret.");
             registerEvent(new AvtaleEndretAvArena(this));
             return;
         }
@@ -911,10 +913,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     public void annullerTilskuddsperiode(TilskuddPeriode tilskuddsperiode) {
         // Sjekk på refusjonens status
         if (tilskuddsperiode.getRefusjonStatus() == RefusjonStatus.UTGÅTT) {
-            log.warn(
-                "Sender ikke annuleringsmelding for tilskuddsperiode {} med utgått refusjon.",
-                tilskuddsperiode.getId()
-            );
+            log.atWarn()
+                .addKeyValue("avtaleId", getId().toString())
+                .log(
+                    "Sender ikke annuleringsmelding for tilskuddsperiode {} med utgått refusjon.",
+                    tilskuddsperiode.getId()
+                );
         } else {
             tilskuddsperiode.setStatus(TilskuddPeriodeStatus.ANNULLERT);
             registerEvent(new TilskuddsperiodeAnnullert(this, tilskuddsperiode));
@@ -1013,18 +1017,32 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         var gjeldendeFraDb = this.gjeldendeTilskuddsperiode;
         var gjeldendeFraDbId = gjeldendeFraDb != null ? gjeldendeFraDb.getId() : null;
         if (!Objects.equals(gjeldendePeriodeKalkulertId, gjeldendeFraDbId)) {
-            log.warn(
-                "Gjeldende tilskuddsperiode ikke oppdatert på avtale {}? Fant {} {} {}, men kalkulerte {} {} {}",
-                id,
-                gjeldendeFraDbId,
-                gjeldendeFraDb != null ? gjeldendeFraDb.getLøpenummer() : null,
-                gjeldendeFraDb != null ? gjeldendeFraDb.getStatus() : null,
-                gjeldendePeriodeKalkulertId,
-                gjeldendePeriode != null ? gjeldendePeriode.getLøpenummer() : null,
-                gjeldendePeriode != null ? gjeldendePeriode.getStatus() : null
-            );
+            log.atWarn()
+                .addKeyValue("avtaleId", this.getId().toString())
+                .log(
+                    "Gjeldende tilskuddsperiode ikke oppdatert på avtale {}? Fant {} {} {}, men kalkulerte {} {} {}",
+                    id,
+                    gjeldendeFraDbId,
+                    gjeldendeFraDb != null ? gjeldendeFraDb.getLøpenummer() : null,
+                    gjeldendeFraDb != null ? gjeldendeFraDb.getStatus() : null,
+                    gjeldendePeriodeKalkulertId,
+                    gjeldendePeriode != null ? gjeldendePeriode.getLøpenummer() : null,
+                    gjeldendePeriode != null ? gjeldendePeriode.getStatus() : null
+                );
         }
         return gjeldendePeriode;
+    }
+
+    public void setGjeldendeTilskuddsperiode(TilskuddPeriode tilskuddPeriode) {
+        log.atInfo()
+            .addKeyValue("avtaleId", this.getId().toString())
+            .log(
+                "Oppdaterer tilskuddsperiode til {} (løpenr {}, status {})",
+                tilskuddPeriode != null ? tilskuddPeriode.getId() : null,
+                tilskuddPeriode != null ? tilskuddPeriode.getLøpenummer() : null,
+                tilskuddPeriode != null ? tilskuddPeriode.getStatus() : null
+            );
+        this.gjeldendeTilskuddsperiode = tilskuddPeriode;
     }
 
     public TilskuddPeriode finnGjeldendeTilskuddsperiode() {
@@ -1193,20 +1211,24 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
                 } else if (status == TilskuddPeriodeStatus.GODKJENT) {
 
                     if (tilskuddsperiode.getRefusjonStatus() == RefusjonStatus.SENDT_KRAV || tilskuddsperiode.getRefusjonStatus() == RefusjonStatus.UTBETALT) {
-                        log.error(
-                            "Prøver å rydde tilskuddsperiode {} som har status: {}",
-                            tilskuddsperiode.getId(),
-                            tilskuddsperiode.getRefusjonStatus()
-                        );
+                        log.atError()
+                            .addKeyValue("avtaleId", getId().toString())
+                            .log(
+                                "Prøver å rydde tilskuddsperiode {} som har status: {}",
+                                tilskuddsperiode.getId(),
+                                tilskuddsperiode.getRefusjonStatus()
+                            );
                     } else {
                         annullerTilskuddsperiode(tilskuddsperiode);
                     }
 
                 } else {
-                    log.error(
-                        "Prøver rydde tilskuddsperioder for en avtale, men statusen er ikke UBEHANDLET, eller GODKJENT (som blir annullert) på periode {}",
-                        tilskuddsperiode.getId()
-                    );
+                    log.atError()
+                        .addKeyValue("avtaleId", getId().toString())
+                        .log(
+                            "Prøver rydde tilskuddsperioder for en avtale, men statusen er ikke UBEHANDLET, eller GODKJENT (som blir annullert) på periode {}",
+                            tilskuddsperiode.getId()
+                        );
                 }
             }
 
@@ -1229,10 +1251,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             }
             return true;
         } else {
-            log.info(
-                "Avtale {} har allerede tilskuddsperioder eller en status som ikke skal ha perioder, eller er ikke tilstrekkelig fylt ut, genererer ikke nye",
-                id
-            );
+            log.atInfo()
+                .addKeyValue("avtaleId", getId().toString())
+                .log(
+                    "Avtale {} har allerede tilskuddsperioder eller en status som ikke skal ha perioder, eller er ikke tilstrekkelig fylt ut, genererer ikke nye",
+                    id
+                );
             return false;
         }
     }
