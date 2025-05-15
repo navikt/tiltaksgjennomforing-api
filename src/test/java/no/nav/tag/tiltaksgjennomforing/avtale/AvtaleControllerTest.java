@@ -17,6 +17,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerExceptio
 import no.nav.tag.tiltaksgjennomforing.exceptions.Kode6SperretForOpprettelseOgEndringException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
@@ -44,6 +45,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -254,7 +256,7 @@ public class AvtaleControllerTest {
         værInnloggetSom(veileder);
 
         assertThatThrownBy(() ->
-                avtaleController.mentorGodkjennTaushetserklæring(enMentorAvtale.getId(), Now.instant(), Avtalerolle.DELTAKER)).isExactlyInstanceOf(TiltaksgjennomforingException.class);
+                avtaleController.mentorGodkjennTaushetserklæring(enMentorAvtale.getId(), Avtalerolle.DELTAKER, Now.instant())).isExactlyInstanceOf(TiltaksgjennomforingException.class);
     }
 
     @Test
@@ -265,7 +267,7 @@ public class AvtaleControllerTest {
 
         when(avtaleRepository.findById(enMentorAvtale.getId())).thenReturn(Optional.of(enMentorAvtale));
 
-        avtaleController.mentorGodkjennTaushetserklæring(enMentorAvtale.getId(), Now.instant(), Avtalerolle.DELTAKER);
+        avtaleController.mentorGodkjennTaushetserklæring(enMentorAvtale.getId(), Avtalerolle.DELTAKER, Now.instant());
     }
 
     @Test
@@ -358,9 +360,9 @@ public class AvtaleControllerTest {
         assertThatThrownBy(
                 () -> avtaleController.endreAvtale(
                         avtale.getId(),
-                        avtale.getSistEndret(),
                         TestData.ingenEndring(),
-                        Avtalerolle.VEILEDER
+                        Avtalerolle.VEILEDER,
+                        avtale.getSistEndret()
                 )
         ).isExactlyInstanceOf(RessursFinnesIkkeException.class);
     }
@@ -395,9 +397,9 @@ public class AvtaleControllerTest {
         ).thenReturn(new Tilgang.Tillat());
         ResponseEntity svar = avtaleController.endreAvtale(
                 avtale.getId(),
-                avtale.getSistEndret(),
                 TestData.ingenEndring(),
-                Avtalerolle.VEILEDER
+                Avtalerolle.VEILEDER,
+                avtale.getSistEndret()
         );
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -410,9 +412,9 @@ public class AvtaleControllerTest {
         assertThatThrownBy(
                 () -> avtaleController.endreAvtale(
                         avtale.getId(),
-                        avtale.getSistEndret(),
                         TestData.ingenEndring(),
-                        Avtalerolle.ARBEIDSGIVER
+                        Avtalerolle.ARBEIDSGIVER,
+                        avtale.getSistEndret()
                 )
         ).isInstanceOf(IkkeTilgangTilAvtaleException.class);
     }
@@ -689,5 +691,32 @@ public class AvtaleControllerTest {
         assertThatThrownBy(
                 () -> avtaleController.hentBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER)
         ).isInstanceOf(KontoregisterFeilException.class);
+    }
+
+    @Test
+    public void godkjennForAvtalepart__skal_ikke_fungere_hvis_versjon_er_feil() {
+        NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
+        Veileder veileder = new Veileder(
+            identTilInnloggetVeileder,
+            null,
+            tilgangskontrollService,
+            persondataService,
+            norg2Client,
+            Collections.emptySet(),
+            new SlettemerkeProperties(),
+            TestData.INGEN_AD_GRUPPER,
+            veilarboppfolgingService,
+            featureToggleServiceMock,
+            mock(EregService.class)
+        );
+        værInnloggetSom(veileder);
+
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+        assertThatThrownBy(() -> avtaleController.godkjenn(
+            avtale.getId(),
+            Avtalerolle.VEILEDER,
+            Instant.now().minusSeconds(60)
+        )).isInstanceOf(SamtidigeEndringerException.class);
     }
 }

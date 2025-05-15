@@ -70,7 +70,7 @@ public class VeilederTest {
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
 
-        assertThatThrownBy(() -> veileder.godkjennAvtale(avtale.getSistEndret(), avtale))
+        assertThatThrownBy(() -> veileder.godkjennAvtale(avtale))
                 .isExactlyInstanceOf(VeilederSkalGodkjenneSistException.class);
     }
 
@@ -106,7 +106,7 @@ public class VeilederTest {
 
         // NÅR
         when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
-        veileder.godkjennAvtale(avtale.getSistEndret(), avtale);
+        veileder.godkjennAvtale(avtale);
 
         // SÅ
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
@@ -251,7 +251,7 @@ public class VeilederTest {
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
-        assertThatThrownBy(() -> veileder.godkjennAvtale(avtale.getSistEndret(), avtale))
+        assertThatThrownBy(() -> veileder.godkjennAvtale(avtale))
                 .isExactlyInstanceOf(Kode6SperretForOpprettelseOgEndringException.class);
     }
 
@@ -284,7 +284,7 @@ public class VeilederTest {
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
 
-        veileder.godkjennAvtale(avtale.getSistEndret(), avtale);
+        veileder.godkjennAvtale(avtale);
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
     }
 
@@ -402,13 +402,12 @@ public class VeilederTest {
             mock(EregService.class)
         );
         avtale.endreAvtale(
-                Now.instant(),
                 TestData.endringPåAlleArbeidstreningFelter(),
                 Avtalerolle.VEILEDER
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
-        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
+        arbeidsgiver.godkjennAvtale(avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
 
         assertFeilkode(
@@ -445,17 +444,16 @@ public class VeilederTest {
         when(tilgangskontrollService.hentSkrivetilgang(eq(veileder), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
 
         avtale.endreAvtale(
-                Now.instant(),
                 TestData.endringPåAlleLønnstilskuddFelter(),
                 Avtalerolle.VEILEDER
         );
-        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
+        arbeidsgiver.godkjennAvtale(avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
 
         assertThat(avtale.erAvtaleInngått()).isFalse();
 
         veileder.opphevGodkjenninger(avtale);
-        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
+        arbeidsgiver.godkjennAvtale(avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
 
         Beslutter beslutter = TestData.enBeslutter(avtale);
@@ -476,7 +474,7 @@ public class VeilederTest {
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.annullerAvtale(avtale.getSistEndret(), "enGrunn", avtale);
+        veileder.annullerAvtale("enGrunn", avtale);
         assertThat(avtale.getAnnullertTidspunkt()).isNotNull();
         assertThat(avtale.getAnnullertGrunn()).isEqualTo("enGrunn");
     }
@@ -487,7 +485,7 @@ public class VeilederTest {
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.annullerAvtale(avtale.getSistEndret(), "enGrunn", avtale);
+        veileder.annullerAvtale("enGrunn", avtale);
         assertThat(avtale.getAnnullertTidspunkt()).isNotNull();
         assertThat(avtale.getAnnullertGrunn()).isEqualTo("enGrunn");
     }
@@ -554,7 +552,7 @@ public class VeilederTest {
         endreAvtale.setLonnstilskuddProsent(null);
         avtale.getGjeldendeInnhold().setSumLonnstilskudd(null);
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.endreAvtale(Now.instant(), endreAvtale, avtale);
+        arbeidsgiver.endreAvtale(endreAvtale, avtale);
 
         Veileder nyVeileder = new Veileder(
             new NavIdent("J987654"),
@@ -617,7 +615,6 @@ public class VeilederTest {
         Avtale avtale = TestData.enAvtaleOpprettetAvArbeidsgiver(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         arbeidsgiver.endreAvtale(
-                Now.instant(),
                 TestData.endringPåAlleLønnstilskuddFelter(),
                 avtale
         );

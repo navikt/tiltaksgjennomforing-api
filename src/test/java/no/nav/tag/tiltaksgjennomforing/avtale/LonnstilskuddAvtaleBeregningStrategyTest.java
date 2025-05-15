@@ -38,7 +38,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(fra);
         endreAvtale.setSluttDato(til);
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
         assertThat(avtale.beregnTilskuddsbeløpForPeriode(fra,til)).isEqualTo(forventetBeløpForPeriode);
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(3);
@@ -60,7 +60,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(fra);
         endreAvtale.setSluttDato(til);
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
 
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(0);
@@ -81,7 +81,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(fra);
         endreAvtale.setSluttDato(til);
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
 
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(3);
@@ -101,7 +101,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(fra);
         endreAvtale.setSluttDato(til);
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         var tilskuddPerioder = avtale.getTilskuddPeriode();
 
         assertThat(tilskuddPerioder.size()).isEqualTo(2);
@@ -119,7 +119,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(40);
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         TilskuddPeriode tilskuddpeirode6mndEtterStart = finnTilskuddsperiodeForDato(avtale.getGjeldendeInnhold().getStartDato().plusMonths(6), avtale);
         TilskuddPeriode tilskuddperiodeDagenFør6Mnd = finnTilskuddsperiodeForDato(avtale.getGjeldendeInnhold().getStartDato().plusMonths(6).minusDays(1), avtale);
 
@@ -145,7 +145,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 1, 1));
         endreAvtale.setSluttDato(LocalDate.of(2021, 10, 1));
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
         TilskuddPeriode tilskuddPeriode1 = finnTilskuddsperiodeForDato(LocalDate.of(2021, 1, 1), avtale);
         TilskuddPeriode tilskuddPeriode2 = finnTilskuddsperiodeForDato(LocalDate.of(2021, 2, 1), avtale);
@@ -171,7 +171,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         assertThat(avtale.tilskuddsperiode(1).getEnhet()).isEqualTo(ENHETS_NR);
         assertThat(avtale.tilskuddsperiode(2).getEnhetsnavn()).isEqualTo(ENHETS_NAVN);
 
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         assertThat(avtale.tilskuddsperiode(0).getEnhet()).isEqualTo(ENHETS_NR);
         assertThat(avtale.tilskuddsperiode(0).getEnhetsnavn()).isEqualTo(ENHETS_NAVN);
         assertThat(avtale.tilskuddsperiode(1).getEnhet()).isEqualTo(ENHETS_NR);
@@ -185,7 +185,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(60);
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(13));
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
         TilskuddPeriode sisteTilskuddsperiode = avtale.tilskuddsperiode(avtale.getTilskuddPeriode().size() - 1);
         assertThat(sisteTilskuddsperiode.getLonnstilskuddProsent()).isEqualTo(50);
@@ -204,7 +204,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
 
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(9);
         harRiktigeEgenskaper(avtale);
         Now.resetClock();
@@ -222,7 +222,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale.setLonnstilskuddProsent(68);
 
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
         assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isEqualTo(LocalDate.of(2022, 1, 1));
         assertThat(avtale.tilskuddsperiode(0).getLonnstilskuddProsent()).isEqualTo(68);
@@ -244,7 +244,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale.setLonnstilskuddProsent(70);
 
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
         assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isEqualTo(LocalDate.of(2023, 1, 1));
         assertThat(avtale.tilskuddsperiode(0).getLonnstilskuddProsent()).isEqualTo(70);
@@ -265,7 +265,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale.setLonnstilskuddProsent(40);
 
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
         assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isNull();
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(40);
@@ -285,7 +285,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale.setLonnstilskuddProsent(69);
 
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
         assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isNull();
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(69);
@@ -305,7 +305,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale.setLonnstilskuddProsent(35);
 
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
         assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isNull();
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(35);
@@ -323,7 +323,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale.setLonnstilskuddProsent(40);
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
         assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isEqualTo(LocalDate.of(2021, 7, 1));
         harRiktigeEgenskaper(avtale);
@@ -341,7 +341,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale.setLonnstilskuddProsent(60);
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
         assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isEqualTo(LocalDate.of(2022, 1, 1));
         harRiktigeEgenskaper(avtale);
@@ -359,7 +359,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale.setLonnstilskuddProsent(60);
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
         assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isNull();
         harRiktigeEgenskaper(avtale);
@@ -374,7 +374,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         endreAvtale.setStartDato(LocalDate.of(2021, 1, 1));
         endreAvtale.setSluttDato(LocalDate.of(2031, 1, 1));
         endreAvtale.setLonnstilskuddProsent(60);
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
         assertThat(avtale.tilskuddsperiode(avtale.getTilskuddPeriode().size() - 1).getLonnstilskuddProsent()).isEqualTo(60);
         assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isNull();

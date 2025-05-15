@@ -22,7 +22,7 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
     }
 
     private void endreAvtale(Avtale avtale, EndreAvtale endreAvtale) {
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
     }
 
     @Test

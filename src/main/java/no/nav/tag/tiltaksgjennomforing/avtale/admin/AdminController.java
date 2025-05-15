@@ -17,7 +17,6 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -261,9 +260,8 @@ public class AdminController {
     @PostMapping("/endre-startdato-for-avtale/{id}")
     public void oppdaterStartdatoForAvtale(@PathVariable UUID id, @RequestBody Map<String, Object> parametere) {
         Avtale avtale = avtaleRepository.findById(id).orElseThrow();
-
         LocalDate startDato = LocalDate.parse((String) parametere.getOrDefault("startDato", null));
-        avtale.midlertidigEndreAvtale(Now.instant(), startDato);
+        avtale.midlertidigEndreAvtale(startDato);
         avtaleRepository.save(avtale);
     }
 
