@@ -86,7 +86,10 @@ class LagGosysVarselLytter {
 
     @TransactionalEventListener
     public void opprettVTAOGosysVarsel(AvtaleInngått event) {
-        if (event.getAvtale().getTiltakstype().equals(Tiltakstype.VTAO)) {
+        if (
+            Tiltakstype.VTAO.equals(event.getAvtale().getTiltakstype()) &&
+            !Avtaleopphav.ARENA.equals(event.getAvtale().getOpphav())
+        ) {
             varsleGosysOmInngaattVTAOAvtale(event.getAvtale());
         }
     }
