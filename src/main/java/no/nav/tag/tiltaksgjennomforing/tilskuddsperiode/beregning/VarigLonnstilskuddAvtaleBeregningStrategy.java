@@ -10,6 +10,13 @@ public class VarigLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstils
     private final int GRENSE_68_PROSENT_ETTER_12_MND = 68;
     private final int MAX_67_PROSENT_ETTER_12_MND = 67;
 
+    @Override
+    public void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {
+        AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
+        avtaleInnhold.setLonnstilskuddProsent(endreTilskuddsberegning.getLonnstilskuddProsent());
+        super.endreBeregning(avtale, endreTilskuddsberegning);
+    }
+
     public void reberegnTotal(Avtale avtale) {
         super.reberegnTotal(avtale);
        regnUtDatoOgSumRedusert(avtale);
