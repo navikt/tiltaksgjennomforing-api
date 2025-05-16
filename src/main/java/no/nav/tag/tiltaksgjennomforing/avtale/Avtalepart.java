@@ -159,6 +159,7 @@ public abstract class Avtalepart<T extends Identifikator> {
     protected abstract Avtalerolle rolle();
 
     public void opphevGodkjenninger(Avtale avtale) {
+        sjekkTilgang(avtale);
         if (!kanOppheveGodkjenninger(avtale)) {
             throw new KanIkkeOppheveException();
         }

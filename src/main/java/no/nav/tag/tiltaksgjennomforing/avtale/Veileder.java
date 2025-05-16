@@ -148,6 +148,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     public void annullerAvtale(String annullerGrunn, Avtale avtale) {
+        sjekkTilgang(avtale);
         avtale.annuller(this, annullerGrunn);
     }
 
@@ -215,6 +216,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     public void delAvtaleMedAvtalepart(Avtalerolle avtalerolle, Avtale avtale) {
+        sjekkTilgang(avtale);
         avtale.delMedAvtalepart(avtalerolle);
     }
 
@@ -368,6 +370,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     protected void oppdaterOppfølgingOgGeoEnhetEtterForespørsel(Avtale avtale) {
+        sjekkTilgang(avtale);
         // Geo enhet
         super.hentGeoEnhetFraNorg2(avtale, norg2Client, persondataService);
         // Oppfølgingsenhet
@@ -415,6 +418,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     protected void oppdatereKostnadssted(Avtale avtale, Norg2Client norg2Client, String enhet) {
+        sjekkTilgang(avtale);
         final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhet(enhet);
 
         if (response == null) {

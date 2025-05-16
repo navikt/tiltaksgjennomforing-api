@@ -306,7 +306,7 @@ public class TestData {
         Avtale avtale = enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusYears(1));
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusYears(1));
-        avtale.nyeTilskuddsperioderEtterMigreringFraArena(LocalDate.of(2023, 2, 1), false);
+        avtale.nyeTilskuddsperioderEtterMigreringFraArena(LocalDate.of(2023, 2, 1));
 
         // Godkjenning
         Arbeidsgiver arbeidsgiver = enArbeidsgiver(avtale);

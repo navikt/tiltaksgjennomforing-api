@@ -1194,9 +1194,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
      * - Sjekk logikk som skjer ved godkjenning av første perioden
      * - Tar ikke høyde for perioder med lengde tre måneder som i arena
      */
-    public boolean nyeTilskuddsperioderEtterMigreringFraArena(LocalDate migreringsDato, boolean dryRun) {
+    public boolean nyeTilskuddsperioderEtterMigreringFraArena(LocalDate migreringsDato) {
         if (sjekkRyddingAvTilskuddsperioder()) {
-
             for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
                 TilskuddPeriodeStatus status = tilskuddsperiode.getStatus();
                 if (status == TilskuddPeriodeStatus.UBEHANDLET || status == TilskuddPeriodeStatus.BEHANDLET_I_ARENA) {
@@ -1237,11 +1236,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
                 }
             });
             fikseLøpenumre(tilskuddsperioder, 1);
-            if (!dryRun) {
-                tilskuddPeriode.addAll(tilskuddsperioder);
-                setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
-                oppdaterKreverOppfolgingFom();
-            }
+            tilskuddPeriode.addAll(tilskuddsperioder);
+            setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
+            oppdaterKreverOppfolgingFom();
             return true;
         } else {
             log.atInfo()

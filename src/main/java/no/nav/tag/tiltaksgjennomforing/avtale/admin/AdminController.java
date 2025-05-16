@@ -84,7 +84,7 @@ public class AdminController {
                     && avtale.getGjeldendeInnhold().getSumLonnstilskudd() != null) {
 
                 avtale.reUtregnRedusert();
-                avtale.nyeTilskuddsperioderEtterMigreringFraArena(migreringsDato, false);
+                avtale.nyeTilskuddsperioderEtterMigreringFraArena(migreringsDato);
                 avtaleRepository.save(avtale);
                 antallUnder67.getAndIncrement();
             }
@@ -172,7 +172,7 @@ public class AdminController {
         log.info("Lager tilskuddsperioder på en enkelt avtale {} fra dato {}", id, migreringsDato);
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        avtale.nyeTilskuddsperioderEtterMigreringFraArena(migreringsDato, false);
+        avtale.nyeTilskuddsperioderEtterMigreringFraArena(migreringsDato);
         avtaleRepository.save(avtale);
     }
 

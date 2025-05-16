@@ -289,7 +289,6 @@ public class AvtaleController {
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(avtalepart))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         avtalepart.endreAvtale(endreAvtale, avtale);
@@ -305,9 +304,7 @@ public class AvtaleController {
             @CookieValue("innlogget-part") Avtalerolle innloggetPart
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(avtalepart))
-            .orElseThrow(RessursFinnesIkkeException::new);
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         avtalepart.endreAvtale(endreAvtale, avtale);
         return avtale;
     }
@@ -321,7 +318,6 @@ public class AvtaleController {
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(avtalepart))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         avtalepart.opphevGodkjenninger(avtale);
@@ -337,7 +333,6 @@ public class AvtaleController {
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(avtalepart))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         avtalepart.godkjennAvtale(avtale);
@@ -356,7 +351,6 @@ public class AvtaleController {
             throw new TiltaksgjennomforingException("Du må være mentor for å signere her");
         }
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(avtalepart))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         avtalepart.godkjennAvtale(avtale);
@@ -479,7 +473,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.forkortAvtale(avtale, forkortAvtale.getSluttDato(), ForkortetGrunn.av(forkortAvtale.getGrunn(), forkortAvtale.getAnnetGrunn()));
@@ -494,7 +487,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.forkortAvtale(avtale, forkortAvtale.getSluttDato(), ForkortetGrunn.av("dry run", ""));
         return avtale;
@@ -509,7 +501,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.forlengAvtale(forlengAvtale.getSluttDato(), avtale);
@@ -524,7 +515,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.forlengAvtale(forlengAvtale.getSluttDato(), avtale);
         return avtale;
@@ -539,7 +529,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreMål(endreMål, avtale);
@@ -555,7 +544,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreInkluderingstilskudd(endreInkluderingstilskudd, avtale);
@@ -571,7 +559,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreStillingbeskrivelse(endreStillingsbeskrivelse, avtale);
@@ -587,7 +574,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreOppfølgingOgTilrettelegging(endreOppfølgingOgTilrettelegging, avtale);
@@ -603,7 +589,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreOmMentor(endreOmMentor, avtale);
@@ -619,7 +604,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreKontaktinfo(endreKontaktInformasjon, avtale);
@@ -634,7 +618,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.oppfolgingAvAvtale(avtale);
@@ -650,7 +633,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreTilskuddsberegning(endreTilskuddsberegning, avtale);
@@ -664,9 +646,7 @@ public class AvtaleController {
             @RequestBody EndreTilskuddsberegning endreTilskuddsberegning
     ) {
         Veileder veileder = innloggingService.hentVeileder();
-        Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
-            .orElseThrow(RessursFinnesIkkeException::new);
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreTilskuddsberegning(endreTilskuddsberegning, avtale);
         return avtale;
     }
@@ -679,7 +659,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.sendTilbakeTilBeslutter(avtale);
@@ -695,7 +674,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.godkjennForVeilederOgDeltaker(paVegneAvGrunn, avtale);
@@ -711,7 +689,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.godkjennForVeilederOgArbeidsgiver(paVegneAvGrunn, avtale);
@@ -727,7 +704,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.godkjennForVeilederOgDeltakerOgArbeidsgiver(paVegneAvGrunn, avtale);
@@ -743,7 +719,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.annullerAvtale(annullertInfo.getAnnullertGrunn(), avtale);
@@ -759,7 +734,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.slettemerk(avtale);
@@ -775,7 +749,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.delAvtaleMedAvtalepart(avtalerolle, avtale);
@@ -790,11 +763,10 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
-        veileder.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
         veileder.overtaAvtale(avtale);
+        veileder.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
         avtaleRepository.save(avtale);
     }
 
@@ -807,14 +779,13 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         if (avtale.erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_ARENA_MIGRERINGSDATO_INNGAATT_AVTALE);
         }
         veileder.sjekkTilgang(avtale);
-        avtale.nyeTilskuddsperioderEtterMigreringFraArena(justerArenaMigreringsdato.getMigreringsdato(), false);
+        avtale.nyeTilskuddsperioderEtterMigreringFraArena(justerArenaMigreringsdato.getMigreringsdato());
         Optional<ArenaRyddeAvtale> lagretAvtaleSomRyddeAvtale = arenaRyddeAvtaleRepository.findByAvtale(avtale);
 
         if (lagretAvtaleSomRyddeAvtale.isEmpty()) {
@@ -833,11 +804,10 @@ public class AvtaleController {
     @AuditLogging("Justering av migreringsdato i avtale om arbeidsmarkedstiltak")
     @PostMapping("/{avtaleId}/juster-arena-migreringsdato/dry-run")
     public Avtale justerArenaMigreringsdatoDryRun(@PathVariable("avtaleId") UUID avtaleId, @RequestBody JusterArenaMigreringsdato justerArenaMigreringsdato) {
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         Veileder veileder = innloggingService.hentVeileder();
-        Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
-            .orElseThrow(RessursFinnesIkkeException::new);
-        avtale.nyeTilskuddsperioderEtterMigreringFraArena(justerArenaMigreringsdato.getMigreringsdato(), false);
+        veileder.sjekkTilgang(avtale);
+        avtale.nyeTilskuddsperioderEtterMigreringFraArena(justerArenaMigreringsdato.getMigreringsdato());
         return avtale;
     }
 
@@ -850,7 +820,6 @@ public class AvtaleController {
     ) {
         Beslutter beslutter = innloggingService.hentBeslutter();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(beslutter))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         beslutter.godkjennTilskuddsperiode(avtale, godkjennTilskuddsperiodeRequest.getEnhet());
@@ -866,7 +835,6 @@ public class AvtaleController {
     ) {
         Beslutter beslutter = innloggingService.hentBeslutter();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(beslutter))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         beslutter.setOmAvtalenKanEtterregistreres(avtale);
@@ -883,12 +851,10 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.oppdatereKostnadssted(avtale, norg2Client, endreKostnadsstedRequest.getEnhet());
-        var oppdatertAvtale = avtaleRepository.save(avtale);
-        return oppdatertAvtale;
+        return avtaleRepository.save(avtale);
     }
 
     @PostMapping("/{avtaleId}/avslag-tilskuddsperiode")
@@ -900,7 +866,6 @@ public class AvtaleController {
     ) {
         Beslutter beslutter = innloggingService.hentBeslutter();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(beslutter))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         avtale.sjekkSistEndret(sistEndret);
@@ -916,7 +881,6 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkTilgang(veileder))
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.oppdaterOppfølgingOgGeoEnhetEtterForespørsel(avtale);
@@ -934,13 +898,6 @@ public class AvtaleController {
     private Function<Avtale, Avtale> sjekkeSistEndret(Instant sistEndret) {
         return (avtale) -> {
             avtale.sjekkSistEndret(sistEndret);
-            return avtale;
-        };
-    }
-
-    private Function<Avtale, Avtale> sjekkTilgang(Avtalepart avtalepart) {
-        return (avtale) -> {
-            avtalepart.sjekkTilgang(avtale);
             return avtale;
         };
     }
