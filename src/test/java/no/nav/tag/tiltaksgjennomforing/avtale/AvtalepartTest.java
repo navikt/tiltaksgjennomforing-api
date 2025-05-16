@@ -8,7 +8,6 @@ import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.Veilarboppfolging
 import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -32,7 +31,7 @@ public class AvtalepartTest {
     public void endreAvtale__skal_feile_for_deltaker() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        assertThatThrownBy(() -> deltaker.endreAvtale(avtale.getSistEndret(), TestData.ingenEndring(), avtale)).isInstanceOf(KanIkkeEndreException.class);
+        assertThatThrownBy(() -> deltaker.endreAvtale(TestData.ingenEndring(), avtale)).isInstanceOf(KanIkkeEndreException.class);
     }
 
     @Test
@@ -86,10 +85,10 @@ public class AvtalepartTest {
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
 
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.godkjennAvtale(avtale.getSistEndret().plusMillis(60000), avtale);
+        arbeidsgiver.godkjennAvtale(avtale);
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        deltaker.godkjennAvtale(avtale.getSistEndret().plusMillis(60000), avtale);
-        assertFeilkode(Feilkode.MENTOR_MÅ_SIGNERE_TAUSHETSERKLÆRING,() -> veileder.godkjennAvtale(avtale.getSistEndret().plusMillis(60000), avtale));
+        deltaker.godkjennAvtale(avtale);
+        assertFeilkode(Feilkode.MENTOR_MÅ_SIGNERE_TAUSHETSERKLÆRING,() -> veileder.godkjennAvtale(avtale));
     }
 
     @Test
@@ -115,7 +114,7 @@ public class AvtalepartTest {
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
 
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.godkjennAvtale(avtale.getSistEndret().plusMillis(60000), avtale);
+        arbeidsgiver.godkjennAvtale(avtale);
         assertFeilkode(Feilkode.MENTOR_MÅ_SIGNERE_TAUSHETSERKLÆRING,() -> veileder.godkjennForVeilederOgDeltaker(new GodkjentPaVegneGrunn(), avtale));
     }
 
@@ -154,7 +153,7 @@ public class AvtalepartTest {
     public void endreAvtale__skal_fungere_for_arbeidsgiver() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.endreAvtale(Now.instant(), TestData.ingenEndring(), avtale);
+        arbeidsgiver.endreAvtale(TestData.ingenEndring(), avtale);
     }
 
     @Test
@@ -179,21 +178,14 @@ public class AvtalepartTest {
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
 
-        veileder.endreAvtale(Now.instant(), TestData.ingenEndring(), avtale);
-    }
-
-    @Test
-    public void godkjennForAvtalepart__skal_ikke_fungere_hvis_versjon_er_feil() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        Deltaker deltaker = TestData.enDeltaker(avtale);
-        assertThatThrownBy(() -> deltaker.godkjennAvtale(avtale.getSistEndret().minusMillis(1), avtale)).isInstanceOf(SamtidigeEndringerException.class);
+        veileder.endreAvtale(TestData.ingenEndring(), avtale);
     }
 
     @Test
     public void godkjennForAvtalepart__skal_fungere_for_deltaker() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        deltaker.godkjennAvtale(avtale.getSistEndret(), avtale);
+        deltaker.godkjennAvtale(avtale);
         assertThat(avtale.erGodkjentAvDeltaker()).isTrue();
         assertThat(avtale.erGodkjentAvArbeidsgiver()).isFalse();
         assertThat(avtale.erGodkjentAvVeileder()).isFalse();
@@ -203,7 +195,7 @@ public class AvtalepartTest {
     public void godkjennForAvtalepart__skal_fungere_for_arbeidsgiver() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.godkjennAvtale(avtale.getSistEndret(), avtale);
+        arbeidsgiver.godkjennAvtale(avtale);
         assertThat(avtale.erGodkjentAvArbeidsgiver()).isTrue();
         assertThat(avtale.erGodkjentAvVeileder()).isFalse();
         assertThat(avtale.erGodkjentAvDeltaker()).isFalse();
@@ -235,7 +227,7 @@ public class AvtalepartTest {
 
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
-        veileder.godkjennAvtale(avtale.getSistEndret(), avtale);
+        veileder.godkjennAvtale(avtale);
         assertThat(avtale.erGodkjentAvArbeidsgiver()).isTrue();
     }
 

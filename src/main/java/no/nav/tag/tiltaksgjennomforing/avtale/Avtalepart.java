@@ -19,7 +19,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
@@ -105,9 +104,8 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract void opphevGodkjenningerSomAvtalepart(Avtale avtale);
 
-    public void godkjennAvtale(Instant sistEndret, Avtale avtale) {
+    public void godkjennAvtale(Avtale avtale) {
         sjekkTilgang(avtale);
-        avtale.sjekkSistEndret(sistEndret);
         godkjennForAvtalepart(avtale);
     }
 
@@ -135,15 +133,13 @@ public abstract class Avtalepart<T extends Identifikator> {
     }
 
     public void endreAvtale(
-        Instant sistEndret,
         EndreAvtale endreAvtale,
         Avtale avtale
     ) {
-        endreAvtale(sistEndret, endreAvtale, avtale, () -> {});
+        endreAvtale(endreAvtale, avtale, () -> {});
     }
 
     public void endreAvtale(
-            Instant sistEndret,
             EndreAvtale endreAvtale,
             Avtale avtale,
             Runnable kjorForEndring
@@ -154,7 +150,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
         avvisDatoerTilbakeITid(avtale, endreAvtale.getStartDato(), endreAvtale.getSluttDato());
         kjorForEndring.run();
-        avtale.endreAvtale(sistEndret, endreAvtale, rolle(), identifikator);
+        avtale.endreAvtale(endreAvtale, rolle(), identifikator);
     }
 
     protected void avvisDatoerTilbakeITid(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {

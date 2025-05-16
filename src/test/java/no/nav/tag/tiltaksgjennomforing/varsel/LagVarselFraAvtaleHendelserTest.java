@@ -25,7 +25,6 @@ import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository
 import no.nav.tag.tiltaksgjennomforing.datavarehus.DvhMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.ArbeidsgiverNotifikasjonRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -100,7 +99,7 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(OPPRETTET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
         assertHendelse(OPPRETTET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.DELTAKER, true);
 
-        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.ARBEIDSGIVER);
+        avtale.endreAvtale(TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.ARBEIDSGIVER);
         avtale = avtaleRepository.save(avtale);
         assertHendelse(ENDRET, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.VEILEDER, true);
         assertHendelse(ENDRET, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.ARBEIDSGIVER, false);
@@ -127,7 +126,7 @@ class LagVarselFraAvtaleHendelserTest {
         assertIngenHendelse(DELT_MED_ARBEIDSGIVER, Avtalerolle.DELTAKER);
 
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        deltaker.godkjennAvtale(Now.instant(), avtale);
+        deltaker.godkjennAvtale(avtale);
         avtale = avtaleRepository.save(avtale);
         assertHendelse(GODKJENT_AV_DELTAKER, AvtaleHendelseUtførtAvRolle.DELTAKER, Avtalerolle.VEILEDER, true);
         assertHendelse(GODKJENT_AV_DELTAKER, AvtaleHendelseUtførtAvRolle.DELTAKER, Avtalerolle.ARBEIDSGIVER, true);
@@ -141,7 +140,7 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(GODKJENNINGER_OPPHEVET_AV_VEILEDER, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.DELTAKER, true);
 
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
+        arbeidsgiver.godkjennAvtale(avtale);
         avtale = avtaleRepository.save(avtale);
         assertHendelse(GODKJENT_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.VEILEDER, true);
         assertHendelse(GODKJENT_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.ARBEIDSGIVER, false);
@@ -153,7 +152,7 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.ARBEIDSGIVER, false);
         assertHendelse(GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.DELTAKER, true);
 
-        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
+        arbeidsgiver.godkjennAvtale(avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
         avtale = avtaleRepository.save(avtale);
         assertHendelse(GODKJENT_PAA_VEGNE_AV, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.VEILEDER, false);
@@ -225,7 +224,7 @@ class LagVarselFraAvtaleHendelserTest {
     void test_for_delt_med_mentor() {
         Avtale avtale = avtaleRepository.save(Avtale.opprett(new OpprettMentorAvtale(new Fnr("00000000000") , new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MENTOR, Avtalerolle.VEILEDER), Avtaleopphav.VEILEDER, TestData.enNavIdent()));
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleMentorFelter(), Avtalerolle.VEILEDER);
+        avtale.endreAvtale(TestData.endringPåAlleMentorFelter(), Avtalerolle.VEILEDER);
         avtale = avtaleRepository.save(avtale);
 
         avtale.delMedAvtalepart(Avtalerolle.DELTAKER);

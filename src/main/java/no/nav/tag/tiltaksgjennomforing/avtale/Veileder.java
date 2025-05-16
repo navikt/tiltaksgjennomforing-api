@@ -33,7 +33,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.sql.Date;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -148,8 +147,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         );
     }
 
-    public void annullerAvtale(Instant sistEndret, String annullerGrunn, Avtale avtale) {
-        avtale.sjekkSistEndret(sistEndret);
+    public void annullerAvtale(String annullerGrunn, Avtale avtale) {
         avtale.annuller(this, annullerGrunn);
     }
 
@@ -230,12 +228,10 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     public void endreAvtale(
-            Instant sistEndret,
             EndreAvtale endreAvtale,
             Avtale avtale
     ) {
         super.endreAvtale(
-            sistEndret,
             endreAvtale,
             avtale,
             () -> oppdatereEnheterVedEndreAvtale(avtale)

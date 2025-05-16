@@ -10,7 +10,6 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.junit.jupiter.api.Test;
 
@@ -71,11 +70,10 @@ class BeslutterTest {
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
 
         avtale.endreAvtale(
-                Now.instant(),
                 TestData.endringPåAlleLønnstilskuddFelter(),
                 Avtalerolle.VEILEDER
         );
-        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
+        arbeidsgiver.godkjennAvtale(avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
         assertThat(avtale.erAvtaleInngått()).isFalse();
         Beslutter beslutter = TestData.enBeslutter(avtale);

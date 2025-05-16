@@ -285,14 +285,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void endreAvtale(
-        Instant sistEndret,
         EndreAvtale nyAvtale,
         Avtalerolle utfortAvRolle,
         Identifikator identifikator
     ) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAvtalenKanEndres();
-        sjekkSistEndret(sistEndret);
         sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
         getGjeldendeInnhold().endreAvtale(nyAvtale);
         nyeTilskuddsperioder();
@@ -311,11 +309,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     /**
      * En midlertidig metode for å oppdatere startdatoen til en gammel avtale som har fått feil startdato
      */
-    public void midlertidigEndreAvtale(
-        Instant sistEndret,
-        LocalDate nyStartDato
-    ) {
-        sjekkSistEndret(sistEndret);
+    public void midlertidigEndreAvtale(LocalDate nyStartDato) {
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
         if (getGjeldendeInnhold().getStartDato().equals(nyStartDato)) {
             return;
@@ -325,11 +319,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void endreAvtale(
-        Instant sistEndret,
         EndreAvtale nyAvtale,
         Avtalerolle utfortAv
     ) {
-        endreAvtale(sistEndret, nyAvtale, utfortAv, null);
+        endreAvtale(nyAvtale, utfortAv, null);
     }
 
     public void endreAvtaleArena(EndreAvtaleArena endreAvtaleArena) {
@@ -598,7 +591,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
     }
 
-    void sjekkSistEndret(Instant sistEndret) {
+    public void sjekkSistEndret(Instant sistEndret) {
         if (sistEndret == null || sistEndret.isBefore(this.sistEndret)) {
             throw new SamtidigeEndringerException();
         }
