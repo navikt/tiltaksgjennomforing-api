@@ -1138,10 +1138,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
     }
 
-    void endreBeløpITilskuddsperioder() {
+    void endreBeløpOgProsentITilskuddsperioder() {
         sendTilbakeTilBeslutter();
         tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET)
-            .forEach(t -> t.setBeløp(beregnTilskuddsbeløpForPeriode(t.getStartDato(), t.getSluttDato())));
+            .forEach(t -> {
+                t.setBeløp(beregnTilskuddsbeløpForPeriode(t.getStartDato(), t.getSluttDato()));
+                t.setLonnstilskuddProsent(gjeldendeInnhold.getLonnstilskuddProsent());
+            });
     }
 
     public void sendTilbakeTilBeslutter() {
@@ -1446,9 +1449,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
         }
+        if (Tiltakstype.VARIG_LONNSTILSKUDD.equals(tiltakstype) && Utils.erTom(endreTilskuddsberegning.getLonnstilskuddProsent())) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
+        }
+
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_TILSKUDDSBEREGNING);
         this.hentBeregningStrategi().endreBeregning(this, endreTilskuddsberegning);
-        endreBeløpITilskuddsperioder();
+        endreBeløpOgProsentITilskuddsperioder();
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         utforEndring(new TilskuddsberegningEndret(this, utførtAv));
     }

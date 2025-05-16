@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 @Value
 @Builder(toBuilder = true)
 public class EndreTilskuddsberegning {
+    Integer lonnstilskuddProsent;
     Integer manedslonn;
     BigDecimal feriepengesats;
     BigDecimal arbeidsgiveravgift;
