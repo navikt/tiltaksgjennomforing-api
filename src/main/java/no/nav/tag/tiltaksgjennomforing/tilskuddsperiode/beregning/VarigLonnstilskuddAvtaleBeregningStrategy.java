@@ -6,9 +6,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import java.time.LocalDate;
 
 public class VarigLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
-
-    private final int GRENSE_68_PROSENT_ETTER_12_MND = 68;
-    private final int MAX_67_PROSENT_ETTER_12_MND = 67;
+    public static final int GRENSE_68_PROSENT_ETTER_12_MND = 68;
+    public static final int MAX_67_PROSENT_ETTER_12_MND = 67;
 
     @Override
     public void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {
@@ -24,7 +23,7 @@ public class VarigLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstils
 
     public void regnUtDatoOgSumRedusert(Avtale avtale) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
-        if(avtaleInnhold.getLonnstilskuddProsent() == null || avtaleInnhold.getLonnstilskuddProsent() < GRENSE_68_PROSENT_ETTER_12_MND) {
+        if (avtaleInnhold.getLonnstilskuddProsent() == null || avtaleInnhold.getLonnstilskuddProsent() < GRENSE_68_PROSENT_ETTER_12_MND) {
             avtaleInnhold.setDatoForRedusertProsent(null);
             avtaleInnhold.setSumLønnstilskuddRedusert(null);
             return;
@@ -40,7 +39,7 @@ public class VarigLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstils
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         if (avtaleInnhold.getDatoForRedusertProsent() != null && avtaleInnhold.getLonnstilskuddProsent() != null) {
             int lonnstilskuddProsent = avtaleInnhold.getLonnstilskuddProsent();
-            if(lonnstilskuddProsent >= GRENSE_68_PROSENT_ETTER_12_MND) lonnstilskuddProsent = MAX_67_PROSENT_ETTER_12_MND;
+            if (lonnstilskuddProsent >= GRENSE_68_PROSENT_ETTER_12_MND) lonnstilskuddProsent = MAX_67_PROSENT_ETTER_12_MND;
             return getSumLonnsTilskudd(avtaleInnhold.getSumLonnsutgifter(), lonnstilskuddProsent);
         } else {
             return null;

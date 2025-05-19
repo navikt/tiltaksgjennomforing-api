@@ -1143,7 +1143,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET)
             .forEach(t -> {
                 t.setBeløp(beregnTilskuddsbeløpForPeriode(t.getStartDato(), t.getSluttDato()));
-                t.setLonnstilskuddProsent(gjeldendeInnhold.getLonnstilskuddProsent());
+                t.setLonnstilskuddProsent(beregnTilskuddsprosentForPeriode(t.getSluttDato()));
             });
     }
 
@@ -1166,6 +1166,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     @JsonProperty
     public boolean erAnnullertEllerAvbrutt() {
         return isAvbrutt() || annullertTidspunkt != null;
+    }
+
+    protected Integer beregnTilskuddsprosentForPeriode(LocalDate sluttDato) {
+        return this.hentBeregningStrategi().beregnTilskuddsprosentForPeriode(this, sluttDato);
     }
 
     protected Integer beregnTilskuddsbeløpForPeriode(LocalDate startDato, LocalDate sluttDato) {

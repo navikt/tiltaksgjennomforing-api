@@ -478,7 +478,15 @@ public class AvtaleTest {
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(1);
         assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(18766));
-        avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build(), TestData.enNavIdent());
+        avtale.endreTilskuddsberegning(
+            EndreTilskuddsberegning.builder()
+                .lonnstilskuddProsent(50)
+                .otpSats(otpSats)
+                .feriepengesats(feriepengesats)
+                .arbeidsgiveravgift(arbeidsgiveravgift)
+                .manedslonn(manedslonn)
+                .build(), TestData.enNavIdent()
+        );
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(2);
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
@@ -502,7 +510,15 @@ public class AvtaleTest {
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(1);
         assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(28149));
-        avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build(), TestData.enNavIdent());
+        avtale.endreTilskuddsberegning(
+            EndreTilskuddsberegning.builder()
+                .lonnstilskuddProsent(75)
+                .otpSats(otpSats)
+                .feriepengesats(feriepengesats)
+                .arbeidsgiveravgift(arbeidsgiveravgift)
+                .manedslonn(manedslonn)
+                .build(), TestData.enNavIdent()
+        );
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(2);
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();

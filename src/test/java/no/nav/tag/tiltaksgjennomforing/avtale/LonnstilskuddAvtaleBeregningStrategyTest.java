@@ -532,6 +532,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         avtale.tilskuddsperiode(2).setStatus(TilskuddPeriodeStatus.GODKJENT);
 
         EndreTilskuddsberegning endreTilskuddsberegning = EndreTilskuddsberegning.builder()
+                .lonnstilskuddProsent(avtale.getGjeldendeInnhold().getLonnstilskuddProsent())
                 .manedslonn(77777)
                 .arbeidsgiveravgift(avtale.getGjeldendeInnhold().getArbeidsgiveravgift())
                 .feriepengesats(avtale.getGjeldendeInnhold().getFeriepengesats())
