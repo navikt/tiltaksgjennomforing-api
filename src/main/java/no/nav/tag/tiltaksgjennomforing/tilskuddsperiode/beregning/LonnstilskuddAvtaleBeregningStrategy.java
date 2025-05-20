@@ -61,11 +61,22 @@ public interface LonnstilskuddAvtaleBeregningStrategy {
     }
 
     default Integer beregnTilskuddsbeløpForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
-        return beløpForPeriode(startDato,
+        return beløpForPeriode(
+                startDato,
                 sluttDato,
                 avtale.getGjeldendeInnhold().getDatoForRedusertProsent(),
                 avtale.getGjeldendeInnhold().getSumLonnstilskudd(),
-                avtale.getGjeldendeInnhold().getSumLønnstilskuddRedusert());
+                avtale.getGjeldendeInnhold().getSumLønnstilskuddRedusert()
+        );
+    }
+
+    default Integer beregnTilskuddsprosentForPeriode(Avtale avtale, LocalDate sluttDato) {
+        return tilskuddprosentForPeriode(
+            sluttDato,
+            avtale.getTiltakstype(),
+            avtale.getGjeldendeInnhold().getDatoForRedusertProsent(),
+            avtale.getGjeldendeInnhold().getLonnstilskuddProsent()
+        );
     }
 
     default  List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(UUID id, Tiltakstype tiltakstype, Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
@@ -85,7 +96,7 @@ public interface LonnstilskuddAvtaleBeregningStrategy {
 
                 List<TilskuddPeriode> tilskuddperioderEtterRedusering = lagPeriode(datoForRedusertProsent, datoTilOgMed).stream().map(datoPar -> {
                     Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMånedRedusert);
-                    return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), getLonnstilskuddProsent(tiltakstype, lonnstilskuddprosent));
+                    return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), getRedusertLonnstilskuddprosent(tiltakstype, lonnstilskuddprosent));
                 }).toList();
 
                 ArrayList<TilskuddPeriode> tilskuddsperioder = new ArrayList<>();
@@ -96,7 +107,7 @@ public interface LonnstilskuddAvtaleBeregningStrategy {
                 // Kun redusete peridoer      ---60----60----60---50---|--50----50---50--50--
                 List<TilskuddPeriode> tilskuddperioderEtterRedusering = lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
                     Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMånedRedusert);
-                    return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), getLonnstilskuddProsent(tiltakstype, lonnstilskuddprosent));
+                    return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), getRedusertLonnstilskuddprosent(tiltakstype, lonnstilskuddprosent));
                 }).toList();
                 return new ArrayList<>(tilskuddperioderEtterRedusering);
             } else {
@@ -106,12 +117,21 @@ public interface LonnstilskuddAvtaleBeregningStrategy {
 
     }
 
-    private static int getLonnstilskuddProsent(Tiltakstype tiltakstype, Integer lonnstilskuddprosent) {
-        if(tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD){
-            if(lonnstilskuddprosent >= 68) return 67;
+    private static Integer tilskuddprosentForPeriode(LocalDate datoTilOgMed, Tiltakstype tiltakstype, LocalDate datoForRedusertProsent, Integer lonnstilskuddprosent) {
+        if (datoForRedusertProsent == null || datoTilOgMed.isBefore(datoForRedusertProsent)) {
             return lonnstilskuddprosent;
         }
-        return lonnstilskuddprosent - 10;
+        return getRedusertLonnstilskuddprosent(tiltakstype, lonnstilskuddprosent);
+    }
+
+    private static int getRedusertLonnstilskuddprosent(Tiltakstype tiltakstype, Integer lonnstilskuddprosent) {
+        if (!Tiltakstype.VARIG_LONNSTILSKUDD.equals(tiltakstype)){
+            return lonnstilskuddprosent - 10;
+        }
+        if (lonnstilskuddprosent >= VarigLonnstilskuddAvtaleBeregningStrategy.GRENSE_68_PROSENT_ETTER_12_MND) {
+            return VarigLonnstilskuddAvtaleBeregningStrategy.MAX_67_PROSENT_ETTER_12_MND;
+        }
+        return lonnstilskuddprosent;
     }
 
     private static Integer beløpForPeriode(LocalDate datoFraOgMed, LocalDate datoTilOgMed, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMåned, Integer sumLønnstilskuddPerMånedRedusert) {

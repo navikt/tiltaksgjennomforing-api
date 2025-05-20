@@ -1148,10 +1148,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
     }
 
-    void endreBeløpITilskuddsperioder() {
+    void endreBeløpOgProsentITilskuddsperioder() {
         sendTilbakeTilBeslutter();
         tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET)
-            .forEach(t -> t.setBeløp(beregnTilskuddsbeløpForPeriode(t.getStartDato(), t.getSluttDato())));
+            .forEach(t -> {
+                t.setBeløp(beregnTilskuddsbeløpForPeriode(t.getStartDato(), t.getSluttDato()));
+                t.setLonnstilskuddProsent(beregnTilskuddsprosentForPeriode(t.getSluttDato()));
+            });
     }
 
     public void sendTilbakeTilBeslutter() {
@@ -1173,6 +1176,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     @JsonProperty
     public boolean erAnnullertEllerAvbrutt() {
         return isAvbrutt() || annullertTidspunkt != null;
+    }
+
+    protected Integer beregnTilskuddsprosentForPeriode(LocalDate sluttDato) {
+        return this.hentBeregningStrategi().beregnTilskuddsprosentForPeriode(this, sluttDato);
     }
 
     protected Integer beregnTilskuddsbeløpForPeriode(LocalDate startDato, LocalDate sluttDato) {
@@ -1453,12 +1460,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             endreTilskuddsberegning.getManedslonn(),
             endreTilskuddsberegning.getOtpSats()
         )) {
-
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
         }
+
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_TILSKUDDSBEREGNING);
         this.hentBeregningStrategi().endreBeregning(this, endreTilskuddsberegning);
-        endreBeløpITilskuddsperioder();
+        endreBeløpOgProsentITilskuddsperioder();
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         utforEndring(new TilskuddsberegningEndret(this, utførtAv));
     }
