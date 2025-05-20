@@ -11,10 +11,8 @@ public class VarigLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstils
 
     @Override
     public void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {
-        if (endreTilskuddsberegning.getLonnstilskuddProsent() != null) {
-            AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
-            avtaleInnhold.setLonnstilskuddProsent(endreTilskuddsberegning.getLonnstilskuddProsent());
-        }
+        AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
+        avtaleInnhold.setLonnstilskuddProsent(endreTilskuddsberegning.getLonnstilskuddProsent());
         super.endreBeregning(avtale, endreTilskuddsberegning);
     }
 
