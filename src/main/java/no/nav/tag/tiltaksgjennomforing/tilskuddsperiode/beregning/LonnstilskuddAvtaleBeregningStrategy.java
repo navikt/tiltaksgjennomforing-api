@@ -125,7 +125,7 @@ public interface LonnstilskuddAvtaleBeregningStrategy {
     }
 
     private static int getRedusertLonnstilskuddprosent(Tiltakstype tiltakstype, Integer lonnstilskuddprosent) {
-        if (tiltakstype != Tiltakstype.VARIG_LONNSTILSKUDD){
+        if (!Tiltakstype.VARIG_LONNSTILSKUDD.equals(tiltakstype)){
             return lonnstilskuddprosent - 10;
         }
         if (lonnstilskuddprosent >= VarigLonnstilskuddAvtaleBeregningStrategy.GRENSE_68_PROSENT_ETTER_12_MND) {

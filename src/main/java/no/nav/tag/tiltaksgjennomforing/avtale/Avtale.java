@@ -1450,10 +1450,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             endreTilskuddsberegning.getManedslonn(),
             endreTilskuddsberegning.getOtpSats()
         )) {
-
-            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
-        }
-        if (Tiltakstype.VARIG_LONNSTILSKUDD.equals(tiltakstype) && Utils.erTom(endreTilskuddsberegning.getLonnstilskuddProsent())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
         }
 
