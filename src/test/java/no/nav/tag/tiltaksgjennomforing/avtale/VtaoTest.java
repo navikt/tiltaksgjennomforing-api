@@ -7,11 +7,9 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -46,11 +44,6 @@ public class VtaoTest {
     private Norg2Client norg2Client;
     @MockBean
     private FeatureToggleService featureToggleService;
-
-    @BeforeEach
-    void setup() {
-        when(featureToggleService.isEnabled(FeatureToggle.VTAO_TILTAK_TOGGLE)).thenReturn(true);
-    }
 
     @Test
     public void kanOppretteVtaoAvtaleTest() {
