@@ -1191,8 +1191,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         List<TilskuddPeriode> nyeTilskuddsperioder = this.hentBeregningStrategi().genererNyeTilskuddsperioder(this);
         boolean harNyeTilskuddsperioder = !(new ArrayList<>(tilskuddPeriode).equals(nyeTilskuddsperioder));
         if (harNyeTilskuddsperioder) {
-            tilskuddPeriode.removeIf(t -> (t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) || (t.getStatus() == TilskuddPeriodeStatus.BEHANDLET_I_ARENA));
-            tilskuddPeriode.addAll(nyeTilskuddsperioder);
+            tilskuddPeriode = new TreeSet<>(nyeTilskuddsperioder);
             setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
         }
     }
