@@ -289,11 +289,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         Avtalerolle utfortAvRolle,
         Identifikator identifikator
     ) {
+        boolean kreverNyeTilskuddsperioder = nyAvtale.kreverNyeTilskuddsperioder(this);
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAvtalenKanEndres();
         sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
         getGjeldendeInnhold().endreAvtale(nyAvtale);
-        nyeTilskuddsperioder();
+        if (kreverNyeTilskuddsperioder) {
+            nyeTilskuddsperioder();
+        }
         oppdaterKreverOppfolgingFom();
         utforEndring(new AvtaleEndret(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utfortAvRolle), identifikator));
     }
