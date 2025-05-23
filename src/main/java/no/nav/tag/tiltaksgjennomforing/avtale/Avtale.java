@@ -103,6 +103,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
@@ -206,10 +207,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     private Instant oppfolgingVarselSendt = null;
 
-    public void leggtilNyeTilskuddsperioder(List<TilskuddPeriode> tilskuddsperioder) {
-        this.tilskuddPeriode.addAll(tilskuddsperioder);
-    }
-
     private Avtale(OpprettAvtale opprettAvtale) {
         sjekkAtIkkeNull(opprettAvtale.getDeltakerFnr(), "Deltakers fnr må være satt.");
         sjekkAtIkkeNull(opprettAvtale.getBedriftNr(), "Arbeidsgivers bedriftnr må være satt.");
@@ -289,14 +286,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         Avtalerolle utfortAvRolle,
         Identifikator identifikator
     ) {
-        boolean kreverNyeTilskuddsperioder = nyAvtale.kreverNyeTilskuddsperioder(this);
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAvtalenKanEndres();
         sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
         getGjeldendeInnhold().endreAvtale(nyAvtale);
-        if (kreverNyeTilskuddsperioder) {
-            nyeTilskuddsperioder();
-        }
+        nyeTilskuddsperioder();
         oppdaterKreverOppfolgingFom();
         utforEndring(new AvtaleEndret(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utfortAvRolle), identifikator));
     }
@@ -1194,8 +1188,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private void nyeTilskuddsperioder() {
-        this.hentBeregningStrategi().genererNyeTilskuddsperioder(this);
-        setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
+        List<TilskuddPeriode> nyeTilskuddsperioder = this.hentBeregningStrategi().genererNyeTilskuddsperioder(this);
+        boolean harNyeTilskuddsperioder = !(new ArrayList<>(tilskuddPeriode).equals(nyeTilskuddsperioder));
+        if (harNyeTilskuddsperioder) {
+            tilskuddPeriode.removeIf(t -> (t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) || (t.getStatus() == TilskuddPeriodeStatus.BEHANDLET_I_ARENA));
+            tilskuddPeriode.addAll(nyeTilskuddsperioder);
+            setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
+        }
     }
 
     private boolean sjekkRyddingAvTilskuddsperioder() {

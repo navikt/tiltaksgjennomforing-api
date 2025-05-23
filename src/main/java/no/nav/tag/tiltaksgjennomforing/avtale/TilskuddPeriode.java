@@ -34,11 +34,11 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
 public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
 
     @Id
-    @EqualsAndHashCode.Include
+    @EqualsAndHashCode.Exclude
     private UUID id = UUID.randomUUID();
 
     @ManyToOne(fetch = FetchType.LAZY) // Unngå rekursiv query-loop (avtale.gjeldendetilskudd->tilskudd.avtale->...)
