@@ -29,7 +29,7 @@ public interface LonnstilskuddAvtaleBeregningStrategy {
     BigDecimal DAGER_I_MÅNED = new BigDecimal("30.4375");
     int ANTALL_MÅNEDER_I_EN_PERIODE = 1;
 
-    void genererNyeTilskuddsperioder(Avtale avtale);
+    List<TilskuddPeriode> genererNyeTilskuddsperioder(Avtale avtale);
     List<TilskuddPeriode> hentTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato);
     void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning);
     void reberegnTotal(Avtale avtale);

@@ -10,11 +10,11 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static no.nav.tag.tiltaksgjennomforing.satser.Sats.VTAO_SATS;
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erNoenTomme;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
 public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
@@ -30,34 +30,31 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
         );
     }
 
-    public void genererNyeTilskuddsperioder(Avtale avtale) {
+    public List<TilskuddPeriode> genererNyeTilskuddsperioder(Avtale avtale) {
         if (avtale.erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
         }
-        List<TilskuddPeriode> tilskuddsperioder = new ArrayList<>();
-        avtale.getTilskuddPeriode()
-            .removeIf(t -> (t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) || (t.getStatus() == TilskuddPeriodeStatus.BEHANDLET_I_ARENA));
         AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
-
-        if (erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato())) {
-            tilskuddsperioder = beregnTilskuddsperioderForVTAO(avtale);
-            if (avtale.getArenaRyddeAvtale() != null || Avtaleopphav.ARENA.equals(avtale.getOpphav())) {
-                LocalDate migreringsdato;
-                if (avtale.getArenaRyddeAvtale() != null && avtale.getArenaRyddeAvtale().getMigreringsdato() != null) {
-                    migreringsdato = avtale.getArenaRyddeAvtale().getMigreringsdato();
-                } else {
-                    migreringsdato = STANDARD_MIGRERINGSDATO;
-                }
-
-                tilskuddsperioder.forEach(periode -> {
-                    if (periode.getSluttDato().minusDays(1).isBefore(migreringsdato)) {
-                        periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
-                    }
-                });
+        if (erNoenTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato())) {
+            return Collections.emptyList();
+        }
+        List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioderForVTAO(avtale);
+        if (avtale.getArenaRyddeAvtale() != null || Avtaleopphav.ARENA.equals(avtale.getOpphav())) {
+            LocalDate migreringsdato;
+            if (avtale.getArenaRyddeAvtale() != null && avtale.getArenaRyddeAvtale().getMigreringsdato() != null) {
+                migreringsdato = avtale.getArenaRyddeAvtale().getMigreringsdato();
+            } else {
+                migreringsdato = STANDARD_MIGRERINGSDATO;
             }
+
+            tilskuddsperioder.forEach(periode -> {
+                if (periode.getSluttDato().minusDays(1).isBefore(migreringsdato)) {
+                    periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
+                }
+            });
         }
         fikseLøpenumre(tilskuddsperioder, 1);
-        avtale.leggtilNyeTilskuddsperioder(tilskuddsperioder);
+        return tilskuddsperioder;
     }
 
     public List<TilskuddPeriode> hentTilskuddsperioderForPeriode(
