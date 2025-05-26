@@ -134,7 +134,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                a.enhetOppfolging AS enhetOppfolging
         FROM Avtale a
         LEFT JOIN AvtaleInnhold i ON i.id = a.gjeldendeInnhold.id
-        LEFT JOIN TilskuddPeriode t ON (t.avtale.id = a.id AND t.status = :tilskuddsperiodestatus AND t.startDato <= :decisiondate)
+        LEFT JOIN TilskuddPeriode t ON t.avtale.id = a.id
         WHERE a.gjeldendeInnhold.godkjentAvVeileder IS NOT NULL
           AND a.tiltakstype IN (:tiltakstype)
           AND EXISTS (SELECT DISTINCT p.avtale.id, p.status, p.løpenummer, p.startDato FROM TilskuddPeriode p WHERE p.avtale.id = a.id
