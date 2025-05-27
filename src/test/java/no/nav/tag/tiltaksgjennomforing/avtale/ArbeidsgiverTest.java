@@ -227,7 +227,7 @@ public class ArbeidsgiverTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setBedriftNr(TestData.etBedriftNr());
 
-        when(avtaleRepository.findAllByBedriftNrInAndFeilregistrertIsFalse(any(), any())).thenReturn(new PageImpl<>(List.of(avtale)));
+        when(avtaleRepository.findAllByBedriftNr(any(), any(), any())).thenReturn(new PageImpl<>(List.of(avtale)));
 
         // PDL Adressepserre og navn mock
         PersondataService persondataService = mock(PersondataService.class);

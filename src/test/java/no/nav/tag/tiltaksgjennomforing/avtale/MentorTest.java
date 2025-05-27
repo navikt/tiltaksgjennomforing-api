@@ -66,7 +66,10 @@ public class MentorTest {
         Mentor mentor = TestData.enMentor(avtaleSignert);
 
         // NÅR
-        when(avtaleRepository.findAllByMentorFnrAndFeilregistrertIsFalse(any(), any())).thenReturn(new PageImpl<>(List.of(avtaleUsignert, avtaleSignert)));
+        when(avtaleRepository.findAllByMentorFnr(any(), any(), any())).thenReturn(new PageImpl<>(List.of(
+            avtaleUsignert,
+            avtaleSignert
+        )));
         var avtalerRespons = hentAvtalerForMentor(mentor);
         var avtalerMinimal = mapper.readValue(avtalerRespons.getContentAsString(), HashMap.class);
 
@@ -122,7 +125,11 @@ public class MentorTest {
         Mentor mentor = TestData.enMentor(avtale);
         AvtaleQueryParameter avtalePredicate = new AvtaleQueryParameter();
         // NÅR
-        when(avtaleRepository.findAllByMentorFnrAndFeilregistrertIsFalse(any(), eq(pageable))).thenReturn(new PageImpl<>(List.of(avtale)));
+        when(avtaleRepository.findAllByMentorFnr(
+            any(),
+            any(),
+            eq(pageable)
+        )).thenReturn(new PageImpl<>(List.of(avtale)));
         List<BegrensetAvtale> avtalerMinimal  = mentor
             .hentBegrensedeAvtalerMedLesetilgang(avtaleRepository, avtalePredicate, pageable)
             .getContent();

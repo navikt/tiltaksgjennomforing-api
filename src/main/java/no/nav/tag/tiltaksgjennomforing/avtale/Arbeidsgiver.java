@@ -20,7 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -56,24 +55,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
         this.eregService = eregService;
-    }
-
-    private static boolean avbruttForMerEnn12UkerSiden(Avtale avtale) {
-        return avtale.isAvbrutt() && avtale.getSistEndret()
-                .plus(84, ChronoUnit.DAYS)
-                .isBefore(Now.instant());
-    }
-
-    private static boolean annullertForMerEnn12UkerSiden(Avtale avtale) {
-        return avtale.getAnnullertTidspunkt() != null && avtale.getAnnullertTidspunkt()
-                .plus(84, ChronoUnit.DAYS)
-                .isBefore(Now.instant());
-    }
-
-    private static boolean sluttdatoPassertMedMerEnn12Uker(Avtale avtale) {
-        return avtale.erGodkjentAvVeileder() && avtale.getGjeldendeInnhold()
-                .getSluttDato().plusWeeks(12)
-                .isBefore(Now.localDate());
     }
 
     private static Avtale fjernAvbruttGrunn(Avtale avtale) {
@@ -168,19 +149,19 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                     );
                 }
 
-                if (sluttdatoPassertMedMerEnn12Uker(avtale)) {
+                if (avtale.harSluttdatoPassertMedMerEnn12Uker()) {
                     return new Tilgang.Avvis(
                         Avslagskode.SLUTTDATO_PASSERT,
                         "Sluttdato har passert med mer enn 12 uker"
                     );
                 }
-                if (avbruttForMerEnn12UkerSiden(avtale)) {
+                if (avtale.erAvbruttForMerEnn12UkerSiden()) {
                     return new Tilgang.Avvis(
                         Avslagskode.UTGATT,
                         "Avbrutt for mer enn 12 uker siden"
                     );
                 }
-                if (annullertForMerEnn12UkerSiden(avtale)) {
+                if (avtale.erAnnullertForMerEnn12UkerSiden()) {
                     return new Tilgang.Avvis(
                         Avslagskode.UTGATT,
                         "Annullert for mer enn 12 uker siden"
@@ -225,23 +206,38 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     @Override
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable) {
+        final LocalDate dato12UkerTilbakeFraNå = Now.localDate().minusWeeks(12);
         if (tilganger.isEmpty()) {
             return Page.empty();
         }
         Page<Avtale> avtaler;
         if (queryParametre.getTiltakstype() != null) {
-            if (harTilgangPåTiltakIBedrift(queryParametre.getBedriftNr(), queryParametre.getTiltakstype()))
-                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstypeAndFeilregistrertIsFalse(Set.of(queryParametre.getBedriftNr()), queryParametre.getTiltakstype(), pageable);
-            else if (queryParametre.getBedriftNr() == null) {
-                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstypeAndFeilregistrertIsFalse(tilganger.keySet(), queryParametre.getTiltakstype(), pageable);
+            if (harTilgangPåTiltakIBedrift(queryParametre.getBedriftNr(), queryParametre.getTiltakstype())) {
+                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstype(
+                    Set.of(queryParametre.getBedriftNr()),
+                    queryParametre.getTiltakstype(),
+                    dato12UkerTilbakeFraNå,
+                    pageable
+                );
+            } else if (queryParametre.getBedriftNr() == null) {
+                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstype(
+                    tilganger.keySet(),
+                    queryParametre.getTiltakstype(),
+                    dato12UkerTilbakeFraNå,
+                    pageable
+                );
             } else { // Bruker ba om informasjon på en bedrift hen ikke har tilgang til, og får dermed tom liste
                 avtaler = Page.empty();
             }
         } else {
-            if (queryParametre.getBedriftNr() != null && tilganger.containsKey(queryParametre.getBedriftNr()))
-                avtaler = avtaleRepository.findAllByBedriftNrInAndFeilregistrertIsFalse(Set.of(queryParametre.getBedriftNr()), pageable);
-            else if (queryParametre.getBedriftNr() == null) {
-                avtaler = avtaleRepository.findAllByBedriftNrInAndFeilregistrertIsFalse(tilganger.keySet(), pageable);
+            if (queryParametre.getBedriftNr() != null && tilganger.containsKey(queryParametre.getBedriftNr())) {
+                avtaler = avtaleRepository.findAllByBedriftNr(
+                    Set.of(queryParametre.getBedriftNr()),
+                    dato12UkerTilbakeFraNå,
+                    pageable
+                );
+            } else if (queryParametre.getBedriftNr() == null) {
+                avtaler = avtaleRepository.findAllByBedriftNr(tilganger.keySet(), dato12UkerTilbakeFraNå, pageable);
             } else { // Bruker ba om informasjon på en bedrift hen ikke har tilgang til, og får dermed tom liste
                 avtaler = Page.empty();
             }
