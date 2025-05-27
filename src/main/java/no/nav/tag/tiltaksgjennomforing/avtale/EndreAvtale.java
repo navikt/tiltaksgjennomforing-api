@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static java.util.Optional.ofNullable;
 
@@ -70,15 +69,6 @@ public class EndreAvtale {
     private Double mentorAntallTimer;
     private String mentorTlf;
     private Integer mentorTimelonn;
-
-    public boolean kreverNyeTilskuddsperioder(Avtale eksisterendeAvtale) {
-        AvtaleInnhold innhold = eksisterendeAvtale.getGjeldendeInnhold();
-        return switch (eksisterendeAvtale.getTiltakstype()) {
-            case VTAO ->
-                !Objects.equals(this.startDato, innhold.getStartDato()) || !Objects.equals(this.sluttDato, innhold.getSluttDato());
-            default -> true;
-        };
-    }
 
     public RefusjonKontaktperson getRefusjonKontaktperson() {
         if (refusjonKontaktpersonTlf == null && refusjonKontaktpersonFornavn == null && refusjonKontaktpersonEtternavn == null) {

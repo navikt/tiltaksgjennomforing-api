@@ -11,7 +11,7 @@ import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
@@ -19,31 +19,31 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
 public class GenerellLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAvtaleBeregningStrategy {
 
-    public void genererNyeTilskuddsperioder(Avtale avtale) {
+    public List<TilskuddPeriode> genererNyeTilskuddsperioder(Avtale avtale) {
         if (avtale.erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
         }
-        List<TilskuddPeriode> tilskuddsperioder = new ArrayList<>();
-        avtale.getTilskuddPeriode().removeIf(t -> (t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) || (t.getStatus() == TilskuddPeriodeStatus.BEHANDLET_I_ARENA));
+
         AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
+        if (Utils.erNoenTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnstilskudd())) {
+            return Collections.emptyList();
+        }
 
-        if (erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnstilskudd())) {
-            tilskuddsperioder = hentTilskuddsperioderForPeriode(avtale, gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
-            if (avtale.getArenaRyddeAvtale() != null) {
-                LocalDate standardMigreringsdato = LocalDate.of(2023, 2, 1);
-                LocalDate migreringsdato = avtale.getArenaRyddeAvtale().getMigreringsdato() != null ? avtale.getArenaRyddeAvtale().getMigreringsdato() : standardMigreringsdato;
+        List<TilskuddPeriode> tilskuddsperioder = hentTilskuddsperioderForPeriode(avtale, gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
+        if (avtale.getArenaRyddeAvtale() != null) {
+            LocalDate standardMigreringsdato = LocalDate.of(2023, 2, 1);
+            LocalDate migreringsdato = avtale.getArenaRyddeAvtale().getMigreringsdato() != null ? avtale.getArenaRyddeAvtale().getMigreringsdato() : standardMigreringsdato;
 
-                tilskuddsperioder.forEach(periode -> {
-                    // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
-                    // Eller skal det være startdato? Er jo den samme datoen som migreringsdato. hmm...
-                    if (periode.getSluttDato().minusDays(1).isBefore(migreringsdato)) {
-                        periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
-                    }
-                });
-            }
+            tilskuddsperioder.forEach(periode -> {
+                // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
+                // Eller skal det være startdato? Er jo den samme datoen som migreringsdato. hmm...
+                if (periode.getSluttDato().minusDays(1).isBefore(migreringsdato)) {
+                    periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
+                }
+            });
         }
         fikseLøpenumre(tilskuddsperioder, 1);
-        avtale.leggtilNyeTilskuddsperioder(tilskuddsperioder);
+        return tilskuddsperioder;
     }
 
     public void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {
