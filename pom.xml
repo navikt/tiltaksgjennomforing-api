@@ -122,12 +122,12 @@
         <dependency>
             <groupId>no.nav.security</groupId>
             <artifactId>token-validation-spring</artifactId>
-            <version>5.0.24</version>
+            <version>5.0.27</version>
         </dependency>
         <dependency>
             <groupId>no.nav.security</groupId>
             <artifactId>token-client-spring</artifactId>
-            <version>5.0.24</version>
+            <version>5.0.27</version>
         </dependency>
 
         <!-- Swagger -->
@@ -171,7 +171,7 @@
         <dependency>
             <groupId>no.nav.team-tiltak</groupId>
             <artifactId>tiltak-persondata</artifactId>
-            <version>2025.04.07_08.09-c5b0327d047a</version>
+            <version>2025.05.14_08.17-6e4f5055b2a5</version>
         </dependency>
 
         <!-- Test -->

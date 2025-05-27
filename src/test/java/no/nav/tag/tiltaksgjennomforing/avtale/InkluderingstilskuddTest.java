@@ -10,7 +10,7 @@ public class InkluderingstilskuddTest {
     @Test
     public void endreInkluderingstilskudd_verifisere_enkel_endring() {
         Avtale avtale = TestData.enInkluderingstilskuddAvtale();
-        avtale.endreAvtale(avtale.getSistEndret(), TestData.endringPåAlleInkluderingstilskuddFelter(), Avtalerolle.VEILEDER);
+        avtale.endreAvtale(TestData.endringPåAlleInkluderingstilskuddFelter(), Avtalerolle.VEILEDER);
     }
 
     @Test

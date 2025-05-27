@@ -332,7 +332,7 @@ public class ArenaAgreementProcessingService {
 
         avtale.setGodkjentForEtterregistrering(true);
         var migreringsdato = agreementAggregate.getTiltakskode().getMigreringsdatoForTilskudd();
-        avtale.nyeTilskuddsperioderEtterMigreringFraArena(migreringsdato, false);
+        avtale.nyeTilskuddsperioderEtterMigreringFraArena(migreringsdato);
         log.info("Opprettet avtale med id: {}", avtale.getId());
         return new ArenaMigrationProcessResult.Completed(action, avtale);
     }

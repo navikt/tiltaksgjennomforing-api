@@ -33,7 +33,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.sql.Date;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -148,8 +147,8 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         );
     }
 
-    public void annullerAvtale(Instant sistEndret, String annullerGrunn, Avtale avtale) {
-        avtale.sjekkSistEndret(sistEndret);
+    public void annullerAvtale(String annullerGrunn, Avtale avtale) {
+        sjekkTilgang(avtale);
         avtale.annuller(this, annullerGrunn);
     }
 
@@ -217,6 +216,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     public void delAvtaleMedAvtalepart(Avtalerolle avtalerolle, Avtale avtale) {
+        sjekkTilgang(avtale);
         avtale.delMedAvtalepart(avtalerolle);
     }
 
@@ -230,12 +230,10 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     public void endreAvtale(
-            Instant sistEndret,
             EndreAvtale endreAvtale,
             Avtale avtale
     ) {
         super.endreAvtale(
-            sistEndret,
             endreAvtale,
             avtale,
             () -> oppdatereEnheterVedEndreAvtale(avtale)
@@ -372,6 +370,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     protected void oppdaterOppfølgingOgGeoEnhetEtterForespørsel(Avtale avtale) {
+        sjekkTilgang(avtale);
         // Geo enhet
         super.hentGeoEnhetFraNorg2(avtale, norg2Client, persondataService);
         // Oppfølgingsenhet
@@ -419,6 +418,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     protected void oppdatereKostnadssted(Avtale avtale, Norg2Client norg2Client, String enhet) {
+        sjekkTilgang(avtale);
         final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhet(enhet);
 
         if (response == null) {

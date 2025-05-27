@@ -70,7 +70,7 @@ public class AvtaleArenaMigreringTest {
     public void vtao_skal_generere_tilskuddsperioder_med_behandlet_status_ved_arena_migrering() {
         Now.fixedDate(LocalDate.of(2025, 1, 15));
         Avtale avtale = TestData.enVtaoArenaAvtaleMedAltUtfylt();
-        avtale.nyeTilskuddsperioderEtterMigreringFraArena(LocalDate.of(2025, 3, 1), false);
+        avtale.nyeTilskuddsperioderEtterMigreringFraArena(LocalDate.of(2025, 3, 1));
 
         TilskuddPeriode sisteBehandletIArena = avtale.getTilskuddPeriode().stream().filter(tilskuddPeriode -> tilskuddPeriode.getStartDato().isAfter(LocalDate.of(
                 2011, 12, 31))).findFirst().get();

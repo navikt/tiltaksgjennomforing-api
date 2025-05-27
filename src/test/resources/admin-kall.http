@@ -30,6 +30,10 @@ Cookie: io.nais.wonderwall.session=<SESSION_ID>
 }
 
 ### Lage nye oppdaterte krav for arbeidsgivere
-POST http://localhost:8080/tiltaksgjennomforing-api/utvikler-admin/oppdaterte-avtalekrav
+POST http://localhost:12345/tiltaksgjennomforing-api/utvikler-admin/oppdaterte-avtalekrav
 Content-Type: application/json
+Authorization: Bearer <TOKEN>
 
+{
+  "avtaleKravTidspunkt": "2025-05-12T10:05:00"
+}

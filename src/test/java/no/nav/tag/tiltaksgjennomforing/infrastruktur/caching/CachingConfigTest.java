@@ -21,7 +21,6 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -174,13 +173,11 @@ public class CachingConfigTest {
         )).thenReturn(true, true, true);
 
         veileder.endreAvtale(
-                Now.instant(),
                 TestData.endringPåAlleLønnstilskuddFelter(),
                 avtale
         );
 
         veileder.endreAvtale(
-                Now.instant(),
                 TestData.endringPåAlleLønnstilskuddFelter(),
                 avtale
         );

@@ -14,7 +14,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.SmsProducer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,10 +68,10 @@ class LagSmsFraAvtaleHendelseTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
+        arbeidsgiver.godkjennAvtale(avtale);
         avtale = avtaleRepository.save(avtale);
         assertSmsOpprettetOgSendt(HendelseType.GODKJENT_AV_ARBEIDSGIVER, avtale.getId(), avtale.getGjeldendeInnhold().getVeilederTlf(), FAGSYSTEMSONE_VARSELTEKST);
-        deltaker.godkjennAvtale(Now.instant(), avtale);
+        deltaker.godkjennAvtale(avtale);
         avtale = avtaleRepository.save(avtale);
         assertSmsOpprettetOgSendt(HendelseType.GODKJENT_AV_DELTAKER, avtale.getId(), avtale.getGjeldendeInnhold().getVeilederTlf(), FAGSYSTEMSONE_VARSELTEKST);
     }
@@ -81,7 +80,7 @@ class LagSmsFraAvtaleHendelseTest {
     void avtaleInngått() throws JsonProcessingException {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
+        arbeidsgiver.godkjennAvtale(avtale);
         Veileder veileder = TestData.enVeileder(avtale);
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = new GodkjentPaVegneGrunn();
         godkjentPaVegneGrunn.setIkkeBankId(true);
@@ -97,8 +96,8 @@ class LagSmsFraAvtaleHendelseTest {
         Avtale avtale = TestData.enMentorAvtaleUsignert();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         Mentor mentor = TestData.enMentor(avtale);
-        mentor.godkjennAvtale(Now.instant(), avtale);
-        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
+        mentor.godkjennAvtale(avtale);
+        arbeidsgiver.godkjennAvtale(avtale);
         Veileder veileder = TestData.enVeileder(avtale);
 
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = new GodkjentPaVegneGrunn();
@@ -118,14 +117,14 @@ class LagSmsFraAvtaleHendelseTest {
         Veileder veileder = TestData.enVeileder(avtale);
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        deltaker.godkjennAvtale(Now.instant(), avtale);
+        deltaker.godkjennAvtale(avtale);
         //Arbeidsgiver opphever deltaker
         arbeidsgiver.opphevGodkjenninger(avtale);
         avtale = avtaleRepository.save(avtale);
         assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
 
-        deltaker.godkjennAvtale(Now.instant(), avtale);
-        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
+        deltaker.godkjennAvtale(avtale);
+        arbeidsgiver.godkjennAvtale(avtale);
         //Veileder opphever arbeidsgiver og deltaker
         veileder.opphevGodkjenninger(avtale);
         avtale = avtaleRepository.save(avtale);

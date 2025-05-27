@@ -31,7 +31,7 @@ public class MentorStartOgSluttDatoStrategyTest {
     }
 
     private void endreAvtale(EndreAvtale endreAvtale) {
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
     }
 
     @Test

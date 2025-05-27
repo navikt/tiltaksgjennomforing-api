@@ -81,10 +81,9 @@ public class DevController {
         endring.setFamilietilknytningForklaring(null);
         endring.setHarFamilietilknytning(false);
         avtale.endreAvtale(
-                Now.instant(),
-                endring,
-                Avtalerolle.ARBEIDSGIVER,
-                avtale.getDeltakerFnr()
+            endring,
+            Avtalerolle.ARBEIDSGIVER,
+            avtale.getDeltakerFnr()
         );
         avtaleRepository.save(avtale);
     }
@@ -111,7 +110,7 @@ public class DevController {
     ResponseEntity<String> opprettAvtale(@RequestBody OpprettAvtaleRequest avtale) {
         Veileder veileder = innloggingService.hentVeileder();
         var lagretAvtale = veileder.opprettAvtale(avtale.opprett());
-        veileder.endreAvtale(Now.instant(), avtale.endre(), lagretAvtale);
+        veileder.endreAvtale(avtale.endre(), lagretAvtale);
         avtaleRepository.save(lagretAvtale);
         return ResponseEntity.ok().body(lagretAvtale.getId().toString());
     }
