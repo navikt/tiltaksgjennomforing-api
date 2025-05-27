@@ -7,9 +7,11 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -64,7 +66,12 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable) {
-        Page<Avtale> avtaler = avtaleRepository.findAllByMentorFnrAndFeilregistrertIsFalse(getIdentifikator(), pageable);
+        final LocalDate dato12UkerTilbakeFraNå = Now.localDate().minusWeeks(12);
+        Page<Avtale> avtaler = avtaleRepository.findAllByMentorFnr(
+            getIdentifikator(),
+            dato12UkerTilbakeFraNå,
+            pageable
+        );
         return avtaler;
     }
 

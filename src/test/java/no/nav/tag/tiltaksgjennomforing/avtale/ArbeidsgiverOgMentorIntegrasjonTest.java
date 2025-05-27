@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles({Miljø.TEST, Miljø.WIREMOCK})
 @DirtiesContext
 @EmbeddedKafka
-class ArbeidsgiverIntegrasjonTest {
+class ArbeidsgiverOgMentorIntegrasjonTest {
 
     @Autowired
     private AvtaleRepository avtaleRepository;
@@ -69,6 +69,8 @@ class ArbeidsgiverIntegrasjonTest {
         avtaleRepository.deleteAll();
         tilskuddPeriodeRepository.deleteAll();
     }
+
+    // ARBEIDSGIVER //
 
     @Test
     public void skal_returnere_avtale_som_er_i_db() {
@@ -143,6 +145,46 @@ class ArbeidsgiverIntegrasjonTest {
         AvtaleQueryParameter queryParameter = new AvtaleQueryParameter();
         Pageable pageable = Pageable.ofSize(10);
         Page<BegrensetAvtale> avtalerPagable = arbeidsgiver.hentBegrensedeAvtalerMedLesetilgang(
+            avtaleRepository,
+            queryParameter,
+            pageable
+        );
+        assertThat(avtalerPagable.getTotalElements()).isEqualTo(1);
+    }
+
+    // MENTOR //
+
+    @Test
+    public void mentor_hentAlleAvtalerMedMuligTilgang_skal_IKKE_returnere_en_gammel_avtale_som_er_eldre_enn_12_uker_fra_db() {
+        Avtale avtale = TestData.enMentorAvtaleSignert();
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusMonths(4));
+        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(13));// ELDRE enn 12 UKER
+        Avtale avtaleLagret = avtaleRepository.save(avtale);
+        Mentor mentor = TestData.enMentor(avtaleLagret);
+
+        AvtaleQueryParameter queryParameter = new AvtaleQueryParameter();
+        Pageable pageable = Pageable.ofSize(10);
+        Page<Avtale> avtalerPagable = mentor.hentAlleAvtalerMedMuligTilgang(
+            avtaleRepository,
+            queryParameter,
+            pageable
+        );
+        assertThat(avtalerPagable.getTotalElements()).isEqualTo(0);
+    }
+
+
+    @Test
+    @Transactional
+    public void mentor_hentAlleAvtalerMedMuligTilgang_skal_returnere_en_avtale_som_er_IKKE_eldre_enn_12_uker_fra_db() {
+        Avtale avtale = TestData.enMentorAvtaleSignert();
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate());
+        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusMonths(2)); // NYERE enn 12 UKER
+        Avtale avtaleLagret = avtaleRepository.save(avtale);
+        Mentor mentor = TestData.enMentor(avtaleLagret);
+
+        AvtaleQueryParameter queryParameter = new AvtaleQueryParameter();
+        Pageable pageable = Pageable.ofSize(10);
+        Page<Avtale> avtalerPagable = mentor.hentAlleAvtalerMedMuligTilgang(
             avtaleRepository,
             queryParameter,
             pageable

@@ -372,6 +372,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void findAllByMentorFnr_skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
         Pageable pageable = PageRequest.of(0, 100);
+        final LocalDate Dato12UkerTilbakeFraNå = Now.localDate().minusWeeks(12);
         final Fnr mentorFnr = new Fnr("12345678911");
         Avtale lagretAvtale = TestData.enMentorAvtaleSignert();
         lagretAvtale.setFeilregistrert(false);
@@ -387,7 +388,7 @@ public class AvtaleRepositoryTest {
 
 
         Page<Avtale> avtalerFunnet = avtaleRepository
-            .findAllByMentorFnrAndFeilregistrertIsFalse(mentorFnr, pageable);
+            .findAllByMentorFnr(mentorFnr, Dato12UkerTilbakeFraNå, pageable);
 
         assertThat(avtalerFunnet.getContent()).isNotEmpty();
         assertThat(avtalerFunnet.getTotalElements()).isEqualTo(1);
