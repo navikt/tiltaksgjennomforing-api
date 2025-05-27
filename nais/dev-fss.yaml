@@ -68,6 +68,11 @@ spec:
     autoInstrumentation:
       enabled: true
       runtime: java
+    logging:
+      destinations:
+        - id: elastic
+        - id: team_logs
+        - id: loki
   accessPolicy:
     inbound:
       rules:
