@@ -307,6 +307,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void findAllByBedriftNrInAndTiltakstype_skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
         Pageable pageable = PageRequest.of(0, 100);
+        final LocalDate Dato12UkerTilbakeFraNå = Now.localDate().minusWeeks(12);
         Avtale lagretAvtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         lagretAvtale.setFeilregistrert(true);
         lagretAvtale.setBedriftNr(new BedriftNr("123456789"));
@@ -326,7 +327,12 @@ public class AvtaleRepositoryTest {
         Set<BedriftNr> bedriftNrSet = Set.of(lagretAvtale3.getBedriftNr(), lagretAvtale2.getBedriftNr(), lagretAvtale.getBedriftNr());
 
         Page<Avtale> avtalerFunnet = avtaleRepository
-            .findAllByBedriftNrInAndTiltakstypeAndFeilregistrertIsFalse(bedriftNrSet, lagretAvtale.getTiltakstype(), pageable);
+            .findAllByBedriftNrInAndTiltakstype(
+                bedriftNrSet,
+                lagretAvtale.getTiltakstype(),
+                Dato12UkerTilbakeFraNå,
+                pageable
+            );
 
         assertThat(avtalerFunnet.getContent()).isNotEmpty();
         assertThat(avtalerFunnet.getTotalElements()).isEqualTo(1);
@@ -336,6 +342,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void findAllByBedriftNrIn_skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
         Pageable pageable = PageRequest.of(0, 100);
+        final LocalDate dato12UkerTilbakeFraNå = Now.localDate().minusWeeks(12);
         Avtale lagretAvtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         lagretAvtale.setFeilregistrert(true);
         lagretAvtale.setBedriftNr(new BedriftNr("123456789"));
@@ -355,7 +362,7 @@ public class AvtaleRepositoryTest {
         Set<BedriftNr> bedriftNrSet = Set.of(lagretAvtale3.getBedriftNr(), lagretAvtale2.getBedriftNr(), lagretAvtale.getBedriftNr());
 
         Page<Avtale> avtalerFunnet = avtaleRepository
-            .findAllByBedriftNrInAndFeilregistrertIsFalse(bedriftNrSet, pageable);
+            .findAllByBedriftNr(bedriftNrSet, dato12UkerTilbakeFraNå, pageable);
 
         assertThat(avtalerFunnet.getContent()).isNotEmpty();
         assertThat(avtalerFunnet.getTotalElements()).isEqualTo(1);

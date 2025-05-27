@@ -206,23 +206,38 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     @Override
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable) {
+        final LocalDate dato12UkerTilbakeFraNå = Now.localDate().minusWeeks(12);
         if (tilganger.isEmpty()) {
             return Page.empty();
         }
         Page<Avtale> avtaler;
         if (queryParametre.getTiltakstype() != null) {
-            if (harTilgangPåTiltakIBedrift(queryParametre.getBedriftNr(), queryParametre.getTiltakstype()))
-                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstypeAndFeilregistrertIsFalse(Set.of(queryParametre.getBedriftNr()), queryParametre.getTiltakstype(), pageable);
-            else if (queryParametre.getBedriftNr() == null) {
-                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstypeAndFeilregistrertIsFalse(tilganger.keySet(), queryParametre.getTiltakstype(), pageable);
+            if (harTilgangPåTiltakIBedrift(queryParametre.getBedriftNr(), queryParametre.getTiltakstype())) {
+                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstype(
+                    Set.of(queryParametre.getBedriftNr()),
+                    queryParametre.getTiltakstype(),
+                    dato12UkerTilbakeFraNå,
+                    pageable
+                );
+            } else if (queryParametre.getBedriftNr() == null) {
+                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstype(
+                    tilganger.keySet(),
+                    queryParametre.getTiltakstype(),
+                    dato12UkerTilbakeFraNå,
+                    pageable
+                );
             } else { // Bruker ba om informasjon på en bedrift hen ikke har tilgang til, og får dermed tom liste
                 avtaler = Page.empty();
             }
         } else {
-            if (queryParametre.getBedriftNr() != null && tilganger.containsKey(queryParametre.getBedriftNr()))
-                avtaler = avtaleRepository.findAllByBedriftNrInAndFeilregistrertIsFalse(Set.of(queryParametre.getBedriftNr()), pageable);
-            else if (queryParametre.getBedriftNr() == null) {
-                avtaler = avtaleRepository.findAllByBedriftNrInAndFeilregistrertIsFalse(tilganger.keySet(), pageable);
+            if (queryParametre.getBedriftNr() != null && tilganger.containsKey(queryParametre.getBedriftNr())) {
+                avtaler = avtaleRepository.findAllByBedriftNr(
+                    Set.of(queryParametre.getBedriftNr()),
+                    dato12UkerTilbakeFraNå,
+                    pageable
+                );
+            } else if (queryParametre.getBedriftNr() == null) {
+                avtaler = avtaleRepository.findAllByBedriftNr(tilganger.keySet(), dato12UkerTilbakeFraNå, pageable);
             } else { // Bruker ba om informasjon på en bedrift hen ikke har tilgang til, og får dermed tom liste
                 avtaler = Page.empty();
             }
