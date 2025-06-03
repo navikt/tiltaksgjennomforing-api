@@ -21,7 +21,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Kode6SperretForOpprettelseOgEn
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
-import no.nav.tag.tiltaksgjennomforing.logging.SecureLog;
+import no.nav.tag.tiltaksgjennomforing.logging.TeamLogs;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
-    private static final SecureLog secureLog = SecureLog.getLogger(log);
+    private static final TeamLogs teamLogs = TeamLogs.getLogger(log);
 
     private final TilgangskontrollService tilgangskontrollService;
     private final PersondataService persondataService;
@@ -109,7 +109,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     public Tilgang harTilgangTilAvtale(Avtale avtale) {
-        secureLog.info("Sjekker tilgang for veileder {} til avtale {}", getIdentifikator(), avtale.getId());
+        teamLogs.info("Sjekker tilgang for veileder {} til avtale {}", getIdentifikator(), avtale.getId());
         Tilgang tilgang = tilgangskontrollService.hentSkrivetilgang(this, avtale.getDeltakerFnr());
         boolean harTilgang = tilgang != null && tilgang.erTillat();
         if (!harTilgang) {
