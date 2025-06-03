@@ -60,8 +60,6 @@ spec:
     type: RollingUpdate
   tokenx:
     enabled: true
-  secureLogs:
-    enabled: true
   prometheus:
     enabled: true
     path: /tiltaksgjennomforing-api/internal/actuator/prometheus
