@@ -37,3 +37,9 @@ Authorization: Bearer <TOKEN>
 {
   "avtaleKravTidspunkt": "2025-05-12T10:05:00"
 }
+
+
+### Oppdater gjeldende tilskuddsperiode på alle avtaler
+POST http://localhost:12345/tiltaksgjennomforing-api/utvikler-admin/oppdater-gjeldende-tilskuddsperiode-for-avtaler
+Content-Type: application/json
+Authorization: Bearer <TOKEN>
