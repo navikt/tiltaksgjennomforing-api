@@ -8,7 +8,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,10 +15,10 @@ import java.util.UUID;
 public class IkkeLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAvtaleBeregningStrategy {
 
     @Override
-    public List<TilskuddPeriode> genererNyeTilskuddsperioder(Avtale avtale) { return Collections.emptyList(); }
+    public void genererNyeTilskuddsperioder(Avtale avtale) {}
 
     @Override
-    public List<TilskuddPeriode> hentTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {return Collections.emptyList(); }
+    public List<TilskuddPeriode> hentTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {return List.of(); }
 
     @Override
     public void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {}

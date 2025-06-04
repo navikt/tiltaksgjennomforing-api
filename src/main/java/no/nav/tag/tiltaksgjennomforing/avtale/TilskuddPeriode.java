@@ -34,10 +34,11 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
 
     @Id
+    @EqualsAndHashCode.Include
     private UUID id = UUID.randomUUID();
 
     @ManyToOne(fetch = FetchType.LAZY) // Unngå rekursiv query-loop (avtale.gjeldendetilskudd->tilskudd.avtale->...)
@@ -191,23 +192,10 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     @Override
     public int compareTo(@NotNull TilskuddPeriode o) {
         return new CompareToBuilder()
-                .append(this.getLøpenummer(), o.getLøpenummer())
                 .append(this.getStartDato(), o.getStartDato())
-                .append(this.getSluttDato(), o.getSluttDato())
                 .append(this.isAktiv(), o.isAktiv())
                 .append(this.getStatus(), o.getStatus())
-                .append(this.getRefusjonStatus(), o.getRefusjonStatus())
-                .append(this.getBeløp(), o.getBeløp())
-                .append(this.getAvtale(), o.getAvtale())
-                .append(this.getGodkjentAvNavIdent(), o.getGodkjentAvNavIdent())
-                .append(this.getGodkjentTidspunkt(), o.getGodkjentTidspunkt())
-                .append(this.getEnhet(), o.getEnhet())
-                .append(this.getEnhetsnavn(), o.getEnhetsnavn())
-                .append(this.getLonnstilskuddProsent(), o.getLonnstilskuddProsent())
-                .append(this.getAvslagsårsaker().toString(), o.getAvslagsårsaker().toString())
-                .append(this.getAvslagsforklaring(), o.getAvslagsforklaring())
-                .append(this.getAvslåttAvNavIdent(), o.getAvslåttAvNavIdent())
-                .append(this.getAvslåttTidspunkt(), o.getAvslåttTidspunkt())
+                .append(this.getId(), o.getId())
                 .toComparison();
     }
 
