@@ -103,7 +103,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
@@ -1189,9 +1188,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     private void nyeTilskuddsperioder() {
         List<TilskuddPeriode> nyeTilskuddsperioder = this.hentBeregningStrategi().genererNyeTilskuddsperioder(this);
-        boolean harNyeTilskuddsperioder = !(new ArrayList<>(tilskuddPeriode).equals(nyeTilskuddsperioder));
+        boolean harNyeTilskuddsperioder = !(tilskuddPeriode.equals(new TreeSet<>(nyeTilskuddsperioder)));
         if (harNyeTilskuddsperioder) {
-            tilskuddPeriode = new TreeSet<>(nyeTilskuddsperioder);
+            tilskuddPeriode.clear();
+            tilskuddPeriode.addAll(nyeTilskuddsperioder);
             setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
         }
     }
