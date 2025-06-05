@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,8 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @ActiveProfiles({Miljø.TEST, Miljø.WIREMOCK})
 @DirtiesContext
-@EmbeddedKafka
-class ArbeidsgiverOgMentorIntegrasjonTest {
+class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
 
     @Autowired
     private AvtaleRepository avtaleRepository;
@@ -46,13 +44,13 @@ class ArbeidsgiverOgMentorIntegrasjonTest {
     @Autowired
     private AvtaleInnholdRepository avtaleInnholdRepository;
 
-    @Autowired
+    @MockBean
     private DvhMeldingEntitetRepository dvhMeldingEntitetRepository;
 
-    @Autowired
+    @MockBean
     private AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
 
-    @Autowired
+    @MockBean
     private ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
 
     @MockBean
@@ -84,6 +82,7 @@ class ArbeidsgiverOgMentorIntegrasjonTest {
     }
 
     @Test
+    @Transactional
     public void skal_IKKE_returnere_en_gammel_avtale_som_er_eldre_enn_12_uker_fra_db() {
         Avtale avtale = TestData.enArbeidstreningAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusMonths(4));
@@ -110,6 +109,7 @@ class ArbeidsgiverOgMentorIntegrasjonTest {
     }
 
     @Test
+    @Transactional
     public void hentBegrensedeAvtalerMedLesetilgang_skal_IKKE_returnere_en_gammel_avtale_som_er_eldre_enn_12_uker_fra_db() {
         Avtale avtale = TestData.enArbeidstreningAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusMonths(4));
@@ -157,8 +157,8 @@ class ArbeidsgiverOgMentorIntegrasjonTest {
     @Test
     public void mentor_hentAlleAvtalerMedMuligTilgang_skal_IKKE_returnere_en_gammel_avtale_som_er_eldre_enn_12_uker_fra_db() {
         Avtale avtale = TestData.enMentorAvtaleSignert();
-        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusMonths(4));
-        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(13));// ELDRE enn 12 UKER
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusMonths(3));
+        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(13));// ELDRE enn 12 UKER fra idag
         Avtale avtaleLagret = avtaleRepository.save(avtale);
         Mentor mentor = TestData.enMentor(avtaleLagret);
 
@@ -169,16 +169,15 @@ class ArbeidsgiverOgMentorIntegrasjonTest {
             queryParameter,
             pageable
         );
-        assertThat(avtalerPagable.getTotalElements()).isEqualTo(0);
+        assertThat(avtalerPagable.getContent()).hasSize(0);
     }
 
 
     @Test
-    @Transactional
     public void mentor_hentAlleAvtalerMedMuligTilgang_skal_returnere_en_avtale_som_er_IKKE_eldre_enn_12_uker_fra_db() {
         Avtale avtale = TestData.enMentorAvtaleSignert();
-        avtale.getGjeldendeInnhold().setStartDato(Now.localDate());
-        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusMonths(2)); // NYERE enn 12 UKER
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusMonths(3));
+        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(1));// nyere enn 12 UKER fra idag
         Avtale avtaleLagret = avtaleRepository.save(avtale);
         Mentor mentor = TestData.enMentor(avtaleLagret);
 
@@ -189,6 +188,6 @@ class ArbeidsgiverOgMentorIntegrasjonTest {
             queryParameter,
             pageable
         );
-        assertThat(avtalerPagable.getTotalElements()).isEqualTo(1);
+        assertThat(avtalerPagable.getContent()).hasSize(1);
     }
 }
