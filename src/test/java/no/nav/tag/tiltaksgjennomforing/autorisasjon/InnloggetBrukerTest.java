@@ -8,6 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Mentor;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
@@ -24,6 +25,7 @@ import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
@@ -280,6 +282,34 @@ public class InnloggetBrukerTest {
                 null
         );
         assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isFalse();
+    }
+
+    @Test
+    public void harTilgang__mentor_skal_ikke_ha_tilgang_til_avsluttet_avtale_eldre_enn_12_uker() {
+        Avtale avtale = TestData.enMentorAvtaleSignert();
+        avtale.godkjennForDeltaker(TestData.enIdentifikator());
+        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        avtale.godkjennForVeileder(TestData.enNavIdent());
+        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
+        Mentor mentor = new Mentor(avtale.getMentorFnr());
+        assertThat(mentor.harTilgangTilAvtale(avtale).erTillat()).isFalse();
+    }
+
+    @Test
+    public void harTilgang__mentor_skal_ikke_ha_tilgang_til_avbrutt_avtale_eldre_enn_12_uker() {
+        Avtale avtale = TestData.enMentorAvtaleSignert();
+        avtale.setSistEndret(Instant.now().minus(85, ChronoUnit.DAYS));
+        avtale.setAvbrutt(true);
+        Mentor mentor = new Mentor(avtale.getMentorFnr());
+        assertThat(mentor.harTilgangTilAvtale(avtale).erTillat()).isFalse();
+    }
+
+    @Test
+    public void harTilgang__mentor_skal_ikke_ha_tilgang_til_en_annullert_avtale_eldre_enn_12_uker() {
+        Avtale avtale = TestData.enMentorAvtaleSignert();
+        avtale.setAnnullertTidspunkt(Instant.now().minus(85, ChronoUnit.DAYS));
+        Mentor mentor = new Mentor(avtale.getMentorFnr());
+        assertThat(mentor.harTilgangTilAvtale(avtale).erTillat()).isFalse();
     }
 
     @Test

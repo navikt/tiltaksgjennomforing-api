@@ -35,10 +35,34 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     List<Avtale> findAllByBedriftNrAndFeilregistrertIsFalse(BedriftNr bedriftNr);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    Page<Avtale> findAllByBedriftNrInAndFeilregistrertIsFalse(Set<BedriftNr> bedriftNrList, Pageable pageable);
+    @Query("""
+        SELECT a
+        FROM Avtale a
+        WHERE a.bedriftNr IN :bedriftNrList
+          AND a.feilregistrert = false
+          AND a.gjeldendeInnhold.sluttDato > :dato12UkerFraIdag
+        """)
+    Page<Avtale> findAllByBedriftNr(
+        @Param("bedriftNrList") Set<BedriftNr> bedriftNrList,
+        @Param("dato12UkerFraIdag") LocalDate dato12UkerFraIdag,
+        Pageable pageable
+    );
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    Page<Avtale> findAllByBedriftNrInAndTiltakstypeAndFeilregistrertIsFalse(Set<BedriftNr> bedriftNrList, Tiltakstype tiltakstype, Pageable pageable);
+    @Query("""
+        SELECT a
+        FROM Avtale a
+        WHERE a.bedriftNr IN :bedriftNrList
+          AND a.tiltakstype = :tiltakstype
+          AND a.feilregistrert = false
+          AND a.gjeldendeInnhold.sluttDato > :dato12UkerFraIdag
+        """)
+    Page<Avtale> findAllByBedriftNrInAndTiltakstype(
+        @Param("bedriftNrList") Set<BedriftNr> bedriftNrList,
+        @Param("tiltakstype") Tiltakstype tiltakstype,
+        @Param("dato12UkerFraIdag") LocalDate dato12UkerFraIdag,
+        Pageable pageable
+    );
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByDeltakerFnrAndFeilregistrertIsFalse(Fnr deltakerFnr, Pageable pageable);
@@ -47,7 +71,14 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     List<Avtale> findAllByDeltakerFnrAndFeilregistrertIsFalse(Fnr deltakerFnr);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    Page<Avtale> findAllByMentorFnrAndFeilregistrertIsFalse(Fnr mentorFnr, Pageable pageable);
+    @Query("""
+        SELECT a
+        FROM Avtale a
+        WHERE a.mentorFnr = :mentorFnr
+          AND a.feilregistrert = false
+          AND a.gjeldendeInnhold.sluttDato > :dato12UkerFraIdag
+        """)
+    Page<Avtale> findAllByMentorFnr(Fnr mentorFnr, LocalDate dato12UkerFraIdag, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByAvtaleNrAndFeilregistrertIsFalse(Integer avtaleNr, Pageable pageable);

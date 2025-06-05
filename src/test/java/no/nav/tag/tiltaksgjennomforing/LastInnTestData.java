@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static no.nav.tag.tiltaksgjennomforing.TestDataGenerator.genererAvtaler;
 
@@ -94,7 +97,22 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaler.add(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
         Now.resetClock();
 
-        avtaler.addAll(avtaleRepository.saveAll(genererAvtaler(10)));
+        //GHOSTING -> Avtaler AG ikke har lenger tilgang (sluttdato eldre enn 12 uker) til men kommer i paginering
+        List<Avtale> ghostingAvtalerEldreEnn12Uker = new ArrayList<>();
+        IntStream.range(0, 30).forEach(index -> {
+            Avtale avtaleEldreEnn12Uker = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
+            avtaleEldreEnn12Uker.setGodkjentForEtterregistrering(true);
+            avtaleEldreEnn12Uker.getGjeldendeInnhold().setDeltakerFornavn("EldreEnn");
+            avtaleEldreEnn12Uker.getGjeldendeInnhold().setDeltakerEtternavn("12uker " + index);
+            avtaleEldreEnn12Uker.getGjeldendeInnhold().setStartDato(LocalDate.now().minusWeeks(14));
+            avtaleEldreEnn12Uker.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusWeeks(13));
+            avtaleEldreEnn12Uker.endreAvtale(EndreAvtale.fraAvtale(avtaleEldreEnn12Uker), Avtalerolle.VEILEDER);
+            avtaleEldreEnn12Uker.godkjennForDeltaker(avtaleEldreEnn12Uker.getDeltakerFnr());
+            avtaleEldreEnn12Uker.godkjennForArbeidsgiver(avtaleEldreEnn12Uker.getBedriftNr());
+            avtaleEldreEnn12Uker.godkjennForVeileder(avtaleEldreEnn12Uker.getVeilederNavIdent());
+        });
+        avtaler.addAll(ghostingAvtalerEldreEnn12Uker);
+        avtaler.addAll(genererAvtaler(10));
         avtaler.forEach(avtale -> {
             avtale.setStatus(Status.fra(avtale));
             avtaleRepository.save(avtale);
