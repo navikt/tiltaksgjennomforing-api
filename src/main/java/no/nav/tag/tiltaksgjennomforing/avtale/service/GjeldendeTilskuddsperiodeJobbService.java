@@ -2,8 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.avtale.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,9 +20,14 @@ public class GjeldendeTilskuddsperiodeJobbService {
 
     @Transactional
     public void settGjeldendeTilskuddsperiodeJobb() {
-        var avtaler = avtaleRepository.finnAvtaleHvorGjeldendeTilskuddsperiodeKanSettes(
-                Set.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB, Tiltakstype.VTAO),
-                Limit.of(200)
+        var avtaler = avtaleRepository.finnAvtaleMedAktiveTilskuddsperioder(
+            Set.of(
+                Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
+                Tiltakstype.VARIG_LONNSTILSKUDD,
+                Tiltakstype.SOMMERJOBB,
+                Tiltakstype.VTAO
+            ),
+            Set.of(Status.GJENNOMFØRES, Status.KLAR_FOR_OPPSTART)
         );
         if (avtaler.isEmpty()) {
             log.info("Ingen avtaler å behandle");
@@ -31,9 +36,6 @@ public class GjeldendeTilskuddsperiodeJobbService {
         log.info("Fant {} avtaler å behandle...", avtaler.size());
         avtaler.forEach(avtale -> {
             var nyGjeldende = avtale.finnGjeldendeTilskuddsperiode();
-            if (nyGjeldende == null) {
-                log.warn("Fant ikke en gjeldende tilskuddsperiode! Har ikke avtalen aktive tilskuddsperioder? (avtale-id: {})", avtale.getId());
-            }
             avtale.setGjeldendeTilskuddsperiode(nyGjeldende);
         });
         avtaleRepository.saveAll(avtaler);

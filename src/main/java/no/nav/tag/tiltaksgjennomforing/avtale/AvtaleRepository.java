@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import io.micrometer.core.annotation.Timed;
-import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -99,10 +98,10 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Query(value = """
         select a from Avtale a
             where a.tiltakstype in (:tiltakstyper)
-            and a.gjeldendeTilskuddsperiode is null
+            and a.status in (:aktuelleStatuser)
             and (select count(*) from TilskuddPeriode t where t.aktiv = true and t.avtale = a) > 0
     """)
-    List<Avtale> finnAvtaleHvorGjeldendeTilskuddsperiodeKanSettes(Set<Tiltakstype> tiltakstyper, Limit limit);
+    List<Avtale> finnAvtaleMedAktiveTilskuddsperioder(Set<Tiltakstype> tiltakstyper, Set<Status> aktuelleStatuser);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override
@@ -165,7 +164,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                a.enhetOppfolging AS enhetOppfolging
         FROM Avtale a
         LEFT JOIN AvtaleInnhold i ON i.id = a.gjeldendeInnhold.id
-        LEFT JOIN TilskuddPeriode t ON (t.avtale.id = a.id AND t.status = :tilskuddsperiodestatus AND t.startDato <= :decisiondate)
+        LEFT JOIN TilskuddPeriode t ON (t.avtale.id = a.id AND t.status = :tilskuddsperiodestatus AND (t.startDato <= :decisiondate OR t.løpenummer = 1))
         WHERE a.gjeldendeInnhold.godkjentAvVeileder IS NOT NULL
           AND a.tiltakstype IN (:tiltakstype)
           AND EXISTS (SELECT DISTINCT p.avtale.id, p.status, p.løpenummer, p.startDato FROM TilskuddPeriode p WHERE p.avtale.id = a.id

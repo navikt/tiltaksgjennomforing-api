@@ -13,6 +13,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.service.GjeldendeTilskuddsperiodeJobbService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
@@ -55,6 +56,7 @@ public class AdminController {
     private final TilgangskontrollService tilgangskontrollService;
     private final PersondataService persondataService;
     private final AdminService adminService;
+    private final GjeldendeTilskuddsperiodeJobbService gjeldendeTilskuddsperiodeJobbService;
 
     @PostMapping("reberegn")
     public void reberegnLønnstilskudd(@RequestBody List<UUID> avtaleIder) {
@@ -200,6 +202,11 @@ public class AdminController {
                 }
             }
         }));
+    }
+
+    @PostMapping("/oppdater-gjeldende-tilskuddsperiode-for-avtaler")
+    public void oppdaterGjeldendeTilskuddsperiode() {
+        gjeldendeTilskuddsperiodeJobbService.settGjeldendeTilskuddsperiodeJobb();
     }
 
     @PostMapping("/avtale/{id}/sjekk-tilgang")

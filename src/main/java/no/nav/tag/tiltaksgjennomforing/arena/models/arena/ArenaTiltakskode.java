@@ -22,10 +22,11 @@ public enum ArenaTiltakskode {
     INKLUDERINGSTILSKUDD("INKLUTILS", Tiltakstype.INKLUDERINGSTILSKUDD, null),
     UKJENT("", null, null);
 
-    public static final ArenaTiltakskode GJELDENDE_MIGRERING = VTAO;
+    public static final ArenaTiltakskode GJELDENDE_MIGRERING = MENTOR;
 
     private static final Set<ArenaTiltakskode> FERDIG_MIGRERT = Set.of(
-        ARBEIDSTRENING
+        ARBEIDSTRENING,
+        VTAO
     );
 
     private final String kode;

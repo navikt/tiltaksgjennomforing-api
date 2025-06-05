@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,11 +35,10 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
 public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
 
     @Id
-    @EqualsAndHashCode.Include
     private UUID id = UUID.randomUUID();
 
     @ManyToOne(fetch = FetchType.LAZY) // Unngå rekursiv query-loop (avtale.gjeldendetilskudd->tilskudd.avtale->...)
@@ -192,11 +192,30 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     @Override
     public int compareTo(@NotNull TilskuddPeriode o) {
         return new CompareToBuilder()
-                .append(this.getStartDato(), o.getStartDato())
-                .append(this.isAktiv(), o.isAktiv())
-                .append(this.getStatus(), o.getStatus())
-                .append(this.getId(), o.getId())
-                .toComparison();
+            .append(this.getLøpenummer(), o.getLøpenummer())
+            .append(this.getStartDato(), o.getStartDato())
+            .append(this.getSluttDato(), o.getSluttDato())
+            .append(this.isAktiv(), o.isAktiv())
+            .append(this.getStatus(), o.getStatus())
+            .append(this.getRefusjonStatus(), o.getRefusjonStatus())
+            .append(this.getBeløp(), o.getBeløp())
+            .append(this.getAvtale(), o.getAvtale())
+            .append(this.getGodkjentTidspunkt(), o.getGodkjentTidspunkt())
+            .append(this.getEnhet(), o.getEnhet())
+            .append(this.getEnhetsnavn(), o.getEnhetsnavn())
+            .append(this.getLonnstilskuddProsent(), o.getLonnstilskuddProsent())
+            .append(this.getAvslåttTidspunkt(), o.getAvslåttTidspunkt())
+            .append(this.getAvslagsforklaring(), o.getAvslagsforklaring())
+            .append(this.getAvslagsårsaker().toString(), o.getAvslagsårsaker().toString())
+            .append(
+                Optional.ofNullable(this.getGodkjentAvNavIdent()).map(NavIdent::asString).orElse(null),
+                Optional.ofNullable(o.getGodkjentAvNavIdent()).map(NavIdent::asString).orElse(null)
+            )
+            .append(
+                Optional.ofNullable(this.getAvslåttAvNavIdent()).map(NavIdent::asString).orElse(null),
+                Optional.ofNullable(o.getAvslåttAvNavIdent()).map(NavIdent::asString).orElse(null)
+            )
+            .toComparison();
     }
 
     public boolean erUtbetalt() {
