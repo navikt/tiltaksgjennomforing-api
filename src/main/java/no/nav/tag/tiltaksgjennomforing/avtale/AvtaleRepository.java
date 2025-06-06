@@ -100,7 +100,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             and a.status in (:aktuelleStatuser)
             and (select count(*) from TilskuddPeriode t where t.aktiv = true and t.avtale = a) > 0
     """)
-    List<Avtale> finnAvtaleMedAktiveTilskuddsperioder(Set<Tiltakstype> tiltakstyper, Set<Status> aktuelleStatuser);
+    Page<Avtale> finnAvtaleMedAktiveTilskuddsperioder(Set<Tiltakstype> tiltakstyper, Set<Status> aktuelleStatuser, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override

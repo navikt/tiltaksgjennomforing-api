@@ -2,9 +2,13 @@ package no.nav.tag.tiltaksgjennomforing.avtale.jobber;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.service.GjeldendeTilskuddsperiodeJobbService;
 import no.nav.tag.tiltaksgjennomforing.leader.LeaderPodCheck;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -24,8 +28,18 @@ class GjeldendeTilskuddsperiodeJobb {
     public void settGjeldendeTilskuddsperiodeJobb() {
         if (leaderPodCheck.isLeaderPod()) {
             log.info("Jobb for å oppdatere gjeldedeTilskuddsperiode-felt startet...");
-            gjeldendeTilskuddsperiodeJobbService.settGjeldendeTilskuddsperiodeJobb();
-            log.info("Jobb for å oppdatere gjeldedeTilskuddsperiode-felt fullført!");
+
+            Page<Avtale> page = Page.empty();
+            do {
+                page = gjeldendeTilskuddsperiodeJobbService.settGjeldendeTilskuddsperiodeJobb(
+                    page.isEmpty() ? PageRequest.of(0, 500, Sort.by(Sort.Direction.ASC, "id")) : page.nextPageable()
+                );
+            } while(page.hasNext());
+
+            log.info(
+                "Jobb for å oppdatere gjeldedeTilskuddsperiode-felt fullført! Behandlet {} avtaler.",
+                page.getTotalElements()
+            );
         }
     }
 }
