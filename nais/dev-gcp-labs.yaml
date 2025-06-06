@@ -26,8 +26,15 @@ spec:
     timeout: 1
     periodSeconds: 30
     failureThreshold: 10
-  secureLogs:
-    enabled: true
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+    logging:
+      destinations:
+        - id: elastic
+        - id: team_logs
+        - id: loki
   resources:
     limits:
       cpu: 2000m
