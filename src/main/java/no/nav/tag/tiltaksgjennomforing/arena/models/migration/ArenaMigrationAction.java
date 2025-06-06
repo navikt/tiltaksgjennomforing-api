@@ -43,10 +43,9 @@ public enum ArenaMigrationAction {
                 case null, default -> IGNORER;
             };
             case AVSLUTTET -> switch (deltakerstatuskode) {
-                case TILBUD, GJENN -> GJENOPPRETT;
-                case FULLF, DELAVB -> AVSLUTT;
-                case GJENN_AVL, FEILREG, IKKEM -> ANNULLER;
-                case null, default -> OPPDATER;
+                case TILBUD, GJENN -> OPPDATER;
+                // Skulle vi ha annullert noe her dersom de har en annullertstatus i Arena?
+                case null, default -> IGNORER;
             };
             case PÅBEGYNT, MANGLER_GODKJENNING, KLAR_FOR_OPPSTART, GJENNOMFØRES -> switch (deltakerstatuskode) {
                 case TILBUD, GJENN -> OPPDATER;

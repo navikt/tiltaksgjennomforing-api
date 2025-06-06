@@ -367,24 +367,27 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             return;
         }
 
-        boolean isForlengelse = EndreAvtaleArena.Handling.GJENOPPRETT == action ||
-            Optional.ofNullable(endreAvtaleArena.getStartdato())
-                .map(arenaStartdato -> arenaStartdato.isAfter(gjeldendeInnhold.getSluttDato()))
-                .orElse(false);
-
         Optional.ofNullable(endreAvtaleArena.getStartdato()).ifPresent(getGjeldendeInnhold()::setStartDato);
         Optional.ofNullable(endreAvtaleArena.getSluttdato()).ifPresent(getGjeldendeInnhold()::setSluttDato);
         Optional.ofNullable(endreAvtaleArena.getStillingprosent()).ifPresent(getGjeldendeInnhold()::setStillingprosent);
         Optional.ofNullable(endreAvtaleArena.getAntallDagerPerUke())
             .ifPresent(getGjeldendeInnhold()::setAntallDagerPerUke);
 
-        setAnnullertTidspunkt(null);
-        setAnnullertGrunn(null);
-        setAvbrutt(false);
-        setAvbruttDato(null);
-        setAvbruttGrunn(null);
-        setFeilregistrert(false);
+        if (EndreAvtaleArena.Handling.GJENOPPRETT == action) {
+            setAnnullertTidspunkt(null);
+            setAnnullertGrunn(null);
+            setAvbrutt(false);
+            setAvbruttDato(null);
+            setAvbruttGrunn(null);
+            setFeilregistrert(false);
+        }
+
         nyeTilskuddsperioder();
+
+        boolean isForlengelse = EndreAvtaleArena.Handling.GJENOPPRETT == action ||
+            Optional.ofNullable(endreAvtaleArena.getStartdato())
+                .map(arenaStartdato -> arenaStartdato.isAfter(gjeldendeInnhold.getSluttDato()))
+                .orElse(false);
 
         if (isForlengelse) {
             utforEndring(new AvtaleForlengetAvArena(this));
