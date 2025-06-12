@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigr
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigrationStatus;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaAgreementMigrationRepository;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaTiltakgjennomforingRepository;
+import no.nav.tag.tiltaksgjennomforing.arena.service.ArenaCleanUpService;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
@@ -41,6 +42,7 @@ public class ArenaAdminController {
     private final ArenaTiltakgjennomforingRepository tiltakgjennomforingRepository;
     private final EregService eregService;
     private final VeilarboppfolgingService veilarboppfolgingService;
+    private final ArenaCleanUpService arenaCleanUpService;
 
     @GetMapping("/tiltak/{arenaTiltakskode}/sjekk-ereg")
     public Map<String, ?> sjekkEreg(
@@ -156,5 +158,13 @@ public class ArenaAdminController {
     @PostMapping("/tiltak/{arenaTiltakskode}/reset")
     public void reset(ArenaTiltakskode arenaTiltakskode) {
         agreementMigrationRepository.reset(arenaTiltakskode);
+    }
+
+    @PostMapping("/tiltak/{arenaTiltakskode}/clean-up")
+    public void cleanUp(
+        ArenaTiltakskode arenaTiltakskode,
+        @RequestParam("dry-run") Boolean dryRun
+    ) {
+        arenaCleanUpService.cleanUp(arenaTiltakskode, dryRun != null && dryRun);
     }
 }

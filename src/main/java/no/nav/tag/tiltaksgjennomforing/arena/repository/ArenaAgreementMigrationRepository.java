@@ -7,7 +7,6 @@ import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigr
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigrationCount;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -72,7 +71,7 @@ public interface ArenaAgreementMigrationRepository extends JpaRepository<ArenaAg
           AND a.status = 'GJENNOMFØRES'
           AND a.id NOT IN (SELECT aam.avtaleId FROM ArenaAgreementMigration aam WHERE aam.avtaleId IS NOT NULL)
     """)
-    List<Avtale> findAgreementsForCleanUp(Tiltakstype tiltakstype, Limit limit);
+    List<Avtale> findAgreementsForCleanUp(Tiltakstype tiltakstype);
 
     @Query("""
         SELECT distinct aam.tiltakdeltakerId
