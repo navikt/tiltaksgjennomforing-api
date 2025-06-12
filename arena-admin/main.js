@@ -15,7 +15,7 @@
             }
         };
 
-        return fetch(`${baseUrl}/tiltak/VTAO/statistikk`, options)
+        return fetch(`${baseUrl}/tiltak/MENTOR/statistikk`, options)
             .then(response => response.json())
             .catch(error => {
                 alert('Feil ved henting av statistikk: ' + error)
@@ -30,7 +30,7 @@
             }
         };
 
-        return fetch(`${baseUrl}/tiltak/VTAO/reset`, options)
+        return fetch(`${baseUrl}/tiltak/MENTOR/reset`, options)
             .catch(error => {
                 alert('Feil ved tilbakestilling: ' + error);
             });
