@@ -14,6 +14,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.service.GjeldendeTilskuddsperiodeJobbService;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
@@ -57,6 +58,7 @@ public class AdminController {
     private final PersondataService persondataService;
     private final AdminService adminService;
     private final GjeldendeTilskuddsperiodeJobbService gjeldendeTilskuddsperiodeJobbService;
+    private final Norg2Client norg2Client;
 
     @PostMapping("reberegn")
     public void reberegnLønnstilskudd(@RequestBody List<UUID> avtaleIder) {
@@ -320,6 +322,29 @@ public class AdminController {
     @PostMapping("/oppdaterte-avtalekrav")
     public void oppdaterteAvtalekrav(@RequestBody AvtaleKravRequest avtaleKravRequest) {
         adminService.oppdaterteAvtalekrav(avtaleKravRequest.avtaleKravTidspunkt());
+    }
+
+    @PostMapping("/avtale/enhet/{enhetId}/oppdater")
+    public void oppdaterEnhet(@PathVariable String enhetId) {
+        List<Avtale> avtaler = avtaleRepository.findAllByEnhetOppfolging(enhetId);
+
+        avtaler.forEach(avtale -> {
+            persondataService.hentGeografiskTilknytning(avtale.getDeltakerFnr()).map(norg2Client::hentGeografiskEnhet)
+                .ifPresent(enhet -> {
+                    avtale.setEnhetGeografisk(enhet.getEnhetNr());
+                    avtale.setEnhetsnavnGeografisk(enhet.getNavn());
+                });
+
+            Optional.ofNullable(veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr().asString()))
+                .ifPresent(oppfølgingsstatus -> avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet()));
+
+            Optional.ofNullable(norg2Client.hentOppfølgingsEnhet(avtale.getEnhetOppfolging()))
+                .ifPresent(enhet -> avtale.setEnhetsnavnOppfolging(enhet.getNavn()));
+
+            log.info("Oppdatert enhet for avtale {}", avtale.getId());
+        });
+
+        avtaleRepository.saveAll(avtaler);
     }
 
 }
