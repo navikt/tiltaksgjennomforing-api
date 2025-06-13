@@ -324,6 +324,7 @@ public class AdminController {
         adminService.oppdaterteAvtalekrav(avtaleKravRequest.avtaleKravTidspunkt());
     }
 
+    @Transactional
     @PostMapping("/avtale/enhet/{enhetId}/oppdater")
     public void oppdaterEnhet(@PathVariable String enhetId) {
         List<Avtale> avtaler = avtaleRepository.findAllByEnhetOppfolging(enhetId);
