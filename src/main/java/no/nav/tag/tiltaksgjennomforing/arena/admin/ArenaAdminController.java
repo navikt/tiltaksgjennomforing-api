@@ -156,13 +156,15 @@ public class ArenaAdminController {
 
     @Transactional
     @PostMapping("/tiltak/{arenaTiltakskode}/reset")
-    public void reset(ArenaTiltakskode arenaTiltakskode) {
+    public void reset(
+        @PathVariable ArenaTiltakskode arenaTiltakskode
+    ) {
         agreementMigrationRepository.reset(arenaTiltakskode);
     }
 
     @PostMapping("/tiltak/{arenaTiltakskode}/clean-up")
     public void cleanUp(
-        ArenaTiltakskode arenaTiltakskode,
+        @PathVariable ArenaTiltakskode arenaTiltakskode,
         @RequestParam("dry-run") Boolean dryRun
     ) {
         arenaCleanUpService.cleanUp(arenaTiltakskode, dryRun != null && dryRun);

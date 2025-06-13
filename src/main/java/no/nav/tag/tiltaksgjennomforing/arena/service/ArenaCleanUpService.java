@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AnnullertGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ public class ArenaCleanUpService {
         this.avtaleRepository = avtaleRepository;
     }
 
+    @Async
     @Transactional
     public void cleanUp(ArenaTiltakskode tiltakskode, boolean dryRun) {
         List<Avtale> avtaleList = arenaAgreementMigrationRepository.findAgreementsForCleanUp(tiltakskode.getTiltakstype());
