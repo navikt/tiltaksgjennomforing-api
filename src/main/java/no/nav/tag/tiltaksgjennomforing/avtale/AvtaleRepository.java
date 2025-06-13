@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -244,8 +243,6 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             and a.kreverOppfolgingFom < :date""")
     List<Avtale> finnAvtalerSomSnartSkalFølgesOpp(LocalDate date);
 
-    Page<Avtale> findByStatusIn(Collection<Status> statuses, Pageable pageable);
-
     @Query("""
         SELECT distinct a.deltakerFnr
         FROM Avtale a
@@ -262,4 +259,6 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     List<Avtale> findByDeltakerFnr(Fnr deltakerFnr);
 
     Stream<Avtale> streamAllByStatusIn(Set<Status> avtalekravStatuser);
+
+    List<Avtale> findAllByEnhetOppfolging(String enhetOppfolging);
 }
