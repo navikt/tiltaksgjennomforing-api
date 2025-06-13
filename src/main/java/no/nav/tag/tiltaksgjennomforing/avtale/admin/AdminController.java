@@ -22,6 +22,7 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -208,7 +209,12 @@ public class AdminController {
 
     @PostMapping("/oppdater-gjeldende-tilskuddsperiode-for-avtaler")
     public void oppdaterGjeldendeTilskuddsperiode() {
-        gjeldendeTilskuddsperiodeJobbService.settGjeldendeTilskuddsperiodeJobb();
+        Page<Avtale> page = Page.empty();
+        do {
+            page = gjeldendeTilskuddsperiodeJobbService.settGjeldendeTilskuddsperiodeJobb(
+                page.isEmpty() ? PageRequest.of(0, 500, Sort.by(Sort.Direction.ASC, "id")) : page.nextPageable()
+            );
+        } while(page.hasNext());
     }
 
     @PostMapping("/avtale/{id}/sjekk-tilgang")
