@@ -331,17 +331,27 @@ public class AdminController {
         avtaler.forEach(avtale -> {
             persondataService.hentGeografiskTilknytning(avtale.getDeltakerFnr()).map(norg2Client::hentGeografiskEnhet)
                 .ifPresent(enhet -> {
+                    log.info("Endrer geografiskenhet for avtale {} fra {} til {}",
+                        avtale.getId(),
+                        avtale.getEnhetGeografisk(),
+                        enhet.getEnhetNr()
+                    );
                     avtale.setEnhetGeografisk(enhet.getEnhetNr());
                     avtale.setEnhetsnavnGeografisk(enhet.getNavn());
                 });
 
             Optional.ofNullable(veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr().asString()))
-                .ifPresent(oppfølgingsstatus -> avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet()));
+                .ifPresent(oppfølgingsstatus -> {
+                    log.info("Endrer enhet for avtale {} fra {} til {}",
+                        avtale.getId(),
+                        avtale.getEnhetOppfolging(),
+                        oppfølgingsstatus.getOppfolgingsenhet()
+                    );
+                    avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
+                });
 
             Optional.ofNullable(norg2Client.hentOppfølgingsEnhet(avtale.getEnhetOppfolging()))
                 .ifPresent(enhet -> avtale.setEnhetsnavnOppfolging(enhet.getNavn()));
-
-            log.info("Oppdatert enhet for avtale {}", avtale.getId());
         });
 
         avtaleRepository.saveAll(avtaler);
