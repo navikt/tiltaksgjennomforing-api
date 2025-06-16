@@ -5,7 +5,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -17,15 +16,10 @@ import java.util.Set;
 @Slf4j
 @Service
 public class GjeldendeTilskuddsperiodeService {
-    private static final int PAGE_SIZE = 1000;
     private final AvtaleRepository avtaleRepository;
 
     public GjeldendeTilskuddsperiodeService(AvtaleRepository avtaleRepository) {
         this.avtaleRepository = avtaleRepository;
-    }
-
-    public Slice<Avtale> hentAvtaler() {
-        return hentAvtaler(PageRequest.of(0, PAGE_SIZE));
     }
 
     public Slice<Avtale> hentAvtaler(Pageable page) {
@@ -42,9 +36,12 @@ public class GjeldendeTilskuddsperiodeService {
     }
 
     @Transactional
-    public void settGjeldendeTilskuddsperiode(List<Avtale> avtaler) {
+    public Slice<Avtale> settGjeldendeTilskuddsperiode(Pageable pageable) {
+        Slice<Avtale> slice = hentAvtaler(pageable);
+        List<Avtale> avtaler = slice.getContent();
         if (avtaler.isEmpty()) {
             log.info("Ingen avtaler å behandle");
+            return slice;
         }
         log.info("Behandler {} avtaler...", avtaler.size());
         avtaler.forEach(avtale -> {
@@ -52,5 +49,6 @@ public class GjeldendeTilskuddsperiodeService {
             avtale.setGjeldendeTilskuddsperiode(nyGjeldende);
         });
         avtaleRepository.saveAll(avtaler);
+        return slice;
     }
 }
