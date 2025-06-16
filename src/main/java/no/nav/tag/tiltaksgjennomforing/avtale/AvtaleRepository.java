@@ -96,10 +96,11 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     List<Avtale> findAllByGjeldendeInnhold_AvtaleInngåttNotNull();
 
     @Query(value = """
-        select a from Avtale a
-            where a.tiltakstype in (:tiltakstyper)
-            and a.status in (:aktuelleStatuser)
-            and (select count(*) from TilskuddPeriode t where t.aktiv = true and t.avtale = a) > 0
+        SELECT a
+        FROM Avtale a
+        WHERE a.tiltakstype IN (:tiltakstyper)
+        AND a.status IN (:aktuelleStatuser)
+        AND (SELECT count(*) FROM TilskuddPeriode t WHERE t.aktiv = true AND t.avtale = a) > 0
     """)
     Slice<Avtale> finnAvtaleMedAktiveTilskuddsperioder(Set<Tiltakstype> tiltakstyper, Set<Status> aktuelleStatuser, Pageable pageable);
 

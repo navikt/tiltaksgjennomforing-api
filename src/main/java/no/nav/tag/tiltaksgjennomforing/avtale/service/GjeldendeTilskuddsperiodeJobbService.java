@@ -5,15 +5,17 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
 public class GjeldendeTilskuddsperiodeJobbService {
-    private static final Pageable DEFAULT_PAGE = PageRequest.of(0, 1000);
+    private static final Pageable DEFAULT_PAGE = PageRequest.of(0, 1000).withSort(Sort.Direction.ASC, "id");
     private final GjeldendeTilskuddsperiodeService gjeldendeTilskuddsperiodeService;
 
     public GjeldendeTilskuddsperiodeJobbService(GjeldendeTilskuddsperiodeService gjeldendeTilskuddsperiodeService) {
@@ -21,7 +23,7 @@ public class GjeldendeTilskuddsperiodeJobbService {
     }
 
     @Async
-    public void start() {
+    public CompletableFuture<Void> start() {
         log.info("Jobb for å oppdatere gjeldedeTilskuddsperiode-felt startet...");
 
         int antallAvtalerBehandlet = 0;
@@ -38,5 +40,7 @@ public class GjeldendeTilskuddsperiodeJobbService {
             "Jobb for å oppdatere gjeldedeTilskuddsperiode-felt fullført! Behandlet {} avtaler.",
             antallAvtalerBehandlet
         );
+
+        return CompletableFuture.completedFuture(null);
     }
 }
