@@ -208,7 +208,7 @@ public class AdminController {
 
     @PostMapping("/oppdater-gjeldende-tilskuddsperiode-for-avtaler")
     public void oppdaterGjeldendeTilskuddsperiode() {
-        gjeldendeTilskuddsperiodeJobbService.settGjeldendeTilskuddsperiodeJobb();
+        gjeldendeTilskuddsperiodeJobbService.start();
     }
 
     @PostMapping("/avtale/{id}/sjekk-tilgang")

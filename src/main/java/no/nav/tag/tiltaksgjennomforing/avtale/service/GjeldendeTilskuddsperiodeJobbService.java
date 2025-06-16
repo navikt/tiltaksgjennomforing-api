@@ -1,43 +1,46 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.service;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.Status;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
 public class GjeldendeTilskuddsperiodeJobbService {
-    private final AvtaleRepository avtaleRepository;
+    private static final Pageable DEFAULT_PAGE = PageRequest.of(0, 1000).withSort(Sort.Direction.ASC, "id");
+    private final GjeldendeTilskuddsperiodeService gjeldendeTilskuddsperiodeService;
 
-    public GjeldendeTilskuddsperiodeJobbService(AvtaleRepository avtaleRepository) {
-        this.avtaleRepository = avtaleRepository;
+    public GjeldendeTilskuddsperiodeJobbService(GjeldendeTilskuddsperiodeService gjeldendeTilskuddsperiodeService) {
+        this.gjeldendeTilskuddsperiodeService = gjeldendeTilskuddsperiodeService;
     }
 
-    @Transactional
-    public void settGjeldendeTilskuddsperiodeJobb() {
-        var avtaler = avtaleRepository.finnAvtaleMedAktiveTilskuddsperioder(
-            Set.of(
-                Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
-                Tiltakstype.VARIG_LONNSTILSKUDD,
-                Tiltakstype.SOMMERJOBB,
-                Tiltakstype.VTAO
-            ),
-            Set.of(Status.GJENNOMFØRES, Status.KLAR_FOR_OPPSTART)
+    @Async
+    public CompletableFuture<Void> start() {
+        log.info("Jobb for å oppdatere gjeldedeTilskuddsperiode-felt startet...");
+
+        int antallAvtalerBehandlet = 0;
+        Slice<Avtale> slice = null;
+
+        do {
+            slice = gjeldendeTilskuddsperiodeService.settGjeldendeTilskuddsperiode(
+                Optional.ofNullable(slice).map(Slice::nextPageable).orElse(DEFAULT_PAGE)
+            );
+            antallAvtalerBehandlet += slice.getNumberOfElements();
+        } while (slice.hasNext());
+
+        log.info(
+            "Jobb for å oppdatere gjeldedeTilskuddsperiode-felt fullført! Behandlet {} avtaler.",
+            antallAvtalerBehandlet
         );
-        if (avtaler.isEmpty()) {
-            log.info("Ingen avtaler å behandle");
-            return;
-        }
-        log.info("Fant {} avtaler å behandle...", avtaler.size());
-        avtaler.forEach(avtale -> {
-            var nyGjeldende = avtale.finnGjeldendeTilskuddsperiode();
-            avtale.setGjeldendeTilskuddsperiode(nyGjeldende);
-        });
-        avtaleRepository.saveAll(avtaler);
+
+        return CompletableFuture.completedFuture(null);
     }
 }

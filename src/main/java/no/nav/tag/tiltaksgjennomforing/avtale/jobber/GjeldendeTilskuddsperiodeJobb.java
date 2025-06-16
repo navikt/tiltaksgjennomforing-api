@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@Profile({Miljø.DEV_FSS})
+@Profile({ Miljø.DEV_FSS, Miljø.PROD_FSS })
 class GjeldendeTilskuddsperiodeJobb {
     private final GjeldendeTilskuddsperiodeJobbService gjeldendeTilskuddsperiodeJobbService;
     private final LeaderPodCheck leaderPodCheck;
@@ -23,9 +23,7 @@ class GjeldendeTilskuddsperiodeJobb {
     @Scheduled(cron = "0 30 0 * * *")
     public void settGjeldendeTilskuddsperiodeJobb() {
         if (leaderPodCheck.isLeaderPod()) {
-            log.info("Jobb for å oppdatere gjeldedeTilskuddsperiode-felt startet...");
-            gjeldendeTilskuddsperiodeJobbService.settGjeldendeTilskuddsperiodeJobb();
-            log.info("Jobb for å oppdatere gjeldedeTilskuddsperiode-felt fullført!");
+            gjeldendeTilskuddsperiodeJobbService.start();
         }
     }
 }
