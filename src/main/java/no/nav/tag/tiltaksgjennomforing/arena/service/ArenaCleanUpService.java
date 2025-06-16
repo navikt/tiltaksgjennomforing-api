@@ -7,7 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AnnullertGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
-import org.springframework.data.domain.Limit;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,17 +28,20 @@ public class ArenaCleanUpService {
         this.avtaleRepository = avtaleRepository;
     }
 
+    @Async
     @Transactional
-    public void cleanUp() {
-        List<Avtale> avtaleList = arenaAgreementMigrationRepository.findAgreementsForCleanUp(
-            ArenaTiltakskode.GJELDENDE_MIGRERING.getTiltakstype(),
-            Limit.of(1000)
+    public void cleanUp(ArenaTiltakskode tiltakskode, boolean dryRun) {
+        List<Avtale> avtaleList = arenaAgreementMigrationRepository.findAgreementsForCleanUp(tiltakskode.getTiltakstype());
+        log.info(
+            "{}Rydder opp {} avtaler som ikke ble migrert fra Arena",
+            dryRun ? "[DRY-RUN]: " : "",
+            avtaleList.size()
         );
-        log.info("Rydder opp {} avtaler som ikke ble migrert fra Arena", avtaleList.size());
 
         for (Avtale avtale : avtaleList) {
             log.info(
-                "Annullerer avtale med id {}, tiltakstype: {} og status: {} ",
+                "{}Annullerer avtale med id {}, tiltakstype: {} og status: {} ",
+                dryRun ? "[DRY-RUN]: " : "",
                 avtale.getId(),
                 avtale.getTiltakstype(),
                 avtale.getStatus()
@@ -46,7 +49,9 @@ public class ArenaCleanUpService {
             avtale.annuller(AnnullertGrunn.FINNES_IKKE_I_ARENA, Identifikator.ARENA);
         }
 
-        avtaleRepository.saveAll(avtaleList);
+        if (!dryRun) {
+            avtaleRepository.saveAll(avtaleList);
+        }
     }
 
 }
