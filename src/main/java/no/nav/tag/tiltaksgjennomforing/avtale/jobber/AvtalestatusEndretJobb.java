@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.jobber;
 
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.service.AvtalestatusService;
 import no.nav.tag.tiltaksgjennomforing.leader.LeaderPodCheck;
@@ -24,7 +25,9 @@ public class AvtalestatusEndretJobb {
         this.leaderPodCheck = leaderPodCheck;
     }
 
-    @Scheduled(cron = "0 5 0 * * *")
+    @Scheduled(cron = "0 */5 * * * *")
+    @SchedulerLock(name = "AvtalestatusEndretJobb_run",
+        lockAtLeastFor = "PT1M", lockAtMostFor = "PT4M")
     public void run() {
         if (leaderPodCheck.isLeaderPod()) {
             log.info("Jobb for å endre avtalestatus startet...");
