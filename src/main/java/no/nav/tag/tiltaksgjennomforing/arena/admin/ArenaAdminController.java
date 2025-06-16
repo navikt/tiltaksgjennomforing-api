@@ -167,6 +167,6 @@ public class ArenaAdminController {
         @PathVariable ArenaTiltakskode arenaTiltakskode,
         @RequestParam("dry-run") Boolean dryRun
     ) {
-        arenaCleanUpService.cleanUp(arenaTiltakskode, dryRun != null && dryRun);
+        arenaCleanUpService.cleanUp(arenaTiltakskode, Boolean.TRUE.equals(dryRun));
     }
 }
