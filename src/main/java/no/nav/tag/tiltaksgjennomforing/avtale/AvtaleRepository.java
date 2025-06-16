@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import io.micrometer.core.annotation.Timed;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -100,7 +101,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             and a.status in (:aktuelleStatuser)
             and (select count(*) from TilskuddPeriode t where t.aktiv = true and t.avtale = a) > 0
     """)
-    Page<Avtale> finnAvtaleMedAktiveTilskuddsperioder(Set<Tiltakstype> tiltakstyper, Set<Status> aktuelleStatuser, Pageable pageable);
+    Slice<Avtale> finnAvtaleMedAktiveTilskuddsperioder(Set<Tiltakstype> tiltakstyper, Set<Status> aktuelleStatuser, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override
