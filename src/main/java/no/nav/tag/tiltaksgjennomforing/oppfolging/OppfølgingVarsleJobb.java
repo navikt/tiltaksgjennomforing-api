@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.oppfolging;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
@@ -28,6 +29,7 @@ public class OppfølgingVarsleJobb {
 
 
     @Scheduled(fixedDelay = 30, timeUnit = TimeUnit.SECONDS)
+    @SchedulerLock(name = "AvtalestatusEndretJobb_run", lockAtLeastFor = "PT20S", lockAtMostFor = "PT30S")
     public void varsleVeilederOmOppfølging() {
         LocalDate dagenDato = Now.localDate();
         List<Avtale> avtaler = avtaleRepository.finnAvtalerSomSnartSkalFølgesOpp(dagenDato);
