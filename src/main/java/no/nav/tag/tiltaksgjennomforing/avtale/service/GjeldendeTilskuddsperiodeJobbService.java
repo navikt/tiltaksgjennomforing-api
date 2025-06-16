@@ -2,13 +2,18 @@ package no.nav.tag.tiltaksgjennomforing.avtale.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 public class GjeldendeTilskuddsperiodeJobbService {
+    private static final Pageable DEFAULT_PAGE = PageRequest.of(0, 1000);
     private final GjeldendeTilskuddsperiodeService gjeldendeTilskuddsperiodeService;
 
     public GjeldendeTilskuddsperiodeJobbService(GjeldendeTilskuddsperiodeService gjeldendeTilskuddsperiodeService) {
@@ -20,13 +25,14 @@ public class GjeldendeTilskuddsperiodeJobbService {
         log.info("Jobb for å oppdatere gjeldedeTilskuddsperiode-felt startet...");
 
         int antallAvtalerBehandlet = 0;
-        Slice<Avtale> avtaler = gjeldendeTilskuddsperiodeService.hentAvtaler();
+        Slice<Avtale> slice = null;
 
         do {
-            gjeldendeTilskuddsperiodeService.settGjeldendeTilskuddsperiode(avtaler.getContent());
-            antallAvtalerBehandlet += avtaler.getNumberOfElements();
-            avtaler = gjeldendeTilskuddsperiodeService.hentAvtaler(avtaler.nextPageable());
-        } while (avtaler.hasNext());
+            slice = gjeldendeTilskuddsperiodeService.settGjeldendeTilskuddsperiode(
+                Optional.ofNullable(slice).map(Slice::nextPageable).orElse(DEFAULT_PAGE)
+            );
+            antallAvtalerBehandlet += slice.getNumberOfElements();
+        } while (slice.hasNext());
 
         log.info(
             "Jobb for å oppdatere gjeldedeTilskuddsperiode-felt fullført! Behandlet {} avtaler.",
