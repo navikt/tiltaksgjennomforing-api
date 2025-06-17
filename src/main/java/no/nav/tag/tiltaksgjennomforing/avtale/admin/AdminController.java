@@ -9,6 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonStatus;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
@@ -134,6 +135,13 @@ public class AdminController {
     public void annullerOgResendTilskuddsperiode(@PathVariable("tilskuddsperiodeId") UUID id) {
         log.info("Annullerer tilskuddsperiode {} og resender som godkjent", id);
         TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
+        if (List.of(
+            RefusjonStatus.UTBETALT,
+            RefusjonStatus.SENDT_KRAV,
+            RefusjonStatus.ANNULLERT
+        ).contains(tilskuddPeriode.getRefusjonStatus())) {
+            throw new IllegalStateException("Kan ikke annullere en periode som er sendt til utbetaling eller allerede er annullert.");
+        }
         Avtale avtale = tilskuddPeriode.getAvtale();
         avtale.annullerTilskuddsperiode(tilskuddPeriode);
         avtale.lagNyGodkjentTilskuddsperiodeFraAnnullertPeriode(tilskuddPeriode);
