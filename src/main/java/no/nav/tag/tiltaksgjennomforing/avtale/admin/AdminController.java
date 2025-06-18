@@ -135,7 +135,7 @@ public class AdminController {
     public void annullerOgResendTilskuddsperiode(@PathVariable("tilskuddsperiodeId") UUID id) {
         log.info("Annullerer tilskuddsperiode {} og resender som godkjent", id);
         TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
-        if (List.of(
+        if (tilskuddPeriode.getRefusjonStatus() != null && List.of(
             RefusjonStatus.UTBETALT,
             RefusjonStatus.SENDT_KRAV,
             RefusjonStatus.ANNULLERT
