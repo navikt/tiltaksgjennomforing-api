@@ -1312,7 +1312,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         krevEnAvTiltakstyper(
             Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
             Tiltakstype.VARIG_LONNSTILSKUDD,
-            Tiltakstype.SOMMERJOBB
+            Tiltakstype.SOMMERJOBB,
+            Tiltakstype.VTAO
         );
         if (annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
