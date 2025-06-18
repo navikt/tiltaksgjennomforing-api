@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @Service
 public class GjeldendeTilskuddsperiodeJobbService {
-    private static final Pageable DEFAULT_PAGE = PageRequest.of(0, 1000).withSort(Sort.Direction.ASC, "id");
+    private static final Pageable DEFAULT_PAGE = PageRequest.of(0, 5000).withSort(Sort.Direction.ASC, "id");
     private final GjeldendeTilskuddsperiodeService gjeldendeTilskuddsperiodeService;
 
     public GjeldendeTilskuddsperiodeJobbService(GjeldendeTilskuddsperiodeService gjeldendeTilskuddsperiodeService) {
