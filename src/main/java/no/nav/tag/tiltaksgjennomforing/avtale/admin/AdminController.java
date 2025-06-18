@@ -142,6 +142,9 @@ public class AdminController {
         ).contains(tilskuddPeriode.getRefusjonStatus())) {
             throw new IllegalStateException("Kan ikke annullere en periode som er sendt til utbetaling eller allerede er annullert.");
         }
+        if (tilskuddPeriode.getStatus() != TilskuddPeriodeStatus.GODKJENT) {
+            throw new IllegalStateException("Kan kun annullere og resende en periode som er godkjent. Denne perioden har status: " + tilskuddPeriode.getStatus());
+        }
         Avtale avtale = tilskuddPeriode.getAvtale();
         avtale.annullerTilskuddsperiode(tilskuddPeriode);
         avtale.lagNyGodkjentTilskuddsperiodeFraAnnullertPeriode(tilskuddPeriode);
