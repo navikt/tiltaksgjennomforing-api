@@ -181,7 +181,8 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                a.status AS avtaleStatus,
                a.enhetOppfolging AS enhetOppfolging
         FROM Avtale a
-        WHERE a.tiltakstype IN (:tiltakstype)
+        WHERE a.gjeldendeInnhold.godkjentAvVeileder IS NOT NULL
+          AND a.tiltakstype IN (:tiltakstype)
           AND a.enhetOppfolging IN (:navEnheter)
           AND (:tilskuddsperiodestatus IS NULL OR a.gjeldendeTilskuddsperiode.status = :tilskuddsperiodestatus)
           AND (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr)
