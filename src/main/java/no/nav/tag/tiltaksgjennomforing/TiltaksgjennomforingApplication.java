@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -23,6 +24,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableCaching
 @EnableAsync
 @EnableScheduling
+@EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
 @OpenAPIDefinition
 @EnableRetry
 public class TiltaksgjennomforingApplication {
