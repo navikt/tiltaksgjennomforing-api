@@ -157,7 +157,11 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
         SELECT a.id AS id,
                a.avtaleNr AS avtaleNr,
                a.tiltakstype AS tiltakstype,
-               a.veilederNavIdent AS veilederNavIdent,
+               (CASE
+                   WHEN a.gjeldendeTilskuddsperiode.status = 'GODKJENT' THEN a.gjeldendeTilskuddsperiode.godkjentAvNavIdent
+                   WHEN a.gjeldendeTilskuddsperiode.status = 'AVSLÅTT' THEN a.gjeldendeTilskuddsperiode.avslåttAvNavIdent
+                   ELSE a.veilederNavIdent
+               END) AS veilederNavIdent,
                a.gjeldendeInnhold.deltakerFornavn AS deltakerFornavn,
                a.opprettetTidspunkt AS opprettetTidspunkt,
                a.sistEndret AS sistEndret,
@@ -165,20 +169,23 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                a.deltakerFnr AS deltakerFnr,
                a.gjeldendeInnhold.bedriftNavn AS bedriftNavn,
                a.bedriftNr AS bedriftNr,
-               min(t.startDato) AS startDato,
-               t.status AS status,
-               count(t.id) AS antallUbehandlet,
+               a.gjeldendeTilskuddsperiode.startDato AS startDato,
+               a.gjeldendeTilskuddsperiode.status AS status,
+               (SELECT count(tp.id) as count
+                FROM TilskuddPeriode tp
+                WHERE tp.avtale = a
+                  AND tp.startDato >= a.gjeldendeTilskuddsperiode.startDato
+                  AND tp.startDato <= :decisiondate
+                  AND tp.status = a.gjeldendeTilskuddsperiode.status
+                ) AS antallUbehandlet,
                a.status AS avtaleStatus,
                a.enhetOppfolging AS enhetOppfolging
         FROM Avtale a
-        LEFT JOIN AvtaleInnhold i ON i.id = a.gjeldendeInnhold.id
-        LEFT JOIN TilskuddPeriode t ON (t.avtale.id = a.id AND t.status = :tilskuddsperiodestatus AND (t.startDato <= :decisiondate OR t.løpenummer = 1))
-        WHERE a.gjeldendeInnhold.godkjentAvVeileder IS NOT NULL
-          AND a.tiltakstype IN (:tiltakstype)
-          AND EXISTS (SELECT DISTINCT p.avtale.id, p.status, p.løpenummer, p.startDato FROM TilskuddPeriode p WHERE p.avtale.id = a.id
-          AND ((:tilskuddsperiodestatus = p.status AND p.startDato <= :decisiondate) or (:tilskuddsperiodestatus = p.status AND p.løpenummer = 1)))
-          AND a.enhetOppfolging IN (:navEnheter) AND (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr) AND (:bedriftNr IS NULL OR cast(a.bedriftNr AS text) = :bedriftNr)
-        GROUP BY a.id, a.gjeldendeInnhold.deltakerFornavn, a.gjeldendeInnhold.deltakerEtternavn, a.veilederNavIdent, a.gjeldendeInnhold.bedriftNavn, t.status
+        WHERE a.tiltakstype IN (:tiltakstype)
+          AND a.enhetOppfolging IN (:navEnheter)
+          AND (:tilskuddsperiodestatus IS NULL OR a.gjeldendeTilskuddsperiode.status = :tilskuddsperiodestatus)
+          AND (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr)
+          AND (:bedriftNr IS NULL OR a.bedriftNr = :bedriftNr)
     """)
     Page<BeslutterOversiktEntity> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
             @Param("tilskuddsperiodestatus") TilskuddPeriodeStatus tilskuddsperiodestatus,
