@@ -98,11 +98,18 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Query(value = """
         SELECT a
         FROM Avtale a
-        WHERE a.tiltakstype IN (:tiltakstyper)
-        AND a.status IN (:aktuelleStatuser)
-        AND (SELECT count(*) FROM TilskuddPeriode t WHERE t.aktiv = true AND t.avtale = a) > 0
+        WHERE a.tiltakstype IN ('MIDLERTIDIG_LONNSTILSKUDD', 'VARIG_LONNSTILSKUDD', 'SOMMERJOBB', 'VTAO')
+          AND a.status IN ('GJENNOMFØRES', 'KLAR_FOR_OPPSTART')
+          AND (a.gjeldendeTilskuddsperiode IS NULL OR EXISTS (
+              SELECT tp
+              FROM TilskuddPeriode tp
+              WHERE tp.avtale = a
+                AND tp.startDato > a.gjeldendeTilskuddsperiode.sluttDato
+                AND tp.startDato <= :decisiondate
+                AND tp.status = 'UBEHANDLET'
+          ))
     """)
-    Slice<Avtale> finnAvtaleMedAktiveTilskuddsperioder(Set<Tiltakstype> tiltakstyper, Set<Status> aktuelleStatuser, Pageable pageable);
+    Slice<Avtale> finnAvtaleMedAktiveTilskuddsperioder(LocalDate decisiondate, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override
