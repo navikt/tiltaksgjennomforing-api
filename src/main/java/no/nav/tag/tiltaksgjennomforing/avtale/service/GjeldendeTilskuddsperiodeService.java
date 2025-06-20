@@ -36,21 +36,22 @@ public class GjeldendeTilskuddsperiodeService {
         log.info("Behandler {} avtaler...", avtaler.size());
         avtaler.forEach(avtale -> {
             var nyGjeldende = avtale.finnGjeldendeTilskuddsperiode();
-            if (avtale.getGjeldendeTilskuddsperiode() == null) {
+            var gjeldendeTilskuddsperiode = avtale.getGjeldendeTilskuddsperiode(false);
+            if (gjeldendeTilskuddsperiode == null) {
                 log.info(
                     "Avtale med id: {} har ingen gjeldende tilskuddsperiode, setter ny gjeldende tilskuddsperiode",
                     avtale.getId()
                 );
             }
             var erLikGjeldende = Optional.ofNullable(nyGjeldende)
-                .map(tilskuddPeriode -> tilskuddPeriode.equals(avtale.getGjeldendeTilskuddsperiode()))
-                .orElse(nyGjeldende == null && avtale.getGjeldendeTilskuddsperiode() == null);
+                .map(tp -> tp.equals(gjeldendeTilskuddsperiode))
+                .orElse(nyGjeldende == null && gjeldendeTilskuddsperiode == null);
             if (!erLikGjeldende) {
                 log.info("Oppdaterer gjeldende tilskuddsperiode for avtale med id: {}", avtale.getId());
                 avtale.setGjeldendeTilskuddsperiode(nyGjeldende);
-                avtaleRepository.save(avtale);
             }
         });
+        avtaleRepository.saveAll(avtaler);
         return slice;
     }
 }

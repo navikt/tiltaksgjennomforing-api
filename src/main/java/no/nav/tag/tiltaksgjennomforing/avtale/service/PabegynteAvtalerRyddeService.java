@@ -83,5 +83,7 @@ public class PabegynteAvtalerRyddeService {
                 });
             }
         });
+
+        System.gc();
     }
 }

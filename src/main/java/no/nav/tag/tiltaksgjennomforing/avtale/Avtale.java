@@ -107,7 +107,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -1001,6 +1000,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         return tilskuddPeriode.toArray(new TilskuddPeriode[0])[index];
     }
 
+
+    @Nullable
+    @JsonProperty
+    public TilskuddPeriode getGjeldendeTilskuddsperiode() {
+        return getGjeldendeTilskuddsperiode(true);
+    }
+
     /**
      * Vi ønsker å migrere til at "gjeldende tilskuddsperiode" lagres i databasen for å legge til rette for bedre
      * filtreringsmuligheter for besluttere. I en overgangsfase bør all logikk basere seg på gammel implementasjon som
@@ -1009,29 +1015,32 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
      * <p>
      * TODO: Fjern gammel logikk, og denne disclaimeren
      */
-    @Nullable
-    @JsonProperty
-    public TilskuddPeriode getGjeldendeTilskuddsperiode() {
+    public TilskuddPeriode getGjeldendeTilskuddsperiode(boolean logg) {
+        if (!logg) {
+            return this.gjeldendeTilskuddsperiode;
+        }
+
         var gjeldendePeriode = finnGjeldendeTilskuddsperiode();
-        var gjeldendePeriodeKalkulertId = gjeldendePeriode != null ? gjeldendePeriode.getId() : null;
         var gjeldendeFraDb = this.gjeldendeTilskuddsperiode;
-        var gjeldendeFraDbId = gjeldendeFraDb != null ? gjeldendeFraDb.getId() : null;
-        if (!Objects.equals(gjeldendePeriodeKalkulertId, gjeldendeFraDbId)) {
+        var erLike = Optional.ofNullable(gjeldendePeriode)
+            .map(tp -> tp.equals(gjeldendeFraDb))
+            .orElse(gjeldendePeriode == null && gjeldendeFraDb == null);
+        if (!erLike) {
             log.atWarn()
                 .addKeyValue("avtaleId", this.getId().toString())
                 .log(
                     "Gjeldende tilskuddsperiode ikke oppdatert på avtale {}? Fant {} {} {}, men kalkulerte {} {} {}",
                     id,
-                    gjeldendeFraDbId,
-                    gjeldendeFraDb != null ? gjeldendeFraDb.getLøpenummer() : null,
-                    gjeldendeFraDb != null ? gjeldendeFraDb.getStatus() : null,
-                    gjeldendePeriodeKalkulertId,
-                    gjeldendePeriode != null ? gjeldendePeriode.getLøpenummer() : null,
-                    gjeldendePeriode != null ? gjeldendePeriode.getStatus() : null
+                    Optional.ofNullable(gjeldendeFraDb).map(TilskuddPeriode::getId).orElse(null),
+                    Optional.ofNullable(gjeldendeFraDb).map(TilskuddPeriode::getLøpenummer).orElse(null),
+                    Optional.ofNullable(gjeldendeFraDb).map(TilskuddPeriode::getStatus).orElse(null),
+                    Optional.ofNullable(gjeldendePeriode).map(TilskuddPeriode::getId).orElse(null),
+                    Optional.ofNullable(gjeldendePeriode).map(TilskuddPeriode::getLøpenummer).orElse(null),
+                    Optional.ofNullable(gjeldendePeriode).map(TilskuddPeriode::getStatus).orElse(null)
                 );
         }
         return gjeldendePeriode;
-    }
+        }
 
     public void setGjeldendeTilskuddsperiode(TilskuddPeriode tilskuddPeriode) {
         log.atInfo()
@@ -1332,6 +1341,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             resendingsnummer
         ));
         tilskuddPeriode.add(nyTilskuddsperiode);
+        setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
     }
 
     private Integer finnResendingsNummer(TilskuddPeriode gjeldendePeriode) {
