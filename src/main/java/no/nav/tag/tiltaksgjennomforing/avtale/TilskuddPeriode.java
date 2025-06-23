@@ -29,7 +29,9 @@ import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 @Data
@@ -37,6 +39,7 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode
 public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
+    private static final LocalDate JAN_2026 = LocalDate.of(2026, 1, 1);
 
     @Id
     private UUID id = UUID.randomUUID();
@@ -89,6 +92,33 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
 
     private boolean aktiv = true;
 
+    public static TilskuddPeriode finnGjeldende(Avtale avtale) {
+        TreeSet<TilskuddPeriode> aktiveTilskuddsperioder = avtale.getTilskuddPeriode().stream()
+            .filter(TilskuddPeriode::isAktiv)
+            .collect(Collectors.toCollection(TreeSet::new));
+
+        if (aktiveTilskuddsperioder.isEmpty()) {
+            return null;
+        }
+
+        Optional<TilskuddPeriode> førsteAvslått = aktiveTilskuddsperioder.stream()
+            .filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.AVSLÅTT)
+            .findFirst();
+
+        if (førsteAvslått.isPresent()) {
+            return førsteAvslått.get();
+        }
+
+        Optional<TilskuddPeriode> førsteSomKanBehandles = aktiveTilskuddsperioder.stream()
+            .filter(TilskuddPeriode::kanBehandles)
+            .findFirst();
+
+        return førsteSomKanBehandles.orElseGet(() -> aktiveTilskuddsperioder.descendingSet().stream()
+            .filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.GODKJENT)
+            .findFirst()
+            .orElseGet(aktiveTilskuddsperioder::first));
+    }
+
     public TilskuddPeriode(Integer beløp, @NonNull LocalDate start, @NonNull LocalDate slutt) {
         this.beløp = beløp;
         this.startDato = start;
@@ -138,8 +168,6 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     private boolean startDatoErI2026() {
         return startDato.isAfter(JAN_2026.minusDays(1));
     }
-
-    private static final LocalDate JAN_2026 = LocalDate.of(2026, 1, 1);
 
     @JsonProperty
     private LocalDate kanBesluttesFom() {

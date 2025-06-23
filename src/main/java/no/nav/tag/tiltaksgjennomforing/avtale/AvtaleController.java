@@ -661,7 +661,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId)
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
-        veileder.sendTilbakeTilBeslutter(avtale);
+        veileder.sendTilbakeTilBeslutterUendret(avtale);
         avtaleRepository.save(avtale);
     }
 
