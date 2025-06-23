@@ -653,7 +653,7 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/send-tilbake-til-beslutter")
     @Transactional
-    public void sendTilbakeTilBeslutter(
+    public void reaktiverTilskuddsperiodeOgsendTilbakeTilBeslutter(
         @PathVariable("avtaleId") UUID avtaleId,
         @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret
     ) {
@@ -661,7 +661,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId)
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
-        veileder.sendTilbakeTilBeslutterUendret(avtale);
+        veileder.reaktiverTilskuddsperiodeOgsendTilbakeTilBeslutter(avtale);
         avtaleRepository.save(avtale);
     }
 

@@ -295,7 +295,7 @@ public class TestData {
    public static Avtale enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjentAvslåttePerioderSomHarBlittRettetAvVeileder() {
        Avtale avtale = enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjentAvslåttePerioderSomMåFølgesOpp();
        Veileder veileder = enVeileder(avtale);
-       veileder.sendTilbakeTilBeslutterUendret(avtale);
+       veileder.reaktiverTilskuddsperiodeOgsendTilbakeTilBeslutter(avtale);
        return avtale;
     }
 
@@ -403,7 +403,7 @@ public class TestData {
     public static Avtale enMidlertidigLonnstilskuddAvtaleGodkjentAvVeilederAvslåttePerioderSomHarBlittRettetAvVeileder() {
         Avtale avtale = enMidlertidigLonnstilskuddAvtaleGodkjentAvVeilederAvslåttePerioderSomMåFølgesOpp();
         Veileder veileder = enVeileder(avtale);
-        veileder.sendTilbakeTilBeslutterUendret(avtale);
+        veileder.reaktiverTilskuddsperiodeOgsendTilbakeTilBeslutter(avtale);
         return avtale;
     }
 
@@ -554,7 +554,7 @@ public class TestData {
     public static Avtale enVtaoAvtaleGodkjentAvVeilederAvslåttePerioderSomHarBlittRettetAvVeileder(){
         Avtale avtale = enVtaoAvtaleGodkjentAvVeilederAvslåttePerioderSomMåFølgesOpp();
         Veileder veileder = enVeileder(avtale);
-        veileder.sendTilbakeTilBeslutterUendret(avtale);
+        veileder.reaktiverTilskuddsperiodeOgsendTilbakeTilBeslutter(avtale);
         return avtale;
     }
 
