@@ -291,11 +291,12 @@ public class TestData {
         avtale.getGjeldendeTilskuddsperiode().avslå(TestData.enNavIdent2(),EnumSet.of(Avslagsårsak.FEIL_I_PROSENTSATS), "Feil i prosentsats");
         return avtale;
     }
+
    public static Avtale enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjentAvslåttePerioderSomHarBlittRettetAvVeileder() {
-        Avtale avtale = enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjentAvslåttePerioderSomMåFølgesOpp();
+       Avtale avtale = enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjentAvslåttePerioderSomMåFølgesOpp();
        Veileder veileder = enVeileder(avtale);
-       veileder.sendTilbakeTilBeslutter(avtale);
-        return avtale;
+       veileder.reaktiverTilskuddsperiodeOgsendTilbakeTilBeslutter(avtale);
+       return avtale;
     }
 
     public static Avtale enMidlertidigLonnstilskuddAvtaleMedAltUtfyltUtenTilskuddsperioder() {
@@ -402,7 +403,7 @@ public class TestData {
     public static Avtale enMidlertidigLonnstilskuddAvtaleGodkjentAvVeilederAvslåttePerioderSomHarBlittRettetAvVeileder() {
         Avtale avtale = enMidlertidigLonnstilskuddAvtaleGodkjentAvVeilederAvslåttePerioderSomMåFølgesOpp();
         Veileder veileder = enVeileder(avtale);
-        veileder.sendTilbakeTilBeslutter(avtale);
+        veileder.reaktiverTilskuddsperiodeOgsendTilbakeTilBeslutter(avtale);
         return avtale;
     }
 
@@ -553,7 +554,7 @@ public class TestData {
     public static Avtale enVtaoAvtaleGodkjentAvVeilederAvslåttePerioderSomHarBlittRettetAvVeileder(){
         Avtale avtale = enVtaoAvtaleGodkjentAvVeilederAvslåttePerioderSomMåFølgesOpp();
         Veileder veileder = enVeileder(avtale);
-        veileder.sendTilbakeTilBeslutter(avtale);
+        veileder.reaktiverTilskuddsperiodeOgsendTilbakeTilBeslutter(avtale);
         return avtale;
     }
 

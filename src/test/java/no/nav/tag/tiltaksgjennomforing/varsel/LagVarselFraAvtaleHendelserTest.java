@@ -166,7 +166,7 @@ class LagVarselFraAvtaleHendelserTest {
         assertIngenHendelse(TILSKUDDSPERIODE_AVSLATT, Avtalerolle.ARBEIDSGIVER);
         assertIngenHendelse(TILSKUDDSPERIODE_AVSLATT, Avtalerolle.DELTAKER);
 
-        veileder.sendTilbakeTilBeslutter(avtale);
+        veileder.reaktiverTilskuddsperiodeOgsendTilbakeTilBeslutter(avtale);
         beslutter.godkjennTilskuddsperiode(avtale, TestData.ENHET_OPPFØLGING.getVerdi());
         avtale = avtaleRepository.save(avtale);
         assertHendelse(TILSKUDDSPERIODE_GODKJENT, AvtaleHendelseUtførtAvRolle.BESLUTTER, Avtalerolle.VEILEDER, true);

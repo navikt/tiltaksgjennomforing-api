@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale.service;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -35,8 +36,8 @@ public class GjeldendeTilskuddsperiodeService {
         }
         log.info("Behandler {} avtaler...", avtaler.size());
         avtaler.forEach(avtale -> {
-            var nyGjeldende = avtale.finnGjeldendeTilskuddsperiode();
             var gjeldendeTilskuddsperiode = avtale.getGjeldendeTilskuddsperiode(false);
+            var nyGjeldende = TilskuddPeriode.finnGjeldende(avtale);
             if (gjeldendeTilskuddsperiode == null) {
                 log.info(
                     "Avtale med id: {} har ingen gjeldende tilskuddsperiode, setter ny gjeldende tilskuddsperiode",

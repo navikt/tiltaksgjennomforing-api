@@ -578,8 +578,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold.setGodkjentAvNavIdent(null);
     }
 
+    private void utførEndring() {
+        utforEndring(null);
+    }
+
     private <T> void utforEndring(T event) {
         this.status = Status.fra(this);
+        this.gjeldendeTilskuddsperiode = TilskuddPeriode.finnGjeldende(this);
         this.sistEndret = Now.instant();
 
         if (event != null) {
@@ -946,7 +951,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         // Sjekk om samme løpenummer allerede er godkjent og annullert. Trenger da en "ekstra" resendingsnummer
         Integer resendingsnummer = finnResendingsNummer(gjeldendePeriode);
         gjeldendePeriode.godkjenn(beslutter, enhet);
-        setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
         if (!erAvtaleInngått()) {
             LocalDateTime tidspunkt = Now.localDateTime();
             godkjennForBeslutter(tidspunkt, beslutter);
@@ -1015,12 +1019,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
      * <p>
      * TODO: Fjern gammel logikk, og denne disclaimeren
      */
-    public TilskuddPeriode getGjeldendeTilskuddsperiode(boolean logg) {
-        if (!logg) {
+    public TilskuddPeriode getGjeldendeTilskuddsperiode(boolean kalkulerNyTilskuddsperiode) {
+        if (!kalkulerNyTilskuddsperiode) {
             return this.gjeldendeTilskuddsperiode;
         }
 
-        var gjeldendePeriode = finnGjeldendeTilskuddsperiode();
+        var gjeldendePeriode = TilskuddPeriode.finnGjeldende(this);
         var gjeldendeFraDb = this.gjeldendeTilskuddsperiode;
         var erLike = Optional.ofNullable(gjeldendePeriode)
             .map(tp -> tp.equals(gjeldendeFraDb))
@@ -1040,7 +1044,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
                 );
         }
         return gjeldendePeriode;
-        }
+    }
 
     public void setGjeldendeTilskuddsperiode(TilskuddPeriode tilskuddPeriode) {
         log.atInfo()
@@ -1052,38 +1056,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
                 tilskuddPeriode != null ? tilskuddPeriode.getStatus() : null
             );
         this.gjeldendeTilskuddsperiode = tilskuddPeriode;
-    }
-
-    public TilskuddPeriode finnGjeldendeTilskuddsperiode() {
-        TreeSet<TilskuddPeriode> aktiveTilskuddsperioder = tilskuddPeriode.stream()
-            .filter(TilskuddPeriode::isAktiv)
-            .collect(Collectors.toCollection(TreeSet::new));
-
-        if (aktiveTilskuddsperioder.isEmpty()) {
-            return null;
-        }
-
-        // Finner første avslått
-        Optional<TilskuddPeriode> førsteAvslått = aktiveTilskuddsperioder.stream()
-            .filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.AVSLÅTT)
-            .findFirst();
-        if (førsteAvslått.isPresent()) {
-            return førsteAvslått.get();
-        }
-
-        // Finn første som kan behandles
-        Optional<TilskuddPeriode> førsteSomKanBehandles = aktiveTilskuddsperioder.stream()
-            .filter(TilskuddPeriode::kanBehandles)
-            .findFirst();
-        if (førsteSomKanBehandles.isPresent()) {
-            return førsteSomKanBehandles.get();
-        }
-
-        // Finn siste godkjent
-        return aktiveTilskuddsperioder.descendingSet().stream()
-            .filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.GODKJENT)
-            .findFirst()
-            .orElseGet(aktiveTilskuddsperioder::first);
     }
 
     public TreeSet<TilskuddPeriode> finnTilskuddsperioderIkkeLukketForEndring() {
@@ -1105,6 +1077,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold.setEnhetKostnadssted(nyttKostnadssted.getEnhet());
         gjeldendeInnhold.setEnhetsnavnKostnadssted(nyttKostnadssted.getEnhetsnavn());
         nyeTilskuddsperioder();
+        utførEndring();
     }
 
     public void slettemerk(NavIdent utførtAv) {
@@ -1114,7 +1087,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     void forlengTilskuddsperioder(LocalDate gammelSluttDato, LocalDate nySluttDato) {
         hentBeregningStrategi().forleng(this, gammelSluttDato, nySluttDato);
-        setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
     }
 
     private void annullerTilskuddsperioder() {
@@ -1126,7 +1098,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
                 annullerTilskuddsperiode(tilskuddsperiode);
             }
         }
-        setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
     }
 
     private void forkortTilskuddsperioder(LocalDate nySluttDato) {
@@ -1151,11 +1122,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
                 }
             }
         }
-        setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
     }
 
     void endreBeløpOgProsentITilskuddsperioder() {
-        sendTilbakeTilBeslutter();
+        reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET)
             .forEach(t -> {
                 t.setBeløp(beregnTilskuddsbeløpForPeriode(t.getStartDato(), t.getSluttDato()));
@@ -1163,14 +1133,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             });
     }
 
-    public void sendTilbakeTilBeslutter() {
+    void reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter() {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         var rettede = tilskuddPeriode.stream()
             .filter(TilskuddPeriode::isAktiv)
             .filter(t -> t.getStatus() == TilskuddPeriodeStatus.AVSLÅTT)
             .map(TilskuddPeriode::deaktiverOgLagNyUbehandlet).toList();
         tilskuddPeriode.addAll(rettede);
-        setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
+        utførEndring();
     }
 
     private void sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt() {
@@ -1202,7 +1172,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (harNyeTilskuddsperioder) {
             tilskuddPeriode.clear();
             tilskuddPeriode.addAll(nyeTilskuddsperioder);
-            setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
         }
     }
 
@@ -1265,7 +1234,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             });
             fikseLøpenumre(tilskuddsperioder, 1);
             tilskuddPeriode.addAll(tilskuddsperioder);
-            setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
+            setGjeldendeTilskuddsperiode(TilskuddPeriode.finnGjeldende(this));
             oppdaterKreverOppfolgingFom();
             return true;
         } else {
@@ -1341,7 +1310,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             resendingsnummer
         ));
         tilskuddPeriode.add(nyTilskuddsperiode);
-        setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
+        setGjeldendeTilskuddsperiode(TilskuddPeriode.finnGjeldende(this));
     }
 
     private Integer finnResendingsNummer(TilskuddPeriode gjeldendePeriode) {
@@ -1422,7 +1391,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         AvtaleInnhold nyAvtaleInnholdVersjon = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORKORTE);
         gjeldendeInnhold = nyAvtaleInnholdVersjon;
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
-        sendTilbakeTilBeslutter();
+        reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         forkortTilskuddsperioder(nySluttDato);
         utforEndring(new AvtaleForkortetAvVeileder(
             this,
@@ -1446,7 +1415,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         var gammelSluttDato = gjeldendeInnhold.getSluttDato();
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
-        sendTilbakeTilBeslutter();
+        reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         forlengTilskuddsperioder(gammelSluttDato, nySluttDato);
         utforEndring(new AvtaleForlengetAvVeileder(this, utførtAv));
     }
@@ -1571,7 +1540,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_KONTAKTINFO);
         getGjeldendeInnhold().endreKontaktInfo(endreKontaktInformasjon);
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
-        sendTilbakeTilBeslutter();
+        reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         utforEndring(new KontaktinformasjonEndret(this, utførtAv));
     }
 
@@ -1602,7 +1571,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         getGjeldendeInnhold().endreStillingsInfo(endreStillingsbeskrivelse);
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         getGjeldendeInnhold().reberegnLønnstilskudd();
-        sendTilbakeTilBeslutter();
+        reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         utforEndring(new StillingsbeskrivelseEndret(this, utførtAv));
     }
 
@@ -1625,7 +1594,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold = gjeldendeInnhold.nyGodkjentVersjon(AvtaleInnholdType.ENDRE_OPPFØLGING_OG_TILRETTELEGGING);
         gjeldendeInnhold.endreOppfølgingOgTilretteleggingInfo(endreOppfølgingOgTilrettelegging);
         gjeldendeInnhold.setIkrafttredelsestidspunkt(Now.localDateTime());
-        sendTilbakeTilBeslutter();
+        reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         utforEndring(new OppfølgingOgTilretteleggingEndret(this, utførtAv));
     }
 
@@ -1655,7 +1624,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         getGjeldendeInnhold().getMaal().addAll(nyeMål);
         getGjeldendeInnhold().getMaal().forEach(m -> m.setAvtaleInnhold(getGjeldendeInnhold()));
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
-        sendTilbakeTilBeslutter();
+        reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         utforEndring(new MålEndret(this, utførtAv));
     }
 
@@ -1698,7 +1667,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         getGjeldendeInnhold().getInkluderingstilskuddsutgift().addAll(nyeInkluderingstilskuddsutgifter);
         getGjeldendeInnhold().getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(getGjeldendeInnhold()));
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
-        sendTilbakeTilBeslutter();
+        reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         utforEndring(new InkluderingstilskuddEndret(this, utførtAv));
     }
 
@@ -1719,7 +1688,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_OM_MENTOR);
         getGjeldendeInnhold().endreOmMentor(endreOmMentor);
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
-        sendTilbakeTilBeslutter();
+        reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         utforEndring(new OmMentorEndret(this, utførtAv));
     }
 
