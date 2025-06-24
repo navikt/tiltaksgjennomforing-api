@@ -1033,8 +1033,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             log.atWarn()
                 .addKeyValue("avtaleId", this.getId().toString())
                 .log(
-                    "Gjeldende tilskuddsperiode ikke oppdatert på avtale {}? Fant {} {} {}, men kalkulerte {} {} {}",
+                    "Gjeldende tilskuddsperiode ikke oppdatert på avtale {} med status {}? Fant {} {} {}, men kalkulerte {} {} {}",
                     id,
+                    status,
                     Optional.ofNullable(gjeldendeFraDb).map(TilskuddPeriode::getId).orElse(null),
                     Optional.ofNullable(gjeldendeFraDb).map(TilskuddPeriode::getLøpenummer).orElse(null),
                     Optional.ofNullable(gjeldendeFraDb).map(TilskuddPeriode::getStatus).orElse(null),
