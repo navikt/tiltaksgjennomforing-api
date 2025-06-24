@@ -766,7 +766,6 @@ public class AvtaleController {
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.overtaAvtale(avtale);
-        veileder.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
         avtaleRepository.save(avtale);
     }
 

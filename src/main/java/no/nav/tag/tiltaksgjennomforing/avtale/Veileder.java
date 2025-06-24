@@ -222,6 +222,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void overtaAvtale(Avtale avtale) {
         super.sjekkTilgang(avtale);
+        this.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
         if (this.getIdentifikator().equals(avtale.getVeilederNavIdent())) {
             throw new ErAlleredeVeilederException();
         }
@@ -310,7 +311,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.setEnhetsnavnOppfolging(response.getNavn());
     }
 
-    public void hentOppfølgingFraArena(
+    void hentOppfølgingFraArena(
             Avtale avtale,
             VeilarboppfolgingService veilarboppfolgingService
     ) {
