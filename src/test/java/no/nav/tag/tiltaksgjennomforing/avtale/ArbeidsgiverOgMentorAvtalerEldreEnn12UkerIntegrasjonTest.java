@@ -155,7 +155,8 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
     // MENTOR //
 
     @Test
-    public void mentor_hentAlleAvtalerMedMuligTilgang_skal_IKKE_returnere_en_gammel_avtale_som_er_eldre_enn_12_uker_fra_db() {
+    @Transactional
+    public void mentor_hentAlleAvtalerMedMuligTilgang_skal_IKKE_returnere_en_gammel_avtale_som_er_eldre_enn_12_uker_fra_db_hvis_den_er_godkjent_av_veileder() {
         Avtale avtale = TestData.enMentorAvtaleSignert();
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusMonths(3));
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(13));// ELDRE enn 12 UKER fra idag
@@ -169,7 +170,21 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
             queryParameter,
             pageable
         );
-        assertThat(avtalerPagable.getContent()).hasSize(0);
+        assertThat(avtalerPagable.getContent()).hasSize(1);
+
+        Veileder veileder = TestData.enVeileder(avtale);
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        arbeidsgiver.godkjennAvtale(avtale);
+        veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
+        avtaleRepository.save(avtale);
+
+        Page<Avtale> avtalerPagableEtterVeiledergodkjenning = mentor.hentAlleAvtalerMedMuligTilgang(
+            avtaleRepository,
+            queryParameter,
+            pageable
+        );
+        // Skal kun skjule eldre avtaler hvis veileder har godkjent avtalen
+        assertThat(avtalerPagableEtterVeiledergodkjenning.getContent()).hasSize(0);
     }
 
 
