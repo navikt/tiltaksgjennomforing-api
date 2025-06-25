@@ -40,7 +40,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
         FROM Avtale a
         WHERE a.bedriftNr IN :bedriftNrList
           AND a.feilregistrert = false
-          AND a.gjeldendeInnhold.sluttDato > :dato12UkerFraIdag
+          AND (a.gjeldendeInnhold.godkjentAvVeileder IS NULL OR a.gjeldendeInnhold.sluttDato > :dato12UkerFraIdag)
         """)
     Page<Avtale> findAllByBedriftNr(
         @Param("bedriftNrList") Set<BedriftNr> bedriftNrList,
@@ -55,7 +55,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
         WHERE a.bedriftNr IN :bedriftNrList
           AND a.tiltakstype = :tiltakstype
           AND a.feilregistrert = false
-          AND a.gjeldendeInnhold.sluttDato > :dato12UkerFraIdag
+          AND (a.gjeldendeInnhold.godkjentAvVeileder IS NULL OR a.gjeldendeInnhold.sluttDato > :dato12UkerFraIdag)
         """)
     Page<Avtale> findAllByBedriftNrInAndTiltakstype(
         @Param("bedriftNrList") Set<BedriftNr> bedriftNrList,
@@ -76,7 +76,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
         FROM Avtale a
         WHERE a.mentorFnr = :mentorFnr
           AND a.feilregistrert = false
-          AND a.gjeldendeInnhold.sluttDato > :dato12UkerFraIdag
+          AND (a.gjeldendeInnhold.godkjentAvVeileder IS NULL OR a.gjeldendeInnhold.sluttDato > :dato12UkerFraIdag)
         """)
     Page<Avtale> findAllByMentorFnr(Fnr mentorFnr, LocalDate dato12UkerFraIdag, Pageable pageable);
 
