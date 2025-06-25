@@ -13,6 +13,7 @@ import java.util.Optional;
 @Data
 @Accessors(chain = true)
 public class AvtaleQueryParameter {
+    private static final String HAR_RETURNERT_SOM_KAN_BEHANDLES = "AVSLÅTT_UBEHANDLET";
 
     private NavIdent veilederNavIdent;
     private BedriftNr bedriftNr;
@@ -20,7 +21,7 @@ public class AvtaleQueryParameter {
     private Tiltakstype tiltakstype;
     private Status status;
     private Boolean erUfordelt;
-    private TilskuddPeriodeStatus tilskuddPeriodeStatus;
+    private String tilskuddPeriodeStatus;
     private String navEnhet;
     private Integer avtaleNr;
 
@@ -39,6 +40,19 @@ public class AvtaleQueryParameter {
 
     public boolean erUfordelt() {
         return Optional.ofNullable(this.erUfordelt).orElse(false);
+    }
+
+    public TilskuddPeriodeStatus getTilskuddPeriodeStatus() {
+        return Optional.ofNullable(this.tilskuddPeriodeStatus)
+            .filter(str -> !HAR_RETURNERT_SOM_KAN_BEHANDLES.equalsIgnoreCase(str))
+            .map(TilskuddPeriodeStatus::valueOf)
+            .orElse(null);
+    }
+
+    public Boolean harReturnertSomKanBehandles() {
+        return Optional.ofNullable(this.tilskuddPeriodeStatus)
+                .map(HAR_RETURNERT_SOM_KAN_BEHANDLES::equalsIgnoreCase)
+                .orElse(false);
     }
 
     public String generateHash() {

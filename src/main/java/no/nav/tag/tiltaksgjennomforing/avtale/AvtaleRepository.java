@@ -154,6 +154,18 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     );
 
     @Query(value = """
+        WITH AvtalerSomHarReturnertSomKanBehandles AS (
+            SELECT a2.id as avtaleId,
+                   EXISTS (
+                       SELECT tp.id
+                       FROM TilskuddPeriode tp
+                       WHERE tp.avtale = a2
+                        AND a2.gjeldendeTilskuddsperiode.status = 'UBEHANDLET'
+                        AND a2.gjeldendeTilskuddsperiode.løpenummer = tp.løpenummer
+                        AND tp.status = 'AVSLÅTT'
+                   ) as avtaleHarReturnertSomKanBehandles
+            FROM Avtale a2
+        )
         SELECT a.id AS id,
                a.avtaleNr AS avtaleNr,
                a.tiltakstype AS tiltakstype,
@@ -171,31 +183,37 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                a.bedriftNr AS bedriftNr,
                a.gjeldendeTilskuddsperiode.startDato AS startDato,
                a.gjeldendeTilskuddsperiode.status AS status,
-               (SELECT count(tp.id) as count
+               (SELECT count(tp.id)
                 FROM TilskuddPeriode tp
                 WHERE tp.avtale = a
                   AND tp.startDato >= a.gjeldendeTilskuddsperiode.startDato
                   AND tp.startDato <= :decisiondate
+                  AND (a.kreverOppfolgingFom IS NULL OR tp.startDato < a.kreverOppfolgingFom + 2 month)
                   AND tp.status = a.gjeldendeTilskuddsperiode.status
-                ) AS antallUbehandlet,
+               ) AS antallUbehandlet,
                a.status AS avtaleStatus,
-               a.enhetOppfolging AS enhetOppfolging
+               a.enhetOppfolging AS enhetOppfolging,
+               ashrskb.avtaleHarReturnertSomKanBehandles AS harReturnertSomKanBehandles
         FROM Avtale a
+        LEFT JOIN AvtalerSomHarReturnertSomKanBehandles ashrskb ON a.id = ashrskb.avtaleId
         WHERE a.gjeldendeInnhold.godkjentAvVeileder IS NOT NULL
           AND a.tiltakstype IN (:tiltakstype)
           AND a.enhetOppfolging IN (:navEnheter)
           AND (:tilskuddsperiodestatus IS NULL OR a.gjeldendeTilskuddsperiode.status = :tilskuddsperiodestatus)
           AND (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr)
           AND (:bedriftNr IS NULL OR a.bedriftNr = :bedriftNr)
+          AND (:harReturnertSomKanBehandles IS FALSE OR ashrskb.avtaleHarReturnertSomKanBehandles = :harReturnertSomKanBehandles)
     """)
     Page<BeslutterOversiktEntity> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
-            @Param("tilskuddsperiodestatus") TilskuddPeriodeStatus tilskuddsperiodestatus,
-            @Param("decisiondate") LocalDate decisiondate,
-            @Param("tiltakstype") Set<Tiltakstype> tiltakstype,
-            @Param("navEnheter") Set<String> navEnheter,
-            @Param("bedriftNr") String bedriftNr,
-            @Param("avtaleNr") Integer avtaleNr,
-            Pageable pageable);
+        TilskuddPeriodeStatus tilskuddsperiodestatus,
+        LocalDate decisiondate,
+        Set<Tiltakstype> tiltakstype,
+        Set<String> navEnheter,
+        String bedriftNr,
+        Integer avtaleNr,
+        boolean harReturnertSomKanBehandles,
+        Pageable pageable
+    );
 
     @Query("""
         SELECT a

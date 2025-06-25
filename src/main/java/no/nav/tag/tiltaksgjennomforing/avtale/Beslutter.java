@@ -142,6 +142,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
             Optional.ofNullable(queryParametre.getNavEnhet()).map(Set::of).orElse(navEnheter),
             Optional.ofNullable(queryParametre.getBedriftNr()).map(BedriftNr::asString).orElse(null),
             queryParametre.getAvtaleNr(),
+            queryParametre.harReturnertSomKanBehandles(),
             pageable
         );
 

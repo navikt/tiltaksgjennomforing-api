@@ -22,4 +22,5 @@ public interface BeslutterOversiktEntity {
     LocalDateTime getOpprettetTidspunkt();
     Instant getSistEndret();
     String getEnhetOppfolging();
+    Boolean getHarReturnertSomKanBehandles();
 }
