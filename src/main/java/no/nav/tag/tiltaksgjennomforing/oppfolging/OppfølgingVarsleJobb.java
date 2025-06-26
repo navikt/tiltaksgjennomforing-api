@@ -29,7 +29,7 @@ public class OppfølgingVarsleJobb {
 
 
     @Scheduled(fixedDelay = 30, timeUnit = TimeUnit.SECONDS)
-    @SchedulerLock(name = "AvtalestatusEndretJobb_run", lockAtLeastFor = "PT20S", lockAtMostFor = "PT30S")
+    @SchedulerLock(name = "OppfølgingVarsleJobb_varsleVeilederOmOppfølging", lockAtLeastFor = "PT20S", lockAtMostFor = "PT30S")
     public void varsleVeilederOmOppfølging() {
         LocalDate dagenDato = Now.localDate();
         List<Avtale> avtaler = avtaleRepository.finnAvtalerSomSnartSkalFølgesOpp(dagenDato);
