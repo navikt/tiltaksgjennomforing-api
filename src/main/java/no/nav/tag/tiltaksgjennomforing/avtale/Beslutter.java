@@ -140,7 +140,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
             Now.localDate().plusDays(getPlussdato()),
             tiltakstyper,
             Optional.ofNullable(queryParametre.getNavEnhet()).map(Set::of).orElse(navEnheter),
-            Optional.ofNullable(queryParametre.getBedriftNr()).map(BedriftNr::asString).orElse(null),
+            queryParametre.getBedriftNr(),
             queryParametre.getAvtaleNr(),
             queryParametre.harReturnertSomKanBehandles(),
             pageable

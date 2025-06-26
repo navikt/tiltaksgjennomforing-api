@@ -209,7 +209,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
         LocalDate decisiondate,
         Set<Tiltakstype> tiltakstype,
         Set<String> navEnheter,
-        String bedriftNr,
+        BedriftNr bedriftNr,
         Integer avtaleNr,
         boolean harReturnertSomKanBehandles,
         Pageable pageable
