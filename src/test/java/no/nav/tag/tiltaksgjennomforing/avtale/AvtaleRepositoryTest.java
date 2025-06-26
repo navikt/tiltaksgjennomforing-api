@@ -262,6 +262,7 @@ public class AvtaleRepositoryTest {
             navEnheter,
             null,
             null,
+            false,
             pageable
         );
 

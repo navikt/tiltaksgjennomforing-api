@@ -136,12 +136,13 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
             ));
 
         Page<BeslutterOversiktEntity> avtaler = avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
-            Optional.ofNullable(queryParametre.getTilskuddPeriodeStatus()).orElse(TilskuddPeriodeStatus.UBEHANDLET),
+            queryParametre.getTilskuddPeriodeStatus(),
             Now.localDate().plusDays(getPlussdato()),
             tiltakstyper,
             Optional.ofNullable(queryParametre.getNavEnhet()).map(Set::of).orElse(navEnheter),
             Optional.ofNullable(queryParametre.getBedriftNr()).map(BedriftNr::asString).orElse(null),
             queryParametre.getAvtaleNr(),
+            queryParametre.harReturnertSomKanBehandles(),
             pageable
         );
 

@@ -67,9 +67,16 @@ public class AvtaleSorterer {
             case DELTAKERETTERNAVN -> sorter.add(new Sort.Order(direction, "deltakerEtternavn"));
             case OPPRETTETTIDSPUNKT -> sorter.add(new Sort.Order(direction, "opprettetTidspunkt"));
             case STARTDATO -> sorter.add(new Sort.Order(direction, "startDato"));
-            case STATUS -> sorter.add(new Sort.Order(direction, "antallUbehandlet"));
+            case STATUS -> sorter.add(
+                new Sort.Order(direction, "status"),
+                new Sort.Order(direction, "harReturnertSomKanBehandles"),
+                new Sort.Order(direction, "antallUbehandlet")
+            );
             case TILTAKSTYPE -> sorter.add(new Sort.Order(direction, "tiltakstype"));
-            default -> sorter.add(new Sort.Order(direction, "sistEndret"));
+            default -> sorter.add(
+                new Sort.Order(direction, "harReturnertSomKanBehandles"),
+                new Sort.Order(direction, "sistEndret")
+            );
         };
     }
 

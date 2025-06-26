@@ -22,6 +22,7 @@ public record BegrensetBeslutterAvtale(
     String antallUbehandlet,
     LocalDateTime opprettetTidspunkt,
     Instant sistEndret,
+    boolean harReturnertSomKanBehandles,
     Diskresjonskode diskresjonskode
 ) {
     public static BegrensetBeslutterAvtale fraEntitetMedDiskresjonskode(BeslutterOversiktEntity entitet, Diskresjonskode diskresjonskode) {
@@ -39,6 +40,7 @@ public record BegrensetBeslutterAvtale(
             entitet.getAntallUbehandlet(),
             entitet.getOpprettetTidspunkt(),
             entitet.getSistEndret(),
+            entitet.getHarReturnertSomKanBehandles() == Boolean.TRUE,
             diskresjonskode
         );
     }
