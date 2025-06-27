@@ -5,8 +5,10 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleUtlopHandling;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -42,6 +44,21 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class PabegynteAvtalerRyddeServiceTest {
+    private static final List<Tiltakstype> TILTAKSTYPER = List.of(
+        Tiltakstype.ARBEIDSTRENING,
+        Tiltakstype.SOMMERJOBB,
+        Tiltakstype.VARIG_LONNSTILSKUDD,
+        Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
+        Tiltakstype.VTAO
+    );
+
+    private static final List<Avtaleopphav> AVTALEOPPHAV = List.of(
+        Avtaleopphav.ARENA,
+        Avtaleopphav.VEILEDER,
+        Avtaleopphav.ARBEIDSGIVER
+    );
+
+    private static final List<Status> STATUSER = List.of(Status.PÅBEGYNT, Status.MANGLER_GODKJENNING);
 
     @Autowired
     private AvtaleRepository avtaleRepository;
@@ -192,15 +209,80 @@ class PabegynteAvtalerRyddeServiceTest {
         assertThat(avtaleRepository.findById(avtale7.getId()).map(Avtale::getStatus).orElse(null)).isEqualTo(Status.ANNULLERT);
     }
 
-    private static Avtale mockAvtale(LocalDateTime sistEndret) {
-        return mockAvtale(sistEndret, Math.random() > 0.5 ? Status.PÅBEGYNT : Status.MANGLER_GODKJENNING);
+    @Test
+    void venter_med_rydding_av_vtao_avtaler_fra_arena_til_1_september() {
+        Now.fixedDate(LocalDate.of(2025, 8, 10).plusDays(1)); // pluss 1 dag = over midnatt
+
+        var vtaoMigreringDato = LocalDateTime.of(2025, 5, 13, 12, 0);
+        Avtale vtaoAvtaleFraArena = mockAvtale(vtaoMigreringDato, Tiltakstype.VTAO, Avtaleopphav.ARENA);
+        Avtale vtaoAvtaleSomIkkeErFraArena = mockAvtale(vtaoMigreringDato, Tiltakstype.VTAO, Avtaleopphav.VEILEDER);
+
+        List<Avtale> avtaler = List.of(vtaoAvtaleFraArena, vtaoAvtaleSomIkkeErFraArena);
+        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(avtaler);
+
+        PabegynteAvtalerRyddeService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeService(
+            avtaleRepositoryMock,
+            featureToggleServiceMock
+        );
+        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
+
+        verify(vtaoAvtaleFraArena, times(0)).utlop(AvtaleUtlopHandling.UTLOP);
+        verify(vtaoAvtaleSomIkkeErFraArena, times(1)).utlop(AvtaleUtlopHandling.UTLOP);
+        verify(avtaleRepositoryMock, times(1)).save(any());
+
+        Now.fixedDate(LocalDate.of(2025, 9, 1).plusDays(1)); // pluss 1 dag = over midnatt
+        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
+
+        verify(vtaoAvtaleFraArena, times(1)).utlop(AvtaleUtlopHandling.UTLOP);
+        verify(vtaoAvtaleSomIkkeErFraArena, times(2)).utlop(AvtaleUtlopHandling.UTLOP);
+        verify(avtaleRepositoryMock, times(3)).save(any());
     }
 
-    private static Avtale mockAvtale(LocalDateTime sistEndret, Status status) {
+    @Test
+    void rydder_vtao_avtaler_fra_arena_som_vanlig_etter_tolv_uker_fra_sist_endret_etter_1_september() {
+        var sisteEndret10September2025 = LocalDateTime.of(2025, 9, 10, 12, 0).minusWeeks(12);
+
+        Avtale vtaoAvtaleFraArena = mockAvtale(sisteEndret10September2025, Tiltakstype.VTAO, Avtaleopphav.ARENA);
+        Avtale vtaoAvtaleSomIkkeErFraArena = mockAvtale(sisteEndret10September2025, Tiltakstype.VTAO, Avtaleopphav.VEILEDER);
+
+        List<Avtale> avtaler = List.of(vtaoAvtaleFraArena, vtaoAvtaleSomIkkeErFraArena);
+        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(avtaler);
+
+        PabegynteAvtalerRyddeService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeService(
+            avtaleRepositoryMock,
+            featureToggleServiceMock
+        );
+
+        Now.fixedDate(LocalDate.of(2025, 9, 1).plusDays(1)); // pluss 1 dag = over midnatt
+        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
+
+        verify(vtaoAvtaleFraArena, times(0)).utlop(AvtaleUtlopHandling.UTLOP);
+        verify(vtaoAvtaleSomIkkeErFraArena, times(0)).utlop(AvtaleUtlopHandling.UTLOP);
+        verify(avtaleRepositoryMock, times(0)).save(any());
+
+        Now.fixedDate(LocalDate.of(2025, 9, 10).plusDays(1)); // pluss 1 dag = over midnatt
+        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
+
+        verify(vtaoAvtaleFraArena, times(1)).utlop(AvtaleUtlopHandling.UTLOP);
+        verify(vtaoAvtaleSomIkkeErFraArena, times(1)).utlop(AvtaleUtlopHandling.UTLOP);
+        verify(avtaleRepositoryMock, times(2)).save(any());
+    }
+
+    private static Avtale mockAvtale(LocalDateTime sistEndret) {
+        return mockAvtale(sistEndret, tilfeldig(TILTAKSTYPER), tilfeldig(AVTALEOPPHAV));
+    }
+
+    private static Avtale mockAvtale(LocalDateTime sistEndret, Tiltakstype tiltakstype, Avtaleopphav avtaleopphav) {
         Avtale avtale = Mockito.mock(Avtale.class);
+        when(avtale.getTiltakstype()).thenReturn(tiltakstype);
+        when(avtale.getOpphav()).thenReturn(avtaleopphav);
         when(avtale.getSistEndret()).thenReturn(ZonedDateTime.of(sistEndret, ZoneId.systemDefault()).toInstant());
-        when(avtale.getStatus()).thenReturn(status);
+        when(avtale.getStatus()).thenReturn(tilfeldig(STATUSER));
         return avtale;
+    }
+
+    private static <T> T tilfeldig(List<T> list) {
+        return list.get((int) (Math.random() * list.size()));
     }
 
 }
