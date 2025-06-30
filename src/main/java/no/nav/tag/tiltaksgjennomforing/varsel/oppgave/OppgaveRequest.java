@@ -18,22 +18,24 @@ class OppgaveRequest {
     String oppgavetype = "VURD_HENV";
     String behandlingstype;
     String behandlingstema;
-
     @JsonFormat(pattern = "yyyy-MM-dd")
     LocalDate aktivDato = Now.localDate();
     String aktoerId;
+    String tildeltEnhetsnr;
 
     public OppgaveRequest(
             @NotNull AktorId aktoerId,
             @NotNull GosysTema tema,
             @NotNull GosysBehandlingstype behandlingstype,
             @Nullable Tiltakstype tiltakstype,
-            @NotNull String beskrivelse
+            @NotNull String beskrivelse,
+            @Nullable String tildeltEnhetsnr
     ) {
         this.aktoerId = aktoerId.asString();
         this.tema = tema.getTemakode();
         this.behandlingstype = behandlingstype.getBehandlingstypekode();
         this.behandlingstema = tiltakstype == null ? null : tiltakstype.getBehandlingstema();
         this.beskrivelse = beskrivelse;
+        this.tildeltEnhetsnr = tildeltEnhetsnr;
     }
 }

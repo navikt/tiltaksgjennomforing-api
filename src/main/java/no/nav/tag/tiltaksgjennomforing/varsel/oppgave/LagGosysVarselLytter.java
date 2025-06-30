@@ -16,6 +16,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
+import java.util.Optional;
 
 import static java.lang.String.format;
 
@@ -46,7 +47,14 @@ class LagGosysVarselLytter {
             beskrivelse = format(GOSYS_OPPRETTET_AVTALE_BESKRIVELSE, tiltakstype.getBeskrivelse());
         }
         try {
-            oppgaveVarselService.opprettOppgave(new OppgaveRequest(aktørid, GosysTema.TILTAK, GosysBehandlingstype.SOKNAD, tiltakstype, beskrivelse));
+            oppgaveVarselService.opprettOppgave(new OppgaveRequest(
+                aktørid,
+                GosysTema.TILTAK,
+                GosysBehandlingstype.SOKNAD,
+                tiltakstype,
+                beskrivelse,
+                Optional.ofNullable(avtale.getEnhetOppfolging()).orElse(avtale.getEnhetGeografisk())
+            ));
             log.info("Opprettet gosys-oppgave for 'avtale opprettet' (avtaleid = {})", avtale.getId());
         } catch (Exception e) {
             log.error("Klarte ikke opprette oppgave for 'avtale opprettet' (avtaleid = {})", avtale.getId(), e);
@@ -61,12 +69,13 @@ class LagGosysVarselLytter {
 
         try {
             oppgaveVarselService.opprettOppgave(new OppgaveRequest(
-                    aktørid,
-                    GosysTema.UFORETRYGD,
-                    GosysBehandlingstype.INGEN,
-                    null,
-                    format(VTAO_INNGÅTT, NORSK_DATO.format(avtale.getGjeldendeInnhold().getStartDato())))
-            );
+                aktørid,
+                GosysTema.UFORETRYGD,
+                GosysBehandlingstype.INGEN,
+                null,
+                format(VTAO_INNGÅTT, NORSK_DATO.format(avtale.getGjeldendeInnhold().getStartDato())),
+                null
+            ));
             log.info("Opprettet gosys-oppgave for 'vtao-avtale inngått' (avtaleid = {})", avtale.getId());
         } catch (Exception e) {
             log.error("Klarte ikke opprette oppgave for 'vtao-avtale inngått' (avtaleid = {})", avtale.getId(), e);

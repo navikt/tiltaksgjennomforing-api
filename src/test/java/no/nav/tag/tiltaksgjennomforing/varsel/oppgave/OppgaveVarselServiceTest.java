@@ -58,13 +58,15 @@ public class OppgaveVarselServiceTest {
         Avtale avtale = new Avtale();
         avtale.setTiltakstype(tiltakstype);
         avtale.setId(UUID.randomUUID());
+        avtale.setEnhetOppfolging("1234");
 
         oppgaveVarselService.opprettOppgave(new OppgaveRequest(
                 AktorId.av("aktørId"),
                 GosysTema.TILTAK,
                 GosysBehandlingstype.SOKNAD,
                 avtale.getTiltakstype(),
-                format(GOSYS_OPPRETTET_AVTALE_BESKRIVELSE, avtale.getTiltakstype().getBeskrivelse())
+                format(GOSYS_OPPRETTET_AVTALE_BESKRIVELSE, avtale.getTiltakstype().getBeskrivelse()),
+                avtale.getEnhetOppfolging()
         ));
         verify(stsRestTemplate).postForObject(eq(uri), requestCaptor.capture(), eq(OppgaveVarselService.OppgaveResponse.class));
         OppgaveRequest request = requestCaptor.getValue().getBody();
@@ -78,6 +80,7 @@ public class OppgaveVarselServiceTest {
         assertThat(request.getOppgavetype()).isEqualTo("VURD_HENV");
         assertThat(request.getPrioritet()).isEqualTo("NORM");
         assertThat(request.getTema()).isEqualTo("TIL");
+        assertThat(request.getTildeltEnhetsnr()).isEqualTo("1234");
     }
 
     @Test
@@ -93,7 +96,8 @@ public class OppgaveVarselServiceTest {
                 GosysTema.TILTAK,
                 GosysBehandlingstype.INGEN,
                 Tiltakstype.INKLUDERINGSTILSKUDD,
-                ""
+                "",
+                null
             ))
         );
     }
