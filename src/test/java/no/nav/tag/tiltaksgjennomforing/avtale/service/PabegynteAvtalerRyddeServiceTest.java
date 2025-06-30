@@ -48,8 +48,7 @@ class PabegynteAvtalerRyddeServiceTest {
         Tiltakstype.ARBEIDSTRENING,
         Tiltakstype.SOMMERJOBB,
         Tiltakstype.VARIG_LONNSTILSKUDD,
-        Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
-        Tiltakstype.VTAO
+        Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD
     );
 
     private static final List<Avtaleopphav> AVTALEOPPHAV = List.of(
