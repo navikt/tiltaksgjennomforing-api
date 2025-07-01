@@ -107,6 +107,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -1018,15 +1019,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
      * TODO: Fjern gammel logikk, og denne disclaimeren
      */
     public TilskuddPeriode getGjeldendeTilskuddsperiode(boolean kalkulerNyTilskuddsperiode) {
-        if (!kalkulerNyTilskuddsperiode) {
-            return this.gjeldendeTilskuddsperiode;
-        }
-
-        var gjeldendePeriode = TilskuddPeriode.finnGjeldende(this);
         var gjeldendeFraDb = this.gjeldendeTilskuddsperiode;
-        var erLike = Optional.ofNullable(gjeldendePeriode)
-            .map(tp -> tp.equals(gjeldendeFraDb))
-            .orElse(gjeldendePeriode == null && gjeldendeFraDb == null);
+        if (!kalkulerNyTilskuddsperiode) {
+            return gjeldendeFraDb;
+        }
+        var gjeldendePeriode = TilskuddPeriode.finnGjeldende(this);
+        var erLike = Objects.equals(gjeldendePeriode, gjeldendeFraDb);
         if (!erLike) {
             log.atWarn()
                 .addKeyValue("avtaleId", this.getId().toString())

@@ -4,13 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -23,7 +23,7 @@ public class GjeldendeTilskuddsperiodeService {
     }
 
     public Slice<Avtale> hentAvtaler(Pageable page) {
-        return avtaleRepository.finnAvtaleMedAktiveTilskuddsperioder(Now.localDate().plusMonths(3), page);
+        return avtaleRepository.finnAvtaleMedAktiveTilskuddsperioder(page);
     }
 
     @Transactional
@@ -36,21 +36,20 @@ public class GjeldendeTilskuddsperiodeService {
         }
         log.info("Behandler {} avtaler...", avtaler.size());
         avtaler.forEach(avtale -> {
-            var gjeldendeTilskuddsperiode = avtale.getGjeldendeTilskuddsperiode(false);
             var nyGjeldende = TilskuddPeriode.finnGjeldende(avtale);
-            if (gjeldendeTilskuddsperiode == null) {
+            var gjeldendeTilskuddsperiode = avtale.getGjeldendeTilskuddsperiode(false);
+
+            var erLikGjeldende = Objects.equals(nyGjeldende, gjeldendeTilskuddsperiode);
+            if (erLikGjeldende) {
                 log.info(
-                    "Avtale med id: {} har ingen gjeldende tilskuddsperiode, setter ny gjeldende tilskuddsperiode",
-                    avtale.getId()
+                    "Avtale med id: {} har allerede riktig gjeldende tilskuddsperiode: {}",
+                    avtale.getId(),
+                    Optional.ofNullable(nyGjeldende).map(TilskuddPeriode::getId).orElse(null)
                 );
+                return;
             }
-            var erLikGjeldende = Optional.ofNullable(nyGjeldende)
-                .map(tp -> tp.equals(gjeldendeTilskuddsperiode))
-                .orElse(nyGjeldende == null && gjeldendeTilskuddsperiode == null);
-            if (!erLikGjeldende) {
-                log.info("Oppdaterer gjeldende tilskuddsperiode for avtale med id: {}", avtale.getId());
-                avtale.setGjeldendeTilskuddsperiode(nyGjeldende);
-            }
+            log.info("Oppdaterer gjeldende tilskuddsperiode for avtale med id: {}", avtale.getId());
+            avtale.setGjeldendeTilskuddsperiode(nyGjeldende);
         });
         avtaleRepository.saveAll(avtaler);
         return slice;

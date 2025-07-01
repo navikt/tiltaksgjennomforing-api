@@ -105,11 +105,11 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
               FROM TilskuddPeriode tp
               WHERE tp.avtale = a
                 AND tp.startDato > a.gjeldendeTilskuddsperiode.sluttDato
-                AND tp.startDato <= :decisiondate
+                AND tp.startDato <= current_date + 3 month
                 AND tp.status = 'UBEHANDLET'
           ))
     """)
-    Slice<Avtale> finnAvtaleMedAktiveTilskuddsperioder(LocalDate decisiondate, Pageable pageable);
+    Slice<Avtale> finnAvtaleMedAktiveTilskuddsperioder(Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override
