@@ -46,12 +46,12 @@ public class GjeldendeTilskuddsperiodeService {
                     avtale.getId(),
                     Optional.ofNullable(nyGjeldende).map(TilskuddPeriode::getId).orElse(null)
                 );
-                return;
+            } else {
+                log.info("Oppdaterer gjeldende tilskuddsperiode for avtale med id: {}", avtale.getId());
+                avtale.setGjeldendeTilskuddsperiode(nyGjeldende);
+                avtaleRepository.save(avtale);
             }
-            log.info("Oppdaterer gjeldende tilskuddsperiode for avtale med id: {}", avtale.getId());
-            avtale.setGjeldendeTilskuddsperiode(nyGjeldende);
         });
-        avtaleRepository.saveAll(avtaler);
         return slice;
     }
 }

@@ -26,8 +26,8 @@ public class GjeldendeTilskuddsperiodeJobbService {
     public CompletableFuture<Void> start() {
         log.info("Jobb for å oppdatere gjeldedeTilskuddsperiode-felt startet...");
 
-        int antallAvtalerBehandlet = 0;
         Slice<Avtale> slice = null;
+        int antallAvtalerBehandlet = 0;
 
         do {
             slice = gjeldendeTilskuddsperiodeService.settGjeldendeTilskuddsperiode(
