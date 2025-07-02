@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.avtale.service;
+package no.nav.tag.tiltaksgjennomforing.avtale.service.gjeldendetilskuddsperiode;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -27,18 +27,24 @@ public class GjeldendeTilskuddsperiodeJobbService {
         log.info("Jobb for å oppdatere gjeldedeTilskuddsperiode-felt startet...");
 
         Slice<Avtale> slice = null;
-        int antallAvtalerBehandlet = 0;
+        int antallOppdatert = 0;
+        int antallIkkeOppdatert = 0;
 
         do {
-            slice = gjeldendeTilskuddsperiodeService.settGjeldendeTilskuddsperiode(
+            SettGjeldendeTilskuddsperiodeRespons respons = gjeldendeTilskuddsperiodeService.settGjeldendeTilskuddsperiode(
                 Optional.ofNullable(slice).map(Slice::nextPageable).orElse(DEFAULT_PAGE)
             );
-            antallAvtalerBehandlet += slice.getNumberOfElements();
+            slice = respons.slice();
+            antallOppdatert += respons.antallOppdatert();
+            antallIkkeOppdatert += respons.antallIkkeOppdatert();
         } while (slice.hasNext());
 
         log.info(
-            "Jobb for å oppdatere gjeldedeTilskuddsperiode-felt fullført! Behandlet {} avtaler.",
-            antallAvtalerBehandlet
+            "Jobb for å oppdatere gjeldedeTilskuddsperiode-felt fullført! " +
+            "Behandlet {} avtaler: {} fikk ny periode. {} hadde korrekt periode.",
+            (antallOppdatert + antallIkkeOppdatert),
+            antallOppdatert == 0 ? "ingen" : antallOppdatert,
+            antallIkkeOppdatert == 0 ? "ingen" : antallIkkeOppdatert
         );
 
         System.gc();

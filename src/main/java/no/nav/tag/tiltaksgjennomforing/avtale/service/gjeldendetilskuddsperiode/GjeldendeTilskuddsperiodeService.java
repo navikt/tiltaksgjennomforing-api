@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.avtale.service;
+package no.nav.tag.tiltaksgjennomforing.avtale.service.gjeldendetilskuddsperiode;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
@@ -27,12 +28,15 @@ public class GjeldendeTilskuddsperiodeService {
     }
 
     @Transactional
-    public Slice<Avtale> settGjeldendeTilskuddsperiode(Pageable pageable) {
+    public SettGjeldendeTilskuddsperiodeRespons settGjeldendeTilskuddsperiode(Pageable pageable) {
+        AtomicInteger antallOppdatert = new AtomicInteger();
+        AtomicInteger antallIkkeOppdatert = new AtomicInteger();
         Slice<Avtale> slice = hentAvtaler(pageable);
         List<Avtale> avtaler = slice.getContent();
+
         if (avtaler.isEmpty()) {
             log.info("Ingen avtaler å behandle");
-            return slice;
+            return new SettGjeldendeTilskuddsperiodeRespons(slice, antallOppdatert.get(), antallIkkeOppdatert.get());
         }
         log.info("Behandler {} avtaler...", avtaler.size());
         avtaler.forEach(avtale -> {
@@ -46,12 +50,14 @@ public class GjeldendeTilskuddsperiodeService {
                     avtale.getId(),
                     Optional.ofNullable(nyGjeldende).map(TilskuddPeriode::getId).orElse(null)
                 );
+                antallIkkeOppdatert.getAndIncrement();
             } else {
                 log.info("Oppdaterer gjeldende tilskuddsperiode for avtale med id: {}", avtale.getId());
                 avtale.setGjeldendeTilskuddsperiode(nyGjeldende);
                 avtaleRepository.save(avtale);
+                antallOppdatert.getAndIncrement();
             }
         });
-        return slice;
+        return new SettGjeldendeTilskuddsperiodeRespons(slice, antallOppdatert.get(), antallIkkeOppdatert.get());
     }
 }
