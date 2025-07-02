@@ -81,7 +81,8 @@ public class InnloggingService {
                 adressesperreTilganger,
                 persondataService,
                 norg2Client,
-                eregService
+                eregService,
+                veilarboppfolgingService
             );
         }
         if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.VEILEDER) {

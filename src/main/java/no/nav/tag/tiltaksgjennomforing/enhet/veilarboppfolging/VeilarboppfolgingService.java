@@ -26,6 +26,10 @@ public class VeilarboppfolgingService {
         this.client = client;
     }
 
+    public Oppfølgingsstatus hentOppfolgingsstatus(Fnr fnr) {
+        return hentOppfolgingsstatus(fnr.asString());
+    }
+
     public Oppfølgingsstatus hentOppfolgingsstatus(String fnr) {
         Optional<HentOppfolgingsstatusRespons> responsOpt;
 
@@ -66,7 +70,7 @@ public class VeilarboppfolgingService {
     }
 
     public Oppfølgingsstatus hentOgSjekkOppfolgingstatus(Fnr fnr, Tiltakstype tiltakstype) {
-        Oppfølgingsstatus oppfølgingStatus = hentOppfolgingsstatus(fnr.asString());
+        Oppfølgingsstatus oppfølgingStatus = hentOppfolgingsstatus(fnr);
         if (tiltakstype.isSommerjobb()) {
             return oppfølgingStatus;
         }

@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.lenient;
@@ -797,7 +798,7 @@ public class TestData {
     public static Arbeidsgiver enArbeidsgiver() {
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
-        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), List.of(), persondataService, null, null);
+        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), List.of(), persondataService, null, null, null);
     }
 
     public static Mentor enMentor(Avtale avtale) {
@@ -816,6 +817,7 @@ public class TestData {
                 List.of(Tiltakstype.values())),
                 List.of(),
                 persondataService,
+                null,
                 null,
                 null
         );
@@ -908,7 +910,7 @@ public class TestData {
                     "0906"
                 )
             );
-        when(veilarboppfolgingService.hentOppfolgingsstatus(any()))
+        when(veilarboppfolgingService.hentOppfolgingsstatus(anyString()))
             .thenReturn(
                 new Oppfølgingsstatus(
                     Formidlingsgruppe.ARBEIDSSOKER,

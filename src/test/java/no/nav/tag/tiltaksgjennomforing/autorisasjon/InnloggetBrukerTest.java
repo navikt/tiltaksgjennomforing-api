@@ -170,6 +170,7 @@ public class InnloggetBrukerTest {
                         List.of(),
                         persondataService,
                         null,
+                        null,
                         null
                 ).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
@@ -228,6 +229,7 @@ public class InnloggetBrukerTest {
                 List.of(),
                 persondataService,
                 null,
+                null,
                 null
             ).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
@@ -244,6 +246,7 @@ public class InnloggetBrukerTest {
                 List.of(),
                 persondataService,
                 null,
+                null,
                 null
         );
         assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isTrue();
@@ -259,6 +262,7 @@ public class InnloggetBrukerTest {
                 tilganger,
                 List.of(),
                 persondataService,
+                null,
                 null,
                 null
         );
@@ -278,6 +282,7 @@ public class InnloggetBrukerTest {
                 tilganger,
                 List.of(),
                 persondataService,
+                null,
                 null,
                 null
         );
@@ -324,6 +329,7 @@ public class InnloggetBrukerTest {
                 List.of(),
                 persondataService,
                 null,
+                null,
                 null
         );
 
@@ -340,6 +346,7 @@ public class InnloggetBrukerTest {
                 tilganger,
                 List.of(),
                 persondataService,
+                null,
                 null,
                 null
         );

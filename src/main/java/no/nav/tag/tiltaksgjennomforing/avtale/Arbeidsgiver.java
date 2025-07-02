@@ -7,7 +7,10 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
@@ -38,6 +41,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
     private final EregService eregService;
+    private final VeilarboppfolgingService veilarboppfolgingService;
 
     public Arbeidsgiver(
             Fnr identifikator,
@@ -46,7 +50,8 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             List<BedriftNr> adressesperreTilgang,
             PersondataService persondataService,
             Norg2Client norg2Client,
-            EregService eregService
+            EregService eregService,
+            VeilarboppfolgingService veilarboppfolgingService
     ) {
         super(identifikator);
         this.altinnOrganisasjoner = altinnOrganisasjoner;
@@ -55,6 +60,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
         this.eregService = eregService;
+        this.veilarboppfolgingService = veilarboppfolgingService;
     }
 
     private static Avtale fjernAvbruttGrunn(Avtale avtale) {
@@ -279,8 +285,28 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     private void leggEnheterVedOpprettelseAvAvtale(Avtale avtale) {
+        this.hentOppfolginsenhet(avtale);
         super.hentGeoEnhetFraNorg2(avtale, norg2Client, persondataService);
         super.hentOppfølgingsenhetNavnFraNorg2(avtale, norg2Client);
+    }
+
+    private void hentOppfolginsenhet(Avtale avtale) {
+        try {
+            Oppfølgingsstatus status = veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr());
+            if (status != null) {
+                avtale.setEnhetOppfolging(status.getOppfolgingsenhet());
+            }
+        } catch (FeilkodeException e) {
+            if (e.getFeilkode() == Feilkode.FANT_IKKE_INNSATSBEHOV || e.getFeilkode() == Feilkode.HENTING_AV_INNSATSBEHOV_FEILET) {
+                log.warn(
+                    "Fant ikke innsatsbehov ved henting av oppfølgingstatus for avtale opprettet av arbeidsgiver " +
+                    "Med melding: {}. Fortsetter uten.",
+                    e.getMessage()
+                );
+            } else {
+                throw e;
+            }
+        }
     }
 
     private void sjekkOmBedriftErGyldigOgOppdaterNavn(Avtale avtale) {
