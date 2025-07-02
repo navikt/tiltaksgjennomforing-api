@@ -8,10 +8,10 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
+import no.nav.tag.tiltaksgjennomforing.exceptions.RolleHarIkkeTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.NavEnhetIkkeFunnetException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -85,14 +85,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler) {
-        Map<Fnr, Boolean> map = tilgangskontrollService.harSkrivetilgangTilAvtaler(this, avtaler);
-        return avtale -> {
-            boolean resultat = map.getOrDefault(avtale.getDeltakerFnr(), false);
-            if (!resultat) {
-                log.info("Har ikke tilgang til avtalenr {}, id: {}", avtale.getAvtaleNr(), avtale.getId());
-            }
-            return resultat;
-        };
+        throw new RolleHarIkkeTilgangException();
     }
 
     public boolean harTilgangTilFnr(Fnr fnr) {
@@ -101,7 +94,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable) {
-        return avtaleRepository.findAllByAvtaleNrAndFeilregistrertIsFalse(queryParametre.getAvtaleNr(), pageable);
+        throw new RolleHarIkkeTilgangException();
     }
 
     private Integer getPlussdato() {
@@ -169,7 +162,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     void godkjennForAvtalepart(Avtale avtale) {
-        throw new TilgangskontrollException("Beslutter kan ikke godkjenne avtaler");
+        throw new RolleHarIkkeTilgangException();
     }
 
     @Override
@@ -184,7 +177,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     void opphevGodkjenningerSomAvtalepart(Avtale avtale) {
-        throw new TilgangskontrollException("Beslutter kan ikke oppheve godkjenninger av avtaler");
+        throw new RolleHarIkkeTilgangException();
     }
 
     @Override
