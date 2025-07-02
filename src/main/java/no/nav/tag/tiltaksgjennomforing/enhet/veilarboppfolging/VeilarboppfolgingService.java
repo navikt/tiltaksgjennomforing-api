@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging;
 
-import com.google.common.hash.Hashing;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
@@ -10,14 +9,16 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.logging.TeamLogs;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Slf4j
 @Service
 public class VeilarboppfolgingService {
+
+    private final TeamLogs teamLogs = TeamLogs.getLogger(log);
 
     private final VeilarboppfolgingClient client;
 
@@ -36,18 +37,16 @@ public class VeilarboppfolgingService {
         }
 
         if (responsOpt.isEmpty()) {
-            log.info(
-                "Fant ikke innsatsbehov for id {}",
-                Hashing.sha256().hashString(fnr + VeilarboppfolgingService.class.getName(), StandardCharsets.UTF_8)
-            );
+            teamLogs.info("Fant ikke innsatsbehov for fnr {}", fnr);
             throw new FeilkodeException(Feilkode.FANT_IKKE_INNSATSBEHOV);
         }
 
         HentOppfolgingsstatusRespons respons = responsOpt.get();
-        log.info("Hentet servicegruppe {} og formidlingsgruppe {} for id {}",
+        teamLogs.info(
+            "Hentet servicegruppe {} og formidlingsgruppe {} for fnr {}",
             respons.servicegruppe(),
             respons.formidlingsgruppe(),
-            Hashing.sha256().hashString(fnr + VeilarboppfolgingService.class.getName(), StandardCharsets.UTF_8)
+            fnr
         );
 
         try {
@@ -77,7 +76,8 @@ public class VeilarboppfolgingService {
         }
 
         if (tiltakstype.isMidlerTidiglonnstilskuddEllerSommerjobbEllerMentor() &&
-            !oppfølgingStatus.getKvalifiseringsgruppe().isKvalifisererTilMidlertidiglonnstilskuddOgSommerjobbOgMentor()) {
+            !oppfølgingStatus.getKvalifiseringsgruppe()
+                .isKvalifisererTilMidlertidiglonnstilskuddOgSommerjobbOgMentor()) {
             throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_MIDLERTIDIG_LONNTILSKUDD_OG_SOMMERJOBB_FEIL);
         }
 
