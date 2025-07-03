@@ -282,6 +282,7 @@ public class AvtaleControllerTest {
                         List.of(),
                         persondataService,
                         null,
+                        null,
                         null
                 )
         );
@@ -541,6 +542,7 @@ public class AvtaleControllerTest {
                 TestData.etFodselsnummer(),
                 Set.of(),
                 Map.of(),
+                null,
                 null,
                 null,
                 null,
