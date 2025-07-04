@@ -1,10 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import org.springframework.data.domain.Sort;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import org.springframework.data.jpa.domain.JpaSort;
 
 public class AvtaleSorterer {
 
@@ -26,94 +23,73 @@ public class AvtaleSorterer {
         Sort.Direction sortDirection = Sort.Direction.valueOf(direction.toUpperCase());
 
         return switch (rolle) {
-            case VEILEDER -> Sort.by(getSortingOrderVeileder(sortOrder, sortDirection));
-            case BESLUTTER -> Sort.by(getSortingOrderBeslutter(sortOrder, sortDirection));
-            default -> Sort.by(getSortingOrderDeltakerOgArbeidsgiver(sortOrder, sortDirection));
+            case VEILEDER -> getSortingOrderVeileder(sortOrder, sortDirection);
+            case BESLUTTER -> getSortingOrderBeslutter(sortOrder, sortDirection);
+            default -> getSortingOrderDeltakerOgArbeidsgiver(sortOrder, sortDirection);
         };
     }
 
-    private static List<Sort.Order> getSortingOrderVeileder(SortOrder order, Sort.Direction direction) {
-        Sorter sorter = new Sorter(new Sort.Order(direction, "id"));
+    private static Sort getSortingOrderVeileder(SortOrder order, Sort.Direction direction) {
+        Sort sortById = Sort.by(direction, "id");
         return switch (order) {
-            case BEDRIFTNAVN -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.bedriftNavn"));
-            case DELTAKERFORNAVN -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.deltakerFornavn"));
-            case DELTAKERETTERNAVN -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.deltakerEtternavn"));
-            case OPPRETTETTIDSPUNKT -> sorter.add(new Sort.Order(direction, "opprettetTidspunkt"));
-            case SLUTTDATO -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.sluttDato"));
-            case STARTDATO -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.startDato"));
-            case TILTAKSTYPE -> sorter.add(new Sort.Order(direction, "tiltakstype"));
-            case VEILEDERNAVIDENT -> sorter.add(new Sort.Order(direction, "veilederNavIdent"));
-            case STATUS -> sorter.add(
-                // NULLS_LAST fungerer ikke i postgres, derfor må vi sortere i revers for å få oppfølging øverst
-                new Sort.Order(direction, "oppfolgingVarselSendt").reverse(),
-                // Status 'AVSLÅTT' skal ha høyere prioritering ved DESC sortering derfor reverse
-                new Sort.Order(direction, "t.status").reverse(),
-                new Sort.Order(direction, "status")
-            );
-            default -> sorter.add(
-                // NULLS_LAST fungerer ikke i postgres, derfor må vi sortere i revers for å få oppfølging øverst
-                new Sort.Order(direction, "oppfolgingVarselSendt").reverse(),
-                // Status 'AVSLÅTT' skal ha høyere prioritering ved DESC sortering derfor reverse
-                new Sort.Order(direction, "t.status").reverse(),
-                new Sort.Order(direction, "sistEndret")
-            );
+            case BEDRIFTNAVN -> Sort.by(direction, "gjeldendeInnhold.bedriftNavn").and(sortById);
+            case DELTAKERFORNAVN -> Sort.by(direction, "gjeldendeInnhold.deltakerFornavn").and(sortById);
+            case DELTAKERETTERNAVN -> Sort.by(direction, "gjeldendeInnhold.deltakerEtternavn").and(sortById);
+            case OPPRETTETTIDSPUNKT -> Sort.by(direction, "opprettetTidspunkt").and(sortById);
+            case SLUTTDATO -> Sort.by(direction, "gjeldendeInnhold.sluttDato").and(sortById);
+            case STARTDATO -> Sort.by(direction, "gjeldendeInnhold.startDato").and(sortById);
+            case TILTAKSTYPE -> Sort.by(direction, "tiltakstype").and(sortById);
+            case VEILEDERNAVIDENT -> Sort.by(direction, "veilederNavIdent").and(sortById);
+            case STATUS -> Sort.unsorted()
+                .and(JpaSort.unsafe(direction, "CASE WHEN (oppfolgingVarselSendt IS NOT NULL) THEN 0 ELSE 1 END"))
+                .and(JpaSort.unsafe(direction, "CASE WHEN (t.status = 'AVSLÅTT') THEN 0 ELSE 1 END"))
+                .and(Sort.by(direction, "status"))
+                .and(sortById);
+            default -> Sort.unsorted()
+                .and(JpaSort.unsafe(direction, "CASE WHEN (oppfolgingVarselSendt IS NOT NULL) THEN 1 ELSE 0 END"))
+                .and(JpaSort.unsafe(direction, "CASE WHEN (t.status = 'AVSLÅTT') THEN 1 ELSE 0 END"))
+                .and(Sort.by(direction, "sistEndret"))
+                .and(sortById);
         };
     }
 
-
-    private static List<Sort.Order> getSortingOrderBeslutter(
+    private static Sort getSortingOrderBeslutter(
         SortOrder order,
         Sort.Direction direction
     ) {
-        Sorter sorter = new Sorter(new Sort.Order(direction, "id"));
+        Sort sortById = Sort.by(direction, "id");
         return switch (order) {
-            case BEDRIFTNAVN -> sorter.add(new Sort.Order(direction, "bedriftNavn"));
-            case DELTAKERFORNAVN -> sorter.add(new Sort.Order(direction, "deltakerFornavn"));
-            case DELTAKERETTERNAVN -> sorter.add(new Sort.Order(direction, "deltakerEtternavn"));
-            case OPPRETTETTIDSPUNKT -> sorter.add(new Sort.Order(direction, "opprettetTidspunkt"));
-            case STARTDATO -> sorter.add(new Sort.Order(direction, "startDato"));
-            case STATUS -> sorter.add(
-                new Sort.Order(direction, "status"),
-                new Sort.Order(direction, "harReturnertSomKanBehandles"),
-                new Sort.Order(direction, "antallUbehandlet")
-            );
-            case TILTAKSTYPE -> sorter.add(new Sort.Order(direction, "tiltakstype"));
-            default -> sorter.add(
-                new Sort.Order(direction, "harReturnertSomKanBehandles"),
-                new Sort.Order(direction, "sistEndret")
-            );
+            case BEDRIFTNAVN -> Sort.by(direction, "bedriftNavn").and(sortById);
+            case DELTAKERFORNAVN -> Sort.by(direction, "deltakerFornavn").and(sortById);
+            case DELTAKERETTERNAVN -> Sort.by(direction, "deltakerEtternavn").and(sortById);
+            case OPPRETTETTIDSPUNKT -> Sort.by(direction, "opprettetTidspunkt").and(sortById);
+            case STARTDATO -> Sort.by(direction, "startDato").and(sortById);
+            case TILTAKSTYPE -> Sort.by(direction, "tiltakstype").and(sortById);
+            case STATUS -> Sort.by(direction, "harReturnertSomKanBehandles")
+                .and(Sort.by(direction, "status"))
+                .and(Sort.by(direction, "antallUbehandlet"))
+                .and(sortById);
+            default -> Sort.by(direction, "harReturnertSomKanBehandles")
+                .and(Sort.by(direction, "sistEndret"))
+                .and(sortById);
         };
     }
 
-    private static List<Sort.Order> getSortingOrderDeltakerOgArbeidsgiver(
+    private static Sort getSortingOrderDeltakerOgArbeidsgiver(
         SortOrder order,
         Sort.Direction direction
     ) {
-        Sorter sorter = new Sorter(new Sort.Order(direction, "id"));
+        Sort sortById = Sort.by(direction, "id");
         return switch (order) {
-            case BEDRIFTNAVN -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.bedriftNavn"));
-            case DELTAKERFORNAVN -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.deltakerFornavn"));
-            case DELTAKERETTERNAVN -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.deltakerEtternavn"));
-            case OPPRETTETTIDSPUNKT -> sorter.add(new Sort.Order(direction, "opprettetTidspunkt"));
-            case SLUTTDATO -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.sluttDato"));
-            case STARTDATO -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.startDato"));
-            case STATUS -> sorter.add(new Sort.Order(direction, "status"));
-            case TILTAKSTYPE -> sorter.add(new Sort.Order(direction, "tiltakstype"));
-            default -> sorter.add(new Sort.Order(direction, "sistEndret"));
+            case BEDRIFTNAVN -> Sort.by(direction, "gjeldendeInnhold.bedriftNavn").and(sortById);
+            case DELTAKERFORNAVN -> Sort.by(direction, "gjeldendeInnhold.deltakerFornavn").and(sortById);
+            case DELTAKERETTERNAVN -> Sort.by(direction, "gjeldendeInnhold.deltakerEtternavn").and(sortById);
+            case OPPRETTETTIDSPUNKT -> Sort.by(direction, "opprettetTidspunkt").and(sortById);
+            case SLUTTDATO -> Sort.by(direction, "gjeldendeInnhold.sluttDato").and(sortById);
+            case STARTDATO -> Sort.by(direction, "gjeldendeInnhold.startDato").and(sortById);
+            case STATUS -> Sort.by(direction, "status").and(sortById);
+            case TILTAKSTYPE -> Sort.by(direction, "tiltakstype").and(sortById);
+            default -> Sort.by(direction, "sistEndret").and(sortById);
         };
-    }
-
-    static class Sorter {
-        private Sort.Order seed;
-
-        public Sorter(Sort.Order seed) {
-            this.seed = seed;
-        }
-
-        public List<Sort.Order> add(Sort.Order... orders) {
-            List<Sort.Order> order = new ArrayList<>(Arrays.asList(orders));
-            order.add(seed);
-            return order;
-        }
     }
 }
