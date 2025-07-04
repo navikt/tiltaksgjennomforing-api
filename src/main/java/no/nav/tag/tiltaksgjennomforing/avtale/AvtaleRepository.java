@@ -156,14 +156,14 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Query(value = """
         WITH AvtalerSomHarReturnertSomKanBehandles AS (
             SELECT a2.id as avtaleId,
-                   EXISTS (
-                       SELECT tp.id
-                       FROM TilskuddPeriode tp
-                       WHERE tp.avtale = a2
-                        AND a2.gjeldendeTilskuddsperiode.status = 'UBEHANDLET'
-                        AND a2.gjeldendeTilskuddsperiode.løpenummer = tp.løpenummer
-                        AND tp.status = 'AVSLÅTT'
-                   ) as avtaleHarReturnertSomKanBehandles
+            EXISTS (
+                SELECT tp.id
+                FROM TilskuddPeriode tp
+                WHERE tp.avtale = a2
+                 AND a2.gjeldendeTilskuddsperiode.status = 'UBEHANDLET'
+                 AND a2.gjeldendeTilskuddsperiode.løpenummer = tp.løpenummer
+                 AND tp.status = 'AVSLÅTT'
+            ) as avtaleHarReturnertSomKanBehandles
             FROM Avtale a2
         )
         SELECT a.id AS id,
@@ -187,7 +187,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                 FROM TilskuddPeriode tp
                 WHERE tp.avtale = a
                   AND tp.startDato >= a.gjeldendeTilskuddsperiode.startDato
-                  AND tp.startDato <= :decisiondate
+                  AND tp.startDato <= current_date + 3 month
                   AND (a.kreverOppfolgingFom IS NULL OR tp.startDato < a.kreverOppfolgingFom + 2 month)
                   AND tp.status = a.gjeldendeTilskuddsperiode.status
                ) AS antallUbehandlet,
@@ -197,17 +197,19 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
         FROM Avtale a
         LEFT JOIN AvtalerSomHarReturnertSomKanBehandles ashrskb ON a.id = ashrskb.avtaleId
         WHERE a.gjeldendeInnhold.godkjentAvVeileder IS NOT NULL
+          AND a.feilregistrert IS FALSE
           AND a.tiltakstype IN (:tiltakstype)
           AND a.enhetOppfolging IN (:navEnheter)
           AND (:tilskuddsperiodestatus IS NULL OR a.gjeldendeTilskuddsperiode.status = :tilskuddsperiodestatus)
           AND (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr)
           AND (:bedriftNr IS NULL OR a.bedriftNr = :bedriftNr)
           AND (:harReturnertSomKanBehandles IS FALSE OR ashrskb.avtaleHarReturnertSomKanBehandles = :harReturnertSomKanBehandles)
+          AND (:avtaleStatus IS NULL OR a.status IN :avtaleStatus)
     """)
     Page<BeslutterOversiktEntity> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
         TilskuddPeriodeStatus tilskuddsperiodestatus,
-        LocalDate decisiondate,
         Set<Tiltakstype> tiltakstype,
+        Set<Status> avtaleStatus,
         Set<String> navEnheter,
         BedriftNr bedriftNr,
         Integer avtaleNr,
