@@ -187,7 +187,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                 FROM TilskuddPeriode tp
                 WHERE tp.avtale = a
                   AND tp.startDato >= a.gjeldendeTilskuddsperiode.startDato
-                  AND tp.startDato <= :decisiondate
+                  AND tp.startDato <= current_date + 3 month
                   AND (a.kreverOppfolgingFom IS NULL OR tp.startDato < a.kreverOppfolgingFom + 2 month)
                   AND tp.status = a.gjeldendeTilskuddsperiode.status
                ) AS antallUbehandlet,
@@ -203,11 +203,12 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
           AND (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr)
           AND (:bedriftNr IS NULL OR a.bedriftNr = :bedriftNr)
           AND (:harReturnertSomKanBehandles IS FALSE OR ashrskb.avtaleHarReturnertSomKanBehandles = :harReturnertSomKanBehandles)
+          AND (:avtaleStatus IS NULL OR a.status IN :avtaleStatus)
     """)
     Page<BeslutterOversiktEntity> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
         TilskuddPeriodeStatus tilskuddsperiodestatus,
-        LocalDate decisiondate,
         Set<Tiltakstype> tiltakstype,
+        Set<Status> avtaleStatus,
         Set<String> navEnheter,
         BedriftNr bedriftNr,
         Integer avtaleNr,
