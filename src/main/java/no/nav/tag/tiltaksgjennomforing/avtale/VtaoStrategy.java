@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class VtaoStrategy extends BaseAvtaleInnholdStrategy {
@@ -23,7 +24,8 @@ public class VtaoStrategy extends BaseAvtaleInnholdStrategy {
 
     @Override
     public Map<String, Object> alleFelterSomMåFyllesUt() {
-        Map<String, Object> alleFelter = super.alleFelterSomMåFyllesUt();
+        HashMap<String, Object> alleFelter = new HashMap<>();
+        alleFelter.putAll(super.alleFelterSomMåFyllesUt());
         alleFelter.put(AvtaleInnhold.Fields.harFamilietilknytning, avtaleInnhold.getHarFamilietilknytning());
         alleFelter.put(AvtaleInnhold.Fields.arbeidsgiverKontonummer, avtaleInnhold.getArbeidsgiverKontonummer());
         alleFelter.put(AvtaleInnhold.Fields.stillingstittel, avtaleInnhold.getStillingstittel());
