@@ -253,12 +253,11 @@ public class AvtaleRepositoryTest {
         Sort by = Sort.by(Sort.Order.asc("startDato"));
         Pageable pageable = PageRequest.of(0, 10, by);
         long plussDato = ChronoUnit.DAYS.between(Now.localDate(), Now.localDate().plusMonths(3));
-        LocalDate decisiondate = Now.localDate().plusDays(plussDato);
 
         Page<BeslutterOversiktEntity> beslutterOversikt = avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
             TilskuddPeriodeStatus.UBEHANDLET,
-            decisiondate,
             tiltakstype,
+            Set.of(Status.PÅBEGYNT, Status.GJENNOMFØRES, Status.KLAR_FOR_OPPSTART, Status.MANGLER_GODKJENNING),
             navEnheter,
             null,
             null,
