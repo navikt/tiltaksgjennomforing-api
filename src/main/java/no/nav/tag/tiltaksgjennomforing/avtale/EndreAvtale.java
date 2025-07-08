@@ -53,6 +53,7 @@ public class EndreAvtale {
 
     // Lønnstilskuddsfelter
     private String arbeidsgiverKontonummer;
+    private String arbeidsgiverKid;
     private Integer lonnstilskuddProsent;
     private Integer manedslonn;
     private BigDecimal feriepengesats;
@@ -121,6 +122,7 @@ public class EndreAvtale {
                 innhold.getInkluderingstilskuddsutgift(),
                 innhold.getInkluderingstilskuddBegrunnelse(),
                 innhold.getArbeidsgiverKontonummer(),
+                innhold.getArbeidsgiverKid(),
                 innhold.getLonnstilskuddProsent(),
                 innhold.getManedslonn(),
                 innhold.getFeriepengesats(),
