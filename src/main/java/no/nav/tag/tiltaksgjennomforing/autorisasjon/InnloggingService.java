@@ -51,7 +51,6 @@ public class InnloggingService {
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
     private final AxsysService axsysService;
-    private final SlettemerkeProperties slettemerkeProperties;
     private final VeilarboppfolgingService veilarboppfolgingService;
     private final ArbeidsgiverTokenStrategyFactory arbeidsgiverTokenStrategyFactory;
     private final FeatureToggleService featureToggleService;
@@ -96,7 +95,6 @@ public class InnloggingService {
                 persondataService,
                 norg2Client,
                 navEnheter,
-                slettemerkeProperties,
                 adGruppeTilganger,
                 veilarboppfolgingService,
                 featureToggleService,

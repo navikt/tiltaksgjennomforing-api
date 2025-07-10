@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -47,7 +46,6 @@ public class AvtalepartTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
@@ -74,7 +72,6 @@ public class AvtalepartTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
@@ -104,7 +101,6 @@ public class AvtalepartTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
@@ -133,7 +129,6 @@ public class AvtalepartTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
@@ -169,7 +164,6 @@ public class AvtalepartTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
@@ -215,7 +209,6 @@ public class AvtalepartTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
@@ -255,7 +248,6 @@ public class AvtalepartTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),

@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
@@ -1049,31 +1048,6 @@ public class AvtaleTest {
     }
 
     @Test
-    public void tom_avtale_kan_avbrytes() {
-        Avtale tomAvtale = TestData.enArbeidstreningAvtale();
-        assertThat(tomAvtale.kanAvbrytes()).isTrue();
-    }
-
-    @Test
-    public void fylt_avtale_kan_avbrytes() {
-        Avtale fyltAvtale = TestData.enAvtaleMedAltUtfylt();
-        assertThat(fyltAvtale.kanAvbrytes()).isTrue();
-    }
-
-    @Test
-    public void godkjent_av_veileder_avtale_kan_avbrytes() {
-        Avtale godkjentAvtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
-        assertThat(godkjentAvtale.kanAvbrytes()).isTrue();
-    }
-
-    @Test
-    public void allerede_avbrutt_avtale_kan_ikke_avbrytes() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setAvbrutt(true);
-        assertThat(avtale.kanAvbrytes()).isFalse();
-    }
-
-    @Test
     public void utforEndring__kalles_ved_endreAvtale() throws InterruptedException {
         Instant førEndringen = Now.instant();
         Avtale avtale = TestData.enArbeidstreningAvtale();
@@ -1225,7 +1199,6 @@ public class AvtaleTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
@@ -1455,7 +1428,6 @@ public class AvtaleTest {
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
-                mock(SlettemerkeProperties.class),
                 TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
                 mock(FeatureToggleService.class),
@@ -1496,7 +1468,6 @@ public class AvtaleTest {
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
-                mock(SlettemerkeProperties.class),
                 TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
                 mock(FeatureToggleService.class),
@@ -1533,7 +1504,6 @@ public class AvtaleTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
@@ -1611,7 +1581,6 @@ public class AvtaleTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
@@ -1646,7 +1615,6 @@ public class AvtaleTest {
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
-                mock(SlettemerkeProperties.class),
                 TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
                 mock(FeatureToggleService.class),
@@ -1693,7 +1661,6 @@ public class AvtaleTest {
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
-                mock(SlettemerkeProperties.class),
                 TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
                 mock(FeatureToggleService.class),

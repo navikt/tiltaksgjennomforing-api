@@ -48,6 +48,7 @@ public class AvtaleMelding {
     Instant sistEndret;
     Instant annullertTidspunkt;
     String annullertGrunn;
+    @Deprecated(since = "Ikke i bruk lenger - må koordinere endringene med konsumenter før fjerning")
     boolean slettemerket;
     boolean opprettetAvArbeidsgiver;
     String enhetGeografisk;
@@ -161,7 +162,7 @@ public class AvtaleMelding {
         avtaleMelding.setSistEndret(avtale.getSistEndret());
         avtaleMelding.setAnnullertTidspunkt(avtale.getAnnullertTidspunkt());
         avtaleMelding.setAnnullertGrunn(avtale.getAnnullertGrunn());
-        avtaleMelding.setSlettemerket(avtale.isSlettemerket());
+        avtaleMelding.setSlettemerket(false);
         avtaleMelding.setOpprettetAvArbeidsgiver(Avtaleopphav.ARBEIDSGIVER.equals(avtale.getOpphav()));
         avtaleMelding.setEnhetGeografisk(avtale.getEnhetGeografisk());
         avtaleMelding.setEnhetsnavnGeografisk(avtale.getEnhetsnavnGeografisk());

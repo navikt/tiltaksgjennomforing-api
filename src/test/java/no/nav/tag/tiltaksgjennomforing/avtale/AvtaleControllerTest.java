@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
@@ -129,7 +128,6 @@ public class AvtaleControllerTest {
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
@@ -161,7 +159,6 @@ public class AvtaleControllerTest {
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
@@ -206,7 +203,6 @@ public class AvtaleControllerTest {
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
@@ -247,7 +243,6 @@ public class AvtaleControllerTest {
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
@@ -312,7 +307,6 @@ public class AvtaleControllerTest {
                 persondataService,
                 norg2Client,
                 Set.of(navEnhet),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
@@ -378,7 +372,6 @@ public class AvtaleControllerTest {
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
@@ -457,7 +450,6 @@ public class AvtaleControllerTest {
                 persondataServiceIMetode,
                 norg2Client,
                 Collections.emptySet(),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
@@ -487,7 +479,6 @@ public class AvtaleControllerTest {
                 persondataServiceIMetode,
                 norg2Client,
                 Collections.emptySet(),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
@@ -517,7 +508,6 @@ public class AvtaleControllerTest {
                 persondataServiceIMetode,
                 norg2Client,
                 Collections.emptySet(),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
@@ -571,17 +561,6 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void viser_ikke_avbruttGrunn_til_arbeidsgiver() {
-        Avtale avtale = enArbeidstreningAvtale();
-        avtale.setAvbruttGrunn("Hemmelig");
-        var arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        værInnloggetSom(arbeidsgiver);
-        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        Avtale hentetAvtale = avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER, null);
-        assertThat(hentetAvtale.getAvbruttGrunn()).isNull();
-    }
-
-    @Test
     public void viser_ikke_navenheter_til_arbeidsgiver() {
         Avtale avtale = enArbeidstreningAvtale();
         var arbeidsgiver = TestData.enArbeidsgiver(avtale);
@@ -605,7 +584,6 @@ public class AvtaleControllerTest {
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
@@ -640,7 +618,6 @@ public class AvtaleControllerTest {
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
@@ -673,7 +650,6 @@ public class AvtaleControllerTest {
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
@@ -705,7 +681,6 @@ public class AvtaleControllerTest {
             persondataService,
             norg2Client,
             Collections.emptySet(),
-            new SlettemerkeProperties(),
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             featureToggleServiceMock,
