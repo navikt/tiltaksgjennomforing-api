@@ -532,25 +532,20 @@ public class AvtaleRepositoryTest {
         avtale1.setStatus(Status.GJENNOMFØRES);
         avtaleRepository.save(avtale1);
 
-        Avtale avtale2 = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avtale2.setVeilederNavIdent(new NavIdent("B123456"));
-        avtale2.setStatus(Status.AVBRUTT);
+        Avtale avtale2 = TestData.enInkluderingstilskuddAvtale();
+        avtale2.setVeilederNavIdent(new NavIdent("C123456"));
+        avtale2.setStatus(Status.KLAR_FOR_OPPSTART);
         avtaleRepository.save(avtale2);
 
-        Avtale avtale3 = TestData.enInkluderingstilskuddAvtale();
-        avtale3.setVeilederNavIdent(new NavIdent("C123456"));
-        avtale2.setStatus(Status.KLAR_FOR_OPPSTART);
+        Avtale avtale3 = TestData.enAvtaleMedAltUtfylt();
+        avtale3.setVeilederNavIdent(new NavIdent("D123456"));
+        avtale3.setStatus(Status.PÅBEGYNT);
         avtaleRepository.save(avtale3);
 
-        Avtale avtale4 = TestData.enAvtaleMedAltUtfylt();
-        avtale4.setVeilederNavIdent(new NavIdent("D123456"));
-        avtale2.setStatus(Status.PÅBEGYNT);
+        Avtale avtale4 = TestData.enMentorAvtaleUsignert();
+        avtale4.setVeilederNavIdent(new NavIdent("E123456"));
+        avtale4.setStatus(Status.MANGLER_GODKJENNING);
         avtaleRepository.save(avtale4);
-
-        Avtale avtale5 = TestData.enMentorAvtaleUsignert();
-        avtale5.setVeilederNavIdent(new NavIdent("E123456"));
-        avtale2.setStatus(Status.MANGLER_GODKJENNING);
-        avtaleRepository.save(avtale5);
 
         Page<Avtale> resultat1 = avtaleRepository.sokEtterAvtale(null, null, null, null, null, null, Status.GJENNOMFØRES, false, PageRequest.of(0, 10));
         assertThat(resultat1.getContent()).hasSize(1);

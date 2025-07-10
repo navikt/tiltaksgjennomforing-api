@@ -32,7 +32,7 @@ public abstract class Avtalepart<T extends Identifikator> {
     private final T identifikator;
 
     public boolean avtalenEksisterer(Avtale avtale) {
-        return !avtale.isFeilregistrert() && !avtale.isSlettemerket();
+        return !avtale.isFeilregistrert();
     }
 
     abstract Tilgang harTilgangTilAvtale(Avtale avtale);

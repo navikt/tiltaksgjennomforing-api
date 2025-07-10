@@ -77,12 +77,6 @@ public class AvtalestatusServiceTest {
         avsluttet.setStatus(Status.AVSLUTTET);
         avtaleRepository.save(avsluttet);
 
-        Avtale avbrutt  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avbrutt.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(1));
-        avbrutt.getGjeldendeInnhold().setSluttDato(LocalDate.now().plusDays(10));
-        avbrutt.setStatus(Status.AVBRUTT);
-        avtaleRepository.save(avbrutt);
-
         avtalestatusService.oppdaterAvtalerSomKreverEndringAvStatus();
 
         Status klarForOppstartStatus = avtaleRepository.findById(klarForOppstart.getId()).map(Avtale::getStatus).orElse(null);
@@ -102,9 +96,6 @@ public class AvtalestatusServiceTest {
 
         Status avsluttetStatus = avtaleRepository.findById(avsluttet.getId()).map(Avtale::getStatus).orElse(null);
         assertThat(avsluttetStatus).isEqualTo(Status.AVSLUTTET);
-
-        Status avbruttStatus = avtaleRepository.findById(avbrutt.getId()).map(Avtale::getStatus).orElse(null);
-        assertThat(avbruttStatus).isEqualTo(Status.AVBRUTT);
     }
 
     @Test
@@ -145,12 +136,6 @@ public class AvtalestatusServiceTest {
         avsluttet.setStatus(Status.AVSLUTTET);
         avtaleRepository.save(avsluttet);
 
-        Avtale avbrutt  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avbrutt.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
-        avbrutt.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        avbrutt.setStatus(Status.AVBRUTT);
-        avtaleRepository.save(avbrutt);
-
         avtalestatusService.oppdaterAvtalerSomKreverEndringAvStatus();
 
         Status klarForOppstartStatus = avtaleRepository.findById(klarForOppstart.getId()).map(Avtale::getStatus).orElse(null);
@@ -170,9 +155,6 @@ public class AvtalestatusServiceTest {
 
         Status avsluttetStatus = avtaleRepository.findById(avsluttet.getId()).map(Avtale::getStatus).orElse(null);
         assertThat(avsluttetStatus).isEqualTo(Status.AVSLUTTET);
-
-        Status avbruttStatus = avtaleRepository.findById(avbrutt.getId()).map(Avtale::getStatus).orElse(null);
-        assertThat(avbruttStatus).isEqualTo(Status.AVBRUTT);
     }
 
     @Test
@@ -213,12 +195,6 @@ public class AvtalestatusServiceTest {
         avsluttet.setStatus(Status.AVSLUTTET);
         avtaleRepository.save(avsluttet);
 
-        Avtale avbrutt  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avbrutt.getGjeldendeInnhold().setStartDato(LocalDate.now().plusDays(1));
-        avbrutt.getGjeldendeInnhold().setSluttDato(LocalDate.now().plusDays(2));
-        avbrutt.setStatus(Status.AVBRUTT);
-        avtaleRepository.save(avbrutt);
-
         avtalestatusService.oppdaterAvtalerSomKreverEndringAvStatus();
 
         Status klarForOppstartStatus = avtaleRepository.findById(klarForOppstart.getId()).map(Avtale::getStatus).orElse(null);
@@ -238,9 +214,6 @@ public class AvtalestatusServiceTest {
 
         Status avsluttetStatus = avtaleRepository.findById(avsluttet.getId()).map(Avtale::getStatus).orElse(null);
         assertThat(avsluttetStatus).isEqualTo(Status.AVSLUTTET);
-
-        Status avbruttStatus = avtaleRepository.findById(avbrutt.getId()).map(Avtale::getStatus).orElse(null);
-        assertThat(avbruttStatus).isEqualTo(Status.AVBRUTT);
     }
 
     @Test
@@ -280,12 +253,6 @@ public class AvtalestatusServiceTest {
         avsluttet.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
         avsluttet.setStatus(Status.AVSLUTTET);
         avtaleRepository.save(avsluttet);
-
-        Avtale avbrutt  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avbrutt.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
-        avbrutt.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        avbrutt.setStatus(Status.AVBRUTT);
-        avtaleRepository.save(avbrutt);
 
         avtalestatusService.oppdaterAvtalerSomKreverEndringAvStatus();
 
@@ -340,12 +307,6 @@ public class AvtalestatusServiceTest {
         avsluttet.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
         avsluttet.setStatus(Status.AVSLUTTET);
         avtaleRepository.save(avsluttet);
-
-        Avtale avbrutt  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avbrutt.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
-        avbrutt.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        avbrutt.setStatus(Status.AVBRUTT);
-        avtaleRepository.save(avbrutt);
 
         avtalestatusService.oppdaterAvtalerSomKreverEndringAvStatus();
 

@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonStatus;
+import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
@@ -84,8 +85,7 @@ public class AdminController {
             LocalDate sluttDato = avtale.getGjeldendeInnhold().getSluttDato();
             if (avtale.getGjeldendeInnhold().getLonnstilskuddProsent() > 67
                     && startDato.isBefore(sluttDato.minusMonths(12))
-                    && avtale.getAnnullertTidspunkt() == null
-                    && avtale.getAvbruttGrunn() == null
+                    && !Status.ANNULLERT.equals(avtale.getStatus())
                     && avtale.getGjeldendeInnhold().getSumLonnstilskudd() != null) {
 
                 avtale.reUtregnRedusert();
@@ -110,8 +110,7 @@ public class AdminController {
 
             if (avtale.getGjeldendeInnhold().getLonnstilskuddProsent() > 67
                     && startDato.isBefore(sluttDato.minusMonths(12))
-                    && avtale.getAnnullertTidspunkt() == null
-                    && avtale.getAvbruttGrunn() == null
+                    && !Status.ANNULLERT.equals(avtale.getStatus())
                     && avtale.getGjeldendeInnhold().getSumLonnstilskudd() != null) {
                 antallUnder67.getAndIncrement();
             }
