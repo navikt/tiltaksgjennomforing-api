@@ -11,7 +11,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -28,12 +28,12 @@ public class AvtaleMeldingEntitet extends AbstractAggregateRoot<AvtaleMeldingEnt
 
     @Enumerated(EnumType.STRING)
     private Status avtaleStatus;
-    private LocalDateTime tidspunkt;
+    private Instant tidspunkt;
     private String json;
     private boolean sendt;
     private boolean sendtCompacted;
 
-    public AvtaleMeldingEntitet(UUID meldingId, UUID avtaleId, LocalDateTime tidspunkt, HendelseType hendelseType, Status avtaleStatus, String meldingAsJson) {
+    public AvtaleMeldingEntitet(UUID meldingId, UUID avtaleId, Instant tidspunkt, HendelseType hendelseType, Status avtaleStatus, String meldingAsJson) {
         this.meldingId = meldingId;
         this.avtaleId = avtaleId;
         this.hendelseType = hendelseType;

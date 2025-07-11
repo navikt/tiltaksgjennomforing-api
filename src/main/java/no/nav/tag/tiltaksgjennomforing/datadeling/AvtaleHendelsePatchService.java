@@ -12,7 +12,7 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -80,7 +80,7 @@ public class AvtaleHendelsePatchService {
     private void lagMelding(Avtale avtale) {
         var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), new Identifikator("tiltaksgjennomforing-api"), AvtaleHendelseUtførtAvRolle.SYSTEM, HendelseType.PATCH);
         UUID meldingId = UUID.randomUUID();
-        LocalDateTime tidspunkt = Now.localDateTime();
+        Instant tidspunkt = Now.instant();
         try {
             String meldingSomString = objectMapper.writeValueAsString(melding);
             AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(meldingId, avtale.getId(), tidspunkt, HendelseType.PATCH, avtale.getStatus(), meldingSomString);
