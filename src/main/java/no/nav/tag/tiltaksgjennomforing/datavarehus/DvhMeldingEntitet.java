@@ -11,8 +11,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -23,7 +22,7 @@ public class DvhMeldingEntitet extends AbstractAggregateRoot<DvhMeldingEntitet> 
     @Id
     private UUID meldingId;
     private UUID avtaleId;
-    private LocalDateTime tidspunkt;
+    private Instant tidspunkt;
     @Enumerated(EnumType.STRING)
     private Status tiltakStatus;
     private String json;
@@ -32,7 +31,7 @@ public class DvhMeldingEntitet extends AbstractAggregateRoot<DvhMeldingEntitet> 
     public DvhMeldingEntitet(Avtale avtale, AvroTiltakHendelse avroTiltakHendelse) {
         this.meldingId = UUID.fromString(avroTiltakHendelse.getMeldingId());
         this.avtaleId = avtale.getId();
-        this.tidspunkt = LocalDateTime.ofInstant(avroTiltakHendelse.getTidspunkt(), ZoneId.systemDefault());
+        this.tidspunkt = avroTiltakHendelse.getTidspunkt();
         this.tiltakStatus = avtale.getStatus();
         this.json = avroTiltakHendelse.toString();
         registerEvent(new DvhMeldingOpprettet(this, avroTiltakHendelse));

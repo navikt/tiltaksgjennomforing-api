@@ -16,8 +16,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.sql.Date;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -67,29 +67,29 @@ public class DeltakerAlleredePaTiltakTest {
                 new Fnr("00000000000"),
                 Now.localDate(),
                 Now.localDate().plusMonths(2),
-                Now.localDateTime()
+                Now.instant()
         );
         settAvtaleInformasjon(
                 TestData.enMentorAvtaleUsignert(),
                 new Fnr("00000000000"),
                 Now.localDate(),
                 Now.localDate().plusMonths(2),
-                Now.localDateTime()
+                Now.instant()
         );
         settAvtaleInformasjon(
                 TestData.enInkluderingstilskuddAvtale(),
                 new Fnr("00000000000"),
                 Now.localDate(),
                 Now.localDate().plusMonths(2),
-                Now.localDateTime()
+                Now.instant()
         );
     }
 
-    private void settAvtaleInformasjon(Avtale avtale, Fnr deltakerFnr, LocalDate startDato, LocalDate sluttDato, LocalDateTime godkjentAvVeileder) {
+    private void settAvtaleInformasjon(Avtale avtale, Fnr deltakerFnr, LocalDate startDato, LocalDate sluttDato, Instant godkjentAvVeileder) {
         avtale.setDeltakerFnr(deltakerFnr);
         avtale.getGjeldendeInnhold().setStartDato(startDato);
         avtale.getGjeldendeInnhold().setSluttDato(sluttDato);
-        if(godkjentAvVeileder != null) {
+        if (godkjentAvVeileder != null) {
             avtale.getGjeldendeInnhold().setGodkjentAvVeileder(godkjentAvVeileder);
         }
         avtaleRepository.save(avtale);
@@ -165,21 +165,21 @@ public class DeltakerAlleredePaTiltakTest {
                 new Fnr("00000000000"),
                 Now.localDate().plusMonths(1).plusDays(1),
                 Now.localDate().plusMonths(3),
-                Now.localDateTime()
+                Now.instant()
         );
         settAvtaleInformasjon(
                 TestData.enMentorAvtaleUsignert(),
                 new Fnr("00000000000"),
                 Now.localDate(),
                 Now.localDate().plusMonths(2),
-                Now.localDateTime()
+                Now.instant()
         );
         settAvtaleInformasjon(
                 TestData.enInkluderingstilskuddAvtale(),
                 new Fnr("00000000000"),
                 Now.localDate(),
                 Now.localDate().plusMonths(2),
-                Now.localDateTime()
+                Now.instant()
         );
         List<AlleredeRegistrertAvtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
                 new Fnr("00000000000"),
@@ -200,21 +200,21 @@ public class DeltakerAlleredePaTiltakTest {
                 new Fnr("00000000000"),
                 Now.localDate().plusMonths(1).plusDays(1),
                 Now.localDate().plusMonths(3),
-                Now.localDateTime()
+                Now.instant()
         );
         settAvtaleInformasjon(
                 TestData.enMentorAvtaleUsignert(),
                 new Fnr("00000000000"),
                 Now.localDate(),
                 Now.localDate().plusMonths(2),
-                Now.localDateTime()
+                Now.instant()
         );
         settAvtaleInformasjon(
                 TestData.enInkluderingstilskuddAvtale(),
                 new Fnr("00000000000"),
                 Now.localDate(),
                 Now.localDate().plusMonths(2),
-                Now.localDateTime()
+                Now.instant()
         );
         List<AlleredeRegistrertAvtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
                 new Fnr("00000000000"),
@@ -235,7 +235,7 @@ public class DeltakerAlleredePaTiltakTest {
                 new Fnr("00000000000"),
                 Now.localDate().plusMonths(1).plusDays(1),
                 Now.localDate().plusMonths(3),
-                Now.localDateTime()
+                Now.instant()
         );
         settAvtaleInformasjon(
                 TestData.enArbeidstreningAvtale(),
@@ -249,14 +249,14 @@ public class DeltakerAlleredePaTiltakTest {
                 new Fnr("00000000000"),
                 Now.localDate(),
                 Now.localDate().plusMonths(2),
-                Now.localDateTime()
+                Now.instant()
         );
         settAvtaleInformasjon(
                 TestData.enInkluderingstilskuddAvtale(),
                 new Fnr("00000000000"),
                 Now.localDate(),
                 Now.localDate().plusMonths(2),
-                Now.localDateTime()
+                Now.instant()
         );
         List<AlleredeRegistrertAvtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
                 new Fnr("00000000000"),

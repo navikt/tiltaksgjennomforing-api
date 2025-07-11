@@ -79,8 +79,8 @@ public class VeilederTest {
         // GITT
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
 
         VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
@@ -118,7 +118,7 @@ public class VeilederTest {
         // GITT
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
 
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
@@ -191,7 +191,7 @@ public class VeilederTest {
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setOpphav(Avtaleopphav.ARENA);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
         VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
@@ -226,8 +226,8 @@ public class VeilederTest {
     @Test
     public void godkjennAvtale__kan_ikke_godkjenne_kode6_med_togglet_adressesperresjekk() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         when(featureToggleService.isEnabled(FeatureToggle.KODE_6_SPERRE)).thenReturn(true);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
@@ -258,8 +258,8 @@ public class VeilederTest {
     @Test
     public void godkjennAvtale__kan_godkjenne_kode6_uten_togglet_adressesperresjekk() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         when(featureToggleService.isEnabled(FeatureToggle.KODE_6_SPERRE)).thenReturn(false);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
@@ -291,7 +291,7 @@ public class VeilederTest {
     @Test
     public void godkjennForVeilederOgDeltaker__kan_ikke_godkjenne_kode6_med_togglet_adressesperresjekk() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         when(featureToggleService.isEnabled(FeatureToggle.KODE_6_SPERRE)).thenReturn(true);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
@@ -319,7 +319,7 @@ public class VeilederTest {
     public void godkjennForVeilederOgDeltaker__kan_godkjenne_kode6_uten_togglet_adressesperresjekk() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         when(featureToggleService.isEnabled(FeatureToggle.KODE_6_SPERRE)).thenReturn(false);
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
@@ -346,10 +346,10 @@ public class VeilederTest {
     @Test
     public void opphevGodkjenninger__kan_ikke_oppheve_godkjenninger_når_avtale_er_inngått() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.instant());
         Veileder veileder = TestData.enVeileder(avtale);
         assertFeilkode(
                 Feilkode.KAN_IKKE_OPPHEVE_GODKJENNINGER_VED_INNGAATT_AVTALE,
@@ -470,9 +470,9 @@ public class VeilederTest {
     @Test
     public void annullerAvtale__kan_annuller_avtale_etter_veiledergodkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         Veileder veileder = TestData.enVeileder(avtale);
         veileder.annullerAvtale("enGrunn", avtale);
         assertThat(avtale.getAnnullertTidspunkt()).isNotNull();
@@ -482,8 +482,8 @@ public class VeilederTest {
     @Test
     public void annullerAvtale__kan_annullere_avtale_foer_veiledergodkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         Veileder veileder = TestData.enVeileder(avtale);
         veileder.annullerAvtale("enGrunn", avtale);
         assertThat(avtale.getAnnullertTidspunkt()).isNotNull();

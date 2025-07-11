@@ -18,6 +18,7 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,7 +33,7 @@ public class ArenaEvent {
     private UUID id;
     private String arenaId;
     private String arenaTable;
-    private LocalDateTime created;
+    private Instant created;
     @Enumerated(EnumType.STRING)
     private ArenaEventStatus status;
     private int retryCount;
@@ -61,7 +62,7 @@ public class ArenaEvent {
             .operationTime(operationTime)
             .currentTs(currentTs)
             .payload(payload)
-            .created(Now.localDateTime())
+            .created(Now.instant())
             .retryCount(0)
             .status(status)
             .pos(pos)

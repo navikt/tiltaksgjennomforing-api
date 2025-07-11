@@ -6,10 +6,10 @@ import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggr
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigration;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigrationStatus;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaAgreementMigrationRepository;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -47,7 +47,7 @@ public class ArenaAgreementService {
                         .tiltakdeltakerId(entry.getValue().getTiltakdeltakerId())
                         .eksternId(entry.getValue().getEksternIdAsUuid().orElse(null))
                         .status(ArenaAgreementMigrationStatus.PROCESSING)
-                        .modified(LocalDateTime.now())
+                        .modified(Now.instant())
                         .tiltakstype(entry.getValue().getTiltakskode())
                         .build()
                 )

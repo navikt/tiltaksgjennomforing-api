@@ -9,6 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAvRolle;
+import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.Varsel;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarselFactory;
@@ -54,7 +55,7 @@ public class AdminService {
 
                 boolean skalBehandles = avtaleGodkjentAvArbeidsgiver != null
                     // arbeidsgiver godkjente før vi endret avtalekravene
-                    && avtaleGodkjentAvArbeidsgiver.isBefore(avtalekravDato)
+                    && DatoUtils.instantTilLocalDateTime(avtaleGodkjentAvArbeidsgiver).isBefore(avtalekravDato)
                     // trenger ikke varsle om endringer i krav på avtaler som er eldre enn 12 uker
                     && !eldreEnn12UkerOgAvsluttet;
 
