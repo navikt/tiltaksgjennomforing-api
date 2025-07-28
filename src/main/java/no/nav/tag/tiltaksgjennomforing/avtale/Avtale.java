@@ -554,7 +554,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
     }
 
-    void opphevGodkjenningerSomVeileder() {
+    public void opphevGodkjenningerSomVeileder() {
         boolean varGodkjentAvDeltaker = erGodkjentAvDeltaker();
         boolean varGodkjentAvArbeidsgiver = erGodkjentAvArbeidsgiver();
         opphevGodkjenninger();
