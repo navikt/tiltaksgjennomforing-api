@@ -381,7 +381,7 @@ public class AdminController {
         if (avtale.erAvtaleInngått()) {
             throw new IllegalStateException("Avtalen er allerede inngått");
         }
-        if (!Status.MANGLER_GODKJENNING.equals(avtale.getStatus())) {
+        if (!Status.MANGLER_GODKJENNING.equals(avtale.getStatus()) && !Status.PÅBEGYNT.equals(avtale.getStatus())) {
             throw new IllegalStateException("Ugyldig status på avtale");
         }
         if (!avtale.erGodkjentAvVeileder() || !avtale.erGodkjentAvArbeidsgiver() || !avtale.erGodkjentAvDeltaker()) {
