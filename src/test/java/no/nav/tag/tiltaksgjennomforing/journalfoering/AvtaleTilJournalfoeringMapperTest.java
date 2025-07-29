@@ -7,11 +7,13 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
 import no.nav.tag.tiltaksgjennomforing.avtale.MaalKategori;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -48,7 +50,7 @@ public class AvtaleTilJournalfoeringMapperTest {
         final UUID avtaleId = UUID.randomUUID();
         avtale.setId(avtaleId);
         avtale.getGjeldendeInnhold().setGodkjentPaVegneAv(true);
-        avtale.setOpprettetTidspunkt(Now.localDateTime());
+        avtale.setOpprettetTidspunkt(Now.instant());
         avtale.getGjeldendeInnhold().setStillingstype(Stillingstype.FAST);
 
         tilJournalfoering = tilJournalfoering(avtaleInnhold, null);
@@ -58,7 +60,7 @@ public class AvtaleTilJournalfoeringMapperTest {
         assertEquals(avtale.getDeltakerFnr().asString(), tilJournalfoering.getDeltakerFnr());
         assertEquals(avtale.getBedriftNr().asString(), tilJournalfoering.getBedriftNr());
         assertEquals(avtale.getVeilederNavIdent().asString(), tilJournalfoering.getVeilederNavIdent());
-        assertEquals(avtale.getOpprettetTidspunkt().toLocalDate(), tilJournalfoering.getOpprettet());
+        assertEquals(avtale.getOpprettetTidspunkt().atZone(ZoneId.systemDefault()).toLocalDate(), tilJournalfoering.getOpprettet());
         assertEquals(avtale.getGjeldendeInnhold().getDeltakerFornavn(), tilJournalfoering.getDeltakerFornavn());
         assertEquals(avtale.getGjeldendeInnhold().getDeltakerEtternavn(), tilJournalfoering.getDeltakerEtternavn());
         assertEquals(avtale.getGjeldendeInnhold().getDeltakerTlf(), tilJournalfoering.getDeltakerTlf());
@@ -75,9 +77,9 @@ public class AvtaleTilJournalfoeringMapperTest {
         assertEquals(avtale.getGjeldendeInnhold().getSluttDato(), tilJournalfoering.getSluttDato());
         assertEquals(avtale.getGjeldendeInnhold().getStillingprosent(), tilJournalfoering.getStillingprosent());
         assertEquals(avtale.getGjeldendeInnhold().getAntallDagerPerUke(), tilJournalfoering.getAntallDagerPerUke());
-        assertEquals(avtale.getGjeldendeInnhold().getGodkjentAvDeltaker().toLocalDate(), tilJournalfoering.getGodkjentAvDeltaker());
-        assertEquals(avtale.getGjeldendeInnhold().getGodkjentAvArbeidsgiver().toLocalDate(), tilJournalfoering.getGodkjentAvArbeidsgiver());
-        assertEquals(avtale.getGjeldendeInnhold().getGodkjentAvVeileder().toLocalDate(), tilJournalfoering.getGodkjentAvVeileder());
+        assertEquals(DatoUtils.instantTilLocalDate(avtale.getGjeldendeInnhold().getGodkjentAvDeltaker()), tilJournalfoering.getGodkjentAvDeltaker());
+        assertEquals(DatoUtils.instantTilLocalDate(avtale.getGjeldendeInnhold().getGodkjentAvArbeidsgiver()), tilJournalfoering.getGodkjentAvArbeidsgiver());
+        assertEquals(DatoUtils.instantTilLocalDate(avtale.getGjeldendeInnhold().getGodkjentAvVeileder()), tilJournalfoering.getGodkjentAvVeileder());
         assertEquals(avtale.getGjeldendeInnhold().isGodkjentPaVegneAv(), tilJournalfoering.isGodkjentPaVegneAv());
         assertEquals(avtale.getGjeldendeInnhold().getVersjon(), tilJournalfoering.getVersjon());
         assertEquals(avtale.getTiltakstype(), tilJournalfoering.getTiltakstype());

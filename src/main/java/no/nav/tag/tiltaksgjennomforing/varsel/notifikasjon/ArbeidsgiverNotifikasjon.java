@@ -15,7 +15,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNrConverter;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -27,7 +27,7 @@ public class ArbeidsgiverNotifikasjon {
 
     @Id
     private UUID id;
-    private LocalDateTime tidspunkt;
+    private Instant tidspunkt;
     private UUID avtaleId;
     @Enumerated(EnumType.STRING)
     private HendelseType hendelseType;
@@ -56,7 +56,7 @@ public class ArbeidsgiverNotifikasjon {
 
         ArbeidsgiverNotifikasjon notifikasjon = new ArbeidsgiverNotifikasjon();
         notifikasjon.id = UUID.randomUUID();
-        notifikasjon.tidspunkt = Now.localDateTime();
+        notifikasjon.tidspunkt = Now.instant();
         notifikasjon.avtaleId = avtale.getId();
         notifikasjon.hendelseType = hendelseType;
         notifikasjon.virksomhetsnummer = avtale.getBedriftNr();

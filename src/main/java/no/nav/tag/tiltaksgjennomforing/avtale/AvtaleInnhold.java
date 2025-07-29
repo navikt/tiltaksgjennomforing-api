@@ -25,8 +25,8 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -137,13 +137,13 @@ public class AvtaleInnhold {
     }
 
     // Godkjenning
-    private LocalDateTime godkjentAvDeltaker;
-    private LocalDateTime godkjentTaushetserklæringAvMentor;
-    private LocalDateTime godkjentAvArbeidsgiver;
-    private LocalDateTime godkjentAvVeileder;
-    private LocalDateTime godkjentAvBeslutter;
-    private LocalDateTime avtaleInngått;
-    private LocalDateTime ikrafttredelsestidspunkt;
+    private Instant godkjentAvDeltaker;
+    private Instant godkjentTaushetserklæringAvMentor;
+    private Instant godkjentAvArbeidsgiver;
+    private Instant godkjentAvVeileder;
+    private Instant godkjentAvBeslutter;
+    private Instant avtaleInngått;
+    private Instant ikrafttredelsestidspunkt;
     @Convert(converter = NavIdentConverter.class)
     private NavIdent godkjentAvNavIdent;
     @Convert(converter = NavIdentConverter.class)
