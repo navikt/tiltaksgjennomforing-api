@@ -8,6 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setGodkjentAvArbeidsgiver(avtaleInnhold.getGodkjentAvArbeidsgiver().toLocalDate());
         avtaleTilJournalfoering.setGodkjentAvVeileder(avtaleInnhold.getGodkjentAvVeileder().toLocalDate());
         avtaleTilJournalfoering.setGodkjentAvDeltaker(avtaleInnhold.getGodkjentAvDeltaker().toLocalDate());
-        avtaleTilJournalfoering.setOpprettet(avtale.getOpprettetTidspunkt().toLocalDate());
+        avtaleTilJournalfoering.setOpprettet(avtale.getOpprettetTidspunkt().atZone(ZoneId.systemDefault()).toLocalDate());
         avtaleTilJournalfoering.setAvtaleId(avtale.getId());
         avtaleTilJournalfoering.setAvtaleVersjonId(avtaleInnhold.getId());
         avtaleTilJournalfoering.setDeltakerFnr(identifikatorAsString(avtale.getDeltakerFnr()));
@@ -56,7 +57,7 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setOppfolging(avtaleInnhold.getOppfolging());
         avtaleTilJournalfoering.setTilrettelegging(avtaleInnhold.getTilrettelegging());
         avtaleTilJournalfoering.setStartDato(avtaleInnhold.getStartDato());
-        avtaleTilJournalfoering.setOpprettetAar(avtale.getOpprettetTidspunkt().getYear());
+        avtaleTilJournalfoering.setOpprettetAar(avtale.getOpprettetTidspunkt().atZone(ZoneId.systemDefault()).getYear());
         avtaleTilJournalfoering.setSluttDato(avtaleInnhold.getSluttDato());
         avtaleTilJournalfoering.setStillingprosent(avtale.getGjeldendeInnhold().getStillingprosent());
         avtaleTilJournalfoering.setAntallDagerPerUke(avtale.getGjeldendeInnhold().getAntallDagerPerUke());
@@ -86,9 +87,7 @@ public class AvtaleTilJournalfoeringMapper {
         }
 
         if (avtale.getTiltakstype().equals(Tiltakstype.VTAO)) {
-            avtaleTilJournalfoering.setSumLonnstilskudd(
-                    VTAO_SATS.hentGjeldendeSats(avtale.getOpprettetTidspunkt().toLocalDate())
-            );
+            avtaleTilJournalfoering.setSumLonnstilskudd(VTAO_SATS.hentGjeldendeSats(avtale.getOpprettetTidspunkt()));
         }
 
         return avtaleTilJournalfoering;

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -48,7 +49,7 @@ public class AvtaleTilJournalfoeringMapperTest {
         final UUID avtaleId = UUID.randomUUID();
         avtale.setId(avtaleId);
         avtale.getGjeldendeInnhold().setGodkjentPaVegneAv(true);
-        avtale.setOpprettetTidspunkt(Now.localDateTime());
+        avtale.setOpprettetTidspunkt(Now.instant());
         avtale.getGjeldendeInnhold().setStillingstype(Stillingstype.FAST);
 
         tilJournalfoering = tilJournalfoering(avtaleInnhold, null);
@@ -58,7 +59,7 @@ public class AvtaleTilJournalfoeringMapperTest {
         assertEquals(avtale.getDeltakerFnr().asString(), tilJournalfoering.getDeltakerFnr());
         assertEquals(avtale.getBedriftNr().asString(), tilJournalfoering.getBedriftNr());
         assertEquals(avtale.getVeilederNavIdent().asString(), tilJournalfoering.getVeilederNavIdent());
-        assertEquals(avtale.getOpprettetTidspunkt().toLocalDate(), tilJournalfoering.getOpprettet());
+        assertEquals(avtale.getOpprettetTidspunkt().atZone(ZoneId.systemDefault()).toLocalDate(), tilJournalfoering.getOpprettet());
         assertEquals(avtale.getGjeldendeInnhold().getDeltakerFornavn(), tilJournalfoering.getDeltakerFornavn());
         assertEquals(avtale.getGjeldendeInnhold().getDeltakerEtternavn(), tilJournalfoering.getDeltakerEtternavn());
         assertEquals(avtale.getGjeldendeInnhold().getDeltakerTlf(), tilJournalfoering.getDeltakerTlf());

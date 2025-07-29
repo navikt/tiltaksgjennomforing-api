@@ -35,6 +35,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -315,7 +317,8 @@ public class ArenaAgreementProcessingService {
         getOppfolgingsenhetnavnFromNorg2(avtale.getEnhetOppfolging()).ifPresent(avtale::setEnhetsnavnOppfolging);
 
         AvtaleInnhold avtaleinnhold = avtale.getGjeldendeInnhold();
-        Optional.ofNullable(agreementAggregate.getRegDato()).ifPresent(avtale::setOpprettetTidspunkt);
+        Optional.ofNullable(agreementAggregate.getRegDato())
+            .ifPresent(regdato -> avtale.setOpprettetTidspunkt(regdato.atZone(ZoneId.systemDefault()).toInstant()));
         agreementAggregate.getAntallDagerPrUke().ifPresent(avtaleinnhold::setAntallDagerPerUke);
         agreementAggregate.getProsentDeltid().ifPresent(avtaleinnhold::setStillingprosent);
         agreementAggregate.findStartdato().ifPresent(avtaleinnhold::setStartDato);
