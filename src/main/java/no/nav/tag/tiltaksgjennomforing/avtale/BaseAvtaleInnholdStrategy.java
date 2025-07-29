@@ -66,6 +66,6 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
     @Override
     public void endreSluttDato(LocalDate nySluttDato) {
         avtaleInnhold.setSluttDato(nySluttDato);
-        avtaleInnhold.setIkrafttredelsestidspunkt(Now.instant());
+        avtaleInnhold.setIkrafttredelsestidspunkt(Now.localDateTime());
     }
 }

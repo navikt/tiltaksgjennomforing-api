@@ -11,7 +11,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -30,8 +30,8 @@ public class ArenaAgreementMigration {
     private UUID avtaleId;
     private UUID eksternId;
     @Transient
-    private Instant created;
-    private Instant modified;
+    private LocalDateTime created;
+    private LocalDateTime modified;
     @Enumerated(EnumType.STRING)
     @Convert(converter = ArenaTiltakskode.Convert.class)
     private ArenaTiltakskode tiltakstype;

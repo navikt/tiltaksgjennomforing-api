@@ -10,7 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -19,7 +19,7 @@ import java.util.UUID;
 public class Sporingslogg {
     @Id
     private UUID id;
-    private Instant tidspunkt;
+    private LocalDateTime tidspunkt;
     private UUID avtaleId;
     @Enumerated(EnumType.STRING)
     private HendelseType hendelseType;
@@ -27,7 +27,7 @@ public class Sporingslogg {
     public static Sporingslogg nyHendelse(Avtale avtale, HendelseType hendelseType) {
         Sporingslogg sporingslogg = new Sporingslogg();
         sporingslogg.id = UUID.randomUUID();
-        sporingslogg.tidspunkt = Now.instant();
+        sporingslogg.tidspunkt = Now.localDateTime();
         sporingslogg.avtaleId = avtale.getId();
         sporingslogg.hendelseType = hendelseType;
         return sporingslogg;

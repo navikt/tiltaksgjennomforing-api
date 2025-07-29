@@ -392,12 +392,12 @@ public class AvtaleTest {
     public void test_riktig_beregning_NEDSATT_ARBEIDSEVNE_Midlertidig_Lonnstilskudd_Avtale_som_varer_i_2_aar() {
         Now.fixedDate(LocalDate.of(2024, 7, 29));
         Avtale avtale = TestData.enMidLonnstilskuddAvtaleMedVarigTilpassetSatsMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
-        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
-        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
-        avtale.getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
+        avtale.getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         avtale.getGjeldendeInnhold().setJournalpostId("1");
         double otpSats = 0.048;
         BigDecimal feriepengesats = new BigDecimal("0.166");
@@ -945,10 +945,10 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusWeeks(4).minusDays(1));
         avtale.getGjeldendeInnhold().setSluttDato(avtale.getGjeldendeInnhold().getStartDato().plusWeeks(4));
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
-        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
-        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
         avtale.setStatus(Status.fra(avtale));
         assertThat(avtale.getStatus()).isEqualTo(Status.AVSLUTTET);
     }
@@ -958,10 +958,10 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusWeeks(4));
         avtale.getGjeldendeInnhold().setSluttDato(avtale.getGjeldendeInnhold().getStartDato().plusWeeks(4));
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
-        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
-        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
         avtale.setStatus(Status.fra(avtale));
         assertThat(avtale.getStatus()).isEqualTo(Status.GJENNOMFØRES);
     }
@@ -971,10 +971,10 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate());
         avtale.getGjeldendeInnhold().setSluttDato(avtale.getGjeldendeInnhold().getStartDato().plusWeeks(4));
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
-        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
-        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
         avtale.setStatus(Status.fra(avtale));
         assertThat(avtale.getStatus()).isEqualTo(Status.GJENNOMFØRES);
     }
@@ -984,10 +984,10 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().plusDays(1));
         avtale.getGjeldendeInnhold().setSluttDato(avtale.getGjeldendeInnhold().getStartDato().plusWeeks(4));
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
-        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
-        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
         avtale.setStatus(Status.fra(avtale));
         assertThat(avtale.getStatus()).isEqualTo(Status.KLAR_FOR_OPPSTART);
     }
@@ -1004,10 +1004,10 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().plusDays(1));
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusDays(1).plusMonths(1).minusDays(1));
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
-        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
-        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
         avtale.setStatus(Status.fra(avtale));
         assertThat(avtale.getStatus()).isEqualTo(Status.KLAR_FOR_OPPSTART);
     }
@@ -1019,10 +1019,10 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusDays(1));
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(1).plusMonths(1));
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
-        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
-        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
         avtale.getGjeldendeInnhold().setDeltakerTlf(null);
         avtale.setStatus(Status.fra(avtale));
         assertThat(avtale.getStatus()).isEqualTo(Status.GJENNOMFØRES);
@@ -1113,7 +1113,7 @@ public class AvtaleTest {
     public void utforEndring__kalles_ved_godkjennForVeilederOgDeltaker() throws InterruptedException {
         Instant førEndringen = Now.instant();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         Thread.sleep(10);
         avtale.godkjennForVeilederOgDeltaker(TestData.enNavIdent(), TestData.enGodkjentPaVegneGrunn());
         assertThat(avtale.getSistEndret()).isAfter(førEndringen);

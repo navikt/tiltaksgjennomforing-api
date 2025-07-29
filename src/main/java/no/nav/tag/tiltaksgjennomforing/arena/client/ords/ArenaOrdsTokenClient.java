@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Component
 public class ArenaOrdsTokenClient {
@@ -61,11 +61,11 @@ public class ArenaOrdsTokenClient {
             return true;
         }
 
-        Instant expiresAt = token.getCachedAt()
+        LocalDateTime expiresAt = token.getCachedAt()
             .plusSeconds(token.getToken().expiresIn())
             .minusSeconds(expireEarlySeconds);
 
-        return Now.instant().isAfter(expiresAt);
+        return Now.localDateTime().isAfter(expiresAt);
     }
 
 

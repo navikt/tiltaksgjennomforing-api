@@ -7,6 +7,9 @@ import no.nav.tag.tiltaksgjennomforing.avtale.ForkortetGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -55,12 +58,12 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setReservert(avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn() != null && avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn().isReservert());
         hendelse.setDigitalKompetanse(avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn() != null && avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn().isDigitalKompetanse());
         hendelse.setArenaMigreringDeltaker(avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn() != null && avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn().isArenaMigreringDeltaker());
-        hendelse.setGodkjentAvDeltaker(avtale.getGjeldendeInnhold().getGodkjentAvDeltaker());
-        hendelse.setGodkjentAvArbeidsgiver(avtale.getGjeldendeInnhold().getGodkjentAvArbeidsgiver());
-        hendelse.setGodkjentAvArbeidsgiver(avtale.getGjeldendeInnhold().getGodkjentAvArbeidsgiver());
-        hendelse.setGodkjentAvVeileder(avtale.getGjeldendeInnhold().getGodkjentAvVeileder());
-        hendelse.setGodkjentAvBeslutter(avtale.getGjeldendeInnhold().getGodkjentAvBeslutter());
-        hendelse.setAvtaleInngaatt(avtale.getGjeldendeInnhold().getAvtaleInngått());
+        hendelse.setGodkjentAvDeltaker(toInstant(avtale.getGjeldendeInnhold().getGodkjentAvDeltaker()));
+        hendelse.setGodkjentAvArbeidsgiver(toInstant(avtale.getGjeldendeInnhold().getGodkjentAvArbeidsgiver()));
+        hendelse.setGodkjentAvArbeidsgiver(toInstant(avtale.getGjeldendeInnhold().getGodkjentAvArbeidsgiver()));
+        hendelse.setGodkjentAvVeileder(toInstant(avtale.getGjeldendeInnhold().getGodkjentAvVeileder()));
+        hendelse.setGodkjentAvBeslutter(toInstant(avtale.getGjeldendeInnhold().getGodkjentAvBeslutter()));
+        hendelse.setAvtaleInngaatt(toInstant(avtale.getGjeldendeInnhold().getAvtaleInngått()));
         hendelse.setUtfortAv(utførtAv);
         hendelse.setEnhetOppfolging(avtale.getEnhetOppfolging());
         hendelse.setEnhetGeografisk(avtale.getEnhetGeografisk());
@@ -77,5 +80,12 @@ public class AvroTiltakHendelseFabrikk {
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
+    }
+
+    private static Instant toInstant(LocalDateTime tidspunkt) {
+        if (tidspunkt == null) {
+            return null;
+        }
+        return tidspunkt.atZone(ZoneId.systemDefault()).toInstant();
     }
 }

@@ -9,7 +9,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -85,7 +84,7 @@ public class TilskuddsperiodeGodkjentMelding {
                 tilskuddsperiode.getGodkjentAvNavIdent(),
                 avtale.getGjeldendeInnhold().getVeilederFornavn(),
                 avtale.getGjeldendeInnhold().getVeilederEtternavn(),
-                DatoUtils.instantTilLocalDateTime(tilskuddsperiode.getGodkjentTidspunkt()),
+                tilskuddsperiode.getGodkjentTidspunkt(),
                 avtale.getGjeldendeInnhold().getArbeidsgiverKontonummer()
         );
     }

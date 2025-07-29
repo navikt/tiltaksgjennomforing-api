@@ -49,7 +49,7 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaler.add(TestData.enAvtaleMedFlereVersjoner());
         avtaler.add(TestData.enAvtaleKlarForOppstart());
         Avtale lilly = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        lilly.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
+        lilly.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtaler.add(lilly);
         avtaler.add(TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder());
 

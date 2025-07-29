@@ -21,7 +21,7 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Slf4j
@@ -73,7 +73,7 @@ public class AvtalestatusService {
     }
 
     private void sendAvtaleMelding(Avtale avtale) {
-        Instant tidspunkt = Now.instant();
+        LocalDateTime tidspunkt = Now.localDateTime();
         AvtaleMelding avtaleMelding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), new Identifikator("tiltaksgjennomforing-api"), AvtaleHendelseUtførtAvRolle.SYSTEM, HendelseType.STATUSENDRING);
         try {
             String meldingSomString = objectMapper.writeValueAsString(avtaleMelding);

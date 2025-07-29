@@ -105,10 +105,10 @@ public class InternalAvtaleControllerTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         avtale.setId(AVTALE_ID_1);
         Avtale avtale2 = TestData.enAvtaleMedFlereVersjoner();
-        avtale2.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
+        avtale2.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale2.setId(AVTALE_ID_2);
         Avtale avtale3 = TestData.enAvtaleMedFlereVersjoner();
-        avtale3.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
+        avtale3.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale3.setId(AVTALE_ID_3);
 
         return Arrays.asList(avtale, avtale2, avtale3);
@@ -116,8 +116,9 @@ public class InternalAvtaleControllerTest {
 
     private static List<Avtale> enAvtaleMedTilskudsPerioderSomSkalJournalføres() {
         Avtale avtale4 = TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate(), Now.localDate());
-        avtale4.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
+        avtale4.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale4.setId(AVTALE_ID_3);
         return Arrays.asList(avtale4);
     }
 }
+

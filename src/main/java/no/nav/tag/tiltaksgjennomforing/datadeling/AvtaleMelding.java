@@ -19,7 +19,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -156,7 +155,7 @@ public class AvtaleMelding {
         avtaleMelding.setBedriftNr(avtale.getBedriftNr());
         avtaleMelding.setVeilederNavIdent(avtale.getVeilederNavIdent());
         avtaleMelding.setTiltakstype(avtale.getTiltakstype());
-        avtaleMelding.setOpprettetTidspunkt(DatoUtils.instantTilLocalDateTime(avtale.getOpprettetTidspunkt()));
+        avtaleMelding.setOpprettetTidspunkt(avtale.getOpprettetTidspunkt());
         avtaleMelding.setAvtaleId(avtale.getId());
         avtaleMelding.setAvtaleNr(avtale.getAvtaleNr());
         avtaleMelding.setSistEndret(avtale.getSistEndret());
@@ -220,13 +219,13 @@ public class AvtaleMelding {
         avtaleMelding.setStillingstype(avtaleInnhold.getStillingstype());
         avtaleMelding.setInkluderingstilskuddBegrunnelse(avtaleInnhold.getInkluderingstilskuddBegrunnelse());
         avtaleMelding.setInkluderingstilskuddTotalBeløp(avtaleInnhold.inkluderingstilskuddTotalBeløp());
-        avtaleMelding.setGodkjentAvDeltaker(DatoUtils.instantTilLocalDateTime(avtaleInnhold.getGodkjentAvDeltaker()));
-        avtaleMelding.setGodkjentTaushetserklæringAvMentor(DatoUtils.instantTilLocalDateTime(avtaleInnhold.getGodkjentTaushetserklæringAvMentor()));
-        avtaleMelding.setGodkjentAvArbeidsgiver(DatoUtils.instantTilLocalDateTime(avtaleInnhold.getGodkjentAvArbeidsgiver()));
-        avtaleMelding.setGodkjentAvVeileder(DatoUtils.instantTilLocalDateTime(avtaleInnhold.getGodkjentAvVeileder()));
-        avtaleMelding.setGodkjentAvBeslutter(DatoUtils.instantTilLocalDateTime(avtaleInnhold.getGodkjentAvBeslutter()));
-        avtaleMelding.setAvtaleInngått(DatoUtils.instantTilLocalDateTime(avtaleInnhold.getAvtaleInngått()));
-        avtaleMelding.setIkrafttredelsestidspunkt(DatoUtils.instantTilLocalDateTime(avtaleInnhold.getIkrafttredelsestidspunkt()));
+        avtaleMelding.setGodkjentAvDeltaker(avtaleInnhold.getGodkjentAvDeltaker());
+        avtaleMelding.setGodkjentTaushetserklæringAvMentor(avtaleInnhold.getGodkjentTaushetserklæringAvMentor());
+        avtaleMelding.setGodkjentAvArbeidsgiver(avtaleInnhold.getGodkjentAvArbeidsgiver());
+        avtaleMelding.setGodkjentAvVeileder(avtaleInnhold.getGodkjentAvVeileder());
+        avtaleMelding.setGodkjentAvBeslutter(avtaleInnhold.getGodkjentAvBeslutter());
+        avtaleMelding.setAvtaleInngått(avtaleInnhold.getAvtaleInngått());
+        avtaleMelding.setIkrafttredelsestidspunkt(avtaleInnhold.getIkrafttredelsestidspunkt());
         avtaleMelding.setGodkjentAvNavIdent(avtaleInnhold.getGodkjentAvNavIdent());
         avtaleMelding.setGodkjentAvBeslutterNavIdent(avtaleInnhold.getGodkjentAvBeslutterNavIdent());
         avtaleMelding.setEnhetKostnadssted(avtaleInnhold.getEnhetKostnadssted());

@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -38,9 +38,9 @@ public class AlleredeRegistrertAvtale {
 
     private LocalDate startDato;
     private LocalDate sluttDato;
-    private Instant godkjentAvVeileder;
-    private Instant godkjentAvBeslutter;
-    private Instant avtaleInngått;
+    private LocalDateTime godkjentAvVeileder;
+    private LocalDateTime godkjentAvBeslutter;
+    private LocalDateTime avtaleInngått;
 
     private static List<AlleredeRegistrertAvtale> filtrerAvtaler(Stream<Avtale> avtaler) {
         return avtaler.map(AlleredeRegistrertAvtale::setAvtaleFelter).toList();

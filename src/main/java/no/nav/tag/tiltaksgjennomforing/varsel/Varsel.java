@@ -19,7 +19,7 @@ import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAvRolle;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -42,7 +42,7 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
     private HendelseType hendelseType;
     private boolean bjelle;
     private UUID avtaleId;
-    private Instant tidspunkt;
+    private LocalDateTime tidspunkt;
     @Enumerated(EnumType.STRING)
     private Avtalerolle mottaker;
     @Enumerated(EnumType.STRING)
@@ -90,7 +90,7 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
     ) {
         Varsel varsel = new Varsel();
         varsel.id = UUID.randomUUID();
-        varsel.tidspunkt = Now.instant();
+        varsel.tidspunkt = Now.localDateTime();
         varsel.identifikator = identifikator;
         varsel.utførtAvIdentifikator = utførtAvIdentifikator;
         varsel.tekst = lagVarselTekst(avtale, tilskuddPeriode, hendelseType);

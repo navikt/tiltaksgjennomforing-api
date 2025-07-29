@@ -3,7 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record VarselRespons(
@@ -13,7 +13,7 @@ public record VarselRespons(
         HendelseType hendelseType,
         boolean bjelle,
         UUID avtaleId,
-        Instant tidspunkt,
+        LocalDateTime tidspunkt,
         String utførtAv
 ) {
     public VarselRespons(Varsel varsel, Avtalerolle innloggetPart) {

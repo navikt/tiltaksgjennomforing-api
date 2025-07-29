@@ -101,6 +101,7 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
@@ -147,7 +148,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     @Column(updatable = false)
     private Tiltakstype tiltakstype;
 
-    private Instant opprettetTidspunkt;
+    private LocalDateTime opprettetTidspunkt;
 
     @Generated(event = EventType.INSERT)
     private Integer avtaleNr;
@@ -218,7 +219,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
 
         this.id = UUID.randomUUID();
-        this.opprettetTidspunkt = Now.instant();
+        this.opprettetTidspunkt = Now.localDateTime();
         this.deltakerFnr = opprettAvtale.getDeltakerFnr();
         this.bedriftNr = opprettAvtale.getBedriftNr();
         this.fnrOgBedrift = new FnrOgBedrift(this.deltakerFnr, this.bedriftNr);
@@ -240,7 +241,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
 
         this.id = UUID.randomUUID();
-        this.opprettetTidspunkt = Now.instant();
+        this.opprettetTidspunkt = Now.localDateTime();
         this.deltakerFnr = opprettMentorAvtale.getDeltakerFnr();
         this.mentorFnr = opprettMentorAvtale.getMentorFnr();
         this.bedriftNr = opprettMentorAvtale.getBedriftNr();
@@ -342,7 +343,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
 
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRET_AV_ARENA);
-        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
+        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
 
         if (EndreAvtaleArena.Handling.AVSLUTT == action) {
             LocalDate sluttDato = Stream.of(endreAvtaleArena.getSluttdato(), gjeldendeInnhold.getSluttDato())
@@ -472,32 +473,32 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     @JsonProperty
-    public Instant godkjentAvDeltaker() {
+    public LocalDateTime godkjentAvDeltaker() {
         return gjeldendeInnhold.getGodkjentAvDeltaker();
     }
 
     @JsonProperty
-    public Instant godkjentAvMentor() {
+    public LocalDateTime godkjentAvMentor() {
         return gjeldendeInnhold.getGodkjentTaushetserklæringAvMentor();
     }
 
     @JsonProperty
-    public Instant godkjentAvArbeidsgiver() {
+    public LocalDateTime godkjentAvArbeidsgiver() {
         return gjeldendeInnhold.getGodkjentAvArbeidsgiver();
     }
 
     @JsonProperty
-    public Instant godkjentAvVeileder() {
+    public LocalDateTime godkjentAvVeileder() {
         return gjeldendeInnhold.getGodkjentAvVeileder();
     }
 
     @JsonProperty
-    public Instant godkjentAvBeslutter() {
+    public LocalDateTime godkjentAvBeslutter() {
         return gjeldendeInnhold.getGodkjentAvBeslutter();
     }
 
     @JsonProperty
-    private Instant avtaleInngått() {
+    private LocalDateTime avtaleInngått() {
         return gjeldendeInnhold.getAvtaleInngått();
     }
 
@@ -604,7 +605,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (erGodkjentAvArbeidsgiver()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_ARBEIDSGIVER_HAR_ALLEREDE_GODKJENT);
         }
-        gjeldendeInnhold.setGodkjentAvArbeidsgiver(Now.instant());
+        gjeldendeInnhold.setGodkjentAvArbeidsgiver(Now.localDateTime());
         utforEndring(new GodkjentAvArbeidsgiver(this, utfortAv));
     }
 
@@ -635,7 +636,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
         }
 
-        Instant tidspunkt = Now.instant();
+        LocalDateTime tidspunkt = Now.localDateTime();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
@@ -643,7 +644,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         utforEndring(new GodkjentAvVeileder(this, utfortAv));
     }
 
-    private void inngåAvtale(Instant tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
+    private void inngåAvtale(LocalDateTime tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
         if (!utførtAvRolle.erInternBruker()) {
             throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_INNGAA_AVTALE);
         }
@@ -698,7 +699,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
 
         paVegneAvGrunn.valgtMinstEnGrunn();
-        Instant tidspunkt = Now.instant();
+        LocalDateTime tidspunkt = Now.localDateTime();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
         gjeldendeInnhold.setGodkjentAvDeltaker(tidspunkt);
         gjeldendeInnhold.setGodkjentPaVegneAv(true);
@@ -737,7 +738,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
 
         godkjentPaVegneAvArbeidsgiverGrunn.valgtMinstEnGrunn();
-        Instant tidspunkt = Now.instant();
+        LocalDateTime tidspunkt = Now.localDateTime();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
         gjeldendeInnhold.setGodkjentAvArbeidsgiver(tidspunkt);
         gjeldendeInnhold.setGodkjentPaVegneAvArbeidsgiver(true);
@@ -776,7 +777,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
 
         paVegneAvDeltakerOgArbeidsgiverGrunn.valgtMinstEnGrunn();
-        Instant tidspunkt = Now.instant();
+        LocalDateTime tidspunkt = Now.localDateTime();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
         gjeldendeInnhold.setGodkjentAvDeltaker(tidspunkt);
         gjeldendeInnhold.setGodkjentAvArbeidsgiver(tidspunkt);
@@ -795,7 +796,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (erGodkjentAvDeltaker()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_DELTAKER_HAR_ALLEREDE_GODKJENT);
         }
-        gjeldendeInnhold.setGodkjentAvDeltaker(Now.instant());
+        gjeldendeInnhold.setGodkjentAvDeltaker(Now.localDateTime());
         utforEndring(new GodkjentAvDeltaker(this, utfortAv));
     }
 
@@ -803,7 +804,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (erGodkjentTaushetserklæringAvMentor()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_MENTOR_HAR_ALLEREDE_GODKJENT);
         }
-        gjeldendeInnhold.setGodkjentTaushetserklæringAvMentor(Now.instant());
+        gjeldendeInnhold.setGodkjentTaushetserklæringAvMentor(Now.localDateTime());
         utforEndring(new SignertAvMentor(this, utfortAv));
     }
 
@@ -950,14 +951,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         Integer resendingsnummer = finnResendingsNummer(gjeldendePeriode);
         gjeldendePeriode.godkjenn(beslutter, enhet);
         if (!erAvtaleInngått()) {
-            Instant tidspunkt = Now.instant();
+            LocalDateTime tidspunkt = Now.localDateTime();
             godkjennForBeslutter(tidspunkt, beslutter);
             inngåAvtale(tidspunkt, Avtalerolle.BESLUTTER, beslutter);
         }
         utforEndring(new TilskuddsperiodeGodkjent(this, gjeldendePeriode, beslutter, resendingsnummer));
     }
 
-    private void godkjennForBeslutter(Instant tidspunkt, NavIdent beslutter) {
+    private void godkjennForBeslutter(LocalDateTime tidspunkt, NavIdent beslutter) {
         gjeldendeInnhold.setGodkjentAvBeslutter(tidspunkt);
         gjeldendeInnhold.setGodkjentAvBeslutterNavIdent(beslutter);
     }
@@ -1447,7 +1448,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_TILSKUDDSBEREGNING);
         this.hentBeregningStrategi().endreBeregning(this, endreTilskuddsberegning);
         endreBeløpOgProsentITilskuddsperioder();
-        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
+        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         utforEndring(new TilskuddsberegningEndret(this, utførtAv));
     }
 
@@ -1535,7 +1536,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_KONTAKTINFO);
         getGjeldendeInnhold().endreKontaktInfo(endreKontaktInformasjon);
-        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
+        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         utforEndring(new KontaktinformasjonEndret(this, utførtAv));
     }
@@ -1565,7 +1566,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_STILLING);
         getGjeldendeInnhold().endreStillingsInfo(endreStillingsbeskrivelse);
-        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
+        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         getGjeldendeInnhold().reberegnLønnstilskudd();
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         utforEndring(new StillingsbeskrivelseEndret(this, utførtAv));
@@ -1589,7 +1590,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
         gjeldendeInnhold = gjeldendeInnhold.nyGodkjentVersjon(AvtaleInnholdType.ENDRE_OPPFØLGING_OG_TILRETTELEGGING);
         gjeldendeInnhold.endreOppfølgingOgTilretteleggingInfo(endreOppfølgingOgTilrettelegging);
-        gjeldendeInnhold.setIkrafttredelsestidspunkt(Now.instant());
+        gjeldendeInnhold.setIkrafttredelsestidspunkt(Now.localDateTime());
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         utforEndring(new OppfølgingOgTilretteleggingEndret(this, utførtAv));
     }
@@ -1619,7 +1620,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             .toList();
         getGjeldendeInnhold().getMaal().addAll(nyeMål);
         getGjeldendeInnhold().getMaal().forEach(m -> m.setAvtaleInnhold(getGjeldendeInnhold()));
-        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
+        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         utforEndring(new MålEndret(this, utførtAv));
     }
@@ -1662,7 +1663,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
         getGjeldendeInnhold().getInkluderingstilskuddsutgift().addAll(nyeInkluderingstilskuddsutgifter);
         getGjeldendeInnhold().getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(getGjeldendeInnhold()));
-        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
+        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         utforEndring(new InkluderingstilskuddEndret(this, utførtAv));
     }
@@ -1683,7 +1684,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_OM_MENTOR);
         getGjeldendeInnhold().endreOmMentor(endreOmMentor);
-        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
+        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         utforEndring(new OmMentorEndret(this, utførtAv));
     }

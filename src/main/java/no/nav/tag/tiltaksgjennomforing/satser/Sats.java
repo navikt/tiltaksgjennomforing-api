@@ -1,8 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.satser;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -67,10 +65,6 @@ public class Sats {
 
     public NavigableMap<LocalDate, Integer> getSatsePerioder() {
         return satsePerioder;
-    }
-
-    public Integer hentGjeldendeSats(Instant instant) {
-        return hentGjeldendeSats(instant.atZone(ZoneId.systemDefault()).toLocalDate());
     }
 
     public Integer hentGjeldendeSats(LocalDate dato) {
