@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 public class CachedOrdsToken {
     private final OrdsToken token;
-    private final LocalDateTime cachedAt = Now.localDateTime();
+    private final Instant cachedAt = Now.instant();
 
     public CachedOrdsToken(OrdsToken token) {
         this.token = token;
