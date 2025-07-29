@@ -34,6 +34,6 @@ public class DatoUtils {
     }
 
     private static ZonedDateTime instantTilZonedDateTime(Instant instant) {
-        return instant.atZone(ZoneId.of("Europe/Oslo"));
+        return instant.atZone(ZoneId.systemDefault());
     }
 }
