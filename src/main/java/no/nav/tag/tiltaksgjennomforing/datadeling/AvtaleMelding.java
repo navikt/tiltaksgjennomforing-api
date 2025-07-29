@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -155,7 +156,7 @@ public class AvtaleMelding {
         avtaleMelding.setBedriftNr(avtale.getBedriftNr());
         avtaleMelding.setVeilederNavIdent(avtale.getVeilederNavIdent());
         avtaleMelding.setTiltakstype(avtale.getTiltakstype());
-        avtaleMelding.setOpprettetTidspunkt(avtale.getOpprettetTidspunkt());
+        avtaleMelding.setOpprettetTidspunkt(avtale.getOpprettetTidspunkt().atZone(ZoneId.systemDefault()).toLocalDateTime());
         avtaleMelding.setAvtaleId(avtale.getId());
         avtaleMelding.setAvtaleNr(avtale.getAvtaleNr());
         avtaleMelding.setSistEndret(avtale.getSistEndret());

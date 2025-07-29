@@ -148,7 +148,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     @Column(updatable = false)
     private Tiltakstype tiltakstype;
 
-    private LocalDateTime opprettetTidspunkt;
+    private Instant opprettetTidspunkt;
 
     @Generated(event = EventType.INSERT)
     private Integer avtaleNr;
@@ -219,7 +219,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
 
         this.id = UUID.randomUUID();
-        this.opprettetTidspunkt = Now.localDateTime();
+        this.opprettetTidspunkt = Now.instant();
         this.deltakerFnr = opprettAvtale.getDeltakerFnr();
         this.bedriftNr = opprettAvtale.getBedriftNr();
         this.fnrOgBedrift = new FnrOgBedrift(this.deltakerFnr, this.bedriftNr);
@@ -241,7 +241,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
 
         this.id = UUID.randomUUID();
-        this.opprettetTidspunkt = Now.localDateTime();
+        this.opprettetTidspunkt = Now.instant();
         this.deltakerFnr = opprettMentorAvtale.getDeltakerFnr();
         this.mentorFnr = opprettMentorAvtale.getMentorFnr();
         this.bedriftNr = opprettMentorAvtale.getBedriftNr();
