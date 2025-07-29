@@ -97,7 +97,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         Map<Fnr, Diskresjonskode> diskresjon = isSkalHenteDiskresjonskoder ? persondataService.hentDiskresjonskoder(
             avtaler.getContent().stream().map(Avtale::getDeltakerFnr).collect(Collectors.toSet())
         ) : Map.of();
-;
+
         List<BegrensetAvtale> begrensedeAvtaler = avtaler
             .getContent()
             .stream()

@@ -30,11 +30,11 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Optional;
 import java.util.UUID;
@@ -172,7 +172,7 @@ public class ArenaAgreementProcessingService {
                 .action(action)
                 .avtaleId(agreementId)
                 .eksternId(eksternId)
-                .modified(Instant.now())
+                .modified(Now.instant())
                 .tiltakstype(tiltakskode)
                 .error(error)
                 .build()
