@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Data
@@ -21,14 +20,13 @@ public class FilterSok {
     @Id
     private String sokId;
     private LocalDateTime sistSoktTidspunkt;
-    private Instant sistSokt;
     private String queryParametre;
     private Integer antallGangerSokt;
+
 
     @SneakyThrows
     public FilterSok(AvtaleQueryParameter queryParametre) {
         this.sistSoktTidspunkt = Now.localDateTime();
-        this.sistSokt = Now.instant();
         this.antallGangerSokt = 1;
         this.sokId = queryParametre.generateHash();
         ObjectMapper mapper = new ObjectMapper();

@@ -167,7 +167,6 @@ public class AvtaleController {
 
         filterSok.setAntallGangerSokt(filterSok.getAntallGangerSokt() + 1);
         filterSok.setSistSoktTidspunkt(Now.localDateTime());
-        filterSok.setSistSokt(Now.instant());
         filterSokRepository.save(filterSok);
         AvtaleQueryParameter avtalePredicate = filterSok.getAvtalePredicate();
 
@@ -218,7 +217,6 @@ public class AvtaleController {
         if (filterSokiDb != null) {
             filterSokiDb.setAntallGangerSokt(filterSokiDb.getAntallGangerSokt() + 1);
             filterSokiDb.setSistSoktTidspunkt(Now.localDateTime());
-            filterSokiDb.setSistSokt(Now.instant());
             filterSokRepository.save(filterSokiDb);
             if (!filterSokiDb.erLik(queryParametre)) {
                 log.error("Kollisjon i søkId: {}", filterSokiDb.getSokId());
