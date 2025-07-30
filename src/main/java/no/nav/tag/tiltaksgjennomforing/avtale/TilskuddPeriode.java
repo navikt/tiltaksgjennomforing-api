@@ -24,8 +24,8 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
@@ -59,7 +59,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     @Convert(converter = NavIdentConverter.class)
     private NavIdent godkjentAvNavIdent;
 
-    private LocalDateTime godkjentTidspunkt;
+    private Instant godkjentTidspunkt;
 
     /**
      * "Enhet" i denne konteksten er oppfølgingsenheten til deltaker;
@@ -81,7 +81,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     private String avslagsforklaring;
     @Convert(converter = NavIdentConverter.class)
     private NavIdent avslåttAvNavIdent;
-    private LocalDateTime avslåttTidspunkt;
+    private Instant avslåttTidspunkt;
     private Integer løpenummer = 1;
 
     @Enumerated(EnumType.STRING)
@@ -185,7 +185,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     void godkjenn(NavIdent beslutter, String enhet) {
         sjekkOmKanBehandles();
 
-        setGodkjentTidspunkt(Now.localDateTime());
+        setGodkjentTidspunkt(Now.instant());
         setGodkjentAvNavIdent(beslutter);
         setEnhet(enhet);
         setStatus(TilskuddPeriodeStatus.GODKJENT);
@@ -200,7 +200,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_INGEN_AVSLAGSAARSAKER);
         }
 
-        setAvslåttTidspunkt(Now.localDateTime());
+        setAvslåttTidspunkt(Now.instant());
         setAvslåttAvNavIdent(beslutter);
         this.avslagsårsaker.addAll(avslagsårsaker);
         setAvslagsforklaring(avslagsforklaring);
