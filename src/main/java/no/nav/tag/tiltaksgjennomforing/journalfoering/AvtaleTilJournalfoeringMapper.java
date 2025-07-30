@@ -7,8 +7,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,10 +33,10 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setMentorOppgaver(avtale.getGjeldendeInnhold().getMentorOppgaver());
         avtaleTilJournalfoering.setMentorAntallTimer(avtale.getGjeldendeInnhold().getMentorAntallTimer());
         avtaleTilJournalfoering.setMentorTimelonn(avtale.getGjeldendeInnhold().getMentorTimelonn());
-        avtaleTilJournalfoering.setGodkjentAvArbeidsgiver(avtaleInnhold.getGodkjentAvArbeidsgiver().toLocalDate());
-        avtaleTilJournalfoering.setGodkjentAvVeileder(avtaleInnhold.getGodkjentAvVeileder().toLocalDate());
-        avtaleTilJournalfoering.setGodkjentAvDeltaker(avtaleInnhold.getGodkjentAvDeltaker().toLocalDate());
-        avtaleTilJournalfoering.setOpprettet(avtale.getOpprettetTidspunkt().atZone(ZoneId.systemDefault()).toLocalDate());
+        avtaleTilJournalfoering.setGodkjentAvArbeidsgiver(DatoUtils.instantTilLocalDate(avtaleInnhold.getGodkjentAvArbeidsgiver()));
+        avtaleTilJournalfoering.setGodkjentAvVeileder(DatoUtils.instantTilLocalDate(avtaleInnhold.getGodkjentAvVeileder()));
+        avtaleTilJournalfoering.setGodkjentAvDeltaker(DatoUtils.instantTilLocalDate(avtaleInnhold.getGodkjentAvDeltaker()));
+        avtaleTilJournalfoering.setOpprettet(DatoUtils.instantTilLocalDate(avtale.getOpprettetTidspunkt()));
         avtaleTilJournalfoering.setAvtaleId(avtale.getId());
         avtaleTilJournalfoering.setAvtaleVersjonId(avtaleInnhold.getId());
         avtaleTilJournalfoering.setDeltakerFnr(identifikatorAsString(avtale.getDeltakerFnr()));
@@ -57,7 +57,7 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setOppfolging(avtaleInnhold.getOppfolging());
         avtaleTilJournalfoering.setTilrettelegging(avtaleInnhold.getTilrettelegging());
         avtaleTilJournalfoering.setStartDato(avtaleInnhold.getStartDato());
-        avtaleTilJournalfoering.setOpprettetAar(avtale.getOpprettetTidspunkt().atZone(ZoneId.systemDefault()).getYear());
+        avtaleTilJournalfoering.setOpprettetAar(DatoUtils.instantTilZonedDateTime(avtale.getOpprettetTidspunkt()).getYear());
         avtaleTilJournalfoering.setSluttDato(avtaleInnhold.getSluttDato());
         avtaleTilJournalfoering.setStillingprosent(avtale.getGjeldendeInnhold().getStillingprosent());
         avtaleTilJournalfoering.setAntallDagerPerUke(avtale.getGjeldendeInnhold().getAntallDagerPerUke());
@@ -83,7 +83,7 @@ public class AvtaleTilJournalfoeringMapper {
             avtaleTilJournalfoering.setAvtalerolle(avtalerolle);
         }
         if (avtaleInnhold.getGodkjentTaushetserklæringAvMentor() != null) {
-            avtaleTilJournalfoering.setGodkjentTaushetserklæringAvMentor(avtaleInnhold.getGodkjentTaushetserklæringAvMentor().toLocalDate());
+            avtaleTilJournalfoering.setGodkjentTaushetserklæringAvMentor(DatoUtils.instantTilLocalDate(avtaleInnhold.getGodkjentTaushetserklæringAvMentor()));
         }
 
         if (avtale.getTiltakstype().equals(Tiltakstype.VTAO)) {

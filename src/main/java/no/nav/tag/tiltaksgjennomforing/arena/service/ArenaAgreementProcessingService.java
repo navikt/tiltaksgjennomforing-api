@@ -30,13 +30,12 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -318,7 +317,7 @@ public class ArenaAgreementProcessingService {
 
         AvtaleInnhold avtaleinnhold = avtale.getGjeldendeInnhold();
         Optional.ofNullable(agreementAggregate.getRegDato())
-            .ifPresent(regdato -> avtale.setOpprettetTidspunkt(regdato.atZone(ZoneId.systemDefault()).toInstant()));
+            .ifPresent(regdato -> avtale.setOpprettetTidspunkt(DatoUtils.localDateTimeTilInstant(regdato)));
         agreementAggregate.getAntallDagerPrUke().ifPresent(avtaleinnhold::setAntallDagerPerUke);
         agreementAggregate.getProsentDeltid().ifPresent(avtaleinnhold::setStillingprosent);
         agreementAggregate.findStartdato().ifPresent(avtaleinnhold::setStartDato);
