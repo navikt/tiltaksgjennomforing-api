@@ -1,8 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.satser;
 
+import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
+
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -70,7 +71,7 @@ public class Sats {
     }
 
     public Integer hentGjeldendeSats(Instant instant) {
-        return hentGjeldendeSats(instant.atZone(ZoneId.systemDefault()).toLocalDate());
+        return hentGjeldendeSats(DatoUtils.instantTilLocalDate(instant));
     }
 
     public Integer hentGjeldendeSats(LocalDate dato) {

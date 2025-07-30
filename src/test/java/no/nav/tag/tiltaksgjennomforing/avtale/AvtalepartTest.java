@@ -225,8 +225,8 @@ public class AvtalepartTest {
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
 
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         veileder.godkjennAvtale(avtale);
         assertThat(avtale.erGodkjentAvArbeidsgiver()).isTrue();
     }
@@ -234,7 +234,7 @@ public class AvtalepartTest {
     @Test
     public void opphevGodkjenninger__veileder_skal_kunne_trekke_tilbake_egen_godkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
         Veileder veileder = TestData.enVeileder(avtale);
         veileder.opphevGodkjenninger(avtale);
         assertThat(avtale.erGodkjentAvVeileder()).isFalse();
