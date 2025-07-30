@@ -57,7 +57,6 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setArenaMigreringDeltaker(avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn() != null && avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn().isArenaMigreringDeltaker());
         hendelse.setGodkjentAvDeltaker(avtale.getGjeldendeInnhold().getGodkjentAvDeltaker());
         hendelse.setGodkjentAvArbeidsgiver(avtale.getGjeldendeInnhold().getGodkjentAvArbeidsgiver());
-        hendelse.setGodkjentAvArbeidsgiver(avtale.getGjeldendeInnhold().getGodkjentAvArbeidsgiver());
         hendelse.setGodkjentAvVeileder(avtale.getGjeldendeInnhold().getGodkjentAvVeileder());
         hendelse.setGodkjentAvBeslutter(avtale.getGjeldendeInnhold().getGodkjentAvBeslutter());
         hendelse.setAvtaleInngaatt(avtale.getGjeldendeInnhold().getAvtaleInngått());
