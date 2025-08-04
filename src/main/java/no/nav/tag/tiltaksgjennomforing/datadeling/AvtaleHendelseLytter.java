@@ -74,7 +74,13 @@ public class AvtaleHendelseLytter {
     @EventListener
     public void avtaleEndret(AvtaleEndret event) {
         Avtale avtale = event.getAvtale();
-        lagHendelse(avtale, HendelseType.ENDRET, event.getUtfortAv(), event.getUtfortAvRolle());
+        Identifikator utførtAv;
+        if (event.getUtfortAvRolle() == AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER) {
+            utførtAv = avtale.getBedriftNr();
+        } else {
+            utførtAv = event.getUtfortAv();
+        }
+        lagHendelse(avtale, HendelseType.ENDRET, utførtAv, event.getUtfortAvRolle());
     }
 
     @EventListener
@@ -161,7 +167,7 @@ public class AvtaleHendelseLytter {
 
     @EventListener
     public void godkjentAvArbeidsgiver(GodkjentAvArbeidsgiver event) {
-        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_AV_ARBEIDSGIVER, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER);
+        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_AV_ARBEIDSGIVER, event.getAvtale().getBedriftNr(), AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER);
     }
 
     @EventListener
