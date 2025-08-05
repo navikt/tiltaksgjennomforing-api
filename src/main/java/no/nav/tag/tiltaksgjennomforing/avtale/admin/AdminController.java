@@ -8,13 +8,15 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgangsattributter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonStatus;
+import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.avtale.service.GjeldendeTilskuddsperiodeJobbService;
+import no.nav.tag.tiltaksgjennomforing.avtale.service.gjeldendetilskuddsperiode.GjeldendeTilskuddsperiodeJobbService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
@@ -368,5 +370,27 @@ public class AdminController {
 
         avtaleRepository.saveAll(avtaler);
     }
+
+    @Transactional
+    @PostMapping("/avtale/{id}/opphev-godkjenning")
+    public void opphevGodkjenninger(@PathVariable UUID id) {
+        Avtale avtale = avtaleRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
+        if (!Avtaleopphav.ARENA.equals(avtale.getOpphav())) {
+            throw new IllegalStateException("Ugyldig opphav på avtale. Kan bare oppheve for Arena avtaler.");
+        }
+        if (avtale.erAvtaleInngått()) {
+            throw new IllegalStateException("Avtalen er allerede inngått");
+        }
+        if (!Status.MANGLER_GODKJENNING.equals(avtale.getStatus()) && !Status.PÅBEGYNT.equals(avtale.getStatus())) {
+            throw new IllegalStateException("Ugyldig status på avtale");
+        }
+        if (!avtale.erGodkjentAvVeileder() || !avtale.erGodkjentAvArbeidsgiver() || !avtale.erGodkjentAvDeltaker()) {
+            throw new IllegalStateException("Avtalen er ikke godkjent av alle parter");
+        }
+        avtale.opphevGodkjenningerSomVeileder();
+        avtaleRepository.save(avtale);
+        log.info("Opphevde godkjenninger for avtale {}", id);
+    }
+
 
 }

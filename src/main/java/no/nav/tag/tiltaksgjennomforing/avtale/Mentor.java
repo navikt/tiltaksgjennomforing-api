@@ -4,9 +4,9 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetMentor;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
+import no.nav.tag.tiltaksgjennomforing.exceptions.RolleHarIkkeTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -92,7 +92,7 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     void opphevGodkjenningerSomAvtalepart(Avtale avtale) {
-        throw new TilgangskontrollException("Mentor kan ikke oppheve godkjenninger");
+        throw new RolleHarIkkeTilgangException();
     }
 
     @Override

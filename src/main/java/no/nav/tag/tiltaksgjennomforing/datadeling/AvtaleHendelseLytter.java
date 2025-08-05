@@ -42,7 +42,7 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Component
@@ -218,11 +218,10 @@ public class AvtaleHendelseLytter {
     private void lagHendelse(Avtale avtale, HendelseType hendelseType, Identifikator utførtAv, AvtaleHendelseUtførtAvRolle utførtAvRolle) {
         lagHendelse(avtale, hendelseType, utførtAv, utførtAvRolle, null);
     }
+
     private void lagHendelse(Avtale avtale, HendelseType hendelseType, Identifikator utførtAv, AvtaleHendelseUtførtAvRolle utførtAvRolle, ForkortetGrunn forkortetGrunn) {
-        LocalDateTime tidspunkt = Now.localDateTime();
+        Instant tidspunkt = Now.instant();
         UUID meldingId = UUID.randomUUID();
-
-
         AvtaleMelding melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), utførtAv, utførtAvRolle, hendelseType, forkortetGrunn);
         try {
             String meldingSomString = objectMapper.writeValueAsString(melding);

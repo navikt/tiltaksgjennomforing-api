@@ -17,7 +17,7 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.events.SmsSendt;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Slf4j
@@ -34,23 +34,25 @@ public class Sms extends AbstractAggregateRoot<Sms> {
     private Identifikator identifikator;
     private String meldingstekst;
     private UUID avtaleId;
-    private LocalDateTime tidspunkt;
+    private Instant tidspunkt;
     @Enumerated(EnumType.STRING)
     private HendelseType hendelseType;
     private String avsenderApplikasjon;
 
-    public static Sms nyttVarsel(String telefonnummer,
-                                 Identifikator identifikator,
-                                 String meldingstekst,
-                                 HendelseType hendelseType,
-                                 UUID avtaleId) {
+    public static Sms nyttVarsel(
+        String telefonnummer,
+         Identifikator identifikator,
+         String meldingstekst,
+         HendelseType hendelseType,
+         UUID avtaleId
+    ) {
         Sms sms = new Sms();
         sms.smsVarselId = UUID.randomUUID();
         sms.telefonnummer = telefonnummer;
         sms.identifikator = identifikator;
         sms.meldingstekst = meldingstekst;
         sms.hendelseType = hendelseType;
-        sms.tidspunkt = Now.localDateTime();
+        sms.tidspunkt = Now.instant();
         sms.avtaleId = avtaleId;
         sms.avsenderApplikasjon = "tiltaksgjennomforing-api";
         sms.registerEvent(new SmsSendt(sms));

@@ -22,6 +22,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.exceptions.RolleHarIkkeTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
@@ -80,7 +81,8 @@ public class InnloggingService {
                 adressesperreTilganger,
                 persondataService,
                 norg2Client,
-                eregService
+                eregService,
+                veilarboppfolgingService
             );
         }
         if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.VEILEDER) {
@@ -146,7 +148,7 @@ public class InnloggingService {
         try {
             return (InnloggetVeileder) hentInnloggetBruker(Avtalerolle.VEILEDER);
         } catch (ClassCastException e) {
-            throw new TilgangskontrollException("Innlogget bruker er ikke veileder.");
+            throw new RolleHarIkkeTilgangException();
         }
     }
 

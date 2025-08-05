@@ -30,7 +30,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({
             IkkeTilgangTilDeltakerException.class,
             IkkeTilgangTilAvtaleException.class,
-            Kode6SperretForOpprettelseOgEndringException.class
+            Kode6SperretForOpprettelseOgEndringException.class,
+            RolleHarIkkeTilgangException.class
     })
     public ResponseEntity<Object> ikkeTilgang(FeilkodeException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)

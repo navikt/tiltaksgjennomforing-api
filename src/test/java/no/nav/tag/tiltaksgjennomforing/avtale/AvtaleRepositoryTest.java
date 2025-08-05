@@ -159,7 +159,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void avtale_godkjent_pa_vegne_av_skal_lagres_med_pa_vegne_av_grunn() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
         godkjentPaVegneGrunn.setIkkeBankId(true);
         Veileder veileder = TestData.enVeileder(avtale);
@@ -173,7 +173,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void lagre_pa_vegne_skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         Veileder veileder = TestData.enVeileder(avtale);
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
         veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
@@ -217,8 +217,8 @@ public class AvtaleRepositoryTest {
     @Test
     public void godkjennForVeileder__skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         TestData.enVeileder(avtale).godkjennAvtale(avtale);
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjentAvVeileder(any());
@@ -253,12 +253,11 @@ public class AvtaleRepositoryTest {
         Sort by = Sort.by(Sort.Order.asc("startDato"));
         Pageable pageable = PageRequest.of(0, 10, by);
         long plussDato = ChronoUnit.DAYS.between(Now.localDate(), Now.localDate().plusMonths(3));
-        LocalDate decisiondate = Now.localDate().plusDays(plussDato);
 
         Page<BeslutterOversiktEntity> beslutterOversikt = avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
             TilskuddPeriodeStatus.UBEHANDLET,
-            decisiondate,
             tiltakstype,
+            Set.of(Status.PÅBEGYNT, Status.GJENNOMFØRES, Status.KLAR_FOR_OPPSTART, Status.MANGLER_GODKJENNING),
             navEnheter,
             null,
             null,

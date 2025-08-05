@@ -3,6 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
+import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
@@ -36,7 +38,7 @@ public class ArbeidsgiverTest {
     @Test
     public void opphevGodkjenninger__kan_oppheve_ved_deltakergodkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         arbeidsgiver.opphevGodkjenninger(avtale);
         assertThat(avtale.erGodkjentAvDeltaker()).isFalse();
@@ -45,7 +47,7 @@ public class ArbeidsgiverTest {
     @Test
     public void opphevGodkjenninger__kan_ikke_oppheve_veiledergodkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         assertThatThrownBy(() -> arbeidsgiver.opphevGodkjenninger(avtale)).isInstanceOf(KanIkkeOppheveException.class);
     }
@@ -57,6 +59,7 @@ public class ArbeidsgiverTest {
         PersondataService persondataService = mock(PersondataService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
         EregService eregService  = mock(EregService.class);
+        VeilarboppfolgingService veilarboppfolgingService  = mock(VeilarboppfolgingService.class);
 
         Norg2GeoResponse navEnhet = new Norg2GeoResponse("Nav Grorud", "0411");
         when(norg2Client.hentGeografiskEnhet(any())).thenReturn(navEnhet);
@@ -64,6 +67,7 @@ public class ArbeidsgiverTest {
         when(persondataService.hentGeografiskTilknytning(any())).thenReturn(Optional.of("0904"));
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
+        when(veilarboppfolgingService.hentOppfolgingsstatus(any(Fnr.class))).thenReturn(new Oppfølgingsstatus(null, null, "0411"));
 
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 TestData.etFodselsnummer(),
@@ -82,7 +86,8 @@ public class ArbeidsgiverTest {
                 List.of(),
                 persondataService,
                 norg2Client,
-                eregService
+                eregService,
+                veilarboppfolgingService
         );
 
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
@@ -102,6 +107,7 @@ public class ArbeidsgiverTest {
                 null,
                 null,
                 null,
+                null,
                 null
         );
         assertThatThrownBy(
@@ -113,6 +119,7 @@ public class ArbeidsgiverTest {
     public void endreAvtale_validererTilDato() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
+                null,
                 null,
                 null,
                 null,
@@ -138,6 +145,7 @@ public class ArbeidsgiverTest {
                 List.of(),
                 persondataService,
                 null,
+                null,
                 null
         );
         OpprettAvtale opprettAvtale = new OpprettAvtale(new Fnr("12345678910"), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING);
@@ -156,6 +164,9 @@ public class ArbeidsgiverTest {
         EregService eregService  = mock(EregService.class);
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
 
+        VeilarboppfolgingService veilarboppfolgingService  = mock(VeilarboppfolgingService.class);
+        when(veilarboppfolgingService.hentOppfolgingsstatus(any(Fnr.class))).thenReturn(new Oppfølgingsstatus(null, null, "0411"));
+
         List<BedriftNr> adressesperreTilganger = List.of(TestData.etBedriftNr());
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 null,
@@ -164,7 +175,8 @@ public class ArbeidsgiverTest {
                 adressesperreTilganger,
                 persondataService,
                 norg2Client,
-                eregService
+                eregService,
+            veilarboppfolgingService
         );
         OpprettAvtale opprettAvtale = new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING);
         arbeidsgiver.opprettAvtale(opprettAvtale);
@@ -190,6 +202,7 @@ public class ArbeidsgiverTest {
                 emptyList(),
                 persondataService,
                 null,
+                null,
                 null
         );
         assertFeilkode(Feilkode.IKKE_TILGANG_TIL_AVTALE, () -> arbeidsgiver.hentAvtale(avtaleRepository, avtale.getId()));
@@ -214,6 +227,7 @@ public class ArbeidsgiverTest {
                 Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
                 adressesperreTilganger,
                 persondataService,
+                null,
                 null,
                 null
         );
@@ -242,6 +256,7 @@ public class ArbeidsgiverTest {
                 emptyList(),
                 persondataService,
                 null,
+                null,
                 null
         );
         Arbeidsgiver arbeidsgiverMedAdressesperreTilgang = new Arbeidsgiver(
@@ -250,6 +265,7 @@ public class ArbeidsgiverTest {
                 Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
                 adressesperreTilganger,
                 persondataService,
+                null,
                 null,
                 null
         );
