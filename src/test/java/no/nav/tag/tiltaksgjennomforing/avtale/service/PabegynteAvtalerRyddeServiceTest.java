@@ -168,44 +168,38 @@ class PabegynteAvtalerRyddeServiceTest {
         avtaleRepository.save(avtale1);
 
         Avtale avtale2  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avtale2.setStatus(Status.AVBRUTT);
-        avtale2.setSistEndret(ZonedDateTime.of(2024, 10, 7, 12, 0, 0, 0, ZoneId.systemDefault()).toInstant());
+        avtale2.setStatus(Status.KLAR_FOR_OPPSTART);
+        avtale2.setSistEndret(ZonedDateTime.of(2024, 10, 6, 12, 0, 0, 0, ZoneId.systemDefault()).toInstant());
         avtaleRepository.save(avtale2);
 
         Avtale avtale3  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avtale3.setStatus(Status.KLAR_FOR_OPPSTART);
-        avtale3.setSistEndret(ZonedDateTime.of(2024, 10, 6, 12, 0, 0, 0, ZoneId.systemDefault()).toInstant());
+        avtale3.setStatus(Status.GJENNOMFØRES);
+        avtale3.setSistEndret(ZonedDateTime.of(2024, 10, 5, 12, 0, 0, 0, ZoneId.systemDefault()).toInstant());
         avtaleRepository.save(avtale3);
 
         Avtale avtale4  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avtale4.setStatus(Status.GJENNOMFØRES);
-        avtale4.setSistEndret(ZonedDateTime.of(2024, 10, 5, 12, 0, 0, 0, ZoneId.systemDefault()).toInstant());
+        avtale4.setStatus(Status.AVSLUTTET);
+        avtale4.setSistEndret(ZonedDateTime.of(2024, 10, 4, 12, 0, 0, 0, ZoneId.systemDefault()).toInstant());
         avtaleRepository.save(avtale4);
 
         Avtale avtale5  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avtale5.setStatus(Status.AVSLUTTET);
-        avtale5.setSistEndret(ZonedDateTime.of(2024, 10, 4, 12, 0, 0, 0, ZoneId.systemDefault()).toInstant());
+        avtale5.setStatus(Status.MANGLER_GODKJENNING);
+        avtale5.setSistEndret(ZonedDateTime.of(2024, 10, 3, 12, 0, 0, 0, ZoneId.systemDefault()).toInstant());
         avtaleRepository.save(avtale5);
 
         Avtale avtale6  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avtale6.setStatus(Status.MANGLER_GODKJENNING);
-        avtale6.setSistEndret(ZonedDateTime.of(2024, 10, 3, 12, 0, 0, 0, ZoneId.systemDefault()).toInstant());
+        avtale6.setStatus(Status.PÅBEGYNT);
+        avtale6.setSistEndret(ZonedDateTime.of(2024, 10, 2, 12, 0, 0, 0, ZoneId.systemDefault()).toInstant());
         avtaleRepository.save(avtale6);
-
-        Avtale avtale7  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avtale7.setStatus(Status.PÅBEGYNT);
-        avtale7.setSistEndret(ZonedDateTime.of(2024, 10, 2, 12, 0, 0, 0, ZoneId.systemDefault()).toInstant());
-        avtaleRepository.save(avtale7);
 
         pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
 
         assertThat(avtaleRepository.findById(avtale1.getId()).map(Avtale::getStatus).orElse(null)).isEqualTo(Status.ANNULLERT);
-        assertThat(avtaleRepository.findById(avtale2.getId()).map(Avtale::getStatus).orElse(null)).isEqualTo(Status.AVBRUTT);
-        assertThat(avtaleRepository.findById(avtale3.getId()).map(Avtale::getStatus).orElse(null)).isEqualTo(Status.KLAR_FOR_OPPSTART);
-        assertThat(avtaleRepository.findById(avtale4.getId()).map(Avtale::getStatus).orElse(null)).isEqualTo(Status.GJENNOMFØRES);
-        assertThat(avtaleRepository.findById(avtale5.getId()).map(Avtale::getStatus).orElse(null)).isEqualTo(Status.AVSLUTTET);
+        assertThat(avtaleRepository.findById(avtale2.getId()).map(Avtale::getStatus).orElse(null)).isEqualTo(Status.KLAR_FOR_OPPSTART);
+        assertThat(avtaleRepository.findById(avtale3.getId()).map(Avtale::getStatus).orElse(null)).isEqualTo(Status.GJENNOMFØRES);
+        assertThat(avtaleRepository.findById(avtale4.getId()).map(Avtale::getStatus).orElse(null)).isEqualTo(Status.AVSLUTTET);
+        assertThat(avtaleRepository.findById(avtale5.getId()).map(Avtale::getStatus).orElse(null)).isEqualTo(Status.ANNULLERT);
         assertThat(avtaleRepository.findById(avtale6.getId()).map(Avtale::getStatus).orElse(null)).isEqualTo(Status.ANNULLERT);
-        assertThat(avtaleRepository.findById(avtale7.getId()).map(Avtale::getStatus).orElse(null)).isEqualTo(Status.ANNULLERT);
     }
 
     @Test

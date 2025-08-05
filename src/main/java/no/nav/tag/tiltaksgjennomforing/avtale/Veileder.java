@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.AdGruppeTilganger;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -15,7 +14,6 @@ import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.Veilarboppfolging
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Kode6SperretForOpprettelseOgEndringException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
@@ -49,7 +47,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     private final TilgangskontrollService tilgangskontrollService;
     private final PersondataService persondataService;
-    private final SlettemerkeProperties slettemerkeProperties;
     private final AdGruppeTilganger adGruppeTilganger;
     private final Norg2Client norg2Client;
     private final Set<NavEnhet> navEnheter;
@@ -65,7 +62,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         PersondataService persondataService,
         Norg2Client norg2Client,
         Set<NavEnhet> navEnheter,
-        SlettemerkeProperties slettemerkeProperties,
         AdGruppeTilganger adGruppeTilganger,
         VeilarboppfolgingService veilarboppfolgingService,
         FeatureToggleService featureToggleService,
@@ -78,7 +74,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
         this.navEnheter = navEnheter;
-        this.slettemerkeProperties = slettemerkeProperties;
         this.adGruppeTilganger = adGruppeTilganger;
         this.veilarboppfolgingService = veilarboppfolgingService;
         this.featureToggleService = featureToggleService;
@@ -361,15 +356,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
         avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
         avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
-    }
-
-    public void slettemerk(Avtale avtale) {
-        super.sjekkTilgang(avtale);
-        List<NavIdent> identer = slettemerkeProperties.getIdent();
-        if (!identer.contains(this.getIdentifikator())) {
-            throw new IkkeAdminTilgangException();
-        }
-        avtale.slettemerk(this.getIdentifikator());
     }
 
     public void endreMål(EndreMål endreMål, Avtale avtale) {
