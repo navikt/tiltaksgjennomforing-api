@@ -1709,7 +1709,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_KID_OG_KONTONUMMER);
         getGjeldendeInnhold().setArbeidsgiverKid(kid);
         getGjeldendeInnhold().setArbeidsgiverKontonummer(kontonummer);
-        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
+        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
         utforEndring(new KidOgKontonummerEndret(this, utførtAv));
     }
 
