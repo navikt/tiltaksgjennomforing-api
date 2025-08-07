@@ -48,6 +48,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -899,5 +900,35 @@ public class AvtaleController {
             avtale.sjekkSistEndret(sistEndret);
             return avtale;
         };
+    }
+
+    @PutMapping("/{avtaleId}/kid-og-kontonummer")
+    @Transactional
+    public Avtale endreKidOgKontonummer(
+        @PathVariable("avtaleId") UUID avtaleId,
+        @RequestBody EndreKidOgKontonummer endreKidOgKontonummer,
+        @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret
+    ) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+            .map(sjekkeSistEndret(sistEndret))
+            .orElseThrow(RessursFinnesIkkeException::new);
+
+        var hentNyttKontonummer = !Objects.equals(
+            endreKidOgKontonummer.getArbeidsgiverKontonummer(),
+            avtale.getGjeldendeInnhold().getArbeidsgiverKontonummer()
+        );
+
+        var kontonummer = hentNyttKontonummer
+            ? kontoregisterService.hentKontonummer(avtale.getBedriftNr().asString())
+            : avtale.getGjeldendeInnhold().getArbeidsgiverKontonummer();
+
+        var kid = endreKidOgKontonummer.getArbeidsgiverKid();
+
+        veileder.endreKidOgKontonummer(
+            new EndreKidOgKontonummer(kontonummer, kid),
+            avtale
+        );
+        return avtaleRepository.save(avtale);
     }
 }

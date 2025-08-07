@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.GenerellLonnstilskuddAvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.LonnstilskuddAvtaleBeregningStrategy;
+import no.nav.tag.tiltaksgjennomforing.utils.KidnummerValidator;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -24,7 +25,12 @@ public class LonnstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnholdStrateg
         if (nyAvtale.getOtpSats() != null && (nyAvtale.getOtpSats() > 0.3 || nyAvtale.getOtpSats() < 0.0)) {
             throw new FeilkodeException(Feilkode.FEIL_OTP_SATS);
         }
+        if (nyAvtale.getArbeidsgiverKid() != null && !KidnummerValidator.isValid(nyAvtale.getArbeidsgiverKid())) {
+            throw new FeilkodeException(Feilkode.FEIL_KID_NUMMER);
+        }
+
         avtaleInnhold.setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
+        avtaleInnhold.setArbeidsgiverKid(nyAvtale.getArbeidsgiverKid());
         avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
         avtaleInnhold.setFeriepengesats(nyAvtale.getFeriepengesats());
         avtaleInnhold.setArbeidsgiveravgift(nyAvtale.getArbeidsgiveravgift());

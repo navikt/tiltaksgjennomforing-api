@@ -34,6 +34,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvArbeidsgiv
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltaker;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltakerOgArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.InkluderingstilskuddEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.KidOgKontonummerEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.KontaktinformasjonEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.MålEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.OmMentorEndret;
@@ -291,6 +292,12 @@ public class LagVarselFraAvtaleHendelser {
     public void endreOppfølgingOgTilretteleggingInformasjon(OppfølgingOgTilretteleggingEndret event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.VEILEDER, event.getUtførtAv(), HendelseType.OPPFØLGING_OG_TILRETTELEGGING_ENDRET);
         varselRepository.saveAll(factory.alleParter());
+    }
+
+    @EventListener
+    public void endreKidOgKontonummer(KidOgKontonummerEndret event) {
+        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.VEILEDER, event.getUtførtAv(), HendelseType.KID_OG_KONTONUMMER_ENDRET);
+        varselRepository.saveAll(List.of(factory.arbeidsgiver(), factory.veileder()));
     }
 
     @EventListener
