@@ -54,6 +54,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvArbeidsgiv
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltaker;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltakerOgArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.InkluderingstilskuddEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.KidOgKontonummerEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.KontaktinformasjonEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.MålEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.OmMentorEndret;
@@ -88,6 +89,7 @@ import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.LonnstilskuddAvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.TilskuddsperioderBeregningStrategyFactory;
+import no.nav.tag.tiltaksgjennomforing.utils.KidnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
@@ -1686,6 +1688,29 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         utforEndring(new OmMentorEndret(this, utførtAv));
+    }
+
+    public void endreKidOgKontonummer(EndreKidOgKontonummer endreKidOgKontonummer, NavIdent utførtAv) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+
+        var kid = endreKidOgKontonummer.getArbeidsgiverKid();
+        var kontonummer = endreKidOgKontonummer.getArbeidsgiverKontonummer();
+
+        if (!erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KID_OG_KONTONUMMER_GRUNN_IKKE_GODKJENT_AVTALE);
+        }
+        if (Utils.erNoenTomme(kontonummer)) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KID_OG_KONTONUMMER_GRUNN_MANGLER);
+        }
+        if (kid != null && !KidnummerValidator.isValid(kid)) {
+            throw new FeilkodeException(Feilkode.FEIL_KID_NUMMER);
+        }
+
+        gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_KID_OG_KONTONUMMER);
+        getGjeldendeInnhold().setArbeidsgiverKid(kid);
+        getGjeldendeInnhold().setArbeidsgiverKontonummer(kontonummer);
+        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
+        utforEndring(new KidOgKontonummerEndret(this, utførtAv));
     }
 
     /**

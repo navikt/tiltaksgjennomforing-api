@@ -16,6 +16,6 @@ class TestDataTest {
     TestData.endreInkluderingstilskuddInfo(endreAvtale);
     assertThat(endreAvtale.getMaal()).isNotEmpty();
     assertThat(endreAvtale.getInkluderingstilskuddsutgift()).isNotEmpty();
-    assertThat(endreAvtale).hasNoNullFieldsOrPropertiesExcept("vtao");
+    assertThat(endreAvtale).hasNoNullFieldsOrPropertiesExcept("vtao", "arbeidsgiverKid");
   }
 }
