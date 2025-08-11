@@ -1,7 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -11,10 +14,21 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class FnrTest {
 
+    @BeforeEach
+    public void setup() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
+    }
+
+    @AfterEach
+    public void tearDown() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
+    }
+
     @Test
     public void fnrKanVæreNull(){
         assertThat(new Fnr(null)).isEqualTo(new Fnr(null));
     }
+
     @Test
     public void fnrSkalIkkeVaereTomt() {
         assertThatThrownBy(() -> new Fnr("")).isExactlyInstanceOf(TiltaksgjennomforingException.class);
@@ -42,7 +56,7 @@ public class FnrTest {
 
     @Test
     public void fnrSkalInneholde11Tall() {
-        String gyldigFnr = "01234567890";
+        String gyldigFnr = "00000000000";
         assertThat(new Fnr(gyldigFnr).asString()).isEqualTo(gyldigFnr);
     }
 
@@ -140,7 +154,7 @@ public class FnrTest {
     @Test
     public void er67Aar() {
         Now.fixedDate(LocalDate.of(2025, 1, 1));
-        Fnr fnr = new Fnr("01015826670");
+        Fnr fnr = Fnr.generer(1958, 1, 1);
         assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate())).isTrue();
         assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate().plusDays(1))).isTrue();
         assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate().minusDays(1))).isFalse();
