@@ -393,6 +393,11 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.forlengAvtale(sluttDato, getIdentifikator());
     }
 
+    public void endreKidOgKontonummer(EndreKidOgKontonummer endreKidOgKontonummer, Avtale avtale) {
+        super.sjekkTilgang(avtale);
+        avtale.endreKidOgKontonummer(endreKidOgKontonummer, getIdentifikator());
+    }
+
     protected void oppdaterOppfølgingOgGeoEnhetEtterForespørsel(Avtale avtale) {
         sjekkTilgang(avtale);
         // Geo enhet

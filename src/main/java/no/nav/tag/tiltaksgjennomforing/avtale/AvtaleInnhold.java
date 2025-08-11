@@ -84,7 +84,6 @@ public class AvtaleInnhold {
     @Embedded
     private RefusjonKontaktperson refusjonKontaktperson;
 
-
     // Mentor
     private String mentorFornavn;
     private String mentorEtternavn;
@@ -95,6 +94,7 @@ public class AvtaleInnhold {
 
     // Lønnstilskudd
     private String arbeidsgiverKontonummer;
+    private String arbeidsgiverKid;
     private Integer lonnstilskuddProsent;
     private Integer manedslonn;
     private BigDecimal feriepengesats;
