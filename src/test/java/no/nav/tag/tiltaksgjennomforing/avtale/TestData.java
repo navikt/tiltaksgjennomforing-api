@@ -268,6 +268,13 @@ public class TestData {
         return avtale;
     }
 
+    public static Avtale enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering() {
+        Avtale avtale = enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusDays(1));
+        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusYears(1));
+        return avtale;
+    }
+
     public static Avtale enVarigLonnstilskuddAvtaleMedAltUtfylt() {
         Avtale avtale = enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusYears(1));
@@ -560,7 +567,7 @@ public class TestData {
     }
 
     public static Avtale enVtaoAvtaleGodkjentAvVeilederFraAnnentOmråde(){
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(new Fnr("11111111111"), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("A123456"));
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(new Fnr("27428318124"), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("A123456"));
         avtale.setEnhetOppfolging("0904");
         avtale.setEnhetsnavnOppfolging("Vinstra");
         EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
