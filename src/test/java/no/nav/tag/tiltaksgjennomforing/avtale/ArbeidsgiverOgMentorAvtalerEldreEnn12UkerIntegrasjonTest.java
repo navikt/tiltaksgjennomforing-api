@@ -85,7 +85,6 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
     @Transactional
     public void skal_IKKE_returnere_en_gammel_avtale_som_er_eldre_enn_12_uker_fra_db() {
         Avtale avtale = TestData.enArbeidstreningAvtaleMedAltUtfylt();
-
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusMonths(4));
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(13));// ELDRE enn 12 UKER
         avtale.setGodkjentForEtterregistrering(true);

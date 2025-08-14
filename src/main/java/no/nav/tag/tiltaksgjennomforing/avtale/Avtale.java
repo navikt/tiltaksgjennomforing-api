@@ -1377,15 +1377,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
 
         //Forleng avtalen i databasen inn har
-
-        //alderSjekkForTiltak();
-
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         forlengTilskuddsperioder(gammelSluttDato, nySluttDato);
         utforEndring(new AvtaleForlengetAvVeileder(this, utførtAv));
     }
 
-    public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
+    private void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
         StartOgSluttDatoStrategyFactory.create(getTiltakstype(), getKvalifiseringsgruppe())
             .sjekkStartOgSluttDato(startDato, sluttDato, isGodkjentForEtterregistrering(), erAvtaleInngått(), deltakerFnr);
     }
@@ -1693,12 +1690,5 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         return this.getAnnullertTidspunkt() != null && this.getAnnullertTidspunkt()
             .plus(84, ChronoUnit.DAYS)
             .isBefore(Now.instant());
-    }
-
-    public void alderSjekkForTiltak() {
-        if (tiltakstype != Tiltakstype.SOMMERJOBB && this.getDeltakerFnr()
-            .erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
-            throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
-        }
     }
 }
