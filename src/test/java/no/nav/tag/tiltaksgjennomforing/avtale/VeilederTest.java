@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
@@ -24,6 +25,8 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +49,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class VeilederTest {
+
+    @BeforeEach
+    public void setup() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
+    }
+
+    @AfterEach
+    public void tearDown() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
+    }
+
     @Test
     public void godkjennAvtale__kan_ikke_godkjenne_foerst() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
@@ -876,24 +890,25 @@ public class VeilederTest {
     public void setter_alle_parameter_dersom_de_eksisterer(){
         AvtaleRepository avtaleRepository = spy(AvtaleRepository.class);
         Veileder veileder = TestData.enVeileder(new NavIdent("Z123456"));
+        Fnr fnr = Fnr.generer(1978, 9, 10);
 
         AvtaleQueryParameter query = new AvtaleQueryParameter();
-        query.setDeltakerFnr(new Fnr("12345678901"));
+        query.setDeltakerFnr(fnr);
         query.setBedriftNr(new BedriftNr("123456789"));
         query.setAvtaleNr(1);
         query.setNavEnhet("4802");
 
         veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, query, Pageable.unpaged());
-        verify(avtaleRepository).sokEtterAvtale(null, 1, new Fnr("12345678901"), new BedriftNr("123456789"), "4802", null, null, false, Pageable.unpaged());
+        verify(avtaleRepository).sokEtterAvtale(null, 1, fnr, new BedriftNr("123456789"), "4802", null, null, false, Pageable.unpaged());
 
         query.setVeilederNavIdent(new NavIdent("Z000000"));
         veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, query, Pageable.unpaged());
-        verify(avtaleRepository).sokEtterAvtale(new NavIdent("Z000000"), 1, new Fnr("12345678901"), new BedriftNr("123456789"), "4802", null, null, false, Pageable.unpaged());
+        verify(avtaleRepository).sokEtterAvtale(new NavIdent("Z000000"), 1, fnr, new BedriftNr("123456789"), "4802", null, null, false, Pageable.unpaged());
 
         query.setTiltakstype(Tiltakstype.ARBEIDSTRENING);
         query.setStatus(Status.MANGLER_GODKJENNING);
         veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, query, Pageable.unpaged());
-        verify(avtaleRepository).sokEtterAvtale(new NavIdent("Z000000"), 1, new Fnr("12345678901"), new BedriftNr("123456789"), "4802", Tiltakstype.ARBEIDSTRENING, Status.MANGLER_GODKJENNING, false, Pageable.unpaged());
+        verify(avtaleRepository).sokEtterAvtale(new NavIdent("Z000000"), 1, fnr, new BedriftNr("123456789"), "4802", Tiltakstype.ARBEIDSTRENING, Status.MANGLER_GODKJENNING, false, Pageable.unpaged());
     }
 
     @Test

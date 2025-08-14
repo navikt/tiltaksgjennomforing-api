@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
+import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -22,6 +23,7 @@ import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -55,6 +57,8 @@ public class InnloggetBrukerTest {
 
     @BeforeEach
     public void setup() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
+
         deltaker = new Fnr("00000000000");
         navIdent = new NavIdent("X100000");
         bedriftNr = new BedriftNr("12345678901");
@@ -66,6 +70,11 @@ public class InnloggetBrukerTest {
         avtaleRepository = mock(AvtaleRepository.class);
 
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
     }
 
     @Test
@@ -223,7 +232,7 @@ public class InnloggetBrukerTest {
         when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
         assertThat(
             new Arbeidsgiver(
-                new Fnr("00000000001"),
+                Fnr.generer(1956, 7, 8),
                 Set.of(),
                 Map.of(),
                 List.of(),
@@ -240,7 +249,7 @@ public class InnloggetBrukerTest {
         when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(this.bedriftNr, Set.of(Tiltakstype.values()));
         Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(
-                new Fnr("00000000009"),
+                Fnr.generer(1956, 7, 8),
                 Set.of(),
                 tilganger,
                 List.of(),
@@ -257,7 +266,7 @@ public class InnloggetBrukerTest {
         when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(this.bedriftNr, Set.of(Tiltakstype.values()));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-                new Fnr("00000000009"),
+                Fnr.generer(1956, 7, 8),
                 Set.of(),
                 tilganger,
                 List.of(),
@@ -277,7 +286,7 @@ public class InnloggetBrukerTest {
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
         Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(
-                new Fnr("00000000009"),
+            Fnr.generer(1956, 7, 8),
                 Set.of(),
                 tilganger,
                 List.of(),
@@ -323,7 +332,7 @@ public class InnloggetBrukerTest {
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-                new Fnr("00000000009"),
+                Fnr.generer(1956, 7, 8),
                 Set.of(),
                 tilganger,
                 List.of(),
@@ -341,7 +350,7 @@ public class InnloggetBrukerTest {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-                new Fnr("00000000009"),
+                Fnr.generer(1956, 7, 8),
                 Set.of(),
                 tilganger,
                 List.of(),

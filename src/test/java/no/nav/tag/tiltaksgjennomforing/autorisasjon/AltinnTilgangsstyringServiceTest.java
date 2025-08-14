@@ -41,14 +41,13 @@ public class AltinnTilgangsstyringServiceTest {
     private FeatureToggleService featureToggleService;
 
     @BeforeEach
-    public void setUp() {
-        // when(tokenUtils.hentSelvbetjeningToken()).thenReturn("token");
+    public void setup() {
         when(featureToggleService.isEnabled(anyString())).thenReturn(false);
     }
 
     @Test
     public void hentOrganisasjoner__gyldig_fnr_en_bedrift_på_hvert_tiltak() {
-        Fnr fnr = new Fnr("10000000000");
+        Fnr fnr = Fnr.generer(1978, 9, 10);
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(fnr, () -> "");
         Set<AltinnReportee> organisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(fnr, () -> "");
 
@@ -76,7 +75,7 @@ public class AltinnTilgangsstyringServiceTest {
 
     @Test
     public void hentOrganisasjoner__tilgang_bare_for_arbeidstrening() {
-        Fnr fnr = new Fnr("20000000000");
+        Fnr fnr = Fnr.generer(1978, 9, 10);
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(fnr, () -> "");
         Set<AltinnReportee> organisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(fnr, () -> "");
 
@@ -94,7 +93,7 @@ public class AltinnTilgangsstyringServiceTest {
 
     @Test
     public void hentOrganisasjoner__ingen_tilgang() {
-        Fnr fnr = new Fnr("09000000000");
+        Fnr fnr = Fnr.generer(1967, 8, 9);
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(fnr, () -> "");
         Set<AltinnReportee> organisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(fnr, () -> "");
 
@@ -104,7 +103,7 @@ public class AltinnTilgangsstyringServiceTest {
 
     @Test
     public void hentTilganger__midlertidig_feil_gir_feilkode() {
-        assertThatThrownBy(() -> altinnTilgangsstyringService.hentTilganger(new Fnr("31000000000"), () -> "")).isExactlyInstanceOf(AltinnFeilException.class);
+        assertThatThrownBy(() -> altinnTilgangsstyringService.hentTilganger(Fnr.generer(1990, 12, 31), () -> "")).isExactlyInstanceOf(AltinnFeilException.class);
     }
 
     @Test

@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTClaimsSet.Builder;
+import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.security.jwt.test.support.JwkGenerator;
 import no.nav.security.jwt.test.support.JwtTokenGenerator;
 import no.nav.security.token.support.core.context.TokenValidationContext;
@@ -10,6 +11,8 @@ import no.nav.security.token.support.core.jwt.JwtToken;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.BrukerOgIssuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,6 +41,16 @@ public class TokenUtilsTest {
 
     @Mock
     private TokenValidationContextHolder contextHolder;
+
+    @BeforeEach
+    public void setup() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
+    }
+
+    @AfterEach
+    public void tearDown() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
+    }
 
     @Test
     public void hentInnloggetBruker__er_selvbetjeningbruker() {
@@ -73,7 +86,7 @@ public class TokenUtilsTest {
         vaerInnloggetSelvbetjeningNiva3(selvbetjeningBruker);
         assertThat(tokenUtils.hentBrukerOgIssuer().isEmpty()).isTrue();
     }
-    
+
     @Test
     public void hentInnloggetBruker__er_nav_ansatt() {
         InnloggetVeileder navAnsatt = TestData.enInnloggetVeileder();
