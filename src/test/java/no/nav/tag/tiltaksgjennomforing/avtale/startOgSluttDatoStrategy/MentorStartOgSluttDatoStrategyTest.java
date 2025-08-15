@@ -1,8 +1,17 @@
-package no.nav.tag.tiltaksgjennomforing.avtale;
+package no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,8 +25,14 @@ public class MentorStartOgSluttDatoStrategyTest {
     private Avtale avtale;
 
     @BeforeEach
-    public void setUp() {
+    public void setup() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
         avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), MENTOR), Avtaleopphav.VEILEDER, TestData.enNavIdent());
+    }
+
+    @AfterEach
+    public void tearDown() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
     }
 
     @Test
@@ -87,5 +102,17 @@ public class MentorStartOgSluttDatoStrategyTest {
         endreAvtale.setSluttDato(sluttDato);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MENTOR_36_MND, () -> endreAvtale(endreAvtale));
+    }
+
+    @Test
+    public void For_gammel_for_og_ha_mentor_tilskudd(){
+        Fnr deltakerFnr = new Fnr("29015414497");
+        LocalDate startDato = Now.localDate();
+        LocalDate sluttDato = startDato.plusMonths(32);
+        boolean erAvtaleInngått = false;
+        boolean erGodkjentForEtterregistrering = false;
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        MentorStartOgSluttDatoStrategy mentorStartOgSluttDatoStrategy = new MentorStartOgSluttDatoStrategy(avtale.getKvalifiseringsgruppe());
+        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> mentorStartOgSluttDatoStrategy.sjekkStartOgSluttDato(startDato, sluttDato ,erGodkjentForEtterregistrering, erAvtaleInngått, deltakerFnr));
     }
 }

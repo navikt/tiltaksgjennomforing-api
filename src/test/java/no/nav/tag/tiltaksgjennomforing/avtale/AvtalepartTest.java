@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
@@ -14,6 +15,8 @@ import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -26,6 +29,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class AvtalepartTest {
+
+    @BeforeEach
+    public void setup() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
+    }
+
+    @AfterEach
+    public void tearDown() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
+    }
 
     @Test
     public void endreAvtale__skal_feile_for_deltaker() {

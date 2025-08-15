@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
@@ -14,6 +15,8 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -34,6 +37,16 @@ import static org.mockito.Mockito.when;
 
 
 public class ArbeidsgiverTest {
+
+    @BeforeEach
+    public void setup() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
+    }
+
+    @AfterEach
+    public void tearDown() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
+    }
 
     @Test
     public void opphevGodkjenninger__kan_oppheve_ved_deltakergodkjenning() {

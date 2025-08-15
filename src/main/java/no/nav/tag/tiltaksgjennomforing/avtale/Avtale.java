@@ -22,6 +22,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
+import no.bekk.bekkopen.banking.KidnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvSystem;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.ArbeidsgiversGodkjenningOpphevetAvVeileder;
@@ -89,7 +90,6 @@ import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.LonnstilskuddAvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.TilskuddsperioderBeregningStrategyFactory;
-import no.nav.tag.tiltaksgjennomforing.utils.KidnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
@@ -625,18 +625,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker()) {
             throw new VeilederSkalGodkjenneSistException();
         }
-        if (this.getTiltakstype() == Tiltakstype.SOMMERJOBB &&
-            this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
-            throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
-        } else if (this.getTiltakstype() != Tiltakstype.SOMMERJOBB && this.getDeltakerFnr()
-            .erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
-            throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
-        }
-        if (this.getTiltakstype() == Tiltakstype.VTAO && this.getDeltakerFnr()
-            .erOver67ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
-            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
-        }
 
+        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
         Instant tidspunkt = Now.instant();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
@@ -683,22 +673,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
         }
-        if (tiltakstype == Tiltakstype.SOMMERJOBB &&
-            this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
-            throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
-        }
+
         if (tiltakstype == Tiltakstype.MENTOR && !erGodkjentTaushetserklæringAvMentor()) {
             throw new FeilkodeException(Feilkode.MENTOR_MÅ_SIGNERE_TAUSHETSERKLÆRING);
         }
-        if (tiltakstype != Tiltakstype.SOMMERJOBB && this.getDeltakerFnr()
-            .erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
-            throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
-        }
-        if (tiltakstype == Tiltakstype.VTAO && this.getDeltakerFnr()
-            .erOver67ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
-            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
-        }
 
+        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
         paVegneAvGrunn.valgtMinstEnGrunn();
         Instant tidspunkt = Now.instant();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
@@ -729,15 +709,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
         }
-        if (tiltakstype == Tiltakstype.SOMMERJOBB && this.getDeltakerFnr()
-            .erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
-            throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
-        }
-        if (tiltakstype == Tiltakstype.VTAO && this.getDeltakerFnr()
-            .erOver67ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
-            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
-        }
-
+        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
         godkjentPaVegneAvArbeidsgiverGrunn.valgtMinstEnGrunn();
         Instant tidspunkt = Now.instant();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
@@ -768,15 +740,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
         }
-        if (tiltakstype.isSommerjobb() && this.getDeltakerFnr()
-            .erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
-            throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
-        }
-        if (tiltakstype == Tiltakstype.VTAO && this.getDeltakerFnr()
-            .erOver67ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
-            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
-        }
-
+        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
         paVegneAvDeltakerOgArbeidsgiverGrunn.valgtMinstEnGrunn();
         Instant tidspunkt = Now.instant();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
@@ -1413,6 +1377,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         var gammelSluttDato = gjeldendeInnhold.getSluttDato();
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
+
+        //Forleng avtalen i databasen inn har
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         forlengTilskuddsperioder(gammelSluttDato, nySluttDato);
         utforEndring(new AvtaleForlengetAvVeileder(this, utførtAv));
@@ -1420,7 +1386,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     private void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
         StartOgSluttDatoStrategyFactory.create(getTiltakstype(), getKvalifiseringsgruppe())
-            .sjekkStartOgSluttDato(startDato, sluttDato, isGodkjentForEtterregistrering(), erAvtaleInngått());
+            .sjekkStartOgSluttDato(startDato, sluttDato, isGodkjentForEtterregistrering(), erAvtaleInngått(), deltakerFnr);
     }
 
     public void endreTilskuddsberegning(EndreTilskuddsberegning endreTilskuddsberegning, NavIdent utførtAv) {

@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
@@ -9,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -49,10 +51,8 @@ public class DeltakerTest {
         Avtale avtale = Avtale.opprett(new OpprettAvtale(new Fnr("30015521534"), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
-        endreAvtale.setSluttDato(LocalDate.of(2027, 1, 30));
-        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
-        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
-        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> avtale.godkjennForVeilederOgDeltaker(TestData.enNavIdent(), TestData.enGodkjentPaVegneGrunn()));
+        endreAvtale.setSluttDato(LocalDate.of(2028, 1, 30));
+        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
 
         Now.resetClock();
     }
@@ -62,42 +62,28 @@ public class DeltakerTest {
         Now.fixedDate(LocalDate.of(2025, 1, 9));
         Avtale avtale = Avtale.opprett(
             new OpprettAvtale(
-                new Fnr("01095726670"),
+                new Fnr("13529543640"),
                 TestData.etBedriftNr(),
                 Tiltakstype.VTAO
             ), Avtaleopphav.VEILEDER, TestData.enNavIdent()
         );
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2025, 1, 9));
-        endreAvtale.setSluttDato(LocalDate.of(2025, 3, 30));
-        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
-        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
-        assertFeilkode(
-            Feilkode.DELTAKER_67_AAR,
-            () -> avtale.godkjennForVeilederOgDeltaker(TestData.enNavIdent(), TestData.enGodkjentPaVegneGrunn())
-        );
+        endreAvtale.setSluttDato(LocalDate.of(2070, 3, 30));
+        assertFeilkode(Feilkode.DELTAKER_67_AAR, () -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
 
         Now.resetClock();
     }
 
     @Test
     public void deltaker_alder_ikke_eldre_enn_67_for_VTAO_avtale_godkjent_av_veileder() {
-        Now.fixedDate(LocalDate.of(2025, 1, 9));
-        Avtale avtale = Avtale.opprett(
-            new OpprettAvtale(
-                new Fnr("01095726670"),
-                TestData.etBedriftNr(),
-                Tiltakstype.VTAO
-            ), Avtaleopphav.VEILEDER, TestData.enNavIdent()
-        );
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(LocalDate.of(2025, 1, 9));
-        endreAvtale.setSluttDato(LocalDate.of(2025, 3, 30));
-        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
-        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
-        avtale.godkjennForDeltaker(avtale.getDeltakerFnr());
+        Now.fixedDate(LocalDate.now());
+        Avtale avtale = TestData.enVtaoAvtaleGodkjentAvArbeidsgiveruUtenEndringer();
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Instant.now());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Instant.now());
         assertFeilkode(Feilkode.DELTAKER_67_AAR, () -> avtale.godkjennForVeileder(TestData.enNavIdent()));
 
         Now.resetClock();
     }
+
 }

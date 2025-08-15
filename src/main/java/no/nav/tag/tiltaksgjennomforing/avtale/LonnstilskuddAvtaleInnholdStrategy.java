@@ -1,11 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.bekk.bekkopen.banking.KidnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.GenerellLonnstilskuddAvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.LonnstilskuddAvtaleBeregningStrategy;
-import no.nav.tag.tiltaksgjennomforing.utils.KidnummerValidator;
 
 import java.time.LocalDate;
 import java.util.HashMap;
