@@ -68,7 +68,7 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         final Tiltakstype tiltakstype = Tiltakstype.VARIG_LONNSTILSKUDD;
         final String deltakerFornavn = "Donald";
         final String deltakerEtternavn = "Duck";
-        final Identifikator deltakerFnr = new Fnr("12345678901");
+        final Identifikator deltakerFnr = Fnr.generer(1978, 9, 10);
         final String arbeidsgiverFornavn = "Arne";
         final String arbeidsgiverEtternavn = "Arbeidsgiver";
         final String arbeidsgiverTlf = "41111111";
@@ -87,7 +87,7 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         final TilskuddsperiodeGodkjentMelding tilskuddMelding = new TilskuddsperiodeGodkjentMelding(avtaleId,
                 tilskuddPeriodeId, avtaleInnholdId, avtaleFom, avtaleTom, tiltakstype, deltakerFornavn, deltakerEtternavn,
                 deltakerFnr, arbeidsgiverFornavn, arbeidsgiverEtternavn, arbeidsgiverTlf, veilederNavIdent, bedriftNavn, bedriftnummer, tilskuddBeløp, tilskuddFraDato, tilskuddTilDato, 10.6, 0.02, 14.1, 60, avtaleNr, løpenummer, 0,
-            "4808", beslutterNavIdent, veilederFornavn, veilederEtternavn, Now.localDateTime(), null);
+            "4808", beslutterNavIdent, veilederFornavn, veilederEtternavn, Now.localDateTime(), null, null);
 
         //NÅR
         tilskuddsperiodeKafkaProducer.publiserTilskuddsperiodeGodkjentMelding(tilskuddMelding);

@@ -1,5 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.bekk.bekkopen.banking.KidnummerValidator;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,6 +14,10 @@ public class VtaoStrategy extends BaseAvtaleInnholdStrategy {
 
     @Override
     public void endre(EndreAvtale nyAvtale) {
+        if (nyAvtale.getArbeidsgiverKid() != null && !KidnummerValidator.isValid(nyAvtale.getArbeidsgiverKid())) {
+            throw new FeilkodeException(Feilkode.FEIL_KID_NUMMER);
+        }
+
         avtaleInnhold.setStillingstittel(nyAvtale.getStillingstittel());
         avtaleInnhold.setStillingStyrk08(nyAvtale.getStillingStyrk08());
         avtaleInnhold.setStillingKonseptId(nyAvtale.getStillingKonseptId());
@@ -17,6 +25,7 @@ public class VtaoStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setFamilietilknytningForklaring(nyAvtale.getFamilietilknytningForklaring());
         avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
         avtaleInnhold.setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
+        avtaleInnhold.setArbeidsgiverKid(nyAvtale.getArbeidsgiverKid());
         avtaleInnhold.setStillingstype(nyAvtale.getStillingstype());
 
         super.endre(nyAvtale);
