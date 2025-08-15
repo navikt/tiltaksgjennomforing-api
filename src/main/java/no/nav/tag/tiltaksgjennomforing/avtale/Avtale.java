@@ -38,7 +38,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleSlettemerket;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleUtloperVarsel;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.DeltakersGodkjenningOpphevetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.DeltakersGodkjenningOpphevetAvVeileder;
@@ -160,10 +159,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     private Instant sistEndret;
     private Instant annullertTidspunkt;
     private String annullertGrunn;
-    private boolean avbrutt;
-    private boolean slettemerket;
-    private LocalDate avbruttDato;
-    private String avbruttGrunn;
     private String enhetGeografisk;
     private String enhetsnavnGeografisk;
     private String enhetOppfolging;
@@ -382,9 +377,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
         setAnnullertTidspunkt(null);
         setAnnullertGrunn(null);
-        setAvbrutt(false);
-        setAvbruttDato(null);
-        setAvbruttGrunn(null);
         setFeilregistrert(false);
         nyeTilskuddsperioder();
 
@@ -829,16 +821,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
     }
 
-    @JsonProperty
-    public boolean kanAvbrytes() {
-        return !isAvbrutt();
-    }
-
-    @JsonProperty
-    public boolean kanGjenopprettes() {
-        return isAvbrutt();
-    }
-
     public void annuller(Veileder veileder, String annullerGrunn) {
         annuller(annullerGrunn, veileder.getNavIdent());
     }
@@ -1078,11 +1060,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         utførEndring();
     }
 
-    public void slettemerk(NavIdent utførtAv) {
-        this.setSlettemerket(true);
-        registerEvent(new AvtaleSlettemerket(this, utførtAv));
-    }
-
     void forlengTilskuddsperioder(LocalDate gammelSluttDato, LocalDate nySluttDato) {
         hentBeregningStrategi().forleng(this, gammelSluttDato, nySluttDato);
     }
@@ -1142,14 +1119,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private void sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt() {
-        if (erAnnullertEllerAvbrutt()) {
+        if (Status.ANNULLERT.equals(status)) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_ANNULLERT_AVTALE);
         }
-    }
-
-    @JsonProperty
-    public boolean erAnnullertEllerAvbrutt() {
-        return isAvbrutt() || annullertTidspunkt != null;
     }
 
     protected Integer beregnTilskuddsprosentForPeriode(LocalDate sluttDato) {
@@ -1178,7 +1150,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             return false;
         }
         // Statuser som skal få tilskuddsperioder
-        return status != Status.ANNULLERT && status != Status.AVBRUTT;
+        return status != Status.ANNULLERT;
     }
 
     /**
@@ -1731,12 +1703,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     protected LonnstilskuddAvtaleBeregningStrategy hentBeregningStrategi() {
         return this.lonnstilskuddAvtaleBeregningStrategy.updateAndGet(strategy -> strategy == null ? TilskuddsperioderBeregningStrategyFactory.create(
             tiltakstype) : strategy);
-    }
-
-    public boolean erAvbruttForMerEnn12UkerSiden() {
-        return this.isAvbrutt() && this.getSistEndret()
-            .plus(84, ChronoUnit.DAYS)
-            .isBefore(Now.instant());
     }
 
     public boolean harSluttdatoPassertMedMerEnn12Uker() {
