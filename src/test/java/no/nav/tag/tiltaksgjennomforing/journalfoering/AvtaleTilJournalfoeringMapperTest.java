@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
+import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
@@ -34,6 +35,8 @@ public class AvtaleTilJournalfoeringMapperTest {
 
     @BeforeEach
     public void setUp() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
+
         avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         avtaleInnhold = avtale.getGjeldendeInnhold();
         grunn = new GodkjentPaVegneGrunn();
@@ -41,6 +44,8 @@ public class AvtaleTilJournalfoeringMapperTest {
 
     @AfterEach
     public void tearDown() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
+
         avtale = null;
         tilJournalfoering = null;
     }
