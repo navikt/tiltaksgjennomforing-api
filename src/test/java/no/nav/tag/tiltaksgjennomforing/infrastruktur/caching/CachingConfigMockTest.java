@@ -1,8 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.infrastruktur.caching;
 
 
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
+import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
@@ -16,6 +15,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,7 +56,7 @@ public class CachingConfigMockTest {
     @Autowired
     private VeilarboppfolgingService veilarboppfolgingService;
 
-    private Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
+    private Avtale avtale;
     private final Norg2OppfølgingResponse FØRSTE_NORG2_OPPFØLGNING_RESPONSE = new Norg2OppfølgingResponse(
             1,
             "1000",
@@ -122,6 +122,10 @@ public class CachingConfigMockTest {
 
     @BeforeEach
     public void setUp() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
+
+        avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
+
         final NavEnhet oppfolgingNavEnhet = TestData.ENHET_OPPFØLGING;
 
         TestData.setGeoNavEnhet(avtale, oppfolgingNavEnhet);
@@ -145,6 +149,11 @@ public class CachingConfigMockTest {
                 FØRSTE_OPPFØLGNING_ENHET_ARENA,
                 ANDRE_OPPFØLGNING_ENHET_ARENA
         );
+    }
+
+    @AfterEach
+    public void tearDown() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
     }
 
     @Test
