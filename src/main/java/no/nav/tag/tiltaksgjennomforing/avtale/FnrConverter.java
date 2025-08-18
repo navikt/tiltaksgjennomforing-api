@@ -14,6 +14,7 @@ public class FnrConverter implements AttributeConverter<Fnr, String> {
 
     @Override
     public Fnr convertToEntityAttribute(String dbData) {
+        if (dbData == null) return null;
         return new Fnr(dbData);
     }
 }

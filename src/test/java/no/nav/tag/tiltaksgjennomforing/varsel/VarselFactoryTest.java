@@ -1,10 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
+import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -14,6 +17,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 class VarselFactoryTest {
+
+  @BeforeEach
+  public void setup() {
+    FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
+  }
+
+  @AfterEach
+  public void tearDown() {
+    FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
+  }
 
   @Test
   public void skal_returnere_tilskuddsperiode_verdi_i_teksten_naar_beslutter_godkjenner_periode(){
