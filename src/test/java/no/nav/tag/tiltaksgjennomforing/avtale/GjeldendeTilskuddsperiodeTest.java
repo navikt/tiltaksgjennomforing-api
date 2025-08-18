@@ -1,9 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -14,16 +11,6 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enMidlertidigLønn
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GjeldendeTilskuddsperiodeTest {
-
-    @BeforeEach
-    public void setup() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
-    }
-
-    @AfterEach
-    public void tearDown() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
-    }
 
     @Test
     public void godkjenner_og_neste_kan_behandles() {

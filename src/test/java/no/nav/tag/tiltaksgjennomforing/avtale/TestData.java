@@ -798,7 +798,7 @@ public class TestData {
     public static Arbeidsgiver enArbeidsgiver() {
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
-        return new Arbeidsgiver(Fnr.generer(1978, 9, 10), Set.of(), Map.of(), List.of(), persondataService, null, null, null);
+        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), List.of(), persondataService, null, null, null);
     }
 
     public static Mentor enMentor(Avtale avtale) {
@@ -806,13 +806,17 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
+        PersondataService persondataService = mock(PersondataService.class);
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+        when(persondataService.hentNavn(any())).thenReturn(new Navn("Donald", "", "Duck"));
+
         return new Arbeidsgiver(
                 TestData.etFodselsnummer(),
                 Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", "", null))
                 , Map.of(avtale.getBedriftNr(),
                 List.of(Tiltakstype.values())),
                 List.of(),
-                mock(PersondataService.class),
+                persondataService,
                 null,
                 null,
                 null

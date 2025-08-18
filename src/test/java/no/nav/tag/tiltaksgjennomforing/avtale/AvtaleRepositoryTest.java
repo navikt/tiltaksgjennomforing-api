@@ -184,7 +184,7 @@ public class AvtaleRepositoryTest {
 
     @Test
     public void opprettAvtale__skal_publisere_domainevent() {
-        Avtale nyAvtale = Avtale.opprett(new OpprettAvtale(Fnr.generer(1980, 2, 19), new BedriftNr("101033333"), ARBEIDSTRENING), Avtaleopphav.VEILEDER, new NavIdent("Q000111"));
+        Avtale nyAvtale = Avtale.opprett(new OpprettAvtale(new Fnr("10101033333"), new BedriftNr("101033333"), ARBEIDSTRENING), Avtaleopphav.VEILEDER, new NavIdent("Q000111"));
         avtaleRepository.save(nyAvtale);
         verify(metrikkRegistrering).avtaleOpprettet(any());
     }
@@ -373,7 +373,7 @@ public class AvtaleRepositoryTest {
     public void findAllByMentorFnr_skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
         Pageable pageable = PageRequest.of(0, 100);
         final LocalDate Dato12UkerTilbakeFraNå = Now.localDate().minusWeeks(12);
-        final Fnr mentorFnr = Fnr.generer(1976, 12, 28);
+        final Fnr mentorFnr = new Fnr("12345678911");
         Avtale lagretAvtale = TestData.enMentorAvtaleSignert();
         lagretAvtale.setFeilregistrert(false);
         lagretAvtale.setMentorFnr(mentorFnr);
@@ -474,23 +474,23 @@ public class AvtaleRepositoryTest {
     @Test
     public void sokEtterAvtale_finner_avtaler_ved_sok_pa_deltakerFnr() {
         Avtale avtale1 = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet();
-        avtale1.setDeltakerFnr(Fnr.generer(2000, 1, 1));
+        avtale1.setDeltakerFnr(new Fnr("10000000001"));
         avtaleRepository.save(avtale1);
 
         Avtale avtale2 = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avtale2.setDeltakerFnr(Fnr.generer(2000, 2, 1));
+        avtale2.setDeltakerFnr(new Fnr("10000000002"));
         avtaleRepository.save(avtale2);
 
         Avtale avtale3 = TestData.enInkluderingstilskuddAvtale();
-        avtale3.setDeltakerFnr(Fnr.generer(2000, 3, 1));
+        avtale3.setDeltakerFnr(new Fnr("10000000003"));
         avtaleRepository.save(avtale3);
 
         Avtale avtale4 = TestData.enAvtaleMedAltUtfylt();
-        avtale4.setDeltakerFnr(Fnr.generer(2000, 4, 1));
+        avtale4.setDeltakerFnr(new Fnr("10000000004"));
         avtaleRepository.save(avtale4);
 
         Avtale avtale5 = TestData.enMentorAvtaleUsignert();
-        avtale5.setDeltakerFnr(Fnr.generer(2000, 5, 1));
+        avtale5.setDeltakerFnr(new Fnr("10000000005"));
         avtaleRepository.save(avtale5);
 
         Page<Avtale> resultat = avtaleRepository.sokEtterAvtale(null, null, avtale4.getDeltakerFnr(), null, null, null, null, false, PageRequest.of(0, 10));

@@ -1,10 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.AssertFeilkode;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,16 +16,9 @@ class VarigLonnstilskuddAvtaleInnholdStrategyTest {
 
     @BeforeEach
     public void setUp() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
-
         Avtale avtale = TestData.enVarigLonnstilskuddsjobbAvtale();
         avtaleInnhold = avtale.getGjeldendeInnhold();
         strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, VARIG_LONNSTILSKUDD);
-    }
-
-    @AfterEach
-    public void tearDown() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
     }
 
     @Test

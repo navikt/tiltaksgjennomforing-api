@@ -1,11 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
-import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,23 +24,16 @@ public class InnloggetArbeidsgiverTest {
     @Mock
     public AvtaleRepository avtaleRepository;
 
-    @BeforeEach
-    public void setup() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
-    }
+    Avtale avtale = TestData.enArbeidstreningAvtale();
+    Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
 
-    @AfterEach
-    public void tearDown() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
+    @BeforeEach
+    public void setUp(){
+        avtale.setAnnullertGrunn("Hemmelig");
     }
 
     @Test
     public void hentAvtale_uten_annullertGrunn() {
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale.setAnnullertGrunn("Hemmelig");
-
-        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         Avtale hentetAvtale = arbeidsgiver.hentAvtale(avtaleRepository, avtale.getId());
         assertThat(hentetAvtale.getAnnullertGrunn()).isNull();
@@ -50,11 +41,6 @@ public class InnloggetArbeidsgiverTest {
 
     @Test
     public void hentAvtalerForMinsideArbeidsgiver_uten_annullertGrunn() {
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale.setAnnullertGrunn("Hemmelig");
-
-        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-
         when(avtaleRepository.findAllByBedriftNrAndFeilregistrertIsFalse(eq(avtale.getBedriftNr()))).thenReturn(Arrays.asList(avtale));
         List<Avtale> hentetAvtaler = arbeidsgiver.hentAvtalerForMinsideArbeidsgiver(avtaleRepository, avtale.getBedriftNr());
         assertThat(hentetAvtaler.get(0).getAnnullertGrunn()).isNull();

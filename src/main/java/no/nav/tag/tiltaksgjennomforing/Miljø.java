@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing;
 
 public class Miljø {
+    public static final String NOT_LOCAL = "!local";
     public static final String LOCAL = "local";
     public static final String TEST = "test";
     public static final String DEV_FSS = "dev-fss";

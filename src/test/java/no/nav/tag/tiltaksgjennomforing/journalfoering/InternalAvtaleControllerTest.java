@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
-import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
@@ -9,8 +8,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -41,8 +38,9 @@ public class InternalAvtaleControllerTest {
     private static final UUID AVTALE_ID_1 = UUID.randomUUID();
     private static final UUID AVTALE_ID_2 = UUID.randomUUID();
     private static final UUID AVTALE_ID_3 = UUID.randomUUID();
-    private List<AvtaleInnhold> avtaleInnholdList;
-    private List<AvtaleInnhold> avtaleInnholdListMedTilskuddsPerioder;
+    private List<AvtaleInnhold> avtaleInnholdList = treAvtalerSomSkalJournalføres().stream().map(avtale -> avtale.getGjeldendeInnhold()).collect(Collectors.toList());
+
+    private List<AvtaleInnhold> avtaleInnholdListMedTilskuddsPerioder = enAvtaleMedTilskudsPerioderSomSkalJournalføres().stream().map(avtale -> avtale.getGjeldendeInnhold()).collect(Collectors.toList());
 
     @InjectMocks
     private InternalAvtaleController internalAvtaleController;
@@ -55,18 +53,6 @@ public class InternalAvtaleControllerTest {
 
     @Mock
     private AvtaleInnholdRepository avtaleInnholdRepository;
-
-    @BeforeEach
-    public void setUp() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
-        avtaleInnholdList = treAvtalerSomSkalJournalføres().stream().map(avtale -> avtale.getGjeldendeInnhold()).collect(Collectors.toList());
-        avtaleInnholdListMedTilskuddsPerioder = enAvtaleMedTilskudsPerioderSomSkalJournalføres().stream().map(avtale -> avtale.getGjeldendeInnhold()).collect(Collectors.toList());
-    }
-
-    @AfterEach
-    public void tearDown() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
-    }
 
     @Test
     public void henterAvtalerMedTilskuddsperioderTilJournalfoering() {

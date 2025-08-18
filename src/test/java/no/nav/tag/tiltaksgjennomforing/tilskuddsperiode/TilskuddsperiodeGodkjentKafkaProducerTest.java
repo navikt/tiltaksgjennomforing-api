@@ -68,7 +68,7 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         final Tiltakstype tiltakstype = Tiltakstype.VARIG_LONNSTILSKUDD;
         final String deltakerFornavn = "Donald";
         final String deltakerEtternavn = "Duck";
-        final Identifikator deltakerFnr = Fnr.generer(1978, 9, 10);
+        final Identifikator deltakerFnr = new Fnr("12345678901");
         final String arbeidsgiverFornavn = "Arne";
         final String arbeidsgiverEtternavn = "Arbeidsgiver";
         final String arbeidsgiverTlf = "41111111";

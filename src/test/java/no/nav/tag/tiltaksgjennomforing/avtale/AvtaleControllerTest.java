@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
@@ -31,8 +30,6 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,16 +92,6 @@ public class AvtaleControllerTest {
     private FeatureToggleService featureToggleServiceMock;
 
     private Pageable pageable = PageRequest.of(0, 100);
-
-    @BeforeEach
-    public void setup() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
-    }
-
-    @AfterEach
-    public void tearDown() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
-    }
 
     private static List<Avtale> lagListeMedAvtaler(Avtale avtale, int antall) {
         List<Avtale> avtaler = new ArrayList<>();
@@ -289,7 +276,7 @@ public class AvtaleControllerTest {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         værInnloggetSom(
                 new Arbeidsgiver(
-                        Fnr.generer(1956, 7, 8),
+                        new Fnr("55555566666"),
                         Set.of(),
                         Map.of(),
                         List.of(),
@@ -477,10 +464,7 @@ public class AvtaleControllerTest {
                 mock(EregService.class)
         );
         værInnloggetSom(enNavAnsatt);
-        Fnr deltakerFnr = Fnr.generer(1978, 9, 10);
-        when(
-                tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt, deltakerFnr)
-        ).thenReturn(true);
+        Fnr deltakerFnr = new Fnr("11111100000");
         when(
                 tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt, deltakerFnr)
         ).thenReturn(false);
@@ -510,7 +494,7 @@ public class AvtaleControllerTest {
                 mock(EregService.class)
         );
         værInnloggetSom(enNavAnsatt);
-        Fnr deltakerFnr = Fnr.generer(1956, 7, 8);
+        Fnr deltakerFnr = new Fnr("11111100000");
         when(
                 tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt, deltakerFnr)
         ).thenReturn(false);
@@ -540,7 +524,7 @@ public class AvtaleControllerTest {
                 mock(EregService.class)
         );
         værInnloggetSom(enNavAnsatt);
-        Fnr deltakerFnr = Fnr.generer(1978, 9, 10);
+        Fnr deltakerFnr = new Fnr("11111100000");
         when(
                 tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt, deltakerFnr)
         ).thenReturn(true);
@@ -567,7 +551,7 @@ public class AvtaleControllerTest {
         værInnloggetSom(arbeidsgiver);
         assertThatThrownBy(
                 () -> avtaleController.opprettAvtaleSomArbeidsgiver(
-                        new OpprettAvtale(Fnr.generer(1978, 9, 10), new BedriftNr("111222333"),
+                        new OpprettAvtale(new Fnr("99887765432"), new BedriftNr("111222333"),
                                 Tiltakstype.ARBEIDSTRENING)
                 )
         ).isInstanceOf(TilgangskontrollException.class);
