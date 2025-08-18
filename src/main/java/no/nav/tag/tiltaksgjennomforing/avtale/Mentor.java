@@ -32,12 +32,6 @@ public class Mentor extends Avtalepart<Fnr> {
                 "Sluttdato har passert med mer enn 12 uker"
             );
         }
-        if (avtale.erAvbruttForMerEnn12UkerSiden()) {
-            return new Tilgang.Avvis(
-                Avslagskode.UTGATT,
-                "Avbrutt for mer enn 12 uker siden"
-            );
-        }
         if (avtale.erAnnullertForMerEnn12UkerSiden()) {
             return new Tilgang.Avvis(
                 Avslagskode.UTGATT,
@@ -107,7 +101,6 @@ public class Mentor extends Avtalepart<Fnr> {
 
     private void skjulSensitivData(Avtale avtale) {
         avtale.setAnnullertGrunn(null);
-        avtale.setAvbruttGrunn(null);
         avtale.setDeltakerFnr(null);
     }
 }

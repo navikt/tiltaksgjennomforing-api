@@ -727,20 +727,6 @@ public class AvtaleController {
         return avtale;
     }
 
-    @PostMapping("/{avtaleId}/slettemerk")
-    @Transactional
-    public void slettemerk(
-        @PathVariable("avtaleId") UUID avtaleId,
-        @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret
-    ) {
-        Veileder veileder = innloggingService.hentVeileder();
-        Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(sjekkeSistEndret(sistEndret))
-            .orElseThrow(RessursFinnesIkkeException::new);
-        veileder.slettemerk(avtale);
-        avtaleRepository.save(avtale);
-    }
-
     @PostMapping("/{avtaleId}/del-med-avtalepart")
     @Transactional
     public void delAvtaleMedAvtalepart(

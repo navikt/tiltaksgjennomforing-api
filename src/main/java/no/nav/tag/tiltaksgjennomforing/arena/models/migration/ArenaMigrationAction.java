@@ -42,7 +42,7 @@ public enum ArenaMigrationAction {
         }
 
         return switch (avtalestatus) {
-            case ANNULLERT, AVBRUTT -> switch (deltakerstatuskode) {
+            case ANNULLERT -> switch (deltakerstatuskode) {
                 case GJENN, TILBUD -> isSluttdatoIDagEllerFremtiden ? (isFeilregistrert ? OPPRETT : GJENOPPRETT) : IGNORER;
                 case null, default -> IGNORER;
             };
