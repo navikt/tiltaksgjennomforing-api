@@ -30,9 +30,9 @@ public record VarselRespons(
     }
 
     private static String hentUtførtAv(Varsel varsel, Avtalerolle innloggetPart) {
-        if (innloggetPart.erInternBruker() && varsel.getUtførtAv().erInternBruker()) {
+        if (innloggetPart.erInternBruker() && varsel.getUtførtAvRolle().erInternBruker()) {
             return varsel.getUtførtAvIdentifikator().asString();
         }
-        return varsel.getUtførtAv().name();
+        return varsel.getUtførtAvRolle().name();
     }
 }

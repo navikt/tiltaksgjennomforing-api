@@ -78,7 +78,7 @@ public class AvtaleHendelsePatchService {
     }
 
     private void lagMelding(Avtale avtale) {
-        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), new Identifikator("tiltaksgjennomforing-api"), AvtaleHendelseUtførtAvRolle.SYSTEM, HendelseType.PATCH);
+        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), AvtaleHendelseUtførtAv.system(Identifikator.TILTAKSGJENNOMFORING_API), HendelseType.PATCH);
         UUID meldingId = UUID.randomUUID();
         Instant tidspunkt = Now.instant();
         try {
@@ -91,7 +91,7 @@ public class AvtaleHendelsePatchService {
     }
 
     private void lagMeldingDRYRun(Avtale avtale) {
-        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), new Identifikator("system"), AvtaleHendelseUtførtAvRolle.SYSTEM, HendelseType.PATCH);
+        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), AvtaleHendelseUtførtAv.system(Identifikator.SYSTEM), HendelseType.PATCH);
         try {
             String meldingSomString = objectMapper.writeValueAsString(melding);
             if(meldingSomString == null ) {

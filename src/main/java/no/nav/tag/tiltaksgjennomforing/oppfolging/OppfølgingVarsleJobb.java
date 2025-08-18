@@ -8,7 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
-import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAvRolle;
+import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.Varsel;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
@@ -35,7 +35,7 @@ public class OppfølgingVarsleJobb {
         List<Avtale> avtaler = avtaleRepository.finnAvtalerSomSnartSkalFølgesOpp(dagenDato);
         if (!avtaler.isEmpty()) log.info("Fant {} avtaler som krever oppfølging. Oppretter varsel til veileder på disse.", avtaler.size());
         avtaler.forEach(avtale -> {
-            Varsel varsel = Varsel.nyttVarsel(avtale.getVeilederNavIdent(), true, avtale, Avtalerolle.VEILEDER, AvtaleHendelseUtførtAvRolle.SYSTEM, Identifikator.SYSTEM, HendelseType.OPPFØLGING_AV_TILTAK_KREVES, null);
+            Varsel varsel = Varsel.nyttVarsel(avtale.getVeilederNavIdent(), true, avtale, Avtalerolle.VEILEDER, AvtaleHendelseUtførtAv.system(Identifikator.SYSTEM), HendelseType.OPPFØLGING_AV_TILTAK_KREVES, null);
             varselRepository.save(varsel);
             avtale.setOppfolgingVarselSendt(Now.instant());
         });

@@ -140,14 +140,14 @@ public class AvtaleMelding {
     boolean godkjentPaVegneAvArbeidsgiver;
     AvtaleInnholdType innholdType;
     Identifikator utførtAv;
-    AvtaleHendelseUtførtAvRolle utførtAvRolle;
+    AvtaleHendelseUtførtAv.Rolle utførtAvRolle;
     String forkortetGrunn;
 
-    public static AvtaleMelding create(Avtale avtale, AvtaleInnhold avtaleInnhold, Identifikator utførtAv, AvtaleHendelseUtførtAvRolle utførtAvAvtaleRolle, HendelseType hendelseType) {
-        return create(avtale, avtaleInnhold, utførtAv, utførtAvAvtaleRolle, hendelseType, null);
+    public static AvtaleMelding create(Avtale avtale, AvtaleInnhold avtaleInnhold, AvtaleHendelseUtførtAv avtaleHendelseUtførtAv, HendelseType hendelseType) {
+        return create(avtale, avtaleInnhold, avtaleHendelseUtførtAv, hendelseType, null);
     }
 
-    public static AvtaleMelding create(Avtale avtale, AvtaleInnhold avtaleInnhold, Identifikator utførtAv, AvtaleHendelseUtførtAvRolle utførtAvAvtaleRolle, HendelseType hendelseType, ForkortetGrunn forkortetGrunn) {
+    public static AvtaleMelding create(Avtale avtale, AvtaleInnhold avtaleInnhold, AvtaleHendelseUtførtAv avtaleHendelseUtførtAv, HendelseType hendelseType, ForkortetGrunn forkortetGrunn) {
         AvtaleMelding avtaleMelding = new AvtaleMelding();
         avtaleMelding.setHendelseType(hendelseType);
         avtaleMelding.setAvtaleStatus(avtale.getStatus());
@@ -236,8 +236,8 @@ public class AvtaleMelding {
         avtaleMelding.setGodkjentPaVegneAvArbeidsgiverGrunn(avtaleInnhold.getGodkjentPaVegneAvArbeidsgiverGrunn());
         avtaleMelding.setGodkjentPaVegneAvArbeidsgiver(avtaleInnhold.isGodkjentPaVegneAvArbeidsgiver());
         avtaleMelding.setInnholdType(avtaleInnhold.getInnholdType());
-        avtaleMelding.setUtførtAv(utførtAv);
-        avtaleMelding.setUtførtAvRolle(utførtAvAvtaleRolle);
+        avtaleMelding.setUtførtAv(avtaleHendelseUtførtAv.identifikator());
+        avtaleMelding.setUtførtAvRolle(avtaleHendelseUtførtAv.rolle());
         avtaleMelding.setForkortetGrunn(Optional.ofNullable(forkortetGrunn).flatMap(ForkortetGrunn::utled).orElse(null));
         avtaleMelding.setOpphav(avtale.getOpphav());
 

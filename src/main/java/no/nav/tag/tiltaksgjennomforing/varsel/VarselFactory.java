@@ -3,47 +3,44 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
-import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAvRolle;
+import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
 
 import java.util.List;
 
 public class VarselFactory {
     private final Avtale avtale;
-    private final AvtaleHendelseUtførtAvRolle utførtAv;
-    private final Identifikator utførtAvIdentifikator;
+    private final AvtaleHendelseUtførtAv utfortAv;
     private final HendelseType hendelseType;
     private final TilskuddPeriode tilskuddPeriode;
 
-    public VarselFactory(Avtale avtale, AvtaleHendelseUtførtAvRolle utførtAv, Identifikator utførtAvIdentifikator, HendelseType hendelseType) {
-        this(avtale, null, utførtAv, utførtAvIdentifikator, hendelseType);
+    public VarselFactory(Avtale avtale, AvtaleHendelseUtførtAv utfortAv, HendelseType hendelseType) {
+        this(avtale, null, utfortAv, hendelseType);
     }
 
-    public VarselFactory(Avtale avtale, TilskuddPeriode tilskuddPeriode, AvtaleHendelseUtførtAvRolle utførtAv, Identifikator utførtAvIdentifikator, HendelseType hendelseType) {
+    public VarselFactory(Avtale avtale, TilskuddPeriode tilskuddPeriode, AvtaleHendelseUtførtAv utfortAv, HendelseType hendelseType) {
         this.avtale = avtale;
         this.hendelseType = hendelseType;
-        this.utførtAv = utførtAv;
-        this.utførtAvIdentifikator = utførtAvIdentifikator;
+        this.utfortAv = utfortAv;
         this.tilskuddPeriode = tilskuddPeriode;
     }
 
     public Varsel deltaker() {
-        return Varsel.nyttVarsel(avtale.getDeltakerFnr(), utførtAv != AvtaleHendelseUtførtAvRolle.DELTAKER, avtale, Avtalerolle.DELTAKER, utførtAv, utførtAvIdentifikator, hendelseType, tilskuddPeriode);
+        return Varsel.nyttVarsel(avtale.getDeltakerFnr(), utfortAv.rolle() != AvtaleHendelseUtførtAv.Rolle.DELTAKER, avtale, Avtalerolle.DELTAKER, utfortAv, hendelseType, tilskuddPeriode);
     }
 
     public Varsel arbeidsgiver() {
-        return Varsel.nyttVarsel(avtale.getBedriftNr(), utførtAv != AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, avtale, Avtalerolle.ARBEIDSGIVER, utførtAv, utførtAvIdentifikator, hendelseType, tilskuddPeriode);
+        return Varsel.nyttVarsel(avtale.getBedriftNr(), utfortAv.rolle() != AvtaleHendelseUtførtAv.Rolle.ARBEIDSGIVER, avtale, Avtalerolle.ARBEIDSGIVER, utfortAv, hendelseType, tilskuddPeriode);
     }
 
     //TODO: Hent IDENTEN til beslutter her og ikke bare veileder
     public Varsel veileder() {
-        return Varsel.nyttVarsel(avtale.getVeilederNavIdent(), utførtAv != AvtaleHendelseUtførtAvRolle.VEILEDER, avtale, Avtalerolle.VEILEDER, utførtAv, utførtAvIdentifikator, hendelseType, tilskuddPeriode);
+        return Varsel.nyttVarsel(avtale.getVeilederNavIdent(), utfortAv.rolle() != AvtaleHendelseUtførtAv.Rolle.VEILEDER, avtale, Avtalerolle.VEILEDER, utfortAv, hendelseType, tilskuddPeriode);
     }
 
     public Varsel mentor() {
-        return Varsel.nyttVarsel(avtale.getMentorFnr(), utførtAv != AvtaleHendelseUtførtAvRolle.MENTOR, avtale, Avtalerolle.MENTOR, utførtAv, utførtAvIdentifikator, hendelseType, tilskuddPeriode);
+        return Varsel.nyttVarsel(avtale.getMentorFnr(), utfortAv.rolle() != AvtaleHendelseUtførtAv.Rolle.MENTOR, avtale, Avtalerolle.MENTOR, utfortAv, hendelseType, tilskuddPeriode);
     }
 
     public List<Varsel> alleParter() {

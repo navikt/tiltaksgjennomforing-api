@@ -8,7 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
-import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAvRolle;
+import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMelding;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitet;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository;
@@ -74,7 +74,7 @@ public class AvtalestatusService {
 
     private void sendAvtaleMelding(Avtale avtale) {
         Instant tidspunkt = Now.instant();
-        AvtaleMelding avtaleMelding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), new Identifikator("tiltaksgjennomforing-api"), AvtaleHendelseUtførtAvRolle.SYSTEM, HendelseType.STATUSENDRING);
+        AvtaleMelding avtaleMelding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), AvtaleHendelseUtførtAv.system(Identifikator.TILTAKSGJENNOMFORING_API), HendelseType.STATUSENDRING);
         try {
             String meldingSomString = objectMapper.writeValueAsString(avtaleMelding);
             AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(UUID.randomUUID(), avtale.getId(), tidspunkt, HendelseType.STATUSENDRING, avtale.getStatus(), meldingSomString);

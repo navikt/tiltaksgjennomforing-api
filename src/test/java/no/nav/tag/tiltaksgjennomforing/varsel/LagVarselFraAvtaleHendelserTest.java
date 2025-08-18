@@ -20,7 +20,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.OpprettMentorAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
-import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAvRolle;
+import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.datavarehus.DvhMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
@@ -95,129 +95,129 @@ class LagVarselFraAvtaleHendelserTest {
         Avtale avtale = avtaleRepository.save(Avtale.opprett(new OpprettAvtale(new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent()));
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
 
-        assertHendelse(OPPRETTET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.VEILEDER, false);
-        assertHendelse(OPPRETTET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
-        assertHendelse(OPPRETTET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.DELTAKER, true);
+        assertHendelse(OPPRETTET, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.VEILEDER, false);
+        assertHendelse(OPPRETTET, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
+        assertHendelse(OPPRETTET, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.DELTAKER, true);
 
         avtale.endreAvtale(TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.ARBEIDSGIVER);
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(ENDRET, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.VEILEDER, true);
-        assertHendelse(ENDRET, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.ARBEIDSGIVER, false);
-        assertHendelse(ENDRET, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.DELTAKER, true);
+        assertHendelse(ENDRET, AvtaleHendelseUtførtAv.Rolle.ARBEIDSGIVER, Avtalerolle.VEILEDER, true);
+        assertHendelse(ENDRET, AvtaleHendelseUtførtAv.Rolle.ARBEIDSGIVER, Avtalerolle.ARBEIDSGIVER, false);
+        assertHendelse(ENDRET, AvtaleHendelseUtførtAv.Rolle.ARBEIDSGIVER, Avtalerolle.DELTAKER, true);
 
         avtale.togglegodkjennEtterregistrering(TestData.enNavIdent());
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(GODKJENT_FOR_ETTERREGISTRERING, AvtaleHendelseUtførtAvRolle.BESLUTTER, Avtalerolle.VEILEDER, true);
+        assertHendelse(GODKJENT_FOR_ETTERREGISTRERING, AvtaleHendelseUtførtAv.Rolle.BESLUTTER, Avtalerolle.VEILEDER, true);
 
         avtale.togglegodkjennEtterregistrering(TestData.enNavIdent());
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(FJERNET_ETTERREGISTRERING, AvtaleHendelseUtførtAvRolle.BESLUTTER, Avtalerolle.VEILEDER, true);
+        assertHendelse(FJERNET_ETTERREGISTRERING, AvtaleHendelseUtførtAv.Rolle.BESLUTTER, Avtalerolle.VEILEDER, true);
 
         avtale.delMedAvtalepart(Avtalerolle.DELTAKER);
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(DELT_MED_DELTAKER, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.VEILEDER, false);
-        assertHendelse(DELT_MED_DELTAKER, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.DELTAKER, true);
+        assertHendelse(DELT_MED_DELTAKER, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.VEILEDER, false);
+        assertHendelse(DELT_MED_DELTAKER, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.DELTAKER, true);
         assertIngenHendelse(DELT_MED_DELTAKER, Avtalerolle.ARBEIDSGIVER);
 
         avtale.delMedAvtalepart(Avtalerolle.ARBEIDSGIVER);
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(DELT_MED_ARBEIDSGIVER, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.VEILEDER, false);
-        assertHendelse(DELT_MED_ARBEIDSGIVER, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
+        assertHendelse(DELT_MED_ARBEIDSGIVER, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.VEILEDER, false);
+        assertHendelse(DELT_MED_ARBEIDSGIVER, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
         assertIngenHendelse(DELT_MED_ARBEIDSGIVER, Avtalerolle.DELTAKER);
 
         Deltaker deltaker = TestData.enDeltaker(avtale);
         deltaker.godkjennAvtale(avtale);
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(GODKJENT_AV_DELTAKER, AvtaleHendelseUtførtAvRolle.DELTAKER, Avtalerolle.VEILEDER, true);
-        assertHendelse(GODKJENT_AV_DELTAKER, AvtaleHendelseUtførtAvRolle.DELTAKER, Avtalerolle.ARBEIDSGIVER, true);
-        assertHendelse(GODKJENT_AV_DELTAKER, AvtaleHendelseUtførtAvRolle.DELTAKER, Avtalerolle.DELTAKER, false);
+        assertHendelse(GODKJENT_AV_DELTAKER, AvtaleHendelseUtførtAv.Rolle.DELTAKER, Avtalerolle.VEILEDER, true);
+        assertHendelse(GODKJENT_AV_DELTAKER, AvtaleHendelseUtførtAv.Rolle.DELTAKER, Avtalerolle.ARBEIDSGIVER, true);
+        assertHendelse(GODKJENT_AV_DELTAKER, AvtaleHendelseUtførtAv.Rolle.DELTAKER, Avtalerolle.DELTAKER, false);
 
         Veileder veileder = TestData.enVeileder(avtale);
         veileder.opphevGodkjenninger(avtale);
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(GODKJENNINGER_OPPHEVET_AV_VEILEDER, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.VEILEDER, false);
-        assertHendelse(GODKJENNINGER_OPPHEVET_AV_VEILEDER, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
-        assertHendelse(GODKJENNINGER_OPPHEVET_AV_VEILEDER, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.DELTAKER, true);
+        assertHendelse(GODKJENNINGER_OPPHEVET_AV_VEILEDER, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.VEILEDER, false);
+        assertHendelse(GODKJENNINGER_OPPHEVET_AV_VEILEDER, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
+        assertHendelse(GODKJENNINGER_OPPHEVET_AV_VEILEDER, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.DELTAKER, true);
 
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         arbeidsgiver.godkjennAvtale(avtale);
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(GODKJENT_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.VEILEDER, true);
-        assertHendelse(GODKJENT_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.ARBEIDSGIVER, false);
-        assertHendelse(GODKJENT_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.DELTAKER, true);
+        assertHendelse(GODKJENT_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAv.Rolle.ARBEIDSGIVER, Avtalerolle.VEILEDER, true);
+        assertHendelse(GODKJENT_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAv.Rolle.ARBEIDSGIVER, Avtalerolle.ARBEIDSGIVER, false);
+        assertHendelse(GODKJENT_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAv.Rolle.ARBEIDSGIVER, Avtalerolle.DELTAKER, true);
 
         arbeidsgiver.opphevGodkjenninger(avtale);
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.VEILEDER, true);
-        assertHendelse(GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.ARBEIDSGIVER, false);
-        assertHendelse(GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.DELTAKER, true);
+        assertHendelse(GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAv.Rolle.ARBEIDSGIVER, Avtalerolle.VEILEDER, true);
+        assertHendelse(GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAv.Rolle.ARBEIDSGIVER, Avtalerolle.ARBEIDSGIVER, false);
+        assertHendelse(GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAv.Rolle.ARBEIDSGIVER, Avtalerolle.DELTAKER, true);
 
         arbeidsgiver.godkjennAvtale(avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(GODKJENT_PAA_VEGNE_AV, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.VEILEDER, false);
+        assertHendelse(GODKJENT_PAA_VEGNE_AV, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.VEILEDER, false);
         assertIngenHendelse(GODKJENT_PAA_VEGNE_AV, Avtalerolle.ARBEIDSGIVER);
         assertIngenHendelse(GODKJENT_PAA_VEGNE_AV, Avtalerolle.DELTAKER);
 
         Beslutter beslutter = TestData.enBeslutter(avtale);
         beslutter.avslåTilskuddsperiode(avtale, EnumSet.of(Avslagsårsak.FEIL_I_REGELFORSTÅELSE), "Forklaring");
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(TILSKUDDSPERIODE_AVSLATT, AvtaleHendelseUtførtAvRolle.BESLUTTER, Avtalerolle.VEILEDER, true);
+        assertHendelse(TILSKUDDSPERIODE_AVSLATT, AvtaleHendelseUtførtAv.Rolle.BESLUTTER, Avtalerolle.VEILEDER, true);
         assertIngenHendelse(TILSKUDDSPERIODE_AVSLATT, Avtalerolle.ARBEIDSGIVER);
         assertIngenHendelse(TILSKUDDSPERIODE_AVSLATT, Avtalerolle.DELTAKER);
 
         veileder.reaktiverTilskuddsperiodeOgsendTilbakeTilBeslutter(avtale);
         beslutter.godkjennTilskuddsperiode(avtale, TestData.ENHET_OPPFØLGING.getVerdi());
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(TILSKUDDSPERIODE_GODKJENT, AvtaleHendelseUtførtAvRolle.BESLUTTER, Avtalerolle.VEILEDER, true);
+        assertHendelse(TILSKUDDSPERIODE_GODKJENT, AvtaleHendelseUtførtAv.Rolle.BESLUTTER, Avtalerolle.VEILEDER, true);
         assertIngenHendelse(TILSKUDDSPERIODE_GODKJENT, Avtalerolle.ARBEIDSGIVER);
         assertIngenHendelse(TILSKUDDSPERIODE_GODKJENT, Avtalerolle.DELTAKER);
 
         veileder.endreStillingbeskrivelse(EndreStillingsbeskrivelse.builder().stillingstittel("Tittel").arbeidsoppgaver("Oppgaver").stillingprosent(BigDecimal.valueOf(100.0)).stillingKonseptId(1).stillingStyrk08(1).antallDagerPerUke(BigDecimal.valueOf(5.0)).build(), avtale);
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(STILLINGSBESKRIVELSE_ENDRET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.VEILEDER, false);
-        assertHendelse(STILLINGSBESKRIVELSE_ENDRET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
-        assertHendelse(STILLINGSBESKRIVELSE_ENDRET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.DELTAKER, true);
+        assertHendelse(STILLINGSBESKRIVELSE_ENDRET, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.VEILEDER, false);
+        assertHendelse(STILLINGSBESKRIVELSE_ENDRET, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
+        assertHendelse(STILLINGSBESKRIVELSE_ENDRET, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.DELTAKER, true);
 
         Veileder nyVeileder = TestData.enVeileder(new NavIdent("I000000"));
         nyVeileder.overtaAvtale(avtale);
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(NY_VEILEDER, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.VEILEDER, false);
-        assertHendelse(NY_VEILEDER, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
-        assertHendelse(NY_VEILEDER, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.DELTAKER, true);
+        assertHendelse(NY_VEILEDER, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.VEILEDER, false);
+        assertHendelse(NY_VEILEDER, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
+        assertHendelse(NY_VEILEDER, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.DELTAKER, true);
     }
 
     @Test
     void test_for_arbeidsgiver_oppretter() {
         Avtale avtale = avtaleRepository.save(Avtale.opprett(new OpprettAvtale(new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.ARBEIDSGIVER));
 
-        assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.VEILEDER, true);
-        assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.ARBEIDSGIVER, false);
-        assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.DELTAKER, true);
+        assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAv.Rolle.ARBEIDSGIVER, Avtalerolle.VEILEDER, true);
+        assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAv.Rolle.ARBEIDSGIVER, Avtalerolle.ARBEIDSGIVER, false);
+        assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAv.Rolle.ARBEIDSGIVER, Avtalerolle.DELTAKER, true);
 
         Veileder veileder = TestData.enVeileder(TestData.enNavIdent());
         veileder.overtaAvtale(avtale);
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(AVTALE_FORDELT, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.VEILEDER, false);
-        assertHendelse(AVTALE_FORDELT, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
-        assertHendelse(AVTALE_FORDELT, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.DELTAKER, true);
+        assertHendelse(AVTALE_FORDELT, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.VEILEDER, false);
+        assertHendelse(AVTALE_FORDELT, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
+        assertHendelse(AVTALE_FORDELT, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.DELTAKER, true);
     }
 
     @Test
     void test_for_arbeidsgiver_oppretter_mentor_avtale() {
         Avtale avtale = avtaleRepository.save(Avtale.opprett(new OpprettMentorAvtale(new Fnr("00000000000"),new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MENTOR, Avtalerolle.ARBEIDSGIVER), Avtaleopphav.ARBEIDSGIVER));
 
-        assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.VEILEDER, true);
-        assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.ARBEIDSGIVER, false);
-        assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.DELTAKER, true);
+        assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAv.Rolle.ARBEIDSGIVER, Avtalerolle.VEILEDER, true);
+        assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAv.Rolle.ARBEIDSGIVER, Avtalerolle.ARBEIDSGIVER, false);
+        assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAv.Rolle.ARBEIDSGIVER, Avtalerolle.DELTAKER, true);
 
         Veileder veileder = TestData.enVeileder(TestData.enNavIdent());
         veileder.overtaAvtale(avtale);
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(AVTALE_FORDELT, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.VEILEDER, false);
-        assertHendelse(AVTALE_FORDELT, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
-        assertHendelse(AVTALE_FORDELT, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.DELTAKER, true);
-        assertHendelse(AVTALE_FORDELT, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.MENTOR, true);
+        assertHendelse(AVTALE_FORDELT, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.VEILEDER, false);
+        assertHendelse(AVTALE_FORDELT, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
+        assertHendelse(AVTALE_FORDELT, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.DELTAKER, true);
+        assertHendelse(AVTALE_FORDELT, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.MENTOR, true);
     }
 
     @Test
@@ -229,14 +229,14 @@ class LagVarselFraAvtaleHendelserTest {
 
         avtale.delMedAvtalepart(Avtalerolle.DELTAKER);
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(DELT_MED_DELTAKER, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.VEILEDER, false);
-        assertHendelse(DELT_MED_DELTAKER, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.DELTAKER, true);
+        assertHendelse(DELT_MED_DELTAKER, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.VEILEDER, false);
+        assertHendelse(DELT_MED_DELTAKER, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.DELTAKER, true);
         assertIngenHendelse(DELT_MED_DELTAKER, Avtalerolle.ARBEIDSGIVER);
 
         avtale.delMedAvtalepart(Avtalerolle.MENTOR);
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(DELT_MED_MENTOR, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.VEILEDER, false);
-        assertHendelse(DELT_MED_MENTOR, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.MENTOR, true);
+        assertHendelse(DELT_MED_MENTOR, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.VEILEDER, false);
+        assertHendelse(DELT_MED_MENTOR, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.MENTOR, true);
         assertIngenHendelse(DELT_MED_MENTOR, Avtalerolle.ARBEIDSGIVER);
 
     }
@@ -251,9 +251,9 @@ class LagVarselFraAvtaleHendelserTest {
         veileder.forlengAvtale(avtale.getGjeldendeInnhold().getSluttDato().plusMonths(1), avtale);
         avtaleRepository.save(avtale);
 
-        assertHendelse(AVTALE_FORLENGET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.VEILEDER, false);
-        assertHendelse(AVTALE_FORLENGET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
-        assertHendelse(AVTALE_FORLENGET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.DELTAKER, true);
+        assertHendelse(AVTALE_FORLENGET, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.VEILEDER, false);
+        assertHendelse(AVTALE_FORLENGET, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
+        assertHendelse(AVTALE_FORLENGET, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.DELTAKER, true);
     }
 
     @Test
@@ -264,14 +264,14 @@ class LagVarselFraAvtaleHendelserTest {
         veileder.endreTilskuddsberegning(TestData.enEndreTilskuddsberegning(), avtale);
         avtaleRepository.save(avtale);
 
-        assertHendelse(TILSKUDDSBEREGNING_ENDRET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.VEILEDER, false);
-        assertHendelse(TILSKUDDSBEREGNING_ENDRET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
-        assertHendelse(TILSKUDDSBEREGNING_ENDRET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.DELTAKER, true);
+        assertHendelse(TILSKUDDSBEREGNING_ENDRET, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.VEILEDER, false);
+        assertHendelse(TILSKUDDSBEREGNING_ENDRET, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
+        assertHendelse(TILSKUDDSBEREGNING_ENDRET, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.DELTAKER, true);
     }
 
-    private void assertHendelse(HendelseType hendelseType, AvtaleHendelseUtførtAvRolle utførtAv, Avtalerolle mottaker, boolean bjelle) {
+    private void assertHendelse(HendelseType hendelseType, AvtaleHendelseUtførtAv.Rolle utførtAv, Avtalerolle mottaker, boolean bjelle) {
         assertThat(varselRepository.findAll())
-                .filteredOn(varsel -> varsel.getMottaker() == mottaker && varsel.getUtførtAv() == utførtAv && varsel.getHendelseType() == hendelseType && varsel.isBjelle() == bjelle)
+                .filteredOn(varsel -> varsel.getMottaker() == mottaker && varsel.getUtførtAvRolle() == utførtAv && varsel.getHendelseType() == hendelseType && varsel.isBjelle() == bjelle)
                 .hasSize(1);
     }
 
