@@ -24,7 +24,7 @@ public class Fnr extends Identifikator {
         if (FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS) {
             return switch (value) {
                 case "12345678910", "00000000000", "11111111111", "99999999999" -> true;
-                default -> FodselsnummerValidator.isValid(value);
+                case null, default -> FodselsnummerValidator.isValid(value);
             };
         }
         return FodselsnummerValidator.isValid(value);
@@ -42,7 +42,7 @@ public class Fnr extends Identifikator {
     public Fnr(String verdi) {
         super(verdi);
 
-        if (verdi != null && !erGyldigFnr(verdi)) {
+        if (!erGyldigFnr(verdi)) {
             throw new TiltaksgjennomforingException("Ugyldig fødselsnummer");
         }
 
@@ -54,7 +54,7 @@ public class Fnr extends Identifikator {
 
             this.fodselsdato = LocalDate.of(aar, maned, dag);
         } catch (IllegalArgumentException e) {
-            if (!FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS) {
+            if (verdi == null || !FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS) {
                 throw e;
             }
         }

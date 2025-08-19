@@ -25,8 +25,9 @@ public class FnrTest {
     }
 
     @Test
-    public void fnrKanVæreNull(){
-        assertThat(new Fnr(null)).isEqualTo(new Fnr(null));
+    public void fnrKanIkkeVæreNull(){
+        assertThatThrownBy(() -> new Fnr(null)).isExactlyInstanceOf(TiltaksgjennomforingException.class)
+                .hasMessage("Ugyldig fødselsnummer");
     }
 
     @Test
