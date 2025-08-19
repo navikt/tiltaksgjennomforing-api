@@ -46,7 +46,7 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
     @Enumerated(EnumType.STRING)
     private Avtalerolle mottaker;
     @Enumerated(EnumType.STRING)
-    private AvtaleHendelseUtførtAv.Rolle utførtAvRolle;
+    private AvtaleHendelseUtførtAv.Rolle utførtAv;
 
     private static String tilskuddsperiodeAvslåttTekst(TilskuddPeriode tilskuddPeriode, String hendelseTypeTekst) {
         String avslagÅrsaker = tilskuddPeriode.getAvslagsårsaker().stream()
@@ -97,7 +97,7 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
         varsel.avtaleId = avtale.getId();
         varsel.bjelle = bjelle;
         varsel.mottaker = mottaker;
-        varsel.utførtAvRolle = utfortAv.rolle();
+        varsel.utførtAv = utfortAv.rolle();
         return varsel;
     }
 

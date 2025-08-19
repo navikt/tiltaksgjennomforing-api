@@ -271,7 +271,7 @@ class LagVarselFraAvtaleHendelserTest {
 
     private void assertHendelse(HendelseType hendelseType, AvtaleHendelseUtførtAv.Rolle utførtAv, Avtalerolle mottaker, boolean bjelle) {
         assertThat(varselRepository.findAll())
-                .filteredOn(varsel -> varsel.getMottaker() == mottaker && varsel.getUtførtAvRolle() == utførtAv && varsel.getHendelseType() == hendelseType && varsel.isBjelle() == bjelle)
+                .filteredOn(varsel -> varsel.getMottaker() == mottaker && varsel.getUtførtAv() == utførtAv && varsel.getHendelseType() == hendelseType && varsel.isBjelle() == bjelle)
                 .hasSize(1);
     }
 
