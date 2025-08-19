@@ -106,7 +106,7 @@ public class MentorStartOgSluttDatoStrategyTest {
 
     @Test
     public void For_gammel_for_og_ha_mentor_tilskudd(){
-        Fnr deltakerFnr = new Fnr("29015414497");
+        Fnr deltakerFnr = Fnr.generer(1954,1,29);
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(32);
         boolean erAvtaleInngått = false;

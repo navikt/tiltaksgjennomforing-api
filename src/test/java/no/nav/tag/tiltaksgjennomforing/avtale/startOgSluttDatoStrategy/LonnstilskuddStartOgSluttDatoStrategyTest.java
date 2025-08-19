@@ -117,7 +117,7 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
 
     @Test
     public void Deltaker_er_for_gammel_for_å_gå_på_MidlertidigLønnstilskudd() {
-        Fnr deltakerFnr = new Fnr("12085220754");
+        Fnr deltakerFnr = Fnr.generer(1952,8,12);
         LocalDate avtaleStart = Now.localDate();
         LocalDate avtaleSlutt = avtaleStart.plusMonths(11).plusDays(1);
         boolean erAvtaleInngått = true;

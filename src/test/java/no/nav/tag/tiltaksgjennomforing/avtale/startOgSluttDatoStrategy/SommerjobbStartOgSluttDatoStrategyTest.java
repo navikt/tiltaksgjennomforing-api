@@ -11,7 +11,7 @@ import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 
 public class SommerjobbStartOgSluttDatoStrategyTest {
 
-    Fnr deltakerFnr = new Fnr("19060464459");
+    Fnr deltakerFnr = Fnr.generer(2004,6,19);
 
     @Test
     public void sjekkStartOgSluttDatoEtterregistreringFeilDatoForSommerjobb(){

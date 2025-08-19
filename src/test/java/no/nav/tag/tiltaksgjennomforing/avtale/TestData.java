@@ -598,7 +598,7 @@ public class TestData {
     }
 
     public static Avtale enVtaoAvtaleGodkjentAvArbeidsgiveruUtenEndringer() {
-        Fnr fnr = new Fnr("31015814449");
+        Fnr fnr = Fnr.generer(1958, 1, 31);
         Avtale avtale = Avtale.opprett(new OpprettAvtale(fnr, new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         avtale.getGjeldendeInnhold().setDeltakerFornavn("Dagny");
         avtale.getGjeldendeInnhold().setDeltakerEtternavn("Deltaker");
@@ -684,7 +684,7 @@ public class TestData {
     private static OpprettMentorAvtale lagOpprettMentorAvtale(Tiltakstype tiltakstype) {
         Fnr deltakerFnr = new Fnr("00000000000");
         BedriftNr bedriftNr = new BedriftNr("999999999");
-        Fnr mentorFnr = new Fnr("23090170716");
+        Fnr mentorFnr =  new Fnr("23090170716");
         return new OpprettMentorAvtale(deltakerFnr, mentorFnr, bedriftNr, tiltakstype, Avtalerolle.VEILEDER);
     }
 
