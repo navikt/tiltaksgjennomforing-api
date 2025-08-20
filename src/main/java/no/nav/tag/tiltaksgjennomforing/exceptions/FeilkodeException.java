@@ -7,6 +7,11 @@ public class FeilkodeException extends RuntimeException {
         this.feilkode = feilkode;
     }
 
+    public FeilkodeException(Feilkode feilkode, Throwable cause) {
+        super(cause);
+        this.feilkode = feilkode;
+    }
+
     public Feilkode getFeilkode() {
         return feilkode;
     }

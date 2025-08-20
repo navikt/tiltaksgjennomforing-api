@@ -92,7 +92,6 @@ public class InnloggetBrukerTest {
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService,
@@ -113,7 +112,6 @@ public class InnloggetBrukerTest {
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService,
@@ -136,7 +134,6 @@ public class InnloggetBrukerTest {
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService,
@@ -155,7 +152,6 @@ public class InnloggetBrukerTest {
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService,
@@ -197,7 +193,6 @@ public class InnloggetBrukerTest {
                         persondataService,
                         norg2Client,
                         Collections.emptySet(),
-                        new SlettemerkeProperties(),
                         TestData.INGEN_AD_GRUPPER,
                         veilarboppfolgingService,
                         featureToggleService,
@@ -218,7 +213,6 @@ public class InnloggetBrukerTest {
                         persondataService,
                         norg2Client,
                         Collections.emptySet(),
-                        new SlettemerkeProperties(),
                         TestData.INGEN_AD_GRUPPER,
                         veilarboppfolgingService,
                         featureToggleService,
@@ -262,25 +256,6 @@ public class InnloggetBrukerTest {
     }
 
     @Test
-    public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avbrutt_avtale_eldre_enn_12_uker() {
-        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
-        Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(this.bedriftNr, Set.of(Tiltakstype.values()));
-        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-                Fnr.generer(1956, 7, 8),
-                Set.of(),
-                tilganger,
-                List.of(),
-                persondataService,
-                null,
-                null,
-                null
-        );
-        avtale.setAvbrutt(true);
-        avtale.setSistEndret(Now.instant().minus(84, ChronoUnit.DAYS).minusMillis(100));
-        assertThat(arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isFalse();
-    }
-
-    @Test
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avsluttet_avtale_eldre_enn_12_uker() {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
@@ -305,15 +280,6 @@ public class InnloggetBrukerTest {
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         avtale.godkjennForVeileder(TestData.enNavIdent());
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
-        Mentor mentor = new Mentor(avtale.getMentorFnr());
-        assertThat(mentor.harTilgangTilAvtale(avtale).erTillat()).isFalse();
-    }
-
-    @Test
-    public void harTilgang__mentor_skal_ikke_ha_tilgang_til_avbrutt_avtale_eldre_enn_12_uker() {
-        Avtale avtale = TestData.enMentorAvtaleSignert();
-        avtale.setSistEndret(Instant.now().minus(85, ChronoUnit.DAYS));
-        avtale.setAvbrutt(true);
         Mentor mentor = new Mentor(avtale.getMentorFnr());
         assertThat(mentor.harTilgangTilAvtale(avtale).erTillat()).isFalse();
     }

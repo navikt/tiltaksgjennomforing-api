@@ -6,7 +6,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvSystem;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvbruttAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
@@ -195,12 +194,6 @@ public class LagVarselFraAvtaleHendelser {
     @EventListener
     public void fordelt(AvtaleFordelt event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAv.veileder(event.getAvtale().getVeilederNavIdent()), HendelseType.AVTALE_FORDELT);
-        varselRepository.saveAll(factory.alleParter());
-    }
-
-    @EventListener
-    public void avbrutt(AvbruttAvVeileder event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAv.veileder(event.getUtfortAv()), HendelseType.AVBRUTT);
         varselRepository.saveAll(factory.alleParter());
     }
 

@@ -4,15 +4,16 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetMentor;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
-import no.nav.tag.tiltaksgjennomforing.exceptions.RolleHarIkkeTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.RolleHarIkkeTilgangException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -32,19 +33,13 @@ public class Mentor extends Avtalepart<Fnr> {
                 "Sluttdato har passert med mer enn 12 uker"
             );
         }
-        if (avtale.erAvbruttForMerEnn12UkerSiden()) {
-            return new Tilgang.Avvis(
-                Avslagskode.UTGATT,
-                "Avbrutt for mer enn 12 uker siden"
-            );
-        }
         if (avtale.erAnnullertForMerEnn12UkerSiden()) {
             return new Tilgang.Avvis(
                 Avslagskode.UTGATT,
                 "Annullert for mer enn 12 uker siden"
             );
         }
-        if (avtale.getMentorFnr().equals(getIdentifikator())) {
+        if (Objects.equals(avtale.getMentorFnr(), getIdentifikator())) {
             return new Tilgang.Tillat();
         }
         return new Tilgang.Avvis(IKKE_TILGANG_TIL_DELTAKER, "Mentor fnr stemmer ikke med innlogget bruker");
@@ -107,7 +102,6 @@ public class Mentor extends Avtalepart<Fnr> {
 
     private void skjulSensitivData(Avtale avtale) {
         avtale.setAnnullertGrunn(null);
-        avtale.setAvbruttGrunn(null);
         avtale.setDeltakerFnr(null);
     }
 }
