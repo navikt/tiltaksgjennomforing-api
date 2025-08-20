@@ -18,7 +18,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleSlettemerket;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvArbeidsgiver;
@@ -225,7 +224,6 @@ public class MetrikkRegistrering {
         counter("avtale.forkortet", rolle, tiltakstype).increment();
     }
 
-
     @EventListener
     public void avtaleNyVeileder(AvtaleNyVeileder event) {
         AvtaleHendelseUtførtAvRolle rolle = AvtaleHendelseUtførtAvRolle.VEILEDER;
@@ -236,10 +234,6 @@ public class MetrikkRegistrering {
             log.info("Avtale byttet veileder: avtaleId={}, tidligere veileder={}, ny veileder={}, opphav={}", event.getAvtale().getId(), event.getTidligereVeileder().asString(), event.getAvtale().getVeilederNavIdent().asString(), event.getAvtale().getOpphav());
         }
         counter("avtale.endretVEileder", rolle, tiltakstype).increment();
-    }
-    @EventListener
-    public void avtaleSlettemerket(AvtaleSlettemerket event) {
-        log.info("Avtale slettemerket, utfortAv={}, avtaleId={}", event.getUtfortAv().asString(), event.getAvtale().getId());
     }
 
     private Counter counter(String navn, AvtaleHendelseUtførtAvRolle utfortAvRolle, Tiltakstype tiltakstype) {

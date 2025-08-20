@@ -39,7 +39,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleSlettemerket;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleUtloperVarsel;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.DeltakersGodkjenningOpphevetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.DeltakersGodkjenningOpphevetAvVeileder;
@@ -160,10 +159,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     private Instant sistEndret;
     private Instant annullertTidspunkt;
     private String annullertGrunn;
-    private boolean avbrutt;
-    private boolean slettemerket;
-    private LocalDate avbruttDato;
-    private String avbruttGrunn;
     private String enhetGeografisk;
     private String enhetsnavnGeografisk;
     private String enhetOppfolging;
@@ -287,7 +282,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         Avtalerolle utfortAvRolle,
         Identifikator identifikator
     ) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAvtalenKanEndres();
         sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
         getGjeldendeInnhold().endreAvtale(nyAvtale);
@@ -382,9 +377,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
         setAnnullertTidspunkt(null);
         setAnnullertGrunn(null);
-        setAvbrutt(false);
-        setAvbruttDato(null);
-        setAvbruttGrunn(null);
         setFeilregistrert(false);
         nyeTilskuddsperioder();
 
@@ -396,7 +388,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void delMedAvtalepart(Avtalerolle avtalerolle) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
 
         String tlf = telefonnummerTilAvtalepart(avtalerolle);
         if (!TelefonnummerValidator.erGyldigMobilnummer(tlf)) {
@@ -406,22 +398,22 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void refusjonKlar(LocalDate fristForGodkjenning) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         registerEvent(new RefusjonKlar(this, fristForGodkjenning));
     }
 
     public void refusjonRevarsel(LocalDate fristForGodkjenning) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         registerEvent(new RefusjonKlarRevarsel(this, fristForGodkjenning));
     }
 
     public void refusjonFristForlenget() {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         registerEvent(new RefusjonFristForlenget(this));
     }
 
     public void refusjonKorrigert() {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         registerEvent(new RefusjonKorrigert(this));
     }
 
@@ -601,7 +593,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void godkjennForArbeidsgiver(Identifikator utfortAv) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
         if (erGodkjentAvArbeidsgiver()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_ARBEIDSGIVER_HAR_ALLEREDE_GODKJENT);
@@ -611,7 +603,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void godkjennForVeileder(NavIdent utfortAv) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
         sjekkGjeldendeStartogSluttDato();
         if (erGodkjentAvVeileder()) {
@@ -662,7 +654,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     void godkjennForVeilederOgDeltaker(NavIdent utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
         sjekkGjeldendeStartogSluttDato();
         if (erGodkjentAvDeltaker()) {
@@ -695,7 +687,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         NavIdent utfortAv,
         GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn
     ) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
         sjekkGjeldendeStartogSluttDato();
         if (Avtaleopphav.ARENA != opphav) {
@@ -727,7 +719,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         NavIdent utfortAv,
         GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvDeltakerOgArbeidsgiverGrunn
     ) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
         sjekkGjeldendeStartogSluttDato();
         if (Avtaleopphav.ARENA != opphav) {
@@ -776,7 +768,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     void sjekkOmAltErKlarTilGodkjenning() {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
 
         if (!felterSomIkkeErFyltUt().isEmpty()) {
             throw new AltMåVæreFyltUtException();
@@ -795,23 +787,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
     }
 
-    @JsonProperty
-    public boolean kanAvbrytes() {
-        return !isAvbrutt();
-    }
-
-    @JsonProperty
-    public boolean kanGjenopprettes() {
-        return isAvbrutt();
-    }
-
     public void annuller(Veileder veileder, String annullerGrunn) {
         annuller(annullerGrunn, veileder.getNavIdent());
     }
 
     public void annuller(String annullerGrunn, Identifikator identifikator) {
         sjekkAtIkkeAvtalenInneholderUtbetaltTilskuddsperiode();
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
 
         annullerTilskuddsperioder();
         setAnnullertTidspunkt(Now.instant());
@@ -853,7 +835,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void overtaAvtale(NavIdent nyNavIdent) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         NavIdent gammelNavIdent = this.getVeilederNavIdent();
         this.setVeilederNavIdent(nyNavIdent);
         getGjeldendeInnhold().reberegnLønnstilskudd();
@@ -901,7 +883,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void godkjennTilskuddsperiode(NavIdent beslutter, String enhet) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
 
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_KAN_KUN_BEHANDLES_VED_INNGAATT_AVTALE);
@@ -935,7 +917,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         EnumSet<Avslagsårsak> avslagsårsaker,
         String avslagsforklaring
     ) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
 
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_KAN_KUN_BEHANDLES_VED_INNGAATT_AVTALE);
@@ -946,7 +928,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void togglegodkjennEtterregistrering(NavIdent beslutter) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         if (erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_MERKES_FOR_ETTERREGISTRERING_AVTALE_GODKJENT);
         }
@@ -1034,7 +1016,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void oppdatereKostnadsstedForTilskuddsperioder(NyttKostnadssted nyttKostnadssted) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         if (erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_OPPDATERE_KOSTNADSSTED_INGAATT_AVTALE);
         }
@@ -1042,11 +1024,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold.setEnhetsnavnKostnadssted(nyttKostnadssted.getEnhetsnavn());
         nyeTilskuddsperioder();
         utførEndring();
-    }
-
-    public void slettemerk(NavIdent utførtAv) {
-        this.setSlettemerket(true);
-        registerEvent(new AvtaleSlettemerket(this, utførtAv));
     }
 
     void forlengTilskuddsperioder(LocalDate gammelSluttDato, LocalDate nySluttDato) {
@@ -1098,7 +1075,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     void reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter() {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         var rettede = tilskuddPeriode.stream()
             .filter(TilskuddPeriode::isAktiv)
             .filter(t -> t.getStatus() == TilskuddPeriodeStatus.AVSLÅTT)
@@ -1107,15 +1084,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         utførEndring();
     }
 
-    private void sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt() {
-        if (erAnnullertEllerAvbrutt()) {
+    private void sjekkAtIkkeAvtaleErAnnullert() {
+        if (Status.ANNULLERT.equals(status)) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_ANNULLERT_AVTALE);
         }
-    }
-
-    @JsonProperty
-    public boolean erAnnullertEllerAvbrutt() {
-        return isAvbrutt() || annullertTidspunkt != null;
     }
 
     protected Integer beregnTilskuddsprosentForPeriode(LocalDate sluttDato) {
@@ -1144,7 +1116,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             return false;
         }
         // Statuser som skal få tilskuddsperioder
-        return status != Status.ANNULLERT && status != Status.AVBRUTT;
+        return status != Status.ANNULLERT;
     }
 
     /**
@@ -1322,7 +1294,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void forkortAvtale(LocalDate nySluttDato, ForkortetGrunn forkortetGrunn, NavIdent utførtAv) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), nySluttDato);
 
         if (!erGodkjentAvVeileder()) {
@@ -1367,7 +1339,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void forlengAvtale(LocalDate nySluttDato, NavIdent utførtAv) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), nySluttDato);
 
         if (!erGodkjentAvVeileder()) {
@@ -1396,7 +1368,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void endreTilskuddsberegning(EndreTilskuddsberegning endreTilskuddsberegning, NavIdent utførtAv) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
 
         krevEnAvTiltakstyper(
             Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
@@ -1427,7 +1399,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     // Metode for å rydde opp i beregnede felter som ikke har blitt satt etter at lønnstilskuddsprosent manuelt i databasen har blitt satt inn
     public void reberegnLønnstilskudd() {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         krevEnAvTiltakstyper(
             Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
             Tiltakstype.VARIG_LONNSTILSKUDD,
@@ -1447,7 +1419,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void reUtregnRedusert() {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         krevEnAvTiltakstyper(
             Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
             Tiltakstype.VARIG_LONNSTILSKUDD,
@@ -1477,7 +1449,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void endreKontaktInformasjon(EndreKontaktInformasjon endreKontaktInformasjon, NavIdent utførtAv) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
 
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KONTAKTINFO_GRUNN_IKKE_GODKJENT_AVTALE);
@@ -1521,7 +1493,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse, NavIdent utførtAv) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
 
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STILLINGSBESKRIVELSE_GRUNN_IKKE_GODKJENT_AVTALE);
@@ -1549,7 +1521,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging,
         NavIdent utførtAv
     ) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
 
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OPPFØLGING_OG_TILRETTELEGGING_GRUNN_IKKE_GODKJENT_AVTALE);
@@ -1569,7 +1541,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void endreMål(EndreMål endreMål, NavIdent utførtAv) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
 
         krevEnAvTiltakstyper(Tiltakstype.ARBEIDSTRENING);
         if (!erGodkjentAvVeileder()) {
@@ -1599,7 +1571,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void endreInkluderingstilskudd(EndreInkluderingstilskudd endreInkluderingstilskudd, NavIdent utførtAv) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
 
         krevEnAvTiltakstyper(Tiltakstype.INKLUDERINGSTILSKUDD);
         if (!erGodkjentAvVeileder()) {
@@ -1642,7 +1614,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void endreOmMentor(EndreOmMentor endreOmMentor, NavIdent utførtAv) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
         krevEnAvTiltakstyper(Tiltakstype.MENTOR);
 
         if (!erGodkjentAvVeileder()) {
@@ -1663,7 +1635,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void endreKidOgKontonummer(EndreKidOgKontonummer endreKidOgKontonummer, NavIdent utførtAv) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkAtIkkeAvtaleErAnnullert();
 
         var kid = endreKidOgKontonummer.getArbeidsgiverKid();
         var kontonummer = endreKidOgKontonummer.getArbeidsgiverKontonummer();
@@ -1703,12 +1675,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     protected LonnstilskuddAvtaleBeregningStrategy hentBeregningStrategi() {
         return this.lonnstilskuddAvtaleBeregningStrategy.updateAndGet(strategy -> strategy == null ? TilskuddsperioderBeregningStrategyFactory.create(
             tiltakstype) : strategy);
-    }
-
-    public boolean erAvbruttForMerEnn12UkerSiden() {
-        return this.isAvbrutt() && this.getSistEndret()
-            .plus(84, ChronoUnit.DAYS)
-            .isBefore(Now.instant());
     }
 
     public boolean harSluttdatoPassertMedMerEnn12Uker() {

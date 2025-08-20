@@ -63,11 +63,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         this.veilarboppfolgingService = veilarboppfolgingService;
     }
 
-    private static Avtale fjernAvbruttGrunn(Avtale avtale) {
-        avtale.setAvbruttGrunn(null);
-        return avtale;
-    }
-
     private static Avtale fjernAnnullertGrunn(Avtale avtale) {
         avtale.setAnnullertGrunn(null);
         return avtale;
@@ -161,12 +156,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                         "Sluttdato har passert med mer enn 12 uker"
                     );
                 }
-                if (avtale.erAvbruttForMerEnn12UkerSiden()) {
-                    return new Tilgang.Avvis(
-                        Avslagskode.UTGATT,
-                        "Avbrutt for mer enn 12 uker siden"
-                    );
-                }
                 if (avtale.erAnnullertForMerEnn12UkerSiden()) {
                     return new Tilgang.Avvis(
                         Avslagskode.UTGATT,
@@ -257,7 +246,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         List<Avtale> liste = avtaleRepository.findAllByBedriftNrAndFeilregistrertIsFalse(bedriftNr).stream()
                 .filter(this::avtalenEksisterer)
                 .filter(avtale -> this.harTilgangTilAvtale(avtale).erTillat())
-                .map(Arbeidsgiver::fjernAvbruttGrunn)
                 .map(Arbeidsgiver::fjernAnnullertGrunn)
                 .collect(Collectors.toList());
 
@@ -318,7 +306,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     @Override
     public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
         Avtale avtale = super.hentAvtale(avtaleRepository, avtaleId);
-        fjernAvbruttGrunn(avtale);
         fjernAnnullertGrunn(avtale);
         fjernKvalifiseringsgruppe(avtale);
         return avtale;

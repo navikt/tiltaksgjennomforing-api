@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.bekk.bekkopen.person.FodselsnummerValidator;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
@@ -13,7 +12,6 @@ import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.Veilarboppfolging
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Kode6SperretForOpprettelseOgEndringException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
@@ -32,7 +30,6 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -74,7 +71,6 @@ public class VeilederTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
@@ -107,7 +103,6 @@ public class VeilederTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             mock(FeatureToggleService.class),
@@ -145,7 +140,6 @@ public class VeilederTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             mock(FeatureToggleService.class),
@@ -180,7 +174,6 @@ public class VeilederTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             mock(FeatureToggleService.class),
@@ -218,7 +211,6 @@ public class VeilederTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             mock(FeatureToggleService.class),
@@ -257,7 +249,6 @@ public class VeilederTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             featureToggleService,
@@ -288,7 +279,6 @@ public class VeilederTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             featureToggleService,
@@ -318,7 +308,6 @@ public class VeilederTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             featureToggleService,
@@ -345,7 +334,6 @@ public class VeilederTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
@@ -409,7 +397,6 @@ public class VeilederTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             mock(FeatureToggleService.class),
@@ -449,7 +436,6 @@ public class VeilederTest {
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
-                mock(SlettemerkeProperties.class),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingServiceMock,
                 featureToggleServiceMock,
@@ -575,7 +561,6 @@ public class VeilederTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             mock(FeatureToggleService.class),
@@ -611,7 +596,6 @@ public class VeilederTest {
             persondataService,
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
-            mock(SlettemerkeProperties.class),
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             mock(FeatureToggleService.class),
@@ -673,7 +657,6 @@ public class VeilederTest {
                 persondataService,
                 norg2Client,
                 Set.of(navEnhet),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
@@ -696,116 +679,6 @@ public class VeilederTest {
         assertThat(avtale.getGjeldendeInnhold().getDeltakerFornavn()).isEqualTo("Donald");
         assertThat(avtale.getGjeldendeInnhold().getDeltakerEtternavn()).isEqualTo("Duck");
         assertThat(avtale.getEnhetGeografisk()).isEqualTo(TestData.ENHET_GEOGRAFISK.getVerdi());
-    }
-
-    @Test
-    public void opprettAvtale__skal_ikke_slettemerkes() {
-        NavIdent navIdent = new NavIdent("Z123456");
-        NavEnhet navEnhet = TestData.ENHET_OPPFØLGING;
-
-        OpprettAvtale opprettAvtale = new OpprettAvtale(
-                TestData.etFodselsnummer(),
-                TestData.etBedriftNr(),
-                Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD
-        );
-
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
-        Norg2Client norg2Client = mock(Norg2Client.class);
-        PersondataService persondataService = mock(PersondataService.class);
-        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
-        EregService eregService  = mock(EregService.class);
-
-        Veileder veileder = new Veileder(
-                navIdent,
-                null,
-                tilgangskontrollService,
-                persondataService,
-                norg2Client,
-                Set.of(navEnhet),
-                new SlettemerkeProperties(),
-                TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
-                featureToggleServiceMock,
-                eregService
-        );
-
-        when(persondataService.hentNavn(any())).thenReturn(Navn.TOMT_NAVN);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
-        when(norg2Client.hentGeografiskEnhet(any()))
-                .thenReturn(
-                        new Norg2GeoResponse(TestData.ENHET_GEOGRAFISK.getNavn(),
-                                TestData.ENHET_GEOGRAFISK.getVerdi())
-                );
-        when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
-
-        Avtale avtale = veileder.opprettAvtale(opprettAvtale);
-        assertThat(avtale.isSlettemerket()).isFalse();
-    }
-
-    @Test
-    public void slettemerke__avtale_med_tilgang() {
-        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        NavIdent navIdent = new NavIdent("Z123456");
-
-        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
-        slettemerkeProperties.setIdent(List.of(navIdent));
-        FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
-        Veileder veileder = new Veileder(
-                navIdent,
-                null,
-                tilgangskontrollService,
-                mock(PersondataService.class),
-                mock(Norg2Client.class),
-                Set.of(new NavEnhet("4802", "Trysil")),
-                slettemerkeProperties,
-                TestData.INGEN_AD_GRUPPER,
-                mock(VeilarboppfolgingService.class),
-                featureToggleServiceMock,
-                mock(EregService.class)
-        );
-        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), eq(avtale.getDeltakerFnr())))
-                .thenReturn(true);
-
-        veileder.slettemerk(avtale);
-        assertThat(avtale.isSlettemerket()).isTrue();
-    }
-
-    @Test
-    public void slettemerke__avtale_uten_tilgang() {
-        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-
-        NavIdent navIdent = new NavIdent("X123456");
-
-        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
-        SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
-        slettemerkeProperties.setIdent(List.of(new NavIdent("Z123456")));
-        Veileder veileder = new Veileder(
-                navIdent,
-                null,
-                tilgangskontrollService,
-                mock(PersondataService.class),
-                mock(Norg2Client.class),
-                Set.of(new NavEnhet("4802", "Trysil")),
-                slettemerkeProperties,
-                TestData.INGEN_AD_GRUPPER,
-                mock(VeilarboppfolgingService.class),
-                featureToggleServiceMock,
-                mock(EregService.class)
-        );
-        when(tilgangskontrollService.hentSkrivetilgang(eq(veileder), eq(avtale.getDeltakerFnr()))).thenReturn(new Tilgang.Tillat());
-        assertThatThrownBy(() -> veileder.slettemerk(avtale)).isExactlyInstanceOf(IkkeAdminTilgangException.class);
-    }
-
-    @Test
-    public void slettemerket_avtale_eksisterer_ikke() {
-        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        avtale.setSlettemerket(true);
-        Veileder veileder = TestData.enVeileder(avtale);
-        assertThat(veileder.avtalenEksisterer(avtale)).isFalse();
     }
 
     @Test
