@@ -7,7 +7,6 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetMentor;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
@@ -880,7 +879,6 @@ public class TestData {
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Oslo gamlebyen")),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService,
@@ -1040,7 +1038,6 @@ public class TestData {
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(ENHET_OPPFØLGING),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService,
@@ -1061,7 +1058,6 @@ public class TestData {
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(ENHET_OPPFØLGING),
-                new SlettemerkeProperties(),
                 TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
                 featureToggleService,

@@ -86,8 +86,7 @@ public class AdminController {
             LocalDate sluttDato = avtale.getGjeldendeInnhold().getSluttDato();
             if (avtale.getGjeldendeInnhold().getLonnstilskuddProsent() > 67
                     && startDato.isBefore(sluttDato.minusMonths(12))
-                    && avtale.getAnnullertTidspunkt() == null
-                    && avtale.getAvbruttGrunn() == null
+                    && !Status.ANNULLERT.equals(avtale.getStatus())
                     && avtale.getGjeldendeInnhold().getSumLonnstilskudd() != null) {
 
                 avtale.reUtregnRedusert();
@@ -112,8 +111,7 @@ public class AdminController {
 
             if (avtale.getGjeldendeInnhold().getLonnstilskuddProsent() > 67
                     && startDato.isBefore(sluttDato.minusMonths(12))
-                    && avtale.getAnnullertTidspunkt() == null
-                    && avtale.getAvbruttGrunn() == null
+                    && !Status.ANNULLERT.equals(avtale.getStatus())
                     && avtale.getGjeldendeInnhold().getSumLonnstilskudd() != null) {
                 antallUnder67.getAndIncrement();
             }
