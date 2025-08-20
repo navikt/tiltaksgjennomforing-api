@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import java.time.LocalDate;
 
 public class InkluderingstilskuddStartOgSluttDatoStrategy implements StartOgSluttDatoStrategy {
+
     @Override
     public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato, boolean erGodkjentForEtterregistrering, boolean erAvtaleInngått, Fnr deltakerFnr) {
         StartOgSluttDatoStrategy.super.sjekkStartOgSluttDato(startDato, sluttDato, erGodkjentForEtterregistrering, erAvtaleInngått, deltakerFnr);

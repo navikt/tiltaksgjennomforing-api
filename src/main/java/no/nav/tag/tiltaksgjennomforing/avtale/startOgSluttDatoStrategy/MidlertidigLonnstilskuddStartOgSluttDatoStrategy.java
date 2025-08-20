@@ -12,7 +12,7 @@ public class MidlertidigLonnstilskuddStartOgSluttDatoStrategy implements StartOg
     private static final int TOLV_MND_MAKS_LENGDE = 12;
     private final Kvalifiseringsgruppe kvalifiseringsgruppe;
 
-    public MidlertidigLonnstilskuddStartOgSluttDatoStrategy(Kvalifiseringsgruppe kvalifiseringsgruppe) {
+    MidlertidigLonnstilskuddStartOgSluttDatoStrategy(Kvalifiseringsgruppe kvalifiseringsgruppe) {
         this.kvalifiseringsgruppe = kvalifiseringsgruppe;
     }
 

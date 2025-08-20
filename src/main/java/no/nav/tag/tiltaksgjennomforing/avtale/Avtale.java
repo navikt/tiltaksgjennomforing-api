@@ -613,6 +613,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     public void godkjennForVeileder(NavIdent utfortAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
+        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
         }
@@ -626,7 +627,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             throw new VeilederSkalGodkjenneSistException();
         }
 
-        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
         Instant tidspunkt = Now.instant();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
@@ -664,6 +664,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     void godkjennForVeilederOgDeltaker(NavIdent utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
+        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
         if (erGodkjentAvDeltaker()) {
             throw new DeltakerHarGodkjentException();
         }
@@ -678,7 +679,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             throw new FeilkodeException(Feilkode.MENTOR_MÅ_SIGNERE_TAUSHETSERKLÆRING);
         }
 
-        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
         paVegneAvGrunn.valgtMinstEnGrunn();
         Instant tidspunkt = Now.instant();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
@@ -697,6 +697,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     ) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
+        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
         if (Avtaleopphav.ARENA != opphav) {
             throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_OPPHAV);
         }
@@ -709,7 +710,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
         }
-        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
+
         godkjentPaVegneAvArbeidsgiverGrunn.valgtMinstEnGrunn();
         Instant tidspunkt = Now.instant();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
@@ -728,6 +729,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     ) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
+        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
         if (Avtaleopphav.ARENA != opphav) {
             throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_OPPHAV);
         }
@@ -740,7 +742,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
         }
-        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
+
         paVegneAvDeltakerOgArbeidsgiverGrunn.valgtMinstEnGrunn();
         Instant tidspunkt = Now.instant();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
@@ -1321,6 +1323,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     public void forkortAvtale(LocalDate nySluttDato, ForkortetGrunn forkortetGrunn, NavIdent utførtAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), nySluttDato);
 
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_IKKE_GODKJENT_AVTALE);
@@ -1345,7 +1348,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (sisteUtbetalt.isPresent() && nySluttDato.isBefore(sisteUtbetalt.get().getSluttDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE);
         }
-        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), nySluttDato);
 
         if (forkortetGrunn.mangler()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_GRUNN_MANGLER);
@@ -1366,6 +1368,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     public void forlengAvtale(LocalDate nySluttDato, NavIdent utførtAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), nySluttDato);
 
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_IKKE_GODKJENT_AVTALE);
@@ -1373,12 +1376,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (!nySluttDato.isAfter(gjeldendeInnhold.getSluttDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO);
         }
-        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), nySluttDato);
+
         var gammelSluttDato = gjeldendeInnhold.getSluttDato();
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
 
-        //Forleng avtalen i databasen inn har
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         forlengTilskuddsperioder(gammelSluttDato, nySluttDato);
         utforEndring(new AvtaleForlengetAvVeileder(this, utførtAv));

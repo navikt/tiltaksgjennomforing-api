@@ -1374,7 +1374,7 @@ public class AvtaleTest {
     @Test
     public void forleng_kun_fremover() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder();
-        assertFeilkode(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO, () -> avtale.forlengAvtale(avtale.getGjeldendeInnhold().getStartDato().minusDays(1), TestData.enNavIdent()));
+        assertFeilkode(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO, () -> avtale.forlengAvtale(avtale.getGjeldendeInnhold().getSluttDato().minusDays(1), TestData.enNavIdent()));
     }
 
     @Test
