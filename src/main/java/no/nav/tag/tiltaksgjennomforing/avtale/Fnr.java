@@ -4,6 +4,8 @@ import lombok.EqualsAndHashCode;
 import no.bekk.bekkopen.person.Fodselsnummer;
 import no.bekk.bekkopen.person.FodselsnummerCalculator;
 import no.bekk.bekkopen.person.FodselsnummerValidator;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.apache.commons.lang3.NotImplementedException;
@@ -16,8 +18,8 @@ import java.util.Date;
 public class Fnr extends Identifikator {
     private LocalDate fodselsdato;
 
-    public static Fnr av(String verdi) {
-        return new Fnr(verdi);
+    public static Fnr fraDb(String verdi) {
+        return new Fnr(verdi, false);
     }
 
     public static boolean erGyldigFnr(String value) {
@@ -40,7 +42,15 @@ public class Fnr extends Identifikator {
     }
 
     public Fnr(String verdi) {
+        this(verdi, true);
+    }
+
+    private Fnr(String verdi, boolean sjekkGyldighet) {
         super(verdi);
+
+        if (!sjekkGyldighet) {
+            return;
+        }
 
         if (!erGyldigFnr(verdi)) {
             throw new TiltaksgjennomforingException("Ugyldig fødselsnummer");
@@ -55,7 +65,7 @@ public class Fnr extends Identifikator {
             this.fodselsdato = LocalDate.of(aar, maned, dag);
         } catch (IllegalArgumentException e) {
             if (verdi == null || !FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS) {
-                throw e;
+                throw new FeilkodeException(Feilkode.FØDSELSNUMMER_IKKE_GYLDIG, e);
             }
         }
     }

@@ -96,7 +96,7 @@ public class ArenaAdminController {
                 arenaTiltaksgjennomforingIdDeltakerIdOgFnr -> {
                     try {
                         veilarboppfolgingService.hentOgSjekkOppfolgingstatus(
-                            Fnr.av(arenaTiltaksgjennomforingIdDeltakerIdOgFnr.getFnr()),
+                            new Fnr(arenaTiltaksgjennomforingIdDeltakerIdOgFnr.getFnr()),
                             arenaTiltakskode.getTiltakstype()
                         );
                         return Optional.empty();

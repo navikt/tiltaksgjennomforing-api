@@ -119,7 +119,7 @@ public class ArenaAgreementAggregate {
     public Optional<Fnr> getFnr() {
         try {
             return !Strings.isNullOrEmpty(fnr)
-                ? Optional.of(Fnr.av(fnr))
+                ? Optional.of(new Fnr(fnr))
                 : Optional.empty();
         } catch (TiltaksgjennomforingException e) {
             return Optional.empty();

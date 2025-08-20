@@ -43,7 +43,7 @@ public class PersondataService {
     public Map<Fnr, Diskresjonskode> hentDiskresjonskoder(Set<Fnr> fnrSet) {
         return persondataClient.hentDiskresjonskoderEllerDefault(
             fnrSet.stream().map(Fnr::asString).collect(Collectors.toSet()),
-            Fnr::av,
+            Fnr::new,
             Diskresjonskode.UGRADERT
         );
     }
