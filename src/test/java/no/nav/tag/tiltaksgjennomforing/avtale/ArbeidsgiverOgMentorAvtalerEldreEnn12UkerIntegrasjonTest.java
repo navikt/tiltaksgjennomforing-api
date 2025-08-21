@@ -74,7 +74,7 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
     public void skal_returnere_avtale_som_er_i_db() {
         Avtale avtale = avtaleRepository.save(TestData.enArbeidstreningAvtale());
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        List<Avtale> arbeidsgiverList = arbeidsgiver.hentAvtalerForMinsideArbeidsgiver(
+        List<Avtale> arbeidsgiverList = arbeidsgiver.hentAvtalerForMinSideArbeidsgiver(
             avtaleRepository,
             avtale.getBedriftNr()
         );
@@ -100,7 +100,7 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
             queryParameter,
             pageable
         );
-        List<Avtale> avtalerFiltrertBasertPaaRiktigTilgang = arbeidsgiver.hentAvtalerForMinsideArbeidsgiver(
+        List<Avtale> avtalerFiltrertBasertPaaRiktigTilgang = arbeidsgiver.hentAvtalerForMinSideArbeidsgiver(
             avtaleRepository,
             avtaleLagret.getBedriftNr()
         );

@@ -32,19 +32,15 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     List<Avtale> findAllById(Iterable<UUID> ids);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    List<Avtale> findAllByBedriftNrAndFeilregistrertIsFalse(BedriftNr bedriftNr);
-
-    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Query("""
         SELECT a
         FROM Avtale a
         WHERE a.bedriftNr IN :bedriftNrList
           AND a.feilregistrert = false
-          AND (a.gjeldendeInnhold.godkjentAvVeileder IS NULL OR a.gjeldendeInnhold.sluttDato > :dato12UkerFraIdag)
+          AND (a.gjeldendeInnhold.godkjentAvVeileder IS NULL OR a.gjeldendeInnhold.sluttDato > current_date - 84 day)
         """)
     Page<Avtale> findAllByBedriftNr(
-        @Param("bedriftNrList") Set<BedriftNr> bedriftNrList,
-        @Param("dato12UkerFraIdag") LocalDate dato12UkerFraIdag,
+        Set<BedriftNr> bedriftNrList,
         Pageable pageable
     );
 
@@ -55,12 +51,11 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
         WHERE a.bedriftNr IN :bedriftNrList
           AND a.tiltakstype = :tiltakstype
           AND a.feilregistrert = false
-          AND (a.gjeldendeInnhold.godkjentAvVeileder IS NULL OR a.gjeldendeInnhold.sluttDato > :dato12UkerFraIdag)
+          AND (a.gjeldendeInnhold.godkjentAvVeileder IS NULL OR a.gjeldendeInnhold.sluttDato > current_date - 84 day)
         """)
-    Page<Avtale> findAllByBedriftNrInAndTiltakstype(
-        @Param("bedriftNrList") Set<BedriftNr> bedriftNrList,
-        @Param("tiltakstype") Tiltakstype tiltakstype,
-        @Param("dato12UkerFraIdag") LocalDate dato12UkerFraIdag,
+    Page<Avtale> findAllByBedriftNrAndTiltakstype(
+        Set<BedriftNr> bedriftNrList,
+        Tiltakstype tiltakstype,
         Pageable pageable
     );
 
@@ -76,9 +71,9 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
         FROM Avtale a
         WHERE a.mentorFnr = :mentorFnr
           AND a.feilregistrert = false
-          AND (a.gjeldendeInnhold.godkjentAvVeileder IS NULL OR a.gjeldendeInnhold.sluttDato > :dato12UkerFraIdag)
+          AND (a.gjeldendeInnhold.godkjentAvVeileder IS NULL OR a.gjeldendeInnhold.sluttDato > current_date - 84 day)
         """)
-    Page<Avtale> findAllByMentorFnr(Fnr mentorFnr, LocalDate dato12UkerFraIdag, Pageable pageable);
+    Page<Avtale> findAllByMentorFnr(Fnr mentorFnr, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByAvtaleNrAndFeilregistrertIsFalse(Integer avtaleNr, Pageable pageable);

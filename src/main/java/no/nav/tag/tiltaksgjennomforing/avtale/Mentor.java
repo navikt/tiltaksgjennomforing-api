@@ -61,10 +61,8 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable) {
-        final LocalDate dato12UkerTilbakeFraNå = Now.localDate().minusWeeks(12);
         Page<Avtale> avtaler = avtaleRepository.findAllByMentorFnr(
             getIdentifikator(),
-            dato12UkerTilbakeFraNå,
             pageable
         );
         return avtaler;
