@@ -605,6 +605,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     public void godkjennForVeileder(NavIdent utfortAv) {
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
+        sjekkGjeldendeStartogSluttDato();
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
         }
@@ -616,17 +617,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
         if (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker()) {
             throw new VeilederSkalGodkjenneSistException();
-        }
-        if (this.getTiltakstype() == Tiltakstype.SOMMERJOBB &&
-            this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
-            throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
-        } else if (this.getTiltakstype() != Tiltakstype.SOMMERJOBB && this.getDeltakerFnr()
-            .erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
-            throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
-        }
-        if (this.getTiltakstype() == Tiltakstype.VTAO && this.getDeltakerFnr()
-            .erOver67ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
-            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
         }
 
         Instant tidspunkt = Now.instant();
@@ -666,6 +656,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     void godkjennForVeilederOgDeltaker(NavIdent utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn) {
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
+        sjekkGjeldendeStartogSluttDato();
         if (erGodkjentAvDeltaker()) {
             throw new DeltakerHarGodkjentException();
         }
@@ -675,20 +666,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
         }
-        if (tiltakstype == Tiltakstype.SOMMERJOBB &&
-            this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
-            throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
-        }
+
         if (tiltakstype == Tiltakstype.MENTOR && !erGodkjentTaushetserklæringAvMentor()) {
             throw new FeilkodeException(Feilkode.MENTOR_MÅ_SIGNERE_TAUSHETSERKLÆRING);
-        }
-        if (tiltakstype != Tiltakstype.SOMMERJOBB && this.getDeltakerFnr()
-            .erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
-            throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
-        }
-        if (tiltakstype == Tiltakstype.VTAO && this.getDeltakerFnr()
-            .erOver67ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
-            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
         }
 
         paVegneAvGrunn.valgtMinstEnGrunn();
@@ -709,6 +689,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     ) {
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
+        sjekkGjeldendeStartogSluttDato();
         if (Avtaleopphav.ARENA != opphav) {
             throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_OPPHAV);
         }
@@ -720,14 +701,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
-        }
-        if (tiltakstype == Tiltakstype.SOMMERJOBB && this.getDeltakerFnr()
-            .erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
-            throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
-        }
-        if (tiltakstype == Tiltakstype.VTAO && this.getDeltakerFnr()
-            .erOver67ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
-            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
         }
 
         godkjentPaVegneAvArbeidsgiverGrunn.valgtMinstEnGrunn();
@@ -748,6 +721,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     ) {
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
+        sjekkGjeldendeStartogSluttDato();
         if (Avtaleopphav.ARENA != opphav) {
             throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_OPPHAV);
         }
@@ -759,14 +733,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
-        }
-        if (tiltakstype.isSommerjobb() && this.getDeltakerFnr()
-            .erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
-            throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
-        }
-        if (tiltakstype == Tiltakstype.VTAO && this.getDeltakerFnr()
-            .erOver67ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
-            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
         }
 
         paVegneAvDeltakerOgArbeidsgiverGrunn.valgtMinstEnGrunn();
@@ -1329,6 +1295,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     public void forkortAvtale(LocalDate nySluttDato, ForkortetGrunn forkortetGrunn, NavIdent utførtAv) {
         sjekkAtIkkeAvtaleErAnnullert();
+        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), nySluttDato);
 
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_IKKE_GODKJENT_AVTALE);
@@ -1353,7 +1320,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (sisteUtbetalt.isPresent() && nySluttDato.isBefore(sisteUtbetalt.get().getSluttDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE);
         }
-        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), nySluttDato);
 
         if (forkortetGrunn.mangler()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_GRUNN_MANGLER);
@@ -1374,6 +1340,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     public void forlengAvtale(LocalDate nySluttDato, NavIdent utførtAv) {
         sjekkAtIkkeAvtaleErAnnullert();
+        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), nySluttDato);
 
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_IKKE_GODKJENT_AVTALE);
@@ -1381,18 +1348,23 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (!nySluttDato.isAfter(gjeldendeInnhold.getSluttDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO);
         }
-        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), nySluttDato);
+
         var gammelSluttDato = gjeldendeInnhold.getSluttDato();
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
+
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         forlengTilskuddsperioder(gammelSluttDato, nySluttDato);
         utforEndring(new AvtaleForlengetAvVeileder(this, utførtAv));
     }
 
+    private void sjekkGjeldendeStartogSluttDato() {
+        sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
+    }
+
     private void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
         StartOgSluttDatoStrategyFactory.create(getTiltakstype(), getKvalifiseringsgruppe())
-            .sjekkStartOgSluttDato(startDato, sluttDato, isGodkjentForEtterregistrering(), erAvtaleInngått());
+            .sjekkStartOgSluttDato(startDato, sluttDato, isGodkjentForEtterregistrering(), erAvtaleInngått(), deltakerFnr);
     }
 
     public void endreTilskuddsberegning(EndreTilskuddsberegning endreTilskuddsberegning, NavIdent utførtAv) {

@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -7,7 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import java.time.LocalDate;
 
 public interface StartOgSluttDatoStrategy {
-    default void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato, boolean erGodkjentForEtterregistrering, boolean erAvtaleInngått) {
+    default void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato, boolean erGodkjentForEtterregistrering, boolean erAvtaleInngått, Fnr deltakerFnr) {
         if (startDato != null && sluttDato != null && startDato.isAfter(sluttDato)) {
             throw new FeilkodeException(Feilkode.START_ETTER_SLUTT);
         }

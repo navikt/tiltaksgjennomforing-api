@@ -1,6 +1,13 @@
-package no.nav.tag.tiltaksgjennomforing.avtale;
+package no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy;
 
 import no.bekk.bekkopen.person.FodselsnummerValidator;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -106,5 +113,28 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale(enVarig(), endreAvtale);
+    }
+
+    @Test
+    public void Deltaker_er_for_gammel_for_å_gå_på_MidlertidigLønnstilskudd() {
+        Fnr deltakerFnr = Fnr.generer(1952,8,12);
+        LocalDate avtaleStart = Now.localDate();
+        LocalDate avtaleSlutt = avtaleStart.plusMonths(11).plusDays(1);
+        boolean erAvtaleInngått = true;
+        boolean erGodkjentForEtterregistrering = true;
+        Kvalifiseringsgruppe kvalifiseringsgruppe = Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS;
+        MidlertidigLonnstilskuddStartOgSluttDatoStrategy midlertidigLonnstilskuddStartOgSluttDatoStrategy = new MidlertidigLonnstilskuddStartOgSluttDatoStrategy(kvalifiseringsgruppe);
+        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> midlertidigLonnstilskuddStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt ,erGodkjentForEtterregistrering, erAvtaleInngått, deltakerFnr));
+    }
+
+    @Test
+    public void Deltaker_er_for_gammel_for_å_gå_på_VarigLønnstilskudd() {
+        Fnr deltakerFnr = new Fnr("12085220754");
+        LocalDate avtaleStart = Now.localDate();
+        LocalDate avtaleSlutt = avtaleStart.plusMonths(11).plusDays(1);
+        boolean erAvtaleInngått = true;
+        boolean erGodkjentForEtterregistrering = true;
+        VarigLonnstilskuddStartOgSluttDatoStrategy varigLonnstilskuddStartOgSluttDatoStrategy = new VarigLonnstilskuddStartOgSluttDatoStrategy();
+        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> varigLonnstilskuddStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt ,erGodkjentForEtterregistrering, erAvtaleInngått, deltakerFnr));
     }
 }

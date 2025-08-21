@@ -87,6 +87,7 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
         Avtale avtale = TestData.enArbeidstreningAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusMonths(4));
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(13));// ELDRE enn 12 UKER
+        avtale.setGodkjentForEtterregistrering(true);
         avtale.godkjennForDeltaker(avtale.getDeltakerFnr());
         avtale.godkjennForArbeidsgiver(avtale.getBedriftNr());
         avtale.godkjennForVeileder(avtale.getVeilederNavIdent());
@@ -114,6 +115,7 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
         Avtale avtale = TestData.enArbeidstreningAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusMonths(4));
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(13)); // ELDRE enn 12 UKER
+        avtale.setGodkjentForEtterregistrering(true);
         avtale.godkjennForDeltaker(avtale.getDeltakerFnr());
         avtale.godkjennForArbeidsgiver(avtale.getBedriftNr());
         avtale.godkjennForVeileder(avtale.getVeilederNavIdent());
@@ -160,6 +162,7 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
         Avtale avtale = TestData.enMentorAvtaleSignert();
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusMonths(3));
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(13));// ELDRE enn 12 UKER fra idag
+        avtale.setGodkjentForEtterregistrering(true);
         Avtale avtaleLagret = avtaleRepository.save(avtale);
         Mentor mentor = TestData.enMentor(avtaleLagret);
 

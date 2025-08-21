@@ -267,6 +267,13 @@ public class TestData {
         return avtale;
     }
 
+    public static Avtale enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering() {
+        Avtale avtale = enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusDays(1));
+        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusYears(1));
+        return avtale;
+    }
+
     public static Avtale enVarigLonnstilskuddAvtaleMedAltUtfylt() {
         Avtale avtale = enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusYears(1));
@@ -276,6 +283,7 @@ public class TestData {
 
     public static Avtale enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjent() {
         Avtale avtale = enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        avtale.setGodkjentForEtterregistrering(true);
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusYears(1));
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusYears(1));
 
@@ -305,6 +313,7 @@ public class TestData {
 
     public static Avtale enVarigLonnstilskuddAvtaleMedBehandletIArenaPerioder() {
         Avtale avtale = enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        avtale.setGodkjentForEtterregistrering(true);
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusYears(1));
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusYears(1));
         avtale.nyeTilskuddsperioderEtterMigreringFraArena(LocalDate.of(2023, 2, 1));
@@ -559,7 +568,7 @@ public class TestData {
     }
 
     public static Avtale enVtaoAvtaleGodkjentAvVeilederFraAnnentOmråde(){
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(new Fnr("11111111111"), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("A123456"));
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(new Fnr("27428318124"), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("A123456"));
         avtale.setEnhetOppfolging("0904");
         avtale.setEnhetsnavnOppfolging("Vinstra");
         EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
@@ -584,6 +593,34 @@ public class TestData {
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(avtale.getVeilederNavIdent());
+        return avtale;
+    }
+
+    public static Avtale enVtaoAvtaleGodkjentAvArbeidsgiveruUtenEndringer() {
+        Fnr fnr = Fnr.generer(1958, 1, 31);
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(fnr, new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
+        avtale.getGjeldendeInnhold().setDeltakerFornavn("Dagny");
+        avtale.getGjeldendeInnhold().setDeltakerEtternavn("Deltaker");
+        avtale.getGjeldendeInnhold().setDeltakerTlf("40000000");
+        avtale.getGjeldendeInnhold().setBedriftNavn("Pers butikk");
+        avtale.getGjeldendeInnhold().setArbeidsgiverFornavn("Per");
+        avtale.getGjeldendeInnhold().setArbeidsgiverEtternavn("Kremmer");
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("99999999");
+        avtale.getGjeldendeInnhold().setVeilederFornavn("Vera");
+        avtale.getGjeldendeInnhold().setVeilederEtternavn("Veileder");
+        avtale.getGjeldendeInnhold().setVeilederTlf("44444444");
+        avtale.getGjeldendeInnhold().setHarFamilietilknytning(false);
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusDays(3));
+        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusMonths(6));
+        avtale.getGjeldendeInnhold().setStillingprosent(BigDecimal.valueOf(50.0d));
+        avtale.getGjeldendeInnhold().setAntallDagerPerUke(BigDecimal.valueOf(5.0d));
+        avtale.getGjeldendeInnhold().setStillingStyrk08(5);
+        avtale.getGjeldendeInnhold().setStillingstittel("Butikkmedarbeider");
+        avtale.getGjeldendeInnhold().setArbeidsoppgaver("Butikkarbeid");
+        avtale.getGjeldendeInnhold().setStillingstype(Stillingstype.FAST);
+        avtale.getGjeldendeInnhold().setOppfolging("Telefon hver uke");
+        avtale.getGjeldendeInnhold().setTilrettelegging("Telefon hver uke");
+        avtale.getGjeldendeInnhold().setArbeidsgiverKontonummer("000111222");
         return avtale;
     }
 
@@ -646,7 +683,7 @@ public class TestData {
     private static OpprettMentorAvtale lagOpprettMentorAvtale(Tiltakstype tiltakstype) {
         Fnr deltakerFnr = new Fnr("00000000000");
         BedriftNr bedriftNr = new BedriftNr("999999999");
-        Fnr mentorFnr = new Fnr("23090170716");
+        Fnr mentorFnr =  new Fnr("23090170716");
         return new OpprettMentorAvtale(deltakerFnr, mentorFnr, bedriftNr, tiltakstype, Avtalerolle.VEILEDER);
     }
 

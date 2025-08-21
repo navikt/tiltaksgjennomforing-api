@@ -87,7 +87,7 @@ public class VeilederTest {
     @Test
     public void godkjennAvtale__kan_godkjenne_sist() {
         // GITT
-        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
@@ -125,7 +125,7 @@ public class VeilederTest {
     @Test
     public void godkjennForVeilederOgDeltaker__kan_godkjenne_med_riktig_oppfølgingsstatus() {
         // GITT
-        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
@@ -159,7 +159,7 @@ public class VeilederTest {
     @Test
     public void godkjennForVeilederOgDeltakerOgArbeidsgiver__kan_godkjenne_med_riktig_oppfølgingsstatus() {
         // GITT
-        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
         avtale.setOpphav(Avtaleopphav.ARENA);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
@@ -195,7 +195,7 @@ public class VeilederTest {
     @Test
     public void godkjennForVeilederOgArbeidsgiver__kan_godkjenne_med_riktig_oppfølgingsstatus() {
         // GITT
-        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
         avtale.setOpphav(Avtaleopphav.ARENA);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
