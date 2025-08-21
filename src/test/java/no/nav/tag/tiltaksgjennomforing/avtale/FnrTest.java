@@ -1,7 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.bekk.bekkopen.person.FodselsnummerValidator;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,33 +27,33 @@ public class FnrTest {
 
     @Test
     public void fnrKanIkkeVæreNull(){
-        assertThatThrownBy(() -> new Fnr(null)).isExactlyInstanceOf(TiltaksgjennomforingException.class)
-                .hasMessage("Ugyldig fødselsnummer");
+        assertThatThrownBy(() -> new Fnr(null)).isExactlyInstanceOf(FeilkodeException.class)
+                .hasMessage(Feilkode.FØDSELSNUMMER_IKKE_GYLDIG.name());
     }
 
     @Test
     public void fnrSkalIkkeVaereTomt() {
-        assertThatThrownBy(() -> new Fnr("")).isExactlyInstanceOf(TiltaksgjennomforingException.class);
+        assertThatThrownBy(() -> new Fnr("")).isExactlyInstanceOf(FeilkodeException.class);
     }
 
     @Test
     public void fnrSkalIkkeHaMindreEnn11Siffer() {
-        assertThatThrownBy(() -> new Fnr("123")).isExactlyInstanceOf(TiltaksgjennomforingException.class);
+        assertThatThrownBy(() -> new Fnr("123")).isExactlyInstanceOf(FeilkodeException.class);
     }
 
     @Test
     public void fnrSkalIkkeHaMerEnn11Siffer() {
-        assertThatThrownBy(() -> new Fnr("1234567890123")).isExactlyInstanceOf(TiltaksgjennomforingException.class);
+        assertThatThrownBy(() -> new Fnr("1234567890123")).isExactlyInstanceOf(FeilkodeException.class);
     }
 
     @Test
     public void fnrSkalIkkeInneholdeBokstaver() {
-        assertThatThrownBy(() -> new Fnr("1234567890a")).isExactlyInstanceOf(TiltaksgjennomforingException.class);
+        assertThatThrownBy(() -> new Fnr("1234567890a")).isExactlyInstanceOf(FeilkodeException.class);
     }
 
     @Test
     public void fnrSkalIkkeInneholdeAndreTingEnnTall() {
-        assertThatThrownBy(() -> new Fnr("12345678900 ")).isExactlyInstanceOf(TiltaksgjennomforingException.class);
+        assertThatThrownBy(() -> new Fnr("12345678900 ")).isExactlyInstanceOf(FeilkodeException.class);
     }
 
     @Test
