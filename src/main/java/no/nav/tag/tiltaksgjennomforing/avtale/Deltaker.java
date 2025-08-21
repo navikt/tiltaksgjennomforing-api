@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
@@ -16,6 +17,7 @@ import java.util.function.Predicate;
 import static no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode.IKKE_TILGANG_TIL_DELTAKER;
 
 
+@Slf4j
 public class Deltaker extends Avtalepart<Fnr> {
 
     public Deltaker(Fnr identifikator) {
@@ -30,6 +32,7 @@ public class Deltaker extends Avtalepart<Fnr> {
 
     @Override
     public Tilgang harTilgangTilAvtale(Avtale avtale) {
+        log.info("Deltaker - harTilgangTilAvtale. Identifikator: {}, avtale {}, erLik: {}", getIdentifikator(), avtale.getDeltakerFnr(), avtale.getDeltakerFnr().equals(getIdentifikator()));
         return avtale.getDeltakerFnr().equals(getIdentifikator())
             ? new Tilgang.Tillat()
             : new Tilgang.Avvis(IKKE_TILGANG_TIL_DELTAKER, "Deltaker fnr stemmer ikke med innlogget bruker");

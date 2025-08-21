@@ -114,6 +114,7 @@ public abstract class Avtalepart<T extends Identifikator> {
             throw new RessursFinnesIkkeException();
         }
         if (harTilgangTilAvtale(avtale) instanceof Tilgang.Avvis avvis) {
+            log.info("Avist: {}, {}", avvis.tilgangskode(), avvis.melding());
             switch (avvis.tilgangskode()) {
                 case STRENGT_FORTROLIG_ADRESSE -> throw new IkkeTilgangTilDeltakerException(
                     avtale.getDeltakerFnr(),

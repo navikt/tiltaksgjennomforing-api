@@ -16,6 +16,7 @@ import java.util.Date;
 
 @EqualsAndHashCode(callSuper = true)
 public class Fnr extends Identifikator {
+    @EqualsAndHashCode.Exclude
     private LocalDate fodselsdato;
 
     public static Fnr fraDb(String verdi) {
