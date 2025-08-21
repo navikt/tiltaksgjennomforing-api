@@ -6,7 +6,6 @@ import no.bekk.bekkopen.person.FodselsnummerCalculator;
 import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.apache.commons.lang3.NotImplementedException;
 
@@ -16,6 +15,7 @@ import java.util.Date;
 
 @EqualsAndHashCode(callSuper = true)
 public class Fnr extends Identifikator {
+    @EqualsAndHashCode.Exclude
     private LocalDate fodselsdato;
 
     public static Fnr fraDb(String verdi) {
@@ -48,12 +48,8 @@ public class Fnr extends Identifikator {
     private Fnr(String verdi, boolean sjekkGyldighet) {
         super(verdi);
 
-        if (!sjekkGyldighet) {
-            return;
-        }
-
-        if (!erGyldigFnr(verdi)) {
-            throw new TiltaksgjennomforingException("Ugyldig fødselsnummer");
+        if (sjekkGyldighet && !erGyldigFnr(verdi)) {
+            throw new FeilkodeException(Feilkode.FØDSELSNUMMER_IKKE_GYLDIG);
         }
 
         try {
@@ -64,7 +60,7 @@ public class Fnr extends Identifikator {
 
             this.fodselsdato = LocalDate.of(aar, maned, dag);
         } catch (IllegalArgumentException e) {
-            if (verdi == null || !FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS) {
+            if (sjekkGyldighet && (verdi == null || !FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS)) {
                 throw new FeilkodeException(Feilkode.FØDSELSNUMMER_IKKE_GYLDIG, e);
             }
         }
