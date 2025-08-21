@@ -14,6 +14,9 @@ public class ArbeidstreningStartOgSluttDatoStrategy implements StartOgSluttDatoS
         if (startDato != null && sluttDato != null && startDato.plusMonths(18).minusDays(1).isBefore(sluttDato)) {
             throw new VarighetForLangArbeidstreningException();
         }
+        if(sluttDato == null){
+            return;
+        }
         if (deltakerFnr.erOver72ÅrFraSluttDato(sluttDato)) {
             throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
         }

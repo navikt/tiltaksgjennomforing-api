@@ -14,6 +14,8 @@ public class InkluderingstilskuddStartOgSluttDatoStrategy implements StartOgSlut
         if (startDato != null && sluttDato != null && startDato.plusMonths(12).isBefore(sluttDato)) {
             throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_INKLUDERINGSTILSKUDD);
         }
+        if(sluttDato == null)
+            return;
         if (deltakerFnr.erOver72ÅrFraSluttDato(sluttDato)) {
             throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
         }

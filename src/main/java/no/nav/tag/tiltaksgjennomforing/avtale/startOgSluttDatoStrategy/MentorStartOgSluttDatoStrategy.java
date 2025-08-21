@@ -29,6 +29,10 @@ public class MentorStartOgSluttDatoStrategy implements StartOgSluttDatoStrategy 
         if (kvalifiseringsgruppe != Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS && kvalifiseringsgruppe != Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS && startDato != null && sluttDato != null && startDato.plusMonths(6).minusDays(1).isBefore(sluttDato)) {
             throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MENTOR_6_MND);
         }
+
+        if(sluttDato == null){
+            return;
+        }
         if (deltakerFnr.erOver72ÅrFraSluttDato(sluttDato)) {
             throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
         }

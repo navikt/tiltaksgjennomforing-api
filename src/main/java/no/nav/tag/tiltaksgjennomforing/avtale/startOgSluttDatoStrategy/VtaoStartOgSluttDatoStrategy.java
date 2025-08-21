@@ -11,10 +11,11 @@ public class VtaoStartOgSluttDatoStrategy implements StartOgSluttDatoStrategy {
     @Override
     public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato, boolean erGodkjentForEtterregistrering, boolean erAvtaleInngått, Fnr deltakerFnr) {
         StartOgSluttDatoStrategy.super.sjekkStartOgSluttDato(startDato, sluttDato, erGodkjentForEtterregistrering, erAvtaleInngått, deltakerFnr);
-        if(sluttDato != null){
-            if(deltakerFnr.erOver67ÅrFraSluttDato(sluttDato)) {
-                throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
-            }
+        if(sluttDato == null) {
+            return;
+        }
+        if(deltakerFnr.erOver67ÅrFraSluttDato(sluttDato)) {
+            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
         }
     }
 }
