@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
@@ -16,8 +17,8 @@ public class MidlertidigLonnstilskuddStartOgSluttDatoStrategy implements StartOg
     }
 
     @Override
-    public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato, boolean erGodkjentForEtterregistrering, boolean erAvtaleInngått) {
-        StartOgSluttDatoStrategy.super.sjekkStartOgSluttDato(startDato, sluttDato, erGodkjentForEtterregistrering, erAvtaleInngått);
+    public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato, boolean erGodkjentForEtterregistrering, boolean erAvtaleInngått, Fnr deltakerFnr) {
+        StartOgSluttDatoStrategy.super.sjekkStartOgSluttDato(startDato, sluttDato, erGodkjentForEtterregistrering, erAvtaleInngått, deltakerFnr);
 
         if (startDato != null && sluttDato != null) {
             if ((kvalifiseringsgruppe == Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS || kvalifiseringsgruppe == Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS)
@@ -32,6 +33,9 @@ public class MidlertidigLonnstilskuddStartOgSluttDatoStrategy implements StartOg
             // Ikke funnet kvalifiseringsgruppe, default 12 mnd
             if (kvalifiseringsgruppe == null && startDato.plusMonths(TOLV_MND_MAKS_LENGDE).minusDays(1).isBefore(sluttDato)) {
                 throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_12_MND);
+            }
+            if (deltakerFnr.erOver72ÅrFraSluttDato(sluttDato)) {
+                throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
             }
         }
     }

@@ -6,6 +6,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
@@ -72,6 +74,7 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaler.add(TestData.enVtaoAvtaleGodkjentAvVeilederFraAnnentOmråde());
         avtaler.add(TestData.enEtterRegistrerdVtaoAvtaleGodkjentAvVeileder());
         avtaler.add(TestData.enVtaoAvtaleGodkjentAvArbeidsgiver());
+        avtaler.add(TestData.enVtaoAvtaleGodkjentAvArbeidsgiveruUtenEndringer());
 
         Now.fixedDate(LocalDate.of(2024, 10, 1));
         avtaler.add(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
