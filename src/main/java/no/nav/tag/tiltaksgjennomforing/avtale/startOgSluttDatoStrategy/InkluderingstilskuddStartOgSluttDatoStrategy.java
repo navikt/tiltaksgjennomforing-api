@@ -11,11 +11,15 @@ public class InkluderingstilskuddStartOgSluttDatoStrategy implements StartOgSlut
     @Override
     public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato, boolean erGodkjentForEtterregistrering, boolean erAvtaleInngått, Fnr deltakerFnr) {
         StartOgSluttDatoStrategy.super.sjekkStartOgSluttDato(startDato, sluttDato, erGodkjentForEtterregistrering, erAvtaleInngått, deltakerFnr);
-        if (startDato != null && sluttDato != null && startDato.plusMonths(12).isBefore(sluttDato)) {
-            throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_INKLUDERINGSTILSKUDD);
+
+        if (sluttDato == null) {
+            return;
         }
-        if (deltakerFnr.erOver72ÅrFraSluttDato(sluttDato)) {
+        if (deltakerFnr != null && deltakerFnr.erOver72ÅrFraSluttDato(sluttDato)) {
             throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
+        }
+        if (startDato != null && startDato.plusMonths(12).isBefore(sluttDato)) {
+            throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_INKLUDERINGSTILSKUDD);
         }
     }
 }

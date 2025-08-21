@@ -20,23 +20,39 @@ public class MidlertidigLonnstilskuddStartOgSluttDatoStrategy implements StartOg
     public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato, boolean erGodkjentForEtterregistrering, boolean erAvtaleInngått, Fnr deltakerFnr) {
         StartOgSluttDatoStrategy.super.sjekkStartOgSluttDato(startDato, sluttDato, erGodkjentForEtterregistrering, erAvtaleInngått, deltakerFnr);
 
-        if (startDato != null && sluttDato != null) {
-            if ((kvalifiseringsgruppe == Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS || kvalifiseringsgruppe == Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS)
-                    && startDato.plusMonths(TJUEFIRE_MND_MAKS_LENGDE).minusDays(1).isBefore(sluttDato)) {
-                throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_24_MND);
-            }
+        if (sluttDato == null) {
+            return;
+        }
+        if (deltakerFnr != null && deltakerFnr.erOver72ÅrFraSluttDato(sluttDato)) {
+            throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
+        }
+        if (startDato == null) {
+            return;
+        }
 
-            if (kvalifiseringsgruppe == Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS && startDato.plusMonths(TOLV_MND_MAKS_LENGDE).minusDays(1).isBefore(sluttDato)) {
-                throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_12_MND);
-            }
+        boolean erSpesieltTilpassetInnsats = kvalifiseringsgruppe == Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS;
+        boolean erVarigTilpassetInnsats = kvalifiseringsgruppe == Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS;
+        boolean erSituasjonsbestemtInnsats = kvalifiseringsgruppe == Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS;
 
-            // Ikke funnet kvalifiseringsgruppe, default 12 mnd
-            if (kvalifiseringsgruppe == null && startDato.plusMonths(TOLV_MND_MAKS_LENGDE).minusDays(1).isBefore(sluttDato)) {
-                throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_12_MND);
-            }
-            if (deltakerFnr.erOver72ÅrFraSluttDato(sluttDato)) {
-                throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
-            }
+        if (
+            (erSpesieltTilpassetInnsats || erVarigTilpassetInnsats) &&
+            startDato.plusMonths(TJUEFIRE_MND_MAKS_LENGDE).minusDays(1).isBefore(sluttDato)
+        ) {
+            throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_24_MND);
+        }
+
+        if (
+            erSituasjonsbestemtInnsats &&
+            startDato.plusMonths(TOLV_MND_MAKS_LENGDE).minusDays(1).isBefore(sluttDato)
+        ) {
+            throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_12_MND);
+        }
+
+        // Ikke funnet kvalifiseringsgruppe, default 12 mnd
+        if (kvalifiseringsgruppe == null && startDato.plusMonths(TOLV_MND_MAKS_LENGDE)
+            .minusDays(1)
+            .isBefore(sluttDato)) {
+            throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_12_MND);
         }
     }
 }

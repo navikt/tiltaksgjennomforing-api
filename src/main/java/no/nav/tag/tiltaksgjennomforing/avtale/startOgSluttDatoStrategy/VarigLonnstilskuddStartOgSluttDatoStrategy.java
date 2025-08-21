@@ -11,10 +11,8 @@ public class VarigLonnstilskuddStartOgSluttDatoStrategy implements StartOgSluttD
     @Override
     public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato,boolean erGodkjentForEtterregistrering, boolean erAvtaleInngått, Fnr deltakerFnr ) {
         StartOgSluttDatoStrategy.super.sjekkStartOgSluttDato(startDato, sluttDato, erGodkjentForEtterregistrering, erAvtaleInngått, deltakerFnr );
-        if(sluttDato != null){
-            if (deltakerFnr.erOver72ÅrFraSluttDato(sluttDato)) {
-                throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
-            }
+        if (sluttDato != null && deltakerFnr != null && deltakerFnr.erOver72ÅrFraSluttDato(sluttDato)) {
+            throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
         }
     }
 }

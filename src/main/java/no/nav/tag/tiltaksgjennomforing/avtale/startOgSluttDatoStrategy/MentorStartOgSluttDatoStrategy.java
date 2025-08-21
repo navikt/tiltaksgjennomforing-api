@@ -19,18 +19,24 @@ public class MentorStartOgSluttDatoStrategy implements StartOgSluttDatoStrategy 
     public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato, boolean erGodkjentForEtterregistrering, boolean erAvtaleInngått, Fnr deltakerFnr ) {
         StartOgSluttDatoStrategy.super.sjekkStartOgSluttDato(startDato, sluttDato, erGodkjentForEtterregistrering, erAvtaleInngått, deltakerFnr);
 
-        if (startDato != null && sluttDato != null) {
-            if ((kvalifiseringsgruppe == Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS || kvalifiseringsgruppe == Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS)
-                    && startDato.plusMonths(36).minusDays(1).isBefore(sluttDato)) {
-                throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MENTOR_36_MND);
-            }
+        if (sluttDato == null) {
+            return;
+        }
+        if (deltakerFnr != null && deltakerFnr.erOver72ÅrFraSluttDato(sluttDato)) {
+            throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
+        }
+        if (startDato == null) {
+            return;
         }
 
-        if (kvalifiseringsgruppe != Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS && kvalifiseringsgruppe != Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS && startDato != null && sluttDato != null && startDato.plusMonths(6).minusDays(1).isBefore(sluttDato)) {
-            throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MENTOR_6_MND);
+        boolean erSpesieltTilpasset = kvalifiseringsgruppe == Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS;
+        boolean erVarigTilpasset = kvalifiseringsgruppe == Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS;
+
+        if ((erSpesieltTilpasset || erVarigTilpasset) && startDato.plusMonths(36).minusDays(1).isBefore(sluttDato)) {
+            throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MENTOR_36_MND);
         }
-        if (deltakerFnr.erOver72ÅrFraSluttDato(sluttDato)) {
-            throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
+        if (!erSpesieltTilpasset && !erVarigTilpasset && startDato.plusMonths(6).minusDays(1).isBefore(sluttDato)) {
+            throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MENTOR_6_MND);
         }
     }
 }
