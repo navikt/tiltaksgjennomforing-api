@@ -74,7 +74,7 @@ public class AvtalestatusService {
 
     private void sendAvtaleMelding(Avtale avtale) {
         Instant tidspunkt = Now.instant();
-        AvtaleMelding avtaleMelding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), AvtaleHendelseUtførtAv.system(Identifikator.TILTAKSGJENNOMFORING_API), HendelseType.STATUSENDRING);
+        AvtaleMelding avtaleMelding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), AvtaleHendelseUtførtAv.system(Identifikator.SYSTEM), HendelseType.STATUSENDRING);
         try {
             String meldingSomString = objectMapper.writeValueAsString(avtaleMelding);
             AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(UUID.randomUUID(), avtale.getId(), tidspunkt, HendelseType.STATUSENDRING, avtale.getStatus(), meldingSomString);

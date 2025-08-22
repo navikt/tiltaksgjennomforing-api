@@ -9,7 +9,6 @@ import lombok.ToString;
 public class Identifikator {
     public static final Identifikator ARENA = new Identifikator("Arena");
     public static final Identifikator SYSTEM = new Identifikator("System");
-    public static final Identifikator TILTAKSGJENNOMFORING_API = new Identifikator("tiltaksgjennomforing-api");
 
     private final String verdi;
 

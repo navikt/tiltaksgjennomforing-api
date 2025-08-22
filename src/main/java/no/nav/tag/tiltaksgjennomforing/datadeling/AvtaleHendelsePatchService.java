@@ -78,7 +78,7 @@ public class AvtaleHendelsePatchService {
     }
 
     private void lagMelding(Avtale avtale) {
-        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), AvtaleHendelseUtførtAv.system(Identifikator.TILTAKSGJENNOMFORING_API), HendelseType.PATCH);
+        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), AvtaleHendelseUtførtAv.system(Identifikator.SYSTEM), HendelseType.PATCH);
         UUID meldingId = UUID.randomUUID();
         Instant tidspunkt = Now.instant();
         try {
