@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RolleHarIkkeTilgangException;
+import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +31,7 @@ public class Deltaker extends Avtalepart<Fnr> {
 
     @Override
     public Tilgang harTilgangTilAvtale(Avtale avtale) {
-        return avtale.getDeltakerFnr().equals(getIdentifikator())
+        return Utils.equalsMenIkkeNull(avtale.getDeltakerFnr(), getIdentifikator())
             ? new Tilgang.Tillat()
             : new Tilgang.Avvis(IKKE_TILGANG_TIL_DELTAKER, "Deltaker fnr stemmer ikke med innlogget bruker");
     }

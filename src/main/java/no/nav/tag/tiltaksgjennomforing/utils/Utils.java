@@ -8,6 +8,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @UtilityClass
 public class Utils {
@@ -58,5 +59,9 @@ public class Utils {
         for (int i = 0; i < tilskuddperioder.size(); i++) {
             tilskuddperioder.get(i).setLøpenummer(startPåLøpenummer + i);
         }
+    }
+
+    public static boolean equalsMenIkkeNull(Object a, Object b) {
+        return a != null && b != null && Objects.equals(a, b);
     }
 }
