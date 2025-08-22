@@ -363,7 +363,7 @@ public class AvtaleController {
     @GetMapping("/min-side-arbeidsgiver")
     public List<Avtale> hentAlleAvtalerForMinSideArbeidsgiver(@RequestParam("bedriftNr") BedriftNr bedriftNr) {
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
-        return arbeidsgiver.hentAvtalerForMinsideArbeidsgiver(avtaleRepository, bedriftNr);
+        return arbeidsgiver.hentAvtalerForMinSideArbeidsgiver(avtaleRepository, bedriftNr);
     }
 
     @GetMapping(path = "/{avtaleId}/kontonummer-arbeidsgiver")

@@ -11,12 +11,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -55,8 +57,8 @@ public class InnloggetArbeidsgiverTest {
 
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
 
-        when(avtaleRepository.findAllByBedriftNrAndFeilregistrertIsFalse(eq(avtale.getBedriftNr()))).thenReturn(Arrays.asList(avtale));
-        List<Avtale> hentetAvtaler = arbeidsgiver.hentAvtalerForMinsideArbeidsgiver(avtaleRepository, avtale.getBedriftNr());
+        when(avtaleRepository.findAllByBedriftNr(eq(Set.of(avtale.getBedriftNr())), any())).thenReturn(new PageImpl<>(List.of(avtale)));
+        List<Avtale> hentetAvtaler = arbeidsgiver.hentAvtalerForMinSideArbeidsgiver(avtaleRepository, avtale.getBedriftNr());
         assertThat(hentetAvtaler.get(0).getAnnullertGrunn()).isNull();
     }
 }

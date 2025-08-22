@@ -305,9 +305,8 @@ public class AvtaleRepositoryTest {
     }
 
     @Test
-    public void findAllByBedriftNrInAndTiltakstype_skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
+    public void findAllByBedriftNrAndTiltakstype_skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
         Pageable pageable = PageRequest.of(0, 100);
-        final LocalDate Dato12UkerTilbakeFraNå = Now.localDate().minusWeeks(12);
         Avtale lagretAvtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         lagretAvtale.setFeilregistrert(true);
         lagretAvtale.setBedriftNr(new BedriftNr("123456789"));
@@ -327,10 +326,9 @@ public class AvtaleRepositoryTest {
         Set<BedriftNr> bedriftNrSet = Set.of(lagretAvtale3.getBedriftNr(), lagretAvtale2.getBedriftNr(), lagretAvtale.getBedriftNr());
 
         Page<Avtale> avtalerFunnet = avtaleRepository
-            .findAllByBedriftNrInAndTiltakstype(
+            .findAllByBedriftNrAndTiltakstype(
                 bedriftNrSet,
                 lagretAvtale.getTiltakstype(),
-                Dato12UkerTilbakeFraNå,
                 pageable
             );
 
@@ -362,7 +360,7 @@ public class AvtaleRepositoryTest {
         Set<BedriftNr> bedriftNrSet = Set.of(lagretAvtale3.getBedriftNr(), lagretAvtale2.getBedriftNr(), lagretAvtale.getBedriftNr());
 
         Page<Avtale> avtalerFunnet = avtaleRepository
-            .findAllByBedriftNr(bedriftNrSet, dato12UkerTilbakeFraNå, pageable);
+            .findAllByBedriftNr(bedriftNrSet, pageable);
 
         assertThat(avtalerFunnet.getContent()).isNotEmpty();
         assertThat(avtalerFunnet.getTotalElements()).isEqualTo(1);
@@ -372,7 +370,6 @@ public class AvtaleRepositoryTest {
     @Test
     public void findAllByMentorFnr_skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
         Pageable pageable = PageRequest.of(0, 100);
-        final LocalDate Dato12UkerTilbakeFraNå = Now.localDate().minusWeeks(12);
         final Fnr mentorFnr = Fnr.generer(1976, 12, 28);
         Avtale lagretAvtale = TestData.enMentorAvtaleSignert();
         lagretAvtale.setFeilregistrert(false);
@@ -387,8 +384,7 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale2);
 
 
-        Page<Avtale> avtalerFunnet = avtaleRepository
-            .findAllByMentorFnr(mentorFnr, Dato12UkerTilbakeFraNå, pageable);
+        Page<Avtale> avtalerFunnet = avtaleRepository.findAllByMentorFnr(mentorFnr, pageable);
 
         assertThat(avtalerFunnet.getContent()).isNotEmpty();
         assertThat(avtalerFunnet.getTotalElements()).isEqualTo(1);
