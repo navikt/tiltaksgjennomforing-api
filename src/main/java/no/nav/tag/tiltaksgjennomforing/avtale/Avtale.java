@@ -72,7 +72,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAvslått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
-import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAvRolle;
+import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
@@ -288,7 +288,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         getGjeldendeInnhold().endreAvtale(nyAvtale);
         nyeTilskuddsperioder();
         oppdaterKreverOppfolgingFom();
-        utforEndring(new AvtaleEndret(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utfortAvRolle), identifikator));
+        utforEndring(new AvtaleEndret(this, AvtaleHendelseUtførtAv.Rolle.fra(utfortAvRolle), identifikator));
     }
 
     private void oppdaterKreverOppfolgingFom() {
@@ -308,7 +308,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             return;
         }
         getGjeldendeInnhold().setStartDato(nyStartDato);
-        utforEndring(new AvtaleEndret(this, AvtaleHendelseUtførtAvRolle.SYSTEM, Identifikator.SYSTEM));
+        utforEndring(new AvtaleEndret(this, AvtaleHendelseUtførtAv.Rolle.SYSTEM, Identifikator.SYSTEM));
     }
 
     public void endreAvtale(
@@ -637,7 +637,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (utførtAvRolle.erBeslutter() || !tiltakstype.skalBesluttes() || erAlleTilskuddsperioderBehandletIArena()) {
             gjeldendeInnhold.setAvtaleInngått(tidspunkt);
             oppdaterKreverOppfolgingFom();
-            utforEndring(new AvtaleInngått(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utførtAvRolle), utførtAv));
+            utforEndring(new AvtaleInngått(this, AvtaleHendelseUtførtAv.Rolle.fra(utførtAvRolle), utførtAv));
         }
     }
 

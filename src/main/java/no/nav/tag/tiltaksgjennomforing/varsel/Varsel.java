@@ -15,7 +15,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.IdentifikatorConverter;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
-import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAvRolle;
+import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
@@ -46,7 +46,7 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
     @Enumerated(EnumType.STRING)
     private Avtalerolle mottaker;
     @Enumerated(EnumType.STRING)
-    private AvtaleHendelseUtførtAvRolle utførtAv;
+    private AvtaleHendelseUtførtAv.Rolle utførtAv;
 
     private static String tilskuddsperiodeAvslåttTekst(TilskuddPeriode tilskuddPeriode, String hendelseTypeTekst) {
         String avslagÅrsaker = tilskuddPeriode.getAvslagsårsaker().stream()
@@ -83,8 +83,7 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
             boolean bjelle,
             Avtale avtale,
             Avtalerolle mottaker,
-            AvtaleHendelseUtførtAvRolle utførtAv,
-            Identifikator utførtAvIdentifikator,
+            AvtaleHendelseUtførtAv utfortAv,
             HendelseType hendelseType,
             TilskuddPeriode tilskuddPeriode
     ) {
@@ -92,13 +91,13 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
         varsel.id = UUID.randomUUID();
         varsel.tidspunkt = Now.instant();
         varsel.identifikator = identifikator;
-        varsel.utførtAvIdentifikator = utførtAvIdentifikator;
+        varsel.utførtAvIdentifikator = utfortAv.identifikator();
         varsel.tekst = lagVarselTekst(avtale, tilskuddPeriode, hendelseType);
         varsel.hendelseType = hendelseType;
         varsel.avtaleId = avtale.getId();
         varsel.bjelle = bjelle;
         varsel.mottaker = mottaker;
-        varsel.utførtAv = utførtAv;
+        varsel.utførtAv = utfortAv.rolle();
         return varsel;
     }
 

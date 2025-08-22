@@ -55,168 +55,162 @@ public class AvtaleHendelseLytter {
 
     @EventListener
     public void avtaleOpprettetAvArbeidsgiver(AvtaleOpprettetAvArbeidsgiver event) {
-        Avtale avtale = event.getAvtale();
-        lagHendelse(avtale, HendelseType.OPPRETTET_AV_ARBEIDSGIVER, avtale.getBedriftNr(), AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER);
+        lagHendelse(event.getAvtale(), HendelseType.OPPRETTET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAv.arbeidsgiver(event.getAvtale()));
     }
 
     @EventListener
     public void avtaleOpprettetAvArena(AvtaleOpprettetAvArena event) {
-        Avtale avtale = event.getAvtale();
-        lagHendelse(avtale, HendelseType.OPPRETTET_AV_ARENA, Identifikator.ARENA, AvtaleHendelseUtførtAvRolle.SYSTEM);
+        lagHendelse(event.getAvtale(), HendelseType.OPPRETTET_AV_ARENA, AvtaleHendelseUtførtAv.system(Identifikator.ARENA));
     }
 
     @EventListener
     public void avtaleOpprettetAvVeileder(AvtaleOpprettetAvVeileder event) {
-        Avtale avtale = event.getAvtale();
-        lagHendelse(avtale, HendelseType.OPPRETTET, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
+        lagHendelse(event.getAvtale(), HendelseType.OPPRETTET, AvtaleHendelseUtførtAv.veileder(event.getUtfortAv()));
     }
 
     @EventListener
     public void avtaleEndret(AvtaleEndret event) {
-        Avtale avtale = event.getAvtale();
-        lagHendelse(avtale, HendelseType.ENDRET, event.getUtfortAv(), event.getUtfortAvRolle());
+        lagHendelse(event.getAvtale(), HendelseType.ENDRET, AvtaleHendelseUtførtAv.fra(event.getAvtale(), event.getUtfortAv(), event.getUtfortAvRolle()));
     }
 
     @EventListener
     public void avtaleEndretAvArena(AvtaleEndretAvArena event) {
-        Avtale avtale = event.getAvtale();
-        lagHendelse(avtale, HendelseType.ENDRET_AV_ARENA, Identifikator.ARENA, AvtaleHendelseUtførtAvRolle.SYSTEM);
+        lagHendelse(event.getAvtale(), HendelseType.ENDRET_AV_ARENA, AvtaleHendelseUtførtAv.system(Identifikator.ARENA));
     }
 
     @EventListener
     public void avtaleInngått(AvtaleInngått event) {
-        Avtale avtale = event.getAvtale();
-        lagHendelse(avtale, HendelseType.AVTALE_INNGÅTT, event.getUtførtAv(), event.getUtførtAvRolle());
+        lagHendelse(event.getAvtale(), HendelseType.AVTALE_INNGÅTT, AvtaleHendelseUtførtAv.fra(event.getAvtale(), event.getUtførtAv(), event.getUtførtAvRolle()));
     }
 
     @EventListener
     public void avtaleForlenget(AvtaleForlengetAvVeileder event) {
-        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORLENGET, event.getUtførtAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
+        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORLENGET, AvtaleHendelseUtførtAv.veileder(event.getUtførtAv()));
     }
 
     @EventListener
     public void avtaleForlengetAvArena(AvtaleForlengetAvArena event) {
-        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORLENGET_AV_ARENA, Identifikator.ARENA, AvtaleHendelseUtførtAvRolle.SYSTEM);
+        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORLENGET_AV_ARENA, AvtaleHendelseUtførtAv.system(Identifikator.ARENA));
     }
 
     @EventListener
     public void avtaleForkortet(AvtaleForkortetAvVeileder event) {
-        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORKORTET, event.getUtførtAv(), AvtaleHendelseUtførtAvRolle.VEILEDER, event.getForkortetGrunn());
+        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORKORTET, AvtaleHendelseUtførtAv.veileder(event.getUtførtAv()), event.getForkortetGrunn());
     }
 
     @EventListener
     public void avtaleForkortetAvArena(AvtaleForkortetAvArena event) {
-        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORKORTET_AV_ARENA, Identifikator.ARENA, AvtaleHendelseUtførtAvRolle.SYSTEM, event.getForkortetGrunn());
+        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORKORTET_AV_ARENA, AvtaleHendelseUtførtAv.system(Identifikator.ARENA), event.getForkortetGrunn());
     }
 
     @EventListener
     public void avtaleAnnullert(AnnullertAvVeileder event) {
-        lagHendelse(event.getAvtale(), HendelseType.ANNULLERT, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
+        lagHendelse(event.getAvtale(), HendelseType.ANNULLERT, AvtaleHendelseUtførtAv.veileder(event.getUtfortAv()));
     }
 
     @EventListener
     public void avtaleAnnullert(AnnullertAvSystem event) {
-        lagHendelse(event.getAvtale(), HendelseType.ANNULLERT, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.SYSTEM);
+        lagHendelse(event.getAvtale(), HendelseType.ANNULLERT, AvtaleHendelseUtførtAv.system(event.getUtfortAv()));
     }
 
     @EventListener
     public void tilskuddsberegningEndret(TilskuddsberegningEndret event) {
-        lagHendelse(event.getAvtale(), HendelseType.TILSKUDDSBEREGNING_ENDRET, event.getUtførtAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
+        lagHendelse(event.getAvtale(), HendelseType.TILSKUDDSBEREGNING_ENDRET, AvtaleHendelseUtførtAv.veileder(event.getUtførtAv()));
     }
 
     @EventListener
     public void stillingsbeskrivelseEndret(StillingsbeskrivelseEndret event) {
-        lagHendelse(event.getAvtale(), HendelseType.STILLINGSBESKRIVELSE_ENDRET, event.getUtførtAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
+        lagHendelse(event.getAvtale(), HendelseType.STILLINGSBESKRIVELSE_ENDRET, AvtaleHendelseUtførtAv.veileder(event.getUtførtAv()));
     }
 
     @EventListener
     public void kontaktinformasjonEndret(KontaktinformasjonEndret event) {
-        lagHendelse(event.getAvtale(), HendelseType.KONTAKTINFORMASJON_ENDRET, event.getUtførtAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
+        lagHendelse(event.getAvtale(), HendelseType.KONTAKTINFORMASJON_ENDRET, AvtaleHendelseUtførtAv.veileder(event.getUtførtAv()));
     }
 
     @EventListener
     public void oppfølgingOgTilretteleggingEndret(OppfølgingOgTilretteleggingEndret event) {
-        lagHendelse(event.getAvtale(), HendelseType.OPPFØLGING_OG_TILRETTELEGGING_ENDRET, event.getUtførtAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
+        lagHendelse(event.getAvtale(), HendelseType.OPPFØLGING_OG_TILRETTELEGGING_ENDRET, AvtaleHendelseUtførtAv.veileder(event.getUtførtAv()));
     }
 
     @EventListener
     public void målEndret(MålEndret event) {
-        lagHendelse(event.getAvtale(), HendelseType.MÅL_ENDRET, event.getUtførtAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
+        lagHendelse(event.getAvtale(), HendelseType.MÅL_ENDRET, AvtaleHendelseUtførtAv.veileder(event.getUtførtAv()));
     }
 
     @EventListener
     public void inkluderingstilskuddEndret(InkluderingstilskuddEndret event) {
-        lagHendelse(event.getAvtale(), HendelseType.INKLUDERINGSTILSKUDD_ENDRET, event.getUtførtAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
+        lagHendelse(event.getAvtale(), HendelseType.INKLUDERINGSTILSKUDD_ENDRET, AvtaleHendelseUtførtAv.veileder(event.getUtførtAv()));
     }
 
     @EventListener
     public void omMentorEndret(OmMentorEndret event) {
-        lagHendelse(event.getAvtale(), HendelseType.OM_MENTOR_ENDRET, event.getUtførtAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
+        lagHendelse(event.getAvtale(), HendelseType.OM_MENTOR_ENDRET, AvtaleHendelseUtførtAv.veileder(event.getUtførtAv()));
     }
 
     @EventListener
     public void nyVeilederPåAvtale(AvtaleNyVeileder event) {
-        lagHendelse(event.getAvtale(), HendelseType.NY_VEILEDER, event.getAvtale().getVeilederNavIdent(), AvtaleHendelseUtførtAvRolle.VEILEDER);
+        lagHendelse(event.getAvtale(), HendelseType.NY_VEILEDER, AvtaleHendelseUtførtAv.veileder(event.getAvtale().getVeilederNavIdent()));
     }
 
     @EventListener
     public void godkjentAvArbeidsgiver(GodkjentAvArbeidsgiver event) {
-        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_AV_ARBEIDSGIVER, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER);
+        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAv.arbeidsgiver(event.getAvtale()));
     }
 
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
-        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_AV_VEILEDER, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
+        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_AV_VEILEDER, AvtaleHendelseUtførtAv.veileder(event.getUtfortAv()));
     }
 
     @EventListener
     public void godkjentAvDeltaker(GodkjentAvDeltaker event) {
-        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_AV_DELTAKER, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.DELTAKER);
+        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_AV_DELTAKER, AvtaleHendelseUtførtAv.deltaker(event.getUtfortAv()));
     }
 
     @EventListener
     public void godkjentPåVegneAvDeltaker(GodkjentPaVegneAvDeltaker event) {
-        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_PAA_VEGNE_AV, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
+        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_PAA_VEGNE_AV, AvtaleHendelseUtførtAv.veileder(event.getUtfortAv()));
     }
 
     @EventListener
     public void godkjentPåVegneAvArbeidsgiver(GodkjentPaVegneAvArbeidsgiver event) {
-        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_PAA_VEGNE_AV_ARBEIDSGIVER, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
+        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_PAA_VEGNE_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAv.veileder(event.getUtfortAv()));
     }
 
     @EventListener
     public void godkjentPåVegneAvDeltakerOgArbeidsgiver(GodkjentPaVegneAvDeltakerOgArbeidsgiver event) {
-        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_PAA_VEGNE_AV_DELTAKER_OG_ARBEIDSGIVER, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
+        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_PAA_VEGNE_AV_DELTAKER_OG_ARBEIDSGIVER, AvtaleHendelseUtførtAv.veileder(event.getUtfortAv()));
     }
 
     @EventListener
     public void signertAvMentor(SignertAvMentor event) {
-        lagHendelse(event.getAvtale(), HendelseType.SIGNERT_AV_MENTOR, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.MENTOR);
+        lagHendelse(event.getAvtale(), HendelseType.SIGNERT_AV_MENTOR, AvtaleHendelseUtførtAv.mentor(event.getUtfortAv()));
     }
 
     @EventListener
     public void deltakersGodkjenningOpphevetAvVeileder(DeltakersGodkjenningOpphevetAvVeileder event) {
-        lagHendelse(event.getAvtale(), HendelseType.DELTAKERS_GODKJENNING_OPPHEVET_AV_VEILEDER, event.getAvtale().getVeilederNavIdent(), AvtaleHendelseUtførtAvRolle.VEILEDER);
+        lagHendelse(event.getAvtale(), HendelseType.DELTAKERS_GODKJENNING_OPPHEVET_AV_VEILEDER, AvtaleHendelseUtførtAv.veileder(event.getAvtale().getVeilederNavIdent()));
     }
 
     @EventListener
     public void deltakersGodkjenningOpphevetAvArbeidsgiver(DeltakersGodkjenningOpphevetAvArbeidsgiver event) {
-        lagHendelse(event.getAvtale(), HendelseType.DELTAKERS_GODKJENNING_OPPHEVET_AV_ARBEIDSGIVER, event.getAvtale().getBedriftNr(), AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER);
+        lagHendelse(event.getAvtale(), HendelseType.DELTAKERS_GODKJENNING_OPPHEVET_AV_ARBEIDSGIVER, AvtaleHendelseUtførtAv.arbeidsgiver(event.getAvtale()));
     }
 
     @EventListener
     public void arbeidsgiversGodkjenningOpphevetAvVeileder(ArbeidsgiversGodkjenningOpphevetAvVeileder event) {
-        lagHendelse(event.getAvtale(), HendelseType.ARBEIDSGIVERS_GODKJENNING_OPPHEVET_AV_VEILEDER, event.getAvtale().getVeilederNavIdent(), AvtaleHendelseUtførtAvRolle.VEILEDER);
+        lagHendelse(event.getAvtale(), HendelseType.ARBEIDSGIVERS_GODKJENNING_OPPHEVET_AV_VEILEDER, AvtaleHendelseUtførtAv.veileder(event.getAvtale().getVeilederNavIdent()));
     }
 
-    private void lagHendelse(Avtale avtale, HendelseType hendelseType, Identifikator utførtAv, AvtaleHendelseUtførtAvRolle utførtAvRolle) {
-        lagHendelse(avtale, hendelseType, utførtAv, utførtAvRolle, null);
+    private void lagHendelse(Avtale avtale, HendelseType hendelseType, AvtaleHendelseUtførtAv utførtAv) {
+        lagHendelse(avtale, hendelseType, utførtAv, null);
     }
 
-    private void lagHendelse(Avtale avtale, HendelseType hendelseType, Identifikator utførtAv, AvtaleHendelseUtførtAvRolle utførtAvRolle, ForkortetGrunn forkortetGrunn) {
+    private void lagHendelse(Avtale avtale, HendelseType hendelseType, AvtaleHendelseUtførtAv avtaleHendelseUtførtAv, ForkortetGrunn forkortetGrunn) {
         Instant tidspunkt = Now.instant();
         UUID meldingId = UUID.randomUUID();
-        AvtaleMelding melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), utførtAv, utførtAvRolle, hendelseType, forkortetGrunn);
+        AvtaleMelding melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), avtaleHendelseUtførtAv, hendelseType, forkortetGrunn);
         try {
             String meldingSomString = objectMapper.writeValueAsString(melding);
             AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(meldingId, avtale.getId(), tidspunkt, hendelseType, avtale.getStatus(), meldingSomString);

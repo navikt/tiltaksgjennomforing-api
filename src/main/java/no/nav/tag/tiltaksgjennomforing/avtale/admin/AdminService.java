@@ -8,7 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
-import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAvRolle;
+import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
 import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.Varsel;
@@ -108,8 +108,7 @@ public class AdminService {
     private Varsel lagHendelse(Avtale avtale) {
         VarselFactory factory = new VarselFactory(
             avtale,
-            AvtaleHendelseUtførtAvRolle.SYSTEM,
-            Identifikator.SYSTEM,
+            AvtaleHendelseUtførtAv.system(Identifikator.SYSTEM),
             HendelseType.OPPDATERTE_AVTALEKRAV
         );
         return factory.arbeidsgiver();
