@@ -12,6 +12,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.function.Predicate;
 
 @EqualsAndHashCode(callSuper = true)
 public class Fnr extends Identifikator {
@@ -19,17 +20,7 @@ public class Fnr extends Identifikator {
     private LocalDate fodselsdato;
 
     public static Fnr fraDb(String verdi) {
-        return new Fnr(verdi, false);
-    }
-
-    public static boolean erGyldigFnr(String value) {
-        if (FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS) {
-            return switch (value) {
-                case "12345678910", "00000000000", "11111111111", "99999999999" -> true;
-                case null, default -> FodselsnummerValidator.isValid(value);
-            };
-        }
-        return FodselsnummerValidator.isValid(value);
+        return new Fnr(verdi, Fnr::erNaivtGyldigFnr);
     }
 
     public static Fnr generer(int aar, int maned, int dag) {
@@ -41,14 +32,28 @@ public class Fnr extends Identifikator {
         return new Fnr(fnr.getValue());
     }
 
-    public Fnr(String verdi) {
-        this(verdi, true);
+    public static boolean erGyldigFnr(String verdi) {
+        if (FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS) {
+            return switch (verdi) {
+                case "12345678910", "00000000000", "11111111111", "99999999999" -> true;
+                case null, default -> FodselsnummerValidator.isValid(verdi);
+            };
+        }
+        return FodselsnummerValidator.isValid(verdi);
     }
 
-    private Fnr(String verdi, boolean sjekkGyldighet) {
+    private static boolean erNaivtGyldigFnr(String verdi) {
+        return verdi != null && verdi.matches("^[0-9]{11}$");
+    }
+
+    public Fnr(String verdi) {
+        this(verdi, Fnr::erGyldigFnr);
+    }
+
+    private Fnr(String verdi, Predicate<String> sjekkGyldighet) {
         super(verdi);
 
-        if (sjekkGyldighet && !erGyldigFnr(verdi)) {
+        if (!sjekkGyldighet.test(verdi)) {
             throw new FeilkodeException(Feilkode.FØDSELSNUMMER_IKKE_GYLDIG);
         }
 
@@ -59,10 +64,8 @@ public class Fnr extends Identifikator {
             int aar = Integer.parseInt(fnr.getBirthYear());
 
             this.fodselsdato = LocalDate.of(aar, maned, dag);
-        } catch (IllegalArgumentException e) {
-            if (sjekkGyldighet && (verdi == null || !FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS)) {
-                throw new FeilkodeException(Feilkode.FØDSELSNUMMER_IKKE_GYLDIG, e);
-            }
+        } catch (IllegalArgumentException ignored) {
+            // Blir allerede håndtert i gyldighetssjekk
         }
     }
 

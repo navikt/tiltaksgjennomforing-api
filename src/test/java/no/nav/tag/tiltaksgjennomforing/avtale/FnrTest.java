@@ -4,6 +4,7 @@ import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,37 +30,45 @@ public class FnrTest {
     public void fnrKanIkkeVæreNull(){
         assertThatThrownBy(() -> new Fnr(null)).isExactlyInstanceOf(FeilkodeException.class)
                 .hasMessage(Feilkode.FØDSELSNUMMER_IKKE_GYLDIG.name());
+        assertThatThrownBy(() -> Fnr.fraDb(null)).isExactlyInstanceOf(FeilkodeException.class)
+            .hasMessage(Feilkode.FØDSELSNUMMER_IKKE_GYLDIG.name());
     }
 
     @Test
     public void fnrSkalIkkeVaereTomt() {
         assertThatThrownBy(() -> new Fnr("")).isExactlyInstanceOf(FeilkodeException.class);
+        assertThatThrownBy(() -> Fnr.fraDb("")).isExactlyInstanceOf(FeilkodeException.class);
     }
 
     @Test
     public void fnrSkalIkkeHaMindreEnn11Siffer() {
         assertThatThrownBy(() -> new Fnr("123")).isExactlyInstanceOf(FeilkodeException.class);
+        assertThatThrownBy(() -> Fnr.fraDb("123")).isExactlyInstanceOf(FeilkodeException.class);
     }
 
     @Test
     public void fnrSkalIkkeHaMerEnn11Siffer() {
         assertThatThrownBy(() -> new Fnr("1234567890123")).isExactlyInstanceOf(FeilkodeException.class);
+        assertThatThrownBy(() -> Fnr.fraDb("1234567890123")).isExactlyInstanceOf(FeilkodeException.class);
     }
 
     @Test
     public void fnrSkalIkkeInneholdeBokstaver() {
         assertThatThrownBy(() -> new Fnr("1234567890a")).isExactlyInstanceOf(FeilkodeException.class);
+        assertThatThrownBy(() -> Fnr.fraDb("1234567890a")).isExactlyInstanceOf(FeilkodeException.class);
     }
 
     @Test
     public void fnrSkalIkkeInneholdeAndreTingEnnTall() {
         assertThatThrownBy(() -> new Fnr("12345678900 ")).isExactlyInstanceOf(FeilkodeException.class);
+        assertThatThrownBy(() -> Fnr.fraDb("12345678900 ")).isExactlyInstanceOf(FeilkodeException.class);
     }
 
     @Test
     public void fnrSkalInneholde11Tall() {
         String gyldigFnr = "00000000000";
         assertThat(new Fnr(gyldigFnr).asString()).isEqualTo(gyldigFnr);
+        assertThat(Fnr.fraDb(gyldigFnr).asString()).isEqualTo(gyldigFnr);
     }
 
     @Test
@@ -68,6 +77,11 @@ public class FnrTest {
         Fnr fnrOver16 = new Fnr("29110976648");
         assertThat(fnrOver16.erUnder16år()).isTrue();
         assertThat(fnrOver16.erOver30år()).isFalse();
+
+        fnrOver16 = Fnr.fraDb("29110976648");
+        assertThat(fnrOver16.erUnder16år()).isTrue();
+        assertThat(fnrOver16.erOver30år()).isFalse();
+
         Now.resetClock();
     }
 
@@ -77,6 +91,11 @@ public class FnrTest {
         Fnr fnr = new Fnr("19109613897");
         assertThat(fnr.erUnder16år()).isFalse();
         assertThat(fnr.erOver30år()).isFalse();
+
+        fnr = Fnr.fraDb("19109613897");
+        assertThat(fnr.erUnder16år()).isFalse();
+        assertThat(fnr.erOver30år()).isFalse();
+
         Now.resetClock();
     }
 
@@ -86,6 +105,11 @@ public class FnrTest {
         Fnr fnr = new Fnr("25128626630");
         assertThat(fnr.erOver30år()).isTrue();
         assertThat(fnr.erUnder16år()).isFalse();
+
+        fnr = Fnr.fraDb("25128626630");
+        assertThat(fnr.erOver30år()).isTrue();
+        assertThat(fnr.erUnder16år()).isFalse();
+
         Now.resetClock();
     }
 
@@ -95,16 +119,27 @@ public class FnrTest {
         Fnr fnr = new Fnr("23029149054");
         assertThat(fnr.erOver30årFørsteJanuar()).isFalse();
         assertThat(fnr.erUnder16år()).isFalse();
+
+        fnr = Fnr.fraDb("23029149054");
+        assertThat(fnr.erOver30årFørsteJanuar()).isFalse();
+        assertThat(fnr.erUnder16år()).isFalse();
+
         Now.resetClock();
     }
 
     @Test
     public void testFnr5() {
         Now.fixedDate(LocalDate.of(2021, 12, 20));
-        final Fnr fnr = new Fnr("23029149054");
         LocalDate startDato = LocalDate.of(2022, 1, 5);
+
+        Fnr fnr = new Fnr("23029149054");
         assertThat(fnr.erOver30årFørsteJanuar()).isFalse();
         assertThat(fnr.erOver30årFraOppstartDato(startDato)).isTrue();
+
+        fnr = Fnr.fraDb("23029149054");
+        assertThat(fnr.erOver30årFørsteJanuar()).isFalse();
+        assertThat(fnr.erOver30årFraOppstartDato(startDato)).isTrue();
+
         Now.resetClock();
     }
 
@@ -114,6 +149,11 @@ public class FnrTest {
         Fnr fnr = new Fnr("49120799125");
         assertThat(fnr.erUnder16år()).isTrue();
         assertThat(fnr.erOver30år()).isFalse();
+
+        fnr = Fnr.fraDb("49120799125");
+        assertThat(fnr.erUnder16år()).isTrue();
+        assertThat(fnr.erOver30år()).isFalse();
+
         Now.resetClock();
     }
 
@@ -123,6 +163,11 @@ public class FnrTest {
         Fnr fnr = new Fnr("64090099076");
         assertThat(fnr.erUnder16år()).isFalse();
         assertThat(fnr.erOver30år()).isFalse();
+
+        fnr = Fnr.fraDb("64090099076");
+        assertThat(fnr.erUnder16år()).isFalse();
+        assertThat(fnr.erOver30år()).isFalse();
+
         Now.resetClock();
     }
 
@@ -132,6 +177,11 @@ public class FnrTest {
         Fnr fnr = new Fnr("07459742977");
         assertThat(fnr.erUnder16år()).isFalse();
         assertThat(fnr.erOver30år()).isFalse();
+
+        fnr = Fnr.fraDb("07459742977");
+        assertThat(fnr.erUnder16år()).isFalse();
+        assertThat(fnr.erOver30år()).isFalse();
+
         Now.resetClock();
     }
 
@@ -148,18 +198,49 @@ public class FnrTest {
     void equalsOgHashCode() {
         assertThat(new Fnr("00000000000").equals(new Fnr("00000000000"))).isTrue();
         assertThat(new Fnr("12345678910").equals(new Fnr("12345678910"))).isTrue();
+        assertThat(Fnr.fraDb("00000000000").equals(new Fnr("00000000000"))).isTrue();
+        assertThat(new Fnr("12345678910").equals(Fnr.fraDb("12345678910"))).isTrue();
 
         assertThat(new Fnr("00000000000").hashCode()).isEqualTo(new Fnr("00000000000").hashCode());
         assertThat(new Fnr("12345678910").hashCode()).isEqualTo(new Fnr("12345678910").hashCode());
+        assertThat(Fnr.fraDb("00000000000").hashCode()).isEqualTo(new Fnr("00000000000").hashCode());
+        assertThat(new Fnr("12345678910").hashCode()).isEqualTo(Fnr.fraDb("12345678910").hashCode());
+
+        assertThat(Fnr.fraDb("01015808566")).isEqualTo(new Fnr("01015808566"));
     }
 
     @Test
     public void er67Aar() {
         Now.fixedDate(LocalDate.of(2025, 1, 1));
+
         Fnr fnr = Fnr.generer(1958, 1, 1);
         assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate())).isTrue();
         assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate().plusDays(1))).isTrue();
         assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate().minusDays(1))).isFalse();
+
+        fnr = Fnr.fraDb("01015808566");
+        assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate())).isTrue();
+        assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate().plusDays(1))).isTrue();
+        assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate().minusDays(1))).isFalse();
+
         Now.resetClock();
     }
+
+    @Test
+    public void mocking_av_fnr_funker_ikke_uten_ALLOW_SYNTHETIC_NUMBERS() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
+
+        assertThatThrownBy(() -> new Fnr("00000000000")).isExactlyInstanceOf(FeilkodeException.class)
+            .hasMessage(Feilkode.FØDSELSNUMMER_IKKE_GYLDIG.name());
+
+        assertThatThrownBy(() -> new Fnr("12345678910")).isExactlyInstanceOf(FeilkodeException.class)
+            .hasMessage(Feilkode.FØDSELSNUMMER_IKKE_GYLDIG.name());
+
+        assertThatThrownBy(() -> Fnr.generer(1988, 12, 10))
+            .isExactlyInstanceOf(NotImplementedException.class);
+
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
+    }
+
+
 }
