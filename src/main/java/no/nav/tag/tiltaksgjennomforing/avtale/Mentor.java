@@ -7,13 +7,11 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RolleHarIkkeTilgangException;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -39,7 +37,7 @@ public class Mentor extends Avtalepart<Fnr> {
                 "Annullert for mer enn 12 uker siden"
             );
         }
-        if (Objects.equals(avtale.getMentorFnr(), getIdentifikator())) {
+        if (Utils.equalsMenIkkeNull(avtale.getMentorFnr(), getIdentifikator())) {
             return new Tilgang.Tillat();
         }
         return new Tilgang.Avvis(IKKE_TILGANG_TIL_DELTAKER, "Mentor fnr stemmer ikke med innlogget bruker");
