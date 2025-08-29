@@ -19,11 +19,15 @@ public class EregService {
     }
 
     public Organisasjon hentVirksomhet(BedriftNr bedriftNr) {
+        var bedriftNrString = bedriftNr.asString();
+        if (!bedriftNrString.matches("^\\d{9}$")) {
+            throw new IllegalArgumentException("Ugyldig bedriftsnummer: " + bedriftNrString + ".");
+        }
         try {
             EregEnhet eregEnhet = restTemplate.getForObject(
                 baseUrl + "/{bedriftNr}",
                 EregEnhet.class,
-                Map.of("bedriftNr", bedriftNr.asString())
+                Map.of("bedriftNr", bedriftNrString)
             );
             if ("JuridiskEnhet".equals(eregEnhet.type())) {
                 throw new EnhetErJuridiskException();
