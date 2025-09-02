@@ -120,7 +120,8 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
                 Tiltakstype.SOMMERJOBB,
                 Tiltakstype.VARIG_LONNSTILSKUDD,
                 Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
-                Tiltakstype.VTAO
+                Tiltakstype.VTAO,
+                Tiltakstype.MENTOR
             ));
 
         Set<Status> avtaleStatus = queryParametre.getAvtaleNr() == null
