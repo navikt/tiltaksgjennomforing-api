@@ -51,6 +51,7 @@ public enum Tiltakstype {
         return this == Tiltakstype.SOMMERJOBB ||
             this == Tiltakstype.VARIG_LONNSTILSKUDD ||
             this == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD ||
-            this == Tiltakstype.VTAO;
+            this == Tiltakstype.VTAO ||
+            this == Tiltakstype.MENTOR;
     }
 }
