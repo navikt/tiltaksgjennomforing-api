@@ -248,12 +248,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         this.gjeldendeInnhold.setAvtale(this);
     }
 
-    protected boolean harOppfølgingsStatus() {
-        return this.getEnhetOppfolging() != null
-            && this.getKvalifiseringsgruppe() != null
-            && this.getFormidlingsgruppe() != null;
-    }
-
     public static Avtale opprett(OpprettAvtale opprettAvtale, Avtaleopphav opphav) {
         return opprett(opprettAvtale, opphav, null);
     }
@@ -275,6 +269,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
         avtale.setOpphav(opphav);
         return avtale;
+    }
+
+    protected boolean harOppfølgingsStatus() {
+        return this.getEnhetOppfolging() != null
+            && this.getKvalifiseringsgruppe() != null
+            && this.getFormidlingsgruppe() != null;
     }
 
     public void endreAvtale(
@@ -959,6 +959,18 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         return getGjeldendeTilskuddsperiode(true);
     }
 
+    public void setGjeldendeTilskuddsperiode(TilskuddPeriode tilskuddPeriode) {
+        log.atInfo()
+            .addKeyValue("avtaleId", this.getId().toString())
+            .log(
+                "Oppdaterer tilskuddsperiode til {} (løpenr {}, status {})",
+                tilskuddPeriode != null ? tilskuddPeriode.getId() : null,
+                tilskuddPeriode != null ? tilskuddPeriode.getLøpenummer() : null,
+                tilskuddPeriode != null ? tilskuddPeriode.getStatus() : null
+            );
+        this.gjeldendeTilskuddsperiode = tilskuddPeriode;
+    }
+
     /**
      * Vi ønsker å migrere til at "gjeldende tilskuddsperiode" lagres i databasen for å legge til rette for bedre
      * filtreringsmuligheter for besluttere. I en overgangsfase bør all logikk basere seg på gammel implementasjon som
@@ -990,18 +1002,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
                 );
         }
         return gjeldendePeriode;
-    }
-
-    public void setGjeldendeTilskuddsperiode(TilskuddPeriode tilskuddPeriode) {
-        log.atInfo()
-            .addKeyValue("avtaleId", this.getId().toString())
-            .log(
-                "Oppdaterer tilskuddsperiode til {} (løpenr {}, status {})",
-                tilskuddPeriode != null ? tilskuddPeriode.getId() : null,
-                tilskuddPeriode != null ? tilskuddPeriode.getLøpenummer() : null,
-                tilskuddPeriode != null ? tilskuddPeriode.getStatus() : null
-            );
-        this.gjeldendeTilskuddsperiode = tilskuddPeriode;
     }
 
     public TreeSet<TilskuddPeriode> finnTilskuddsperioderIkkeLukketForEndring() {
@@ -1227,7 +1227,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
             Tiltakstype.VARIG_LONNSTILSKUDD,
             Tiltakstype.SOMMERJOBB,
-            Tiltakstype.VTAO
+            Tiltakstype.VTAO,
+            Tiltakstype.MENTOR
         );
         if (annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
@@ -1364,7 +1365,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     private void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
         StartOgSluttDatoStrategyFactory.create(getTiltakstype(), getKvalifiseringsgruppe())
-            .sjekkStartOgSluttDato(startDato, sluttDato, isGodkjentForEtterregistrering(), erAvtaleInngått(), deltakerFnr);
+            .sjekkStartOgSluttDato(
+                startDato,
+                sluttDato,
+                isGodkjentForEtterregistrering(),
+                erAvtaleInngått(),
+                deltakerFnr
+            );
     }
 
     public void endreTilskuddsberegning(EndreTilskuddsberegning endreTilskuddsberegning, NavIdent utførtAv) {
@@ -1373,7 +1380,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         krevEnAvTiltakstyper(
             Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
             Tiltakstype.VARIG_LONNSTILSKUDD,
-            Tiltakstype.SOMMERJOBB
+            Tiltakstype.SOMMERJOBB,
+            Tiltakstype.MENTOR
         );
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_IKKE_GODKJENT_AVTALE);
@@ -1403,7 +1411,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         krevEnAvTiltakstyper(
             Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
             Tiltakstype.VARIG_LONNSTILSKUDD,
-            Tiltakstype.SOMMERJOBB
+            Tiltakstype.SOMMERJOBB,
+            Tiltakstype.MENTOR
         );
         if (gjeldendeInnhold.getSumLonnstilskudd() == null && Utils.erIkkeTomme(
             gjeldendeInnhold.getLonnstilskuddProsent(),
