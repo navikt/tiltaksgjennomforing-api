@@ -304,7 +304,6 @@ public class AvtaleController {
             @RequestBody EndreAvtale endreAvtale,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart
     ) {
-        log.info("DRY RUN endreAvtaleDryRun for avtaleId {}", avtaleId);
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         avtalepart.endreAvtale(endreAvtale, avtale);
