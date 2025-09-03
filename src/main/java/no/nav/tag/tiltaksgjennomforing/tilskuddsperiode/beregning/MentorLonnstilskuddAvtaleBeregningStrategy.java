@@ -83,11 +83,6 @@ public class MentorLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstil
         int prosent = 100; //innhold.getLonnstilskuddProsent();
         LocalDate redusertFra = innhold.getDatoForRedusertProsent();
 
-        // TODO: FOR DEMO
-        innhold.setFeriepengesats(BigDecimal.valueOf(10));
-        innhold.setOtpSats(20.0);
-        innhold.setArbeidsgiveravgift(BigDecimal.valueOf(14.2));
-
         BigDecimal brutto = BigDecimal
             .valueOf(innhold.getMentorAntallTimer())
             .multiply(BigDecimal.valueOf(innhold.getMentorTimelonn()));

@@ -13,6 +13,8 @@ public class MentorStrategy extends BaseAvtaleInnholdStrategy {
 
     @Override
     public void endre(EndreAvtale nyAvtale) {
+        Integer manedslonn = (int) (nyAvtale.getMentorTimelonn() * nyAvtale.getMentorAntallTimer());
+
         avtaleInnhold.setMentorFornavn(nyAvtale.getMentorFornavn());
         avtaleInnhold.setMentorEtternavn(nyAvtale.getMentorEtternavn());
         avtaleInnhold.setMentorOppgaver(nyAvtale.getMentorOppgaver());
@@ -21,6 +23,15 @@ public class MentorStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setMentorTimelonn(nyAvtale.getMentorTimelonn());
         avtaleInnhold.setHarFamilietilknytning(nyAvtale.getHarFamilietilknytning());
         avtaleInnhold.setFamilietilknytningForklaring(nyAvtale.getFamilietilknytningForklaring());
+
+
+        avtaleInnhold.setFeriepengesats(nyAvtale.getFeriepengesats());
+        avtaleInnhold.setOtpSats(nyAvtale.getOtpSats());
+        avtaleInnhold.setArbeidsgiveravgift(nyAvtale.getArbeidsgiveravgift());
+        avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
+        // todo: sjekk at mentor manedslonn stemmer med mentor timelonn * mentor antall timer
+        avtaleInnhold.setManedslonn(manedslonn);
+
         super.endre(nyAvtale);
     }
 
