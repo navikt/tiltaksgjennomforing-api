@@ -31,7 +31,6 @@ public class RefusjonEndretStatusKafkaConsumer {
     @KafkaListener(topics = Topics.REFUSJON_ENDRET_STATUS)
     public void refusjonEndretStatus(String melding) throws JsonProcessingException {
         RefusjonEndretStatusMelding refusjonEndretStatusMelding = objectMapper.readValue(melding, RefusjonEndretStatusMelding.class);
-        log.info("Mottok melding om endret avtale {} refusjonsstatus for tilskuddsperiode {} med status {}", refusjonEndretStatusMelding.getAvtaleId(), refusjonEndretStatusMelding.getTilskuddsperiodeId(), refusjonEndretStatusMelding.getStatus());
         TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(UUID.fromString(refusjonEndretStatusMelding.getTilskuddsperiodeId())).orElseThrow();
         if(tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
             log.error("En tilskuddsperiode {} som er ubehandlet har fått statusendring fra refusjon-api", refusjonEndretStatusMelding.getTilskuddsperiodeId());
