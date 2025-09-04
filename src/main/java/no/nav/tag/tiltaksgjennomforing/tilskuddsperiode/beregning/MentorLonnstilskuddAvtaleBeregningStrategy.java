@@ -19,6 +19,20 @@ public class MentorLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstil
     int MAKS_PROSENT = 100;
 
     @Override
+    public void reberegnTotal(Avtale avtale) {
+        AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
+        if (innhold.getManedslonn() == null
+            && innhold.getMentorAntallTimer() != null
+            && innhold.getMentorTimelonn() != null) {
+            int manedslonn = beregnMånedligTilskudd(
+                innhold.getMentorAntallTimer(),
+                innhold.getMentorTimelonn());
+            innhold.setManedslonn(manedslonn);
+        }
+        super.reberegnTotal(avtale);
+    }
+
+    @Override
     public boolean nødvendigeFelterErUtfylt(Avtale avtale) {
         AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
         return Utils.erIkkeTomme(

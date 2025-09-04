@@ -29,6 +29,8 @@ public class MentorStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setArbeidsgiveravgift(nyAvtale.getArbeidsgiveravgift());
         avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
 
+//        avtaleInnhold.setFeriepengerBelop(nyAvtale.getFeriepengesats() * nyAvtale.getManedslonn() / 100);
+
         super.endre(nyAvtale);
     }
 
