@@ -1,14 +1,17 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold.Fields;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentorLonnstilskuddAvtaleBeregningStrategy;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class MentorStrategy extends BaseAvtaleInnholdStrategy {
+public class MentorAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy {
+    private MentorLonnstilskuddAvtaleBeregningStrategy mentorBeregningStrategy;
 
-    public MentorStrategy(AvtaleInnhold avtaleInnhold) {
+    public MentorAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
+        mentorBeregningStrategy = new MentorLonnstilskuddAvtaleBeregningStrategy();
     }
 
     @Override
@@ -29,10 +32,14 @@ public class MentorStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setArbeidsgiveravgift(nyAvtale.getArbeidsgiveravgift());
         avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
 
-//        avtaleInnhold.setFeriepengerBelop(nyAvtale.getFeriepengesats() * nyAvtale.getManedslonn() / 100);
-
         super.endre(nyAvtale);
     }
+
+    @Override
+    public void regnUtTotalLonnstilskudd() {
+        mentorBeregningStrategy.reberegnTotal(avtaleInnhold.getAvtale());
+    }
+
 
     @Override
     public Map<String, Object> alleFelterSomMåFyllesUt() {
@@ -46,7 +53,10 @@ public class MentorStrategy extends BaseAvtaleInnholdStrategy {
         alleFelter.put(Fields.mentorTlf, avtaleInnhold.getMentorTlf());
         alleFelter.put(AvtaleInnhold.Fields.harFamilietilknytning, avtaleInnhold.getHarFamilietilknytning());
         if (avtaleInnhold.getHarFamilietilknytning() != null && avtaleInnhold.getHarFamilietilknytning()) {
-            alleFelter.put(AvtaleInnhold.Fields.familietilknytningForklaring, avtaleInnhold.getFamilietilknytningForklaring());
+            alleFelter.put(
+                AvtaleInnhold.Fields.familietilknytningForklaring,
+                avtaleInnhold.getFamilietilknytningForklaring()
+            );
         }
 
         return alleFelter;

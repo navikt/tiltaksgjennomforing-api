@@ -733,7 +733,7 @@ public class TestData {
         endreAvtale.setMentorOppgaver("Mentoroppgaver");
         endreAvtale.setMentorAntallTimer(10.0);
         endreAvtale.setMentorTlf("44444444");
-        endreAvtale.setMentorTimelonn(1000);
+        endreAvtale.setMentorTimelonn(null);
         return endreAvtale;
     }
 
@@ -799,6 +799,17 @@ public class TestData {
     public static EndreAvtale endringPåAlleMentorFelter() {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreKontaktInfo(endreAvtale);
+        endreAvtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.023));
+        endreAvtale.setOtpSats(0.02);
+        endreAvtale.setArbeidsgiverKontonummer("837262829292");
+        endreAvtale.setArbeidsoppgaver("arbeidsoppgaver");
+        endreAvtale.setStillingstittel("Stillingstittel");
+        endreAvtale.setStillingprosent(BigDecimal.valueOf(50.7));
+        endreAvtale.setStillingstype(Stillingstype.FAST);
+        endreAvtale.setAntallDagerPerUke(BigDecimal.valueOf(5));
+        endreAvtale.setFeriepengesats(BigDecimal.valueOf(0.03));
+        endreAvtale.setManedslonn(null);
+        endreAvtale.setMentorTimelonn(null);
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
