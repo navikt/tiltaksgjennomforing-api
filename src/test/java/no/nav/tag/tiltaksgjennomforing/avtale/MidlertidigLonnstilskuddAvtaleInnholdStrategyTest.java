@@ -28,7 +28,7 @@ class MidlertidigLonnstilskuddAvtaleInnholdStrategyTest {
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
     }
 
-        @Test
+    @Test
     void test_at_feil_når_familietilknytning_ikke_er_fylt_ut() {
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setHarFamilietilknytning(true);
