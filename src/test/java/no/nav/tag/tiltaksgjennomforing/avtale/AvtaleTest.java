@@ -852,26 +852,23 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.sluttDato,
                 AvtaleInnhold.Fields.mentorFornavn,
                 AvtaleInnhold.Fields.mentorEtternavn,
-                AvtaleInnhold.Fields.mentorTimelonn,
                 AvtaleInnhold.Fields.mentorOppgaver,
                 AvtaleInnhold.Fields.mentorAntallTimer,
+                AvtaleInnhold.Fields.mentorTimelonn
                 AvtaleInnhold.Fields.tilrettelegging,
                 AvtaleInnhold.Fields.oppfolging,
                 AvtaleInnhold.Fields.mentorTlf,
-            AvtaleInnhold.Fields.harFamilietilknytning,
-            AvtaleInnhold.Fields.arbeidsgiveravgift,
-            AvtaleInnhold.Fields.otpSats,
-            AvtaleInnhold.Fields.arbeidsgiverKontonummer,
-            AvtaleInnhold.Fields.arbeidsoppgaver,
-            AvtaleInnhold.Fields.stillingstittel,
-            AvtaleInnhold.Fields.stillingprosent,
-            AvtaleInnhold.Fields.stillingstype,
-            AvtaleInnhold.Fields.antallDagerPerUke,
-            AvtaleInnhold.Fields.feriepengesats,
-            AvtaleInnhold.Fields.manedslonn
+                AvtaleInnhold.Fields.harFamilietilknytning,
+                AvtaleInnhold.Fields.arbeidsgiveravgift,
+                AvtaleInnhold.Fields.otpSats,
+                AvtaleInnhold.Fields.arbeidsgiverKontonummer,
+                AvtaleInnhold.Fields.stillingstype,
+                AvtaleInnhold.Fields.feriepengesats,
         );
 
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.VEILEDER, TestData.enNavIdent());
+
+
 
         testAtAlleFelterMangler(avtale, mentorfelter);
         testAtHvertEnkeltFeltMangler(avtale, mentorfelter, avtale.getTiltakstype());

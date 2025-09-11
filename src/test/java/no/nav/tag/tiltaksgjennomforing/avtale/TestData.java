@@ -733,7 +733,7 @@ public class TestData {
         endreAvtale.setMentorOppgaver("Mentoroppgaver");
         endreAvtale.setMentorAntallTimer(10.0);
         endreAvtale.setMentorTlf("44444444");
-        endreAvtale.setMentorTimelonn(null);
+        endreAvtale.setMentorTimelonn(100);
         return endreAvtale;
     }
 
@@ -810,6 +810,7 @@ public class TestData {
         endreAvtale.setFeriepengesats(BigDecimal.valueOf(0.03));
         endreAvtale.setManedslonn(null);
         endreAvtale.setMentorTimelonn(null);
+        endreAvtale.setMentorAntallTimer(null);
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
