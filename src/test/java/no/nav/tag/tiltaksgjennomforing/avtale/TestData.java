@@ -801,7 +801,7 @@ public class TestData {
         endreKontaktInfo(endreAvtale);
         endreAvtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.023));
         endreAvtale.setOtpSats(0.02);
-        endreAvtale.setArbeidsgiverKontonummer("837262829292");
+        endreAvtale.setArbeidsgiverKontonummer("83726282929");
         endreAvtale.setArbeidsoppgaver("arbeidsoppgaver");
         endreAvtale.setStillingstittel("Stillingstittel");
         endreAvtale.setStillingprosent(BigDecimal.valueOf(50.7));

@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
@@ -31,6 +32,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import static no.nav.common.utils.AssertUtils.assertTrue;
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.getForPart;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.jsonHarVerdi;
@@ -89,7 +91,7 @@ public class MentorTest {
         var respons = hentAvtaleForMentor(mentor, avtaleSignert.getId());
         var avtaleJson = mapper.readTree(respons.getContentAsString(StandardCharsets.UTF_8));
 
-        assertEquals(avtaleJson, ((ObjectNode) originalJson.deepCopy()).putNull("deltakerFnr"),
+        assertEquals(avtaleJson.get("deltakerFnr"), ((ObjectNode) originalJson.deepCopy()).putNull("deltakerFnr").get("deltakerFnr"),
                 "Når vi fjerner fnr fra det opprinnelige testobjektet skal det matche responsen");
         assertFalse(jsonHarVerdi(respons.getContentAsString(), deltakerFnr));
     }

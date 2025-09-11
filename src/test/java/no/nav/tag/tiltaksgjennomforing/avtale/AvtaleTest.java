@@ -854,7 +854,7 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.mentorEtternavn,
                 AvtaleInnhold.Fields.mentorOppgaver,
                 AvtaleInnhold.Fields.mentorAntallTimer,
-                AvtaleInnhold.Fields.mentorTimelonn
+                AvtaleInnhold.Fields.mentorTimelonn,
                 AvtaleInnhold.Fields.tilrettelegging,
                 AvtaleInnhold.Fields.oppfolging,
                 AvtaleInnhold.Fields.mentorTlf,
@@ -863,8 +863,7 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.otpSats,
                 AvtaleInnhold.Fields.arbeidsgiverKontonummer,
                 AvtaleInnhold.Fields.stillingstype,
-                AvtaleInnhold.Fields.feriepengesats,
-        );
+                AvtaleInnhold.Fields.feriepengesats);
 
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.VEILEDER, TestData.enNavIdent());
 
