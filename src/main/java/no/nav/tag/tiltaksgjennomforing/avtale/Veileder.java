@@ -166,7 +166,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
-        avtale.godkjennForVeileder(getIdentifikator());
+        avtale.godkjennForVeileder(getIdentifikator(), featureToggleService.isEnabled(FeatureToggle.MENTOR_TILSKUDD));
     }
 
     @Override

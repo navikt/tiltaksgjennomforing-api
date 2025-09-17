@@ -286,7 +286,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         sjekkOmAvtalenKanEndres();
         sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
         getGjeldendeInnhold().endreAvtale(nyAvtale);
-        nyeTilskuddsperioder();
+        if(tiltakstype !=  tiltakstype.MENTOR){
+            nyeTilskuddsperioder();
+        }
+
         oppdaterKreverOppfolgingFom();
         utforEndring(new AvtaleEndret(this, AvtaleHendelseUtførtAv.Rolle.fra(utfortAvRolle), identifikator));
     }
@@ -603,6 +606,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void godkjennForVeileder(NavIdent utfortAv) {
+        godkjennForVeileder(utfortAv, false);
+    }
+
+    public void godkjennForVeileder(NavIdent utfortAv, boolean mentorFeaturetoggel) {
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
         sjekkGjeldendeStartogSluttDato();
@@ -622,12 +629,31 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         Instant tidspunkt = Now.instant();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
-        inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
+        if(tiltakstype == Tiltakstype.MENTOR) {
+            inngåMentorAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv, mentorFeaturetoggel);
+        } else {
+            inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
+        }
+        //inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         gjeldendeInnhold.setIkrafttredelsestidspunkt(tidspunkt);
         utforEndring(new GodkjentAvVeileder(this, utfortAv));
     }
 
     private void inngåAvtale(Instant tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
+        if (!utførtAvRolle.erInternBruker()) {
+            throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_INNGAA_AVTALE);
+        }
+        if (erAvtaleInngått()) {
+            throw new FeilkodeException(Feilkode.AVTALE_ER_ALLEREDE_INNGAATT);
+        }
+        if (utførtAvRolle.erBeslutter() || !tiltakstype.skalBesluttes() || erAlleTilskuddsperioderBehandletIArena()) {
+            gjeldendeInnhold.setAvtaleInngått(tidspunkt);
+            oppdaterKreverOppfolgingFom();
+            utforEndring(new AvtaleInngått(this, AvtaleHendelseUtførtAv.Rolle.fra(utførtAvRolle), utførtAv));
+        }
+    }
+
+    private void inngåMentorAvtale(Instant tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv, boolean mentorFeaturetoggel ) {
         if (!utførtAvRolle.erInternBruker()) {
             throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_INNGAA_AVTALE);
         }
