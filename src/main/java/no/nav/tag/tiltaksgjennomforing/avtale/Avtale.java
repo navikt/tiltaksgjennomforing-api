@@ -630,7 +630,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         if(tiltakstype == Tiltakstype.MENTOR) {
-            inngåMentorAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv, mentorFeaturetoggel);
+            inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv, mentorFeaturetoggel);
         } else {
             inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         }
@@ -640,27 +640,17 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private void inngåAvtale(Instant tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
-        if (!utførtAvRolle.erInternBruker()) {
-            throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_INNGAA_AVTALE);
-        }
-        if (erAvtaleInngått()) {
-            throw new FeilkodeException(Feilkode.AVTALE_ER_ALLEREDE_INNGAATT);
-        }
-        if (utførtAvRolle.erBeslutter() || !tiltakstype.skalBesluttes() || erAlleTilskuddsperioderBehandletIArena()) {
-            gjeldendeInnhold.setAvtaleInngått(tidspunkt);
-            oppdaterKreverOppfolgingFom();
-            utforEndring(new AvtaleInngått(this, AvtaleHendelseUtførtAv.Rolle.fra(utførtAvRolle), utførtAv));
-        }
+        inngåAvtale(tidspunkt, utførtAvRolle, utførtAv, false);
     }
 
-    private void inngåMentorAvtale(Instant tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv, boolean mentorFeaturetoggel ) {
+    private void inngåAvtale(Instant tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv, boolean mentorFeaturetoggel ) {
         if (!utførtAvRolle.erInternBruker()) {
             throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_INNGAA_AVTALE);
         }
         if (erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.AVTALE_ER_ALLEREDE_INNGAATT);
         }
-        if (utførtAvRolle.erBeslutter() || !tiltakstype.skalBesluttes() || erAlleTilskuddsperioderBehandletIArena()) {
+        if (utførtAvRolle.erBeslutter() || (!tiltakstype.skalBesluttes() && !mentorFeaturetoggel) || erAlleTilskuddsperioderBehandletIArena()) {
             gjeldendeInnhold.setAvtaleInngått(tidspunkt);
             oppdaterKreverOppfolgingFom();
             utforEndring(new AvtaleInngått(this, AvtaleHendelseUtførtAv.Rolle.fra(utførtAvRolle), utførtAv));
