@@ -650,7 +650,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.AVTALE_ER_ALLEREDE_INNGAATT);
         }
-        if (utførtAvRolle.erBeslutter() || (!tiltakstype.skalBesluttes() && !mentorFeaturetoggel) || erAlleTilskuddsperioderBehandletIArena()) {
+        if ((tiltakstype.isMentor() && !mentorFeaturetoggel) || utførtAvRolle.erBeslutter() || (!tiltakstype.skalBesluttes() && !mentorFeaturetoggel) || erAlleTilskuddsperioderBehandletIArena()) {
             gjeldendeInnhold.setAvtaleInngått(tidspunkt);
             oppdaterKreverOppfolgingFom();
             utforEndring(new AvtaleInngått(this, AvtaleHendelseUtførtAv.Rolle.fra(utførtAvRolle), utførtAv));
