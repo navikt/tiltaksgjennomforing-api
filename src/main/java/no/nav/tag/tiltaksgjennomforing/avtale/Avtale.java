@@ -323,7 +323,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         EndreAvtale nyAvtale,
         Avtalerolle utfortAv
     ) {
-        endreAvtale(nyAvtale, utfortAv, null, true);
+        endreAvtale(nyAvtale, utfortAv, null, null);
     }
 
     public void endreAvtaleArena(EndreAvtaleArena endreAvtaleArena) {

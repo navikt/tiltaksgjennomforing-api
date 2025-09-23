@@ -15,7 +15,6 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.HentOppfolgingsstatusRequest;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.HentOppfolgingsstatusRespons;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FakeUnleash;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
@@ -24,7 +23,6 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
@@ -55,8 +53,6 @@ public class CachingConfigTest {
     private final VeilarboppfolgingService veilarboppfolgingService;
     private final Norg2Client norg2Client;
     private final PersondataService persondataService;
-    @Spy
-    private final FeatureToggleService featureToggleServiceMock = new FeatureToggleService(new FakeUnleash(), null);
 
     public CachingConfigTest(
             @Autowired CacheManager cacheManager,
