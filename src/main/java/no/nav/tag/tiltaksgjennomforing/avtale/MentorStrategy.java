@@ -22,15 +22,10 @@ public class MentorStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setMentorTimelonn(nyAvtale.getMentorTimelonn());
         avtaleInnhold.setHarFamilietilknytning(nyAvtale.getHarFamilietilknytning());
         avtaleInnhold.setFamilietilknytningForklaring(nyAvtale.getFamilietilknytningForklaring());
-
-
         avtaleInnhold.setFeriepengesats(nyAvtale.getFeriepengesats());
         avtaleInnhold.setOtpSats(nyAvtale.getOtpSats());
         avtaleInnhold.setArbeidsgiveravgift(nyAvtale.getArbeidsgiveravgift());
         avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
-
-//        avtaleInnhold.setFeriepengerBelop(nyAvtale.getFeriepengesats() * nyAvtale.getManedslonn() / 100);
-
         super.endre(nyAvtale);
     }
 

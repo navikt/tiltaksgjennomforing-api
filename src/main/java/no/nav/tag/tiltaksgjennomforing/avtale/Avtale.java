@@ -276,11 +276,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             && this.getKvalifiseringsgruppe() != null
             && this.getFormidlingsgruppe() != null;
     }
-/*
-    public void endreMentorAvtale(EndreAvtale endreAvtale, Avtalerolle utfortAvRolle, Identifikator identifikator, Boolean featerToggle) {
-        endreAvtale(endreAvtale, utfortAvRolle, identifikator, featerToggle);
-    }
-*/
+
     public void endreAvtale(
         EndreAvtale nyAvtale,
         Avtalerolle utfortAvRolle,
@@ -323,7 +319,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         EndreAvtale nyAvtale,
         Avtalerolle utfortAv
     ) {
-        endreAvtale(nyAvtale, utfortAv, null, null);
+        endreAvtale(nyAvtale, utfortAv, null, false);
     }
 
     public void endreAvtaleArena(EndreAvtaleArena endreAvtaleArena) {
