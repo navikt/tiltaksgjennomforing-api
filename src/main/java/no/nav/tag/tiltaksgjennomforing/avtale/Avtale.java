@@ -635,7 +635,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         } else {
             inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         }
-        //inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         gjeldendeInnhold.setIkrafttredelsestidspunkt(tidspunkt);
         utforEndring(new GodkjentAvVeileder(this, utfortAv));
     }
