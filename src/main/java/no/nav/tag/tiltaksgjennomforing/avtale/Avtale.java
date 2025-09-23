@@ -276,17 +276,22 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             && this.getKvalifiseringsgruppe() != null
             && this.getFormidlingsgruppe() != null;
     }
-
+/*
+    public void endreMentorAvtale(EndreAvtale endreAvtale, Avtalerolle utfortAvRolle, Identifikator identifikator, Boolean featerToggle) {
+        endreAvtale(endreAvtale, utfortAvRolle, identifikator, featerToggle);
+    }
+*/
     public void endreAvtale(
         EndreAvtale nyAvtale,
         Avtalerolle utfortAvRolle,
-        Identifikator identifikator
+        Identifikator identifikator,
+        Boolean featerToggle
     ) {
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAvtalenKanEndres();
         sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
         getGjeldendeInnhold().endreAvtale(nyAvtale);
-        if(tiltakstype !=  tiltakstype.MENTOR){
+        if(tiltakstype != tiltakstype.MENTOR || featerToggle) {
             nyeTilskuddsperioder();
         }
 
@@ -318,7 +323,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         EndreAvtale nyAvtale,
         Avtalerolle utfortAv
     ) {
-        endreAvtale(nyAvtale, utfortAv, null);
+        endreAvtale(nyAvtale, utfortAv, null, true);
     }
 
     public void endreAvtaleArena(EndreAvtaleArena endreAvtaleArena) {

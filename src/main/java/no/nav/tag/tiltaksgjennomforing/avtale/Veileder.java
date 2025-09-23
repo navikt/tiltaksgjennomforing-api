@@ -241,7 +241,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         super.endreAvtale(
             endreAvtale,
             avtale,
-            () -> oppdatereEnheterVedEndreAvtale(avtale)
+            () -> oppdatereEnheterVedEndreAvtale(avtale), featureToggleService.isEnabled(FeatureToggle.MENTOR_TILSKUDD)
         );
     }
 
