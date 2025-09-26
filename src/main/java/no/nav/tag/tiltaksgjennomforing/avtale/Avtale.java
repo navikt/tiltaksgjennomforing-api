@@ -287,7 +287,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         sjekkOmAvtalenKanEndres();
         sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
         getGjeldendeInnhold().endreAvtale(nyAvtale);
-        if(tiltakstype != tiltakstype.MENTOR || featerToggle) {
+        if(tiltakstype != Tiltakstype.MENTOR || featerToggle) {
             nyeTilskuddsperioder();
         }
 

@@ -17,6 +17,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -116,7 +117,7 @@ public class TestData {
     public static Avtale enMentorAvtaleUsignert() {
         Avtale avtale = enMentorAvtale();
         EndreAvtale endreAvtale = endringPåAlleMentorFelter();
-        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null, featureToggleService.isEnabled(FeatureToggle.MENTOR_TILSKUDD) );
         return avtale;
     }
 
