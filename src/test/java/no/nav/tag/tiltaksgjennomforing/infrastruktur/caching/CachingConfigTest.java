@@ -15,7 +15,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.HentOppfolgingsstatusRequest;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.HentOppfolgingsstatusRespons;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FakeUnleash;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -53,7 +53,6 @@ public class CachingConfigTest {
     private final VeilarboppfolgingService veilarboppfolgingService;
     private final Norg2Client norg2Client;
     private final PersondataService persondataService;
-    private final FeatureToggleService featureToggleServiceMock = new FeatureToggleService(new FakeUnleash(), null);
 
     public CachingConfigTest(
             @Autowired CacheManager cacheManager,
@@ -151,6 +150,8 @@ public class CachingConfigTest {
 
         final TilgangskontrollService mockTilgangskontrollService = mock(TilgangskontrollService.class);
 
+        final FeatureToggleService mockFeatureToggleService = mock(FeatureToggleService.class);
+
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 null,
@@ -160,10 +161,12 @@ public class CachingConfigTest {
                 Set.of(new NavEnhet(avtale.getEnhetOppfolging(), avtale.getEnhetsnavnOppfolging())),
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
-                featureToggleServiceMock,
+                mockFeatureToggleService,
                 mock(EregService.class)
         );
         when(mockTilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+
+        when(mockFeatureToggleService.isEnabled(FeatureToggle.MENTOR_TILSKUDD)).thenReturn(false);
 
         lenient().when(mockTilgangskontrollService.harSkrivetilgangTilKandidat(
                 eq(veileder),

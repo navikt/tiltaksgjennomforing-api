@@ -280,13 +280,17 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     public void endreAvtale(
         EndreAvtale nyAvtale,
         Avtalerolle utfortAvRolle,
-        Identifikator identifikator
+        Identifikator identifikator,
+        Boolean featerToggle
     ) {
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAvtalenKanEndres();
         sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
         getGjeldendeInnhold().endreAvtale(nyAvtale);
-        nyeTilskuddsperioder();
+        if(tiltakstype != Tiltakstype.MENTOR || featerToggle) {
+            nyeTilskuddsperioder();
+        }
+
         oppdaterKreverOppfolgingFom();
         utforEndring(new AvtaleEndret(this, AvtaleHendelseUtførtAv.Rolle.fra(utfortAvRolle), identifikator));
     }
@@ -315,7 +319,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         EndreAvtale nyAvtale,
         Avtalerolle utfortAv
     ) {
-        endreAvtale(nyAvtale, utfortAv, null);
+        endreAvtale(nyAvtale, utfortAv, null, false);
     }
 
     public void endreAvtaleArena(EndreAvtaleArena endreAvtaleArena) {
@@ -603,6 +607,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void godkjennForVeileder(NavIdent utfortAv) {
+        godkjennForVeileder(utfortAv, false);
+    }
+
+    public void godkjennForVeileder(NavIdent utfortAv, boolean mentorFeaturetoggel) {
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
         sjekkGjeldendeStartogSluttDato();
@@ -622,19 +630,27 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         Instant tidspunkt = Now.instant();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
-        inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
+        if(tiltakstype == Tiltakstype.MENTOR) {
+            inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv, mentorFeaturetoggel);
+        } else {
+            inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
+        }
         gjeldendeInnhold.setIkrafttredelsestidspunkt(tidspunkt);
         utforEndring(new GodkjentAvVeileder(this, utfortAv));
     }
 
     private void inngåAvtale(Instant tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
+        inngåAvtale(tidspunkt, utførtAvRolle, utførtAv, false);
+    }
+
+    private void inngåAvtale(Instant tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv, boolean mentorFeaturetoggel ) {
         if (!utførtAvRolle.erInternBruker()) {
             throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_INNGAA_AVTALE);
         }
         if (erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.AVTALE_ER_ALLEREDE_INNGAATT);
         }
-        if (utførtAvRolle.erBeslutter() || !tiltakstype.skalBesluttes() || erAlleTilskuddsperioderBehandletIArena()) {
+        if ((tiltakstype.isMentor() && !mentorFeaturetoggel) || utførtAvRolle.erBeslutter() || (!tiltakstype.skalBesluttes() && !mentorFeaturetoggel) || erAlleTilskuddsperioderBehandletIArena()) {
             gjeldendeInnhold.setAvtaleInngått(tidspunkt);
             oppdaterKreverOppfolgingFom();
             utforEndring(new AvtaleInngått(this, AvtaleHendelseUtførtAv.Rolle.fra(utførtAvRolle), utførtAv));
@@ -653,7 +669,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         );
     }
 
-    void godkjennForVeilederOgDeltaker(NavIdent utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn) {
+    void godkjennForVeilederOgDeltaker(NavIdent utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn){
+        godkjennForVeilederOgDeltaker(utfortAv, paVegneAvGrunn, false);
+    }
+
+    void godkjennForVeilederOgDeltaker(NavIdent utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn, boolean mentorFeaturetoggel) {
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
         sjekkGjeldendeStartogSluttDato();
@@ -679,7 +699,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold.setGodkjentPaVegneGrunn(paVegneAvGrunn);
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         gjeldendeInnhold.setIkrafttredelsestidspunkt(tidspunkt);
-        inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
+        if(tiltakstype == Tiltakstype.MENTOR) {
+            inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv, mentorFeaturetoggel);
+        } else {
+            inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
+        }
         utforEndring(new GodkjentPaVegneAvDeltaker(this, utfortAv));
     }
 

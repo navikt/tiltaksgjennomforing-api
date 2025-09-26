@@ -11,7 +11,9 @@ public enum FeatureToggle {
     ARENA_OPPFOLGING_SJEKK("arenaOppfolgingSjekk"),
     ARENA_KAFKA("arenaKafka"),
     PABEGYNT_AVTALE_RYDDE_JOBB("pabegyntAvtaleRyddeJobb"),
-    KODE_6_SPERRE("kode6Sperre"),;
+    KODE_6_SPERRE("kode6Sperre"),
+    MENTOR_TILSKUDD("mentorFeatureToggle");
+
 
     private String toggleNavn;
 
