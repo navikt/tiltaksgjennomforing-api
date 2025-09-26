@@ -179,7 +179,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
-        avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
+        avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn, featureToggleService.isEnabled(FeatureToggle.MENTOR_TILSKUDD));
     }
 
     public void godkjennForVeilederOgArbeidsgiver(

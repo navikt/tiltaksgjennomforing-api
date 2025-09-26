@@ -669,7 +669,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         );
     }
 
-    void godkjennForVeilederOgDeltaker(NavIdent utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn) {
+    void godkjennForVeilederOgDeltaker(NavIdent utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn){
+        godkjennForVeilederOgDeltaker(utfortAv, paVegneAvGrunn, false);
+    }
+
+    void godkjennForVeilederOgDeltaker(NavIdent utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn, boolean mentorFeaturetoggel) {
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
         sjekkGjeldendeStartogSluttDato();
@@ -695,7 +699,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold.setGodkjentPaVegneGrunn(paVegneAvGrunn);
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         gjeldendeInnhold.setIkrafttredelsestidspunkt(tidspunkt);
-        inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
+        if(tiltakstype == Tiltakstype.MENTOR) {
+            inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv, mentorFeaturetoggel);
+        } else {
+            inngåAvtale(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
+        }
         utforEndring(new GodkjentPaVegneAvDeltaker(this, utfortAv));
     }
 
