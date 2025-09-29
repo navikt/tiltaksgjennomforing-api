@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.Beslutter;
 import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
@@ -13,6 +14,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Mentor;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.SmsProducer;
 import org.junit.jupiter.api.Test;
@@ -30,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
 @DirtiesContext
@@ -92,7 +95,9 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void avtaleInngåttMentor() throws JsonProcessingException {
+    void avtaleInngåttMentorGammel() throws JsonProcessingException {
+        when(TestData.featureToggleService.isEnabled(FeatureToggle.MENTOR_TILSKUDD)).thenReturn(false);
+
         Avtale avtale = TestData.enMentorAvtaleUsignert();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         Mentor mentor = TestData.enMentor(avtale);
@@ -104,7 +109,32 @@ class LagSmsFraAvtaleHendelseTest {
         godkjentPaVegneGrunn.setIkkeBankId(true);
         veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
 
-        avtaleRepository.save(avtale);
+        avtale = avtaleRepository.saveAndFlush(avtale);
+
+        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
+        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
+        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getMentorTlf(), SELVBETJENINGSONE_VARSELTEKST);
+    }
+
+    @Test
+    void avtaleInngåttMentorTilskuddsperioder() throws JsonProcessingException {
+        when(TestData.featureToggleService.isEnabled(FeatureToggle.MENTOR_TILSKUDD)).thenReturn(true);
+
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        Mentor mentor = TestData.enMentor(avtale);
+        mentor.godkjennAvtale(avtale);
+        arbeidsgiver.godkjennAvtale(avtale);
+        Veileder veileder = TestData.enVeileder(avtale);
+
+        GodkjentPaVegneGrunn godkjentPaVegneGrunn = new GodkjentPaVegneGrunn();
+        godkjentPaVegneGrunn.setIkkeBankId(true);
+        veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
+
+        Beslutter beslutter = TestData.enBeslutter(avtale);
+        beslutter.godkjennTilskuddsperiode(avtale, TestData.ENHET_OPPFØLGING.getVerdi());
+
+        avtale = avtaleRepository.saveAndFlush(avtale);
 
         assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
         assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);

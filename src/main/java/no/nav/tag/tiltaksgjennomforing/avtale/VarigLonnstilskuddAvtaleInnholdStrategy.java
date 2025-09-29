@@ -9,7 +9,7 @@ public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtale
 
     private VarigLonnstilskuddAvtaleBeregningStrategy beregningStrategy;
 
-    public VarigLonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold){
+    public VarigLonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
         beregningStrategy =  new VarigLonnstilskuddAvtaleBeregningStrategy();
     }

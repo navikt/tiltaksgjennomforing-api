@@ -47,10 +47,13 @@ public enum Tiltakstype {
 
     public boolean isVTAO() { return this == Tiltakstype.VTAO; }
 
+    public boolean isMentor() { return this == Tiltakstype.MENTOR; }
+
     public boolean skalBesluttes() {
         return this == Tiltakstype.SOMMERJOBB ||
             this == Tiltakstype.VARIG_LONNSTILSKUDD ||
             this == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD ||
-            this == Tiltakstype.VTAO;
+            this == Tiltakstype.VTAO ||
+            this == Tiltakstype.MENTOR;
     }
 }

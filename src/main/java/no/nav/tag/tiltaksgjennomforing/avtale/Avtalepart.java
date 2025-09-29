@@ -29,6 +29,7 @@ import java.util.function.Predicate;
 @Slf4j
 @Data
 public abstract class Avtalepart<T extends Identifikator> {
+
     private final T identifikator;
 
     public boolean avtalenEksisterer(Avtale avtale) {
@@ -136,13 +137,14 @@ public abstract class Avtalepart<T extends Identifikator> {
         EndreAvtale endreAvtale,
         Avtale avtale
     ) {
-        endreAvtale(endreAvtale, avtale, () -> {});
+        endreAvtale(endreAvtale, avtale, () -> {}, false);
     }
 
     public void endreAvtale(
             EndreAvtale endreAvtale,
             Avtale avtale,
-            Runnable kjorForEndring
+            Runnable kjorForEndring,
+            Boolean featureToggle
     ) {
         sjekkTilgang(avtale);
         if (!kanEndreAvtale()) {
@@ -150,7 +152,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
         avvisDatoerTilbakeITid(avtale, endreAvtale.getStartDato(), endreAvtale.getSluttDato());
         kjorForEndring.run();
-        avtale.endreAvtale(endreAvtale, rolle(), identifikator);
+        avtale.endreAvtale(endreAvtale, rolle(), identifikator, featureToggle);
     }
 
     protected void avvisDatoerTilbakeITid(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {

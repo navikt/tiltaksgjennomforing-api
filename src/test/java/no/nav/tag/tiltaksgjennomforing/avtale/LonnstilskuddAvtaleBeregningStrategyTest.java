@@ -62,7 +62,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"MENTOR", "ARBEIDSTRENING", "INKLUDERINGSTILSKUDD"})
+    @ValueSource(strings = {"ARBEIDSTRENING", "INKLUDERINGSTILSKUDD"})
     public void en_avtaletype_som_ikke_stotter_tilskuddsperioder_skal_ikke_generere_perioder_i_beregning_strategi(String tiltakstypeString) {
         final Tiltakstype tiltakstype = Tiltakstype.valueOf(tiltakstypeString);
         Now.fixedDate(LocalDate.of(2021, 1, 1));
@@ -80,6 +80,16 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         assertThat(avtale.beregnTilskuddsbeløpForPeriode(fra,til)).isEqualTo(forventetBeløpForPeriode);
         assertThat(avtale.getTilskuddPeriode()).isEmpty();
         Now.resetClock();
+    }
+
+    @Test
+    public void beregn_mentor_tilskuddsbeløp_for_periode_samsvarer_med_sum_genererte_perioder() {
+        LocalDate start = LocalDate.of(2025,1,5);
+        LocalDate slutt = LocalDate.of(2025,3,17);
+        Avtale avtale = TestData.enMentorAvtaleMedMedAltUtfylt();
+        int direkte = avtale.beregnTilskuddsbeløpForPeriode(start, slutt);
+        int sum = avtale.getTilskuddPeriode().stream().mapToInt(TilskuddPeriode::getBeløp).sum();
+        assertThat(direkte).isEqualTo(sum);
     }
 
     @Test
