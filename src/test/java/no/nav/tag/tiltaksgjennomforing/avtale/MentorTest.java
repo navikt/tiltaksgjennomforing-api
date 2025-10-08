@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
@@ -17,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +30,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import static no.nav.common.utils.AssertUtils.assertTrue;
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.getForPart;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.jsonHarVerdi;

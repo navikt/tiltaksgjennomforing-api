@@ -224,7 +224,7 @@ class LagVarselFraAvtaleHendelserTest {
     void test_for_delt_med_mentor() {
         Avtale avtale = avtaleRepository.save(Avtale.opprett(new OpprettMentorAvtale(new Fnr("00000000000") , new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MENTOR, Avtalerolle.VEILEDER), Avtaleopphav.VEILEDER, TestData.enNavIdent()));
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        avtale.endreAvtale(TestData.endringPåAlleMentorFelter(), Avtalerolle.VEILEDER);
+        avtale.endreAvtale(TestData.endrePåAlleMentorFelter(), Avtalerolle.VEILEDER);
         avtale = avtaleRepository.save(avtale);
 
         avtale.delMedAvtalepart(Avtalerolle.DELTAKER);

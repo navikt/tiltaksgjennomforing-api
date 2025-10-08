@@ -136,5 +136,7 @@ tiltaksgjennomforing:
       url: http://localhost:8090/aktivitet-arena-acl
     hendelse-aktivitetsplan:
       url: http://localhost:8090
+  mentor-tilskuddsperioder:
+    enabled: false
 
 ELECTOR_PATH: null

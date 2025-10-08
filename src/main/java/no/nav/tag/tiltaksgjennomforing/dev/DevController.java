@@ -83,7 +83,7 @@ public class DevController {
         avtale.endreAvtale(
             endring,
             Avtalerolle.ARBEIDSGIVER,
-            avtale.getDeltakerFnr(), false
+            avtale.getDeltakerFnr()
         );
         avtaleRepository.save(avtale);
     }

@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
+import no.nav.tag.tiltaksgjennomforing.avtale.MentorTilskuddsperioderToggle;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
@@ -46,6 +47,10 @@ public class MentorLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstil
 
     @Override
     public List<TilskuddPeriode> genererNyeTilskuddsperioder(Avtale avtale) {
+        if (!MentorTilskuddsperioderToggle.isEnabled()){
+            return Collections.emptyList();
+        }
+
         if (avtale.erAvtaleInngått()) {
             return Collections.emptyList();
         }

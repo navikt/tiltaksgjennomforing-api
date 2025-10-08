@@ -835,45 +835,8 @@ public class AvtaleTest {
         testAtHvertEnkeltFeltMangler(avtale, lønnstilskuddfelter, avtale.getTiltakstype());
     }
 
-    @Test
-    public void kanIkkeGodkjennesNårNoeMangler__mentor() {
-        Set<String> mentorfelter = Set.of(
-                AvtaleInnhold.Fields.deltakerFornavn,
-                AvtaleInnhold.Fields.deltakerEtternavn,
-                AvtaleInnhold.Fields.deltakerTlf,
-                AvtaleInnhold.Fields.bedriftNavn,
-                AvtaleInnhold.Fields.arbeidsgiverFornavn,
-                AvtaleInnhold.Fields.arbeidsgiverEtternavn,
-                AvtaleInnhold.Fields.arbeidsgiverTlf,
-                AvtaleInnhold.Fields.veilederFornavn,
-                AvtaleInnhold.Fields.veilederEtternavn,
-                AvtaleInnhold.Fields.veilederTlf,
-                AvtaleInnhold.Fields.startDato,
-                AvtaleInnhold.Fields.sluttDato,
-                AvtaleInnhold.Fields.mentorFornavn,
-                AvtaleInnhold.Fields.mentorEtternavn,
-                AvtaleInnhold.Fields.mentorOppgaver,
-                AvtaleInnhold.Fields.mentorAntallTimer,
-                AvtaleInnhold.Fields.mentorTimelonn,
-                AvtaleInnhold.Fields.tilrettelegging,
-                AvtaleInnhold.Fields.oppfolging,
-                AvtaleInnhold.Fields.mentorTlf,
-                AvtaleInnhold.Fields.harFamilietilknytning,
-                AvtaleInnhold.Fields.arbeidsgiveravgift,
-                AvtaleInnhold.Fields.otpSats,
-                AvtaleInnhold.Fields.arbeidsgiverKontonummer,
-                AvtaleInnhold.Fields.stillingstype,
-                AvtaleInnhold.Fields.feriepengesats);
 
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.VEILEDER, TestData.enNavIdent());
-
-
-
-        testAtAlleFelterMangler(avtale, mentorfelter);
-        testAtHvertEnkeltFeltMangler(avtale, mentorfelter, avtale.getTiltakstype());
-    }
-
-    private static void testAtHvertEnkeltFeltMangler(Avtale avtale, Set<String> felterSomKrevesForTiltakstype, Tiltakstype tiltakstype) {
+    public static void testAtHvertEnkeltFeltMangler(Avtale avtale, Set<String> felterSomKrevesForTiltakstype, Tiltakstype tiltakstype) {
         for (String felt : felterSomKrevesForTiltakstype) {
             EndreAvtale endreAvtale = endringPåAltUtenom(felt, tiltakstype);
             avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
@@ -882,7 +845,7 @@ public class AvtaleTest {
         }
     }
 
-    private static void testAtAlleFelterMangler(Avtale avtale, Set<String> arbeidstreningsfelter) {
+    public static void testAtAlleFelterMangler(Avtale avtale, Set<String> arbeidstreningsfelter) {
         assertThat(avtale.felterSomIkkeErFyltUt()).containsExactlyInAnyOrderElementsOf(arbeidstreningsfelter);
     }
 
@@ -890,7 +853,7 @@ public class AvtaleTest {
         EndreAvtale endreAvtale =
                 switch (tiltakstype) {
                     case ARBEIDSTRENING -> TestData.endringPåAlleArbeidstreningFelter();
-                    case MENTOR -> TestData.endringPåAlleMentorFelter();
+                    case MENTOR -> TestData.endrePåAlleMentorFelter();
                     case INKLUDERINGSTILSKUDD -> TestData.endringPåAlleInkluderingstilskuddFelter();
                     case VTAO -> TestData.endringPåAlleVTAOFelter();
                     case MIDLERTIDIG_LONNSTILSKUDD, SOMMERJOBB, VARIG_LONNSTILSKUDD ->

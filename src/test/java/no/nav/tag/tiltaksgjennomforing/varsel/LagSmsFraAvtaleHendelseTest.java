@@ -6,24 +6,23 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.avtale.Beslutter;
 import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Mentor;
+import no.nav.tag.tiltaksgjennomforing.avtale.MentorTilskuddsperioderToggle;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.SmsProducer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -32,9 +31,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-@SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
+@SpringBootTest(properties = {"tiltaksgjennomforing.kafka.enabled=true", "tiltaksgjennomforing.mentor-tilskuddsperioder.enabled=false"})
 @DirtiesContext
 @ActiveProfiles(Miljø.TEST)
 @EmbeddedKafka(partitions = 1, topics = {Topics.TILTAK_SMS })
@@ -43,7 +41,7 @@ class LagSmsFraAvtaleHendelseTest {
     SmsRepository smsRepository;
     @Autowired
     AvtaleRepository avtaleRepository;
-    @SpyBean
+    @MockitoSpyBean
     SmsProducer smsProducer;
 
     private static final String SELVBETJENINGSONE_VARSELTEKST = "Du har mottatt et nytt varsel på https://arbeidsgiver.nav.no/tiltaksgjennomforing";
@@ -95,8 +93,8 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void avtaleInngåttMentorGammel() throws JsonProcessingException {
-        when(TestData.featureToggleService.isEnabled(FeatureToggle.MENTOR_TILSKUDD)).thenReturn(false);
+    void avtaleInngåttMentorUtenTilskuddsperioder() throws JsonProcessingException {
+        MentorTilskuddsperioderToggle.setValue(false);
 
         Avtale avtale = TestData.enMentorAvtaleUsignert();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
@@ -108,31 +106,6 @@ class LagSmsFraAvtaleHendelseTest {
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = new GodkjentPaVegneGrunn();
         godkjentPaVegneGrunn.setIkkeBankId(true);
         veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
-
-        avtale = avtaleRepository.saveAndFlush(avtale);
-
-        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
-        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
-        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getMentorTlf(), SELVBETJENINGSONE_VARSELTEKST);
-    }
-
-    @Test
-    void avtaleInngåttMentorTilskuddsperioder() throws JsonProcessingException {
-        when(TestData.featureToggleService.isEnabled(FeatureToggle.MENTOR_TILSKUDD)).thenReturn(true);
-
-        Avtale avtale = TestData.enMentorAvtaleUsignert();
-        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        Mentor mentor = TestData.enMentor(avtale);
-        mentor.godkjennAvtale(avtale);
-        arbeidsgiver.godkjennAvtale(avtale);
-        Veileder veileder = TestData.enVeileder(avtale);
-
-        GodkjentPaVegneGrunn godkjentPaVegneGrunn = new GodkjentPaVegneGrunn();
-        godkjentPaVegneGrunn.setIkkeBankId(true);
-        veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
-
-        Beslutter beslutter = TestData.enBeslutter(avtale);
-        beslutter.godkjennTilskuddsperiode(avtale, TestData.ENHET_OPPFØLGING.getVerdi());
 
         avtale = avtaleRepository.saveAndFlush(avtale);
 

@@ -1,18 +1,23 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.bekk.bekkopen.person.FodselsnummerValidator;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
+@SpringBootTest(properties = {
+    "tiltaksgjennomforing.mentor-tilskuddsperioder.enabled=true"
+})
+@ActiveProfiles(Miljø.TEST)
 public class MentorAvtaleBeregningStrategyTest {
 
     @BeforeEach
@@ -27,7 +32,6 @@ public class MentorAvtaleBeregningStrategyTest {
 
     @Test
     public void en_mentor_avtale_beregning_se_at_otpSats_blir_lagret_i_avtale_innhold_etter_beregning() {
-        when(TestData.featureToggleService.isEnabled(FeatureToggle.MENTOR_TILSKUDD)).thenReturn(true);
         Now.fixedDate(LocalDate.of(2025, 3, 1));
         LocalDate fra = LocalDate.of(2025, 3, 1);
         LocalDate til = LocalDate.of(2025, 3, 31);
@@ -46,7 +50,7 @@ public class MentorAvtaleBeregningStrategyTest {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.012));
         endreAvtale.setMentorAntallTimer(8.0);
         endreAvtale.setMentorTimelonn(100);
-        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null, TestData.featureToggleService.isEnabled(FeatureToggle.MENTOR_TILSKUDD));
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
 
         assertThat(avtale.getGjeldendeInnhold().getFeriepengerBelop()).isEqualTo(feriepengerBelop);
         assertThat(avtale.getGjeldendeInnhold().getOtpBelop()).isEqualTo(forventetOptBelop);

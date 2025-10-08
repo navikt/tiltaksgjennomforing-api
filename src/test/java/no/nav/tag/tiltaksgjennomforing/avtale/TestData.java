@@ -17,7 +17,6 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -116,14 +115,14 @@ public class TestData {
 
     public static Avtale enMentorAvtaleUsignert() {
         Avtale avtale = enMentorAvtale();
-        EndreAvtale endreAvtale = endringPåAlleMentorFelter();
-        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null, featureToggleService.isEnabled(FeatureToggle.MENTOR_TILSKUDD) );
+        EndreAvtale endreAvtale = endrePåAlleMentorFelter();
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
         return avtale;
     }
 
     public static Avtale enMentorAvtaleSignert() {
         Avtale avtale = enMentorAvtale();
-        EndreAvtale endreAvtale = endringPåAlleMentorFelter();
+        EndreAvtale endreAvtale = endrePåAlleMentorFelter();
         avtale.godkjennForMentor(avtale.getMentorFnr());
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         return avtale;
@@ -797,26 +796,41 @@ public class TestData {
         return endreAvtale;
     }
 
-    public static EndreAvtale endringPåAlleMentorFelter() {
+    public static EndreAvtale endrePåAlleMentorFelter(){
+        if (MentorTilskuddsperioderToggle.isEnabled()) {
+            return endringPåMentorBeregningTilskuddsFelter();
+        } else {
+            return endringPåAlleMentorFelterUtenBeregning();
+        }
+    }
+
+    public static EndreAvtale endringPåAlleMentorFelterUtenBeregning() {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreKontaktInfo(endreAvtale);
-        endreAvtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.023));
-        endreAvtale.setOtpSats(0.02);
         endreAvtale.setArbeidsgiverKontonummer("83726282929");
         endreAvtale.setArbeidsoppgaver("arbeidsoppgaver");
         endreAvtale.setStillingstittel("Stillingstittel");
         endreAvtale.setStillingprosent(BigDecimal.valueOf(50.7));
         endreAvtale.setStillingstype(Stillingstype.FAST);
         endreAvtale.setAntallDagerPerUke(BigDecimal.valueOf(5));
-        endreAvtale.setFeriepengesats(BigDecimal.valueOf(0.03));
         endreAvtale.setManedslonn(null);
-        endreAvtale.setMentorTimelonn(null);
         endreAvtale.setMentorAntallTimer(null);
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(6).minusDays(1));
         endreMentorInfo(endreAvtale);
+        return endreAvtale;
+    }
+
+    public static EndreAvtale endringPåMentorBeregningTilskuddsFelter() {
+        EndreAvtale endreAvtale = endringPåAlleMentorFelterUtenBeregning();
+        endreAvtale.setMentorTimelonn(100);
+        endreAvtale.setMentorAntallTimer(10.0);
+        endreAvtale.setManedslonn(null);
+        endreAvtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.023));
+        endreAvtale.setOtpSats(0.02);
+        endreAvtale.setFeriepengesats(BigDecimal.valueOf(0.03));
         return endreAvtale;
     }
 

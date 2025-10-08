@@ -166,7 +166,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
-        avtale.godkjennForVeileder(getIdentifikator(), featureToggleService.isEnabled(FeatureToggle.MENTOR_TILSKUDD));
+        avtale.godkjennForVeileder(getIdentifikator());
     }
 
     @Override
@@ -179,7 +179,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
-        avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn, featureToggleService.isEnabled(FeatureToggle.MENTOR_TILSKUDD));
+        avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
 
     public void godkjennForVeilederOgArbeidsgiver(
@@ -241,7 +241,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         super.endreAvtale(
             endreAvtale,
             avtale,
-            () -> oppdatereEnheterVedEndreAvtale(avtale), featureToggleService.isEnabled(FeatureToggle.MENTOR_TILSKUDD)
+            () -> oppdatereEnheterVedEndreAvtale(avtale)
         );
     }
 

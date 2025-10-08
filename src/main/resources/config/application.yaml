@@ -65,6 +65,8 @@ tiltaksgjennomforing:
   notifikasjoner:
     uri: https://ag-notifikasjon-produsent-api.dev.intern.nav.no/api/graphql
     lenke: https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/
+  mentor-tilskuddsperioder:
+    enabled: false
 
 no.nav.security.jwt:
   client:

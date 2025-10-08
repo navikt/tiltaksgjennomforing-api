@@ -137,14 +137,13 @@ public abstract class Avtalepart<T extends Identifikator> {
         EndreAvtale endreAvtale,
         Avtale avtale
     ) {
-        endreAvtale(endreAvtale, avtale, () -> {}, false);
+        endreAvtale(endreAvtale, avtale, () -> {});
     }
 
     public void endreAvtale(
             EndreAvtale endreAvtale,
             Avtale avtale,
-            Runnable kjorForEndring,
-            Boolean featureToggle
+            Runnable kjorForEndring
     ) {
         sjekkTilgang(avtale);
         if (!kanEndreAvtale()) {
@@ -152,7 +151,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
         avvisDatoerTilbakeITid(avtale, endreAvtale.getStartDato(), endreAvtale.getSluttDato());
         kjorForEndring.run();
-        avtale.endreAvtale(endreAvtale, rolle(), identifikator, featureToggle);
+        avtale.endreAvtale(endreAvtale, rolle(), identifikator);
     }
 
     protected void avvisDatoerTilbakeITid(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {

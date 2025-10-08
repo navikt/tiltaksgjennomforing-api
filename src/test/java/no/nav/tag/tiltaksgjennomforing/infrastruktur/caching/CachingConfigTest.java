@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.MentorTilskuddsperioderToggle;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -15,7 +16,6 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.HentOppfolgingsstatusRequest;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.HentOppfolgingsstatusRespons;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -166,7 +166,7 @@ public class CachingConfigTest {
         );
         when(mockTilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
 
-        when(mockFeatureToggleService.isEnabled(FeatureToggle.MENTOR_TILSKUDD)).thenReturn(false);
+        MentorTilskuddsperioderToggle.setValue(false);
 
         lenient().when(mockTilgangskontrollService.harSkrivetilgangTilKandidat(
                 eq(veileder),

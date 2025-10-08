@@ -27,10 +27,12 @@ public class MentorAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrat
         avtaleInnhold.setFamilietilknytningForklaring(nyAvtale.getFamilietilknytningForklaring());
 
 
-        avtaleInnhold.setFeriepengesats(nyAvtale.getFeriepengesats());
-        avtaleInnhold.setOtpSats(nyAvtale.getOtpSats());
-        avtaleInnhold.setArbeidsgiveravgift(nyAvtale.getArbeidsgiveravgift());
-        avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
+        if (MentorTilskuddsperioderToggle.isEnabled()) {
+            avtaleInnhold.setFeriepengesats(nyAvtale.getFeriepengesats());
+            avtaleInnhold.setOtpSats(nyAvtale.getOtpSats());
+            avtaleInnhold.setArbeidsgiveravgift(nyAvtale.getArbeidsgiveravgift());
+            avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
+        }
 
         super.endre(nyAvtale);
     }
@@ -71,9 +73,11 @@ public class MentorAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrat
         alleFelter.put(AvtaleInnhold.Fields.mentorTimelonn, avtaleInnhold.getMentorTimelonn());
         alleFelter.put(Fields.mentorTlf, avtaleInnhold.getMentorTlf());
 
-        alleFelter.put(AvtaleInnhold.Fields.feriepengesats, avtaleInnhold.getFeriepengesats());
-        alleFelter.put(AvtaleInnhold.Fields.otpSats, avtaleInnhold.getOtpSats());
-        alleFelter.put(AvtaleInnhold.Fields.arbeidsgiveravgift, avtaleInnhold.getArbeidsgiveravgift());
+        if (MentorTilskuddsperioderToggle.isEnabled()) {
+            alleFelter.put(AvtaleInnhold.Fields.feriepengesats, avtaleInnhold.getFeriepengesats());
+            alleFelter.put(AvtaleInnhold.Fields.otpSats, avtaleInnhold.getOtpSats());
+            alleFelter.put(AvtaleInnhold.Fields.arbeidsgiveravgift, avtaleInnhold.getArbeidsgiveravgift());
+        }
 
         alleFelter.put(AvtaleInnhold.Fields.harFamilietilknytning, avtaleInnhold.getHarFamilietilknytning());
         if (avtaleInnhold.getHarFamilietilknytning() != null && avtaleInnhold.getHarFamilietilknytning()) {
