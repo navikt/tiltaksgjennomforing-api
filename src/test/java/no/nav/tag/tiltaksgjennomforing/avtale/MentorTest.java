@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
@@ -48,7 +49,7 @@ public class MentorTest {
 
     @Autowired
     MockMvc mockMvc;
-    @MockBean
+    @MockitoBean
     private AvtaleRepository avtaleRepository;
     @Autowired
     ObjectMapper mapper;
