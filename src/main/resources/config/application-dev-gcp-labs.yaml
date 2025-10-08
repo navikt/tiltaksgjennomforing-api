@@ -95,5 +95,7 @@ tiltaksgjennomforing:
       client-secret: secret
     aktivitet-acl:
       url: http://tiltaksgjennomforing-wiremock/aktivitet-arena-acl
+  mentor-tilskuddsperioder:
+    enabled: true
 
 ELECTOR_PATH: null

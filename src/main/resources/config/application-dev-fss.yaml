@@ -177,3 +177,5 @@ tiltaksgjennomforing:
       url: https://aktivitet-arena-acl.intern.dev.nav.no
     hendelse-aktivitetsplan:
       url: https://tiltak-hendelse-aktivitetsplan.intern.dev.nav.no
+  mentor-tilskuddsperioder:
+    enabled: true
