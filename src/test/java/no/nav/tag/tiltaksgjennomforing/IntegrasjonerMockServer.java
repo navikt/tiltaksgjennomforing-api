@@ -7,7 +7,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-@Profile(Miljø.WIREMOCK)
+@Profile({Miljø.WIREMOCK, Miljø.DEV_GCP_LABS})
 @Slf4j
 @Component
 public class IntegrasjonerMockServer implements DisposableBean {
