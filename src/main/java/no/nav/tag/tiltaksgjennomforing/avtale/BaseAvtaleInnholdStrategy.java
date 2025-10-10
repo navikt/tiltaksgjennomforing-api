@@ -1,6 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.time.LocalDate;
@@ -16,6 +18,9 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
 
     @Override
     public void endre(EndreAvtale nyAvtale) {
+        if(avtaleInnhold.getAvtale().erOpphavArena() && avtaleInnhold.getStartDato() != null && !avtaleInnhold.getStartDato().equals(nyAvtale.getStartDato())){
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_AVTALE_MED_OPPHAV_ARENA_OG_STARTDATO_ALLEREDE_SATT);
+        }
         avtaleInnhold.setDeltakerFornavn(nyAvtale.getDeltakerFornavn());
         avtaleInnhold.setDeltakerEtternavn(nyAvtale.getDeltakerEtternavn());
         avtaleInnhold.setDeltakerTlf(nyAvtale.getDeltakerTlf());

@@ -1699,4 +1699,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             .plus(84, ChronoUnit.DAYS)
             .isBefore(Now.instant());
     }
+    public boolean erOpphavArena(){
+        return Avtaleopphav.ARENA == opphav;
+    }
 }

@@ -2,12 +2,14 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.val;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -25,6 +27,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -35,8 +38,10 @@ import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.getForPart;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.jsonHarVerdi;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -56,6 +61,60 @@ public class MentorTest {
 
     private final Pageable pageable = PageRequest.of(0, 100);
 
+    @Test
+    public void endreAvtale_av_veileder_fra_opphav_arena_og_start_dato_er_allerede_satt_skal_ikke_kunne_endres(){
+        // GITT
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.ARENA);
+        avtale.getGjeldendeInnhold().setStartDato(LocalDate.now().minusYears(2));
+        avtale.getGjeldendeInnhold().setSluttDato(LocalDate.now().plusYears(1));
+
+        // NÅR
+        val ønsketStartDato_2_maaneder_tilbake = LocalDate.now().minusMonths(2);
+        EndreAvtale endreAvtale = new EndreAvtale();
+        endreAvtale.setStartDato(ønsketStartDato_2_maaneder_tilbake);
+        // SÅ
+        assertThrows(FeilkodeException.class,() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
+    }
+
+    @Test
+    public void endreAvtale_av_veileder_fra_opphav_arena_og_start_dato_er_IKKE_satt_skal_avtalen_dato_kunne_endres(){
+        // GITT
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.ARENA);
+        avtale.getGjeldendeInnhold().setStartDato(null);
+        avtale.getGjeldendeInnhold().setSluttDato(null);
+        avtale.setGodkjentForEtterregistrering(true);
+
+        //NÅR
+        val ønsketStartDato_2_maaneder_tilbake = LocalDate.now().minusMonths(2);
+        EndreAvtale endreAvtale = new EndreAvtale();
+        endreAvtale.setStartDato(ønsketStartDato_2_maaneder_tilbake);
+        endreAvtale.setSluttDato(ønsketStartDato_2_maaneder_tilbake.plusMonths(1));
+
+        // SÅ
+        assertDoesNotThrow(() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
+        assertThat(avtale.getGjeldendeInnhold().getStartDato()).isEqualTo(ønsketStartDato_2_maaneder_tilbake);
+        assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(ønsketStartDato_2_maaneder_tilbake.plusMonths(1));
+    }
+
+    @Test
+    public void endreAvtale_av_veileder_fra_opphav_arena_og_start_dato_er_LIK_NY_START_DATO_ENDRING_skal_Avtalen_endres(){
+        //GITT
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.ARENA);
+        val ønsketStartDato_2_maaneder_tilbake = LocalDate.now().minusMonths(2);
+        avtale.getGjeldendeInnhold().setStartDato(ønsketStartDato_2_maaneder_tilbake);
+        avtale.getGjeldendeInnhold().setSluttDato(ønsketStartDato_2_maaneder_tilbake.plusMonths(1));
+        avtale.setGodkjentForEtterregistrering(true);
+
+        //NÅR
+        EndreAvtale endreAvtale = new EndreAvtale();
+        endreAvtale.setStartDato(ønsketStartDato_2_maaneder_tilbake);
+        endreAvtale.setSluttDato(ønsketStartDato_2_maaneder_tilbake.plusMonths(2));
+
+        //SÅ
+        assertDoesNotThrow(() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
+        assertThat(avtale.getGjeldendeInnhold().getStartDato()).isEqualTo(ønsketStartDato_2_maaneder_tilbake);
+        assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(ønsketStartDato_2_maaneder_tilbake.plusMonths(2));
+    }
     @Test
     public void hentAlleAvtalerMedMuligTilgang__mentor_en_avtale() throws Exception {
 
