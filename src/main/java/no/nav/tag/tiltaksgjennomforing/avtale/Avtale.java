@@ -773,6 +773,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         sjekkAtIkkeAvtaleErAnnullert();
 
         if (!felterSomIkkeErFyltUt().isEmpty()) {
+            log.warn("Avtale= {}, med type= {} har ikke alle felter fylt ut for godkjenning= {}", this.avtaleNr, this.tiltakstype, felterSomIkkeErFyltUt());
             throw new AltMåVæreFyltUtException();
         }
         if (List.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB)
