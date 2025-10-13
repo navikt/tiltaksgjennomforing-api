@@ -35,7 +35,6 @@ public enum ArenaMigrationAction {
         Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
         Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
         boolean isFeilregistrert = avtale.isFeilregistrert();
-        boolean isSluttdatoIDagEllerFremtiden = agreementAggregate.isSluttdatoIDagEllerFremtiden();
 
         if (agreementAggregate.isDublett()) {
             return IGNORER;
@@ -43,26 +42,25 @@ public enum ArenaMigrationAction {
 
         return switch (avtalestatus) {
             case ANNULLERT -> switch (deltakerstatuskode) {
-                case GJENN, TILBUD -> isSluttdatoIDagEllerFremtiden ? (isFeilregistrert ? OPPRETT : GJENOPPRETT) : IGNORER;
+                case GJENN, TILBUD -> (isFeilregistrert ? OPPRETT : GJENOPPRETT);
                 case null, default -> IGNORER;
             };
             case AVSLUTTET -> switch (deltakerstatuskode) {
-                case GJENN, TILBUD -> isSluttdatoIDagEllerFremtiden ? GJENOPPRETT : IGNORER;
+                case GJENN, TILBUD -> GJENOPPRETT;
                 case null, default -> IGNORER;
             };
-            case KLAR_FOR_OPPSTART -> switch(deltakerstatuskode) {
+            case KLAR_FOR_OPPSTART -> switch (deltakerstatuskode) {
                 case GJENN, TILBUD -> OPPDATER;
                 case null, default -> ANNULLER;
             };
             case GJENNOMFØRES -> switch (tiltakstatuskode) {
-                case AVBRUTT -> switch(deltakerstatuskode) {
+                case AVBRUTT -> switch (deltakerstatuskode) {
                     case GJENN_AVB -> AVSLUTT;
                     case null, default -> ANNULLER;
                 };
                 case AVLYST -> ANNULLER;
-                case AVSLUTT, GJENNOMFOR -> switch(deltakerstatuskode) {
-                    case FULLF -> AVSLUTT;
-                    case GJENN, TILBUD -> isSluttdatoIDagEllerFremtiden ? OPPDATER : AVSLUTT;
+                case AVSLUTT, GJENNOMFOR -> switch (deltakerstatuskode) {
+                    case FULLF, GJENN, TILBUD -> AVSLUTT;
                     case null, default -> ANNULLER;
                 };
                 case null, default -> throw new IllegalStateException(formatExceptionMsg(tiltakstatuskode, deltakerstatuskode));
