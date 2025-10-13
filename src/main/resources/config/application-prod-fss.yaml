@@ -131,6 +131,9 @@ tiltaksgjennomforing:
     vtaoServiceEdition: 6
     adressesperreServiceCode: 5516
     adressesperreServiceEdition: 7
+  mentor-tilskuddsperioder:
+    enabled: false
+
 
   ereg:
     uri: https://ereg-services.intern.nav.no/api/v2/organisasjon
