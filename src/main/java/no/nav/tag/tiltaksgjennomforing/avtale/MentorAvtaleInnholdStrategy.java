@@ -25,13 +25,12 @@ public class MentorAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrat
         avtaleInnhold.setMentorTimelonn(nyAvtale.getMentorTimelonn());
         avtaleInnhold.setHarFamilietilknytning(nyAvtale.getHarFamilietilknytning());
         avtaleInnhold.setFamilietilknytningForklaring(nyAvtale.getFamilietilknytningForklaring());
-
+        avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
 
         if (MentorTilskuddsperioderToggle.isEnabled()) {
             avtaleInnhold.setFeriepengesats(nyAvtale.getFeriepengesats());
             avtaleInnhold.setOtpSats(nyAvtale.getOtpSats());
             avtaleInnhold.setArbeidsgiveravgift(nyAvtale.getArbeidsgiveravgift());
-            avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
         }
 
         super.endre(nyAvtale);
