@@ -96,6 +96,6 @@ tiltaksgjennomforing:
     aktivitet-acl:
       url: http://tiltaksgjennomforing-wiremock/aktivitet-arena-acl
   mentor-tilskuddsperioder:
-    enabled: true
+    enabled: false
 
 ELECTOR_PATH: null
