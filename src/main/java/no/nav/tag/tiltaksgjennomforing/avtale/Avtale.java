@@ -294,9 +294,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     private void oppdaterKreverOppfolgingFom() {
         if (Tiltakstype.VTAO.equals(this.getTiltakstype()) && this.gjeldendeInnhold.getStartDato() != null) {
-            LocalDate tidligstMuligeDato = maksDato(this.gjeldendeInnhold.getStartDato(), Now.localDate());
-            LocalDate sluttenAvMnd4MndFremITid = YearMonth.from(tidligstMuligeDato).plusMonths(4).atDay(1);
-            this.setKreverOppfolgingFom(sluttenAvMnd4MndFremITid);
+            // Krever oppfølging bør ikke skje tidligere enn 6 mnd frem i tid. Kan skje lenger frem i tid hvis oppstartsdato er frem i tid.
+            LocalDate startPunktForBeregning = maksDato(this.gjeldendeInnhold.getStartDato(), Now.localDate());
+            LocalDate femMndFremITid = startPunktForBeregning.plusMonths(5);
+            this.setKreverOppfolgingFom(femMndFremITid);
         }
     }
 
@@ -528,9 +529,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     @JsonProperty
     public LocalDate getKreverOppfolgingFrist() {
-        return this.kreverOppfolgingFom == null ? null : YearMonth.from(this.kreverOppfolgingFom)
-            .plusMonths(1)
-            .atEndOfMonth();
+        return this.kreverOppfolgingFom == null ? null : this.kreverOppfolgingFom.plusMonths(1);
     }
 
     private void sjekkOmAvtalenKanEndres() {
@@ -1500,7 +1499,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     public void godkjennOppfolgingAvAvtale(NavIdent utførtAv) {
         setOppfolgingVarselSendt(null);
-        setKreverOppfolgingFom(getKreverOppfolgingFom().plusMonths(6));
+        // Finn maxdato av (dagens dato og forrigeOppfølging) + 6 mnd:
+        LocalDate utgangspunktForBeregning = maksDato(Now.localDate(), getKreverOppfolgingFom());
+        setKreverOppfolgingFom(utgangspunktForBeregning.plusMonths(6));
         utforEndring(new OppfolgingAvAvtaleGodkjent(this, utførtAv));
     }
 
