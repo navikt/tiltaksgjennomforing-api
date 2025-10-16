@@ -1499,7 +1499,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     public void godkjennOppfolgingAvAvtale(NavIdent utførtAv) {
         setOppfolgingVarselSendt(null);
-        // Finn maxdato av (dagens dato og forrigeOppfølging) + 6 mnd:
+        // Når man utfører en oppfølging av VTAO, settes ny krever oppfølging med utgangspunkt med dagens dato hvis man er på etterskudd
+        // slik at man ikke får en ny oppfølging med èn gang, eller like etterpå.. Det vil alltid være 6mnd til neste.
         LocalDate utgangspunktForBeregning = maksDato(Now.localDate(), getKreverOppfolgingFom());
         setKreverOppfolgingFom(utgangspunktForBeregning.plusMonths(6));
         utforEndring(new OppfolgingAvAvtaleGodkjent(this, utførtAv));
