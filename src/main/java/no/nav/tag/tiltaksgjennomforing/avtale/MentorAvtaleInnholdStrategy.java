@@ -35,6 +35,7 @@ public class MentorAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrat
         }
 
         super.endre(nyAvtale);
+        regnUtTotalLonnstilskudd();
     }
 
     @Override
