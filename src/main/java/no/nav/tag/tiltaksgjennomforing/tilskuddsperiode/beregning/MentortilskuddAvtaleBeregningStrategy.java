@@ -16,7 +16,7 @@ import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
-public class MentorLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
+public class MentortilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
     int MAKS_PROSENT = 100;
 
     @Override

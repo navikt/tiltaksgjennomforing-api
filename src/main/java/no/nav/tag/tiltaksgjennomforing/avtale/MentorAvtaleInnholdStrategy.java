@@ -1,17 +1,17 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold.Fields;
-import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentorLonnstilskuddAvtaleBeregningStrategy;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentortilskuddAvtaleBeregningStrategy;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MentorAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy {
-    private MentorLonnstilskuddAvtaleBeregningStrategy mentorBeregningStrategy;
+    private MentortilskuddAvtaleBeregningStrategy mentorBeregningStrategy;
 
     public MentorAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
-        mentorBeregningStrategy = new MentorLonnstilskuddAvtaleBeregningStrategy();
+        mentorBeregningStrategy = new MentortilskuddAvtaleBeregningStrategy();
     }
 
     @Override

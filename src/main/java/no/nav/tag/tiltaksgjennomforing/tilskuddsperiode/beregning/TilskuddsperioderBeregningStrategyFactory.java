@@ -6,7 +6,7 @@ public interface TilskuddsperioderBeregningStrategyFactory {
     static LonnstilskuddAvtaleBeregningStrategy create(Tiltakstype tiltakstype){
         return switch (tiltakstype) {
             case ARBEIDSTRENING,INKLUDERINGSTILSKUDD -> new IkkeLonnstilskuddAvtaleBeregningStrategy();
-            case MENTOR -> new MentorLonnstilskuddAvtaleBeregningStrategy();
+            case MENTOR -> new MentortilskuddAvtaleBeregningStrategy();
             case MIDLERTIDIG_LONNSTILSKUDD ->new MidlertidigLonnstilskuddAvtaleBeregningStrategy();
             case VARIG_LONNSTILSKUDD -> new VarigLonnstilskuddAvtaleBeregningStrategy();
             case SOMMERJOBB -> new SommerjobbLonnstilskuddAvtaleBeregningStrategy();
