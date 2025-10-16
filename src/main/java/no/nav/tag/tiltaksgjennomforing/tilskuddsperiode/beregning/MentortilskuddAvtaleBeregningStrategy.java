@@ -40,7 +40,12 @@ public class MentorLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstil
             innhold.getStartDato(),
             innhold.getSluttDato(),
             innhold.getMentorAntallTimer(),
-            innhold.getMentorTimelonn()
+            innhold.getMentorTimelonn(),
+            innhold.getFeriepengesats(),
+            innhold.getArbeidsgiveravgift(),
+            innhold.getOtpSats(),
+            innhold.getStillingprosent(),
+            innhold.getManedslonn100pst()
         );
     }
 
@@ -63,17 +68,17 @@ public class MentorLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstil
         LocalDate slutt = innhold.getSluttDato();
         LocalDate redusertFra = innhold.getDatoForRedusertProsent();
 
-        Integer månedligTilskudd = beregnMånedligTilskudd(innhold.getMentorAntallTimer(), innhold.getMentorTimelonn());
+//        Integer månedligTilskudd = beregnMånedligTilskudd(innhold.getMentorAntallTimer(), innhold.getMentorTimelonn());
 
         List<TilskuddPeriode> perioder = beregnTilskuddsperioderForAvtale(
             UUID.randomUUID(),
             avtale.getTiltakstype(),
-            månedligTilskudd,
+            avtale.getGjeldendeInnhold().getManedslonn100pst(),
             start,
             slutt,
             MAKS_PROSENT,
             redusertFra,
-            månedligTilskudd
+            avtale.getGjeldendeInnhold().getManedslonn100pst()
         );
         perioder.forEach(p -> p.setAvtale(avtale));
         perioder.forEach(p -> p.setEnhet(innhold.getEnhetKostnadssted()));
