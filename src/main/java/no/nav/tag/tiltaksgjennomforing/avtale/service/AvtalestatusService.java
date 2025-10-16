@@ -59,7 +59,7 @@ public class AvtalestatusService {
                 status
             );
 
-            avtale.setStatus(status);
+            avtale.endreStatus(status);
             avtaleRepository.save(avtale);
 
             sendAvtaleMelding(avtale);

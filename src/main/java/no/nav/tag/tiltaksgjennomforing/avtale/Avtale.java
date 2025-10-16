@@ -169,6 +169,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     @Enumerated(EnumType.STRING)
     private Avtaleopphav opphav;
 
+    public void endreStatus(Status nyStatus) {
+        if (nyStatus.avsluttetEllerAnnullert() && getKreverOppfolgingFom() != null) {
+            setOppfolgingVarselSendt(null);
+            setKreverOppfolgingFom(null);
+        }
+        this.status = nyStatus;
+    }
+
     @Enumerated(EnumType.STRING)
     private Status status = Status.PÅBEGYNT;
 
@@ -580,7 +588,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private <T> void utforEndring(T event) {
-        this.status = Status.fra(this);
+        endreStatus(Status.fra(this));
         this.gjeldendeTilskuddsperiode = TilskuddPeriode.finnGjeldende(this);
         this.sistEndret = Now.instant();
 
@@ -630,7 +638,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         utforEndring(new GodkjentAvVeileder(this, utfortAv));
     }
 
-    private void inngåAvtale(Instant tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv ) {
+    private void inngåAvtale(Instant tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
         boolean mentorFeatureToggelEnabled = MentorTilskuddsperioderToggle.isEnabled();
         if (!utførtAvRolle.erInternBruker()) {
             throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_INNGAA_AVTALE);
@@ -775,7 +783,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         sjekkAtIkkeAvtaleErAnnullert();
 
         if (!felterSomIkkeErFyltUt().isEmpty()) {
-            log.warn("Avtale= {}, med type= {} har ikke alle felter fylt ut for godkjenning= {}", this.avtaleNr, this.tiltakstype, felterSomIkkeErFyltUt());
+            log.warn(
+                "Avtale= {}, med type= {} har ikke alle felter fylt ut for godkjenning= {}",
+                this.avtaleNr,
+                this.tiltakstype,
+                felterSomIkkeErFyltUt()
+            );
             throw new AltMåVæreFyltUtException();
         }
         if (List.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB)
