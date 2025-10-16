@@ -51,7 +51,7 @@ public class TestDataGenerator {
                         currAvtale.getGjeldendeInnhold().setBedriftNavn(NavnGenerator.genererBedriftsnavn());
                         currAvtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
                         currAvtale.setDeltakerFnr(new Fnr(FnrGen.singleFnr()));
-                        currAvtale.setStatus(Status.fra(currAvtale));
+                        currAvtale.endreStatus(Status.fra(currAvtale));
                         avtaler.add(currAvtale);
                     });
         });

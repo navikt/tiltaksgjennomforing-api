@@ -44,37 +44,37 @@ public class AvtalestatusServiceTest {
         Avtale klarForOppstart  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         klarForOppstart.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(1));
         klarForOppstart.getGjeldendeInnhold().setSluttDato(LocalDate.now().plusDays(10));
-        klarForOppstart.setStatus(Status.KLAR_FOR_OPPSTART);
+        klarForOppstart.endreStatus(Status.KLAR_FOR_OPPSTART);
         avtaleRepository.save(klarForOppstart);
 
         Avtale gjennomføres  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         gjennomføres.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(1));
         gjennomføres.getGjeldendeInnhold().setSluttDato(LocalDate.now().plusDays(10));
-        gjennomføres.setStatus(Status.GJENNOMFØRES);
+        gjennomføres.endreStatus(Status.GJENNOMFØRES);
         avtaleRepository.save(gjennomføres);
 
         Avtale påbegynt  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         påbegynt.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(1));
         påbegynt.getGjeldendeInnhold().setSluttDato(LocalDate.now().plusDays(10));
-        påbegynt.setStatus(Status.PÅBEGYNT);
+        påbegynt.endreStatus(Status.PÅBEGYNT);
         avtaleRepository.save(påbegynt);
 
         Avtale manglerGodkjenning  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         manglerGodkjenning.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(1));
         manglerGodkjenning.getGjeldendeInnhold().setSluttDato(LocalDate.now().plusDays(10));
-        manglerGodkjenning.setStatus(Status.MANGLER_GODKJENNING);
+        manglerGodkjenning.endreStatus(Status.MANGLER_GODKJENNING);
         avtaleRepository.save(manglerGodkjenning);
 
         Avtale annullert  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         annullert.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(1));
         annullert.getGjeldendeInnhold().setSluttDato(LocalDate.now().plusDays(10));
-        annullert.setStatus(Status.ANNULLERT);
+        annullert.endreStatus(Status.ANNULLERT);
         avtaleRepository.save(annullert);
 
         Avtale avsluttet  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         avsluttet.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(1));
         avsluttet.getGjeldendeInnhold().setSluttDato(LocalDate.now().plusDays(10));
-        avsluttet.setStatus(Status.AVSLUTTET);
+        avsluttet.endreStatus(Status.AVSLUTTET);
         avtaleRepository.save(avsluttet);
 
         avtalestatusService.oppdaterAvtalerSomKreverEndringAvStatus();
@@ -103,37 +103,37 @@ public class AvtalestatusServiceTest {
         Avtale klarForOppstart  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         klarForOppstart.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
         klarForOppstart.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        klarForOppstart.setStatus(Status.KLAR_FOR_OPPSTART);
+        klarForOppstart.endreStatus(Status.KLAR_FOR_OPPSTART);
         avtaleRepository.save(klarForOppstart);
 
         Avtale gjennomføres  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         gjennomføres.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
         gjennomføres.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        gjennomføres.setStatus(Status.GJENNOMFØRES);
+        gjennomføres.endreStatus(Status.GJENNOMFØRES);
         avtaleRepository.save(gjennomføres);
 
         Avtale påbegynt  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         påbegynt.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
         påbegynt.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        påbegynt.setStatus(Status.PÅBEGYNT);
+        påbegynt.endreStatus(Status.PÅBEGYNT);
         avtaleRepository.save(påbegynt);
 
         Avtale manglerGodkjenning  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         manglerGodkjenning.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
         manglerGodkjenning.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        manglerGodkjenning.setStatus(Status.MANGLER_GODKJENNING);
+        manglerGodkjenning.endreStatus(Status.MANGLER_GODKJENNING);
         avtaleRepository.save(manglerGodkjenning);
 
         Avtale annullert  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         annullert.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
         annullert.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        annullert.setStatus(Status.ANNULLERT);
+        annullert.endreStatus(Status.ANNULLERT);
         avtaleRepository.save(annullert);
 
         Avtale avsluttet  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         avsluttet.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
         avsluttet.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        avsluttet.setStatus(Status.AVSLUTTET);
+        avsluttet.endreStatus(Status.AVSLUTTET);
         avtaleRepository.save(avsluttet);
 
         avtalestatusService.oppdaterAvtalerSomKreverEndringAvStatus();
@@ -162,37 +162,37 @@ public class AvtalestatusServiceTest {
         Avtale klarForOppstart  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         klarForOppstart.getGjeldendeInnhold().setStartDato(LocalDate.now().plusDays(1));
         klarForOppstart.getGjeldendeInnhold().setSluttDato(LocalDate.now().plusDays(2));
-        klarForOppstart.setStatus(Status.KLAR_FOR_OPPSTART);
+        klarForOppstart.endreStatus(Status.KLAR_FOR_OPPSTART);
         avtaleRepository.save(klarForOppstart);
 
         Avtale gjennomføres  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         gjennomføres.getGjeldendeInnhold().setStartDato(LocalDate.now().plusDays(1));
         gjennomføres.getGjeldendeInnhold().setSluttDato(LocalDate.now().plusDays(2));
-        gjennomføres.setStatus(Status.GJENNOMFØRES);
+        gjennomføres.endreStatus(Status.GJENNOMFØRES);
         avtaleRepository.save(gjennomføres);
 
         Avtale påbegynt  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         påbegynt.getGjeldendeInnhold().setStartDato(LocalDate.now().plusDays(1));
         påbegynt.getGjeldendeInnhold().setSluttDato(LocalDate.now().plusDays(2));
-        påbegynt.setStatus(Status.PÅBEGYNT);
+        påbegynt.endreStatus(Status.PÅBEGYNT);
         avtaleRepository.save(påbegynt);
 
         Avtale manglerGodkjenning  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         manglerGodkjenning.getGjeldendeInnhold().setStartDato(LocalDate.now().plusDays(1));
         manglerGodkjenning.getGjeldendeInnhold().setSluttDato(LocalDate.now().plusDays(2));
-        manglerGodkjenning.setStatus(Status.MANGLER_GODKJENNING);
+        manglerGodkjenning.endreStatus(Status.MANGLER_GODKJENNING);
         avtaleRepository.save(manglerGodkjenning);
 
         Avtale annullert  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         annullert.getGjeldendeInnhold().setStartDato(LocalDate.now().plusDays(1));
         annullert.getGjeldendeInnhold().setSluttDato(LocalDate.now().plusDays(2));
-        annullert.setStatus(Status.ANNULLERT);
+        annullert.endreStatus(Status.ANNULLERT);
         avtaleRepository.save(annullert);
 
         Avtale avsluttet  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         avsluttet.getGjeldendeInnhold().setStartDato(LocalDate.now().plusDays(1));
         avsluttet.getGjeldendeInnhold().setSluttDato(LocalDate.now().plusDays(2));
-        avsluttet.setStatus(Status.AVSLUTTET);
+        avsluttet.endreStatus(Status.AVSLUTTET);
         avtaleRepository.save(avsluttet);
 
         avtalestatusService.oppdaterAvtalerSomKreverEndringAvStatus();
@@ -221,37 +221,37 @@ public class AvtalestatusServiceTest {
         Avtale klarForOppstart  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         klarForOppstart.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
         klarForOppstart.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        klarForOppstart.setStatus(Status.KLAR_FOR_OPPSTART);
+        klarForOppstart.endreStatus(Status.KLAR_FOR_OPPSTART);
         avtaleRepository.save(klarForOppstart);
 
         Avtale gjennomføres  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         gjennomføres.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
         gjennomføres.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        gjennomføres.setStatus(Status.GJENNOMFØRES);
+        gjennomføres.endreStatus(Status.GJENNOMFØRES);
         avtaleRepository.save(gjennomføres);
 
         Avtale påbegynt  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         påbegynt.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
         påbegynt.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        påbegynt.setStatus(Status.PÅBEGYNT);
+        påbegynt.endreStatus(Status.PÅBEGYNT);
         avtaleRepository.save(påbegynt);
 
         Avtale manglerGodkjenning  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         manglerGodkjenning.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
         manglerGodkjenning.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        manglerGodkjenning.setStatus(Status.MANGLER_GODKJENNING);
+        manglerGodkjenning.endreStatus(Status.MANGLER_GODKJENNING);
         avtaleRepository.save(manglerGodkjenning);
 
         Avtale annullert  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         annullert.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
         annullert.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        annullert.setStatus(Status.ANNULLERT);
+        annullert.endreStatus(Status.ANNULLERT);
         avtaleRepository.save(annullert);
 
         Avtale avsluttet  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         avsluttet.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
         avsluttet.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        avsluttet.setStatus(Status.AVSLUTTET);
+        avsluttet.endreStatus(Status.AVSLUTTET);
         avtaleRepository.save(avsluttet);
 
         avtalestatusService.oppdaterAvtalerSomKreverEndringAvStatus();
@@ -275,37 +275,37 @@ public class AvtalestatusServiceTest {
         Avtale klarForOppstart  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         klarForOppstart.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
         klarForOppstart.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        klarForOppstart.setStatus(Status.KLAR_FOR_OPPSTART);
+        klarForOppstart.endreStatus(Status.KLAR_FOR_OPPSTART);
         avtaleRepository.save(klarForOppstart);
 
         Avtale gjennomføres  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         gjennomføres.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
         gjennomføres.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        gjennomføres.setStatus(Status.GJENNOMFØRES);
+        gjennomføres.endreStatus(Status.GJENNOMFØRES);
         avtaleRepository.save(gjennomføres);
 
         Avtale påbegynt  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         påbegynt.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
         påbegynt.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        påbegynt.setStatus(Status.PÅBEGYNT);
+        påbegynt.endreStatus(Status.PÅBEGYNT);
         avtaleRepository.save(påbegynt);
 
         Avtale manglerGodkjenning  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         manglerGodkjenning.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
         manglerGodkjenning.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        manglerGodkjenning.setStatus(Status.MANGLER_GODKJENNING);
+        manglerGodkjenning.endreStatus(Status.MANGLER_GODKJENNING);
         avtaleRepository.save(manglerGodkjenning);
 
         Avtale annullert  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         annullert.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
         annullert.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        annullert.setStatus(Status.ANNULLERT);
+        annullert.endreStatus(Status.ANNULLERT);
         avtaleRepository.save(annullert);
 
         Avtale avsluttet  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         avsluttet.getGjeldendeInnhold().setStartDato(LocalDate.now().minusDays(10));
         avsluttet.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusDays(1));
-        avsluttet.setStatus(Status.AVSLUTTET);
+        avsluttet.endreStatus(Status.AVSLUTTET);
         avtaleRepository.save(avsluttet);
 
         avtalestatusService.oppdaterAvtalerSomKreverEndringAvStatus();

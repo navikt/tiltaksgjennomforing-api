@@ -525,22 +525,22 @@ public class AvtaleRepositoryTest {
     public void sokEtterAvtale_finner_avtaler_ved_sok_pa_status_og_andre_parametere() {
         Avtale avtale1 = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet();
         avtale1.setVeilederNavIdent(new NavIdent("A123456"));
-        avtale1.setStatus(Status.GJENNOMFØRES);
+        avtale1.endreStatus(Status.GJENNOMFØRES);
         avtaleRepository.save(avtale1);
 
         Avtale avtale2 = TestData.enInkluderingstilskuddAvtale();
         avtale2.setVeilederNavIdent(new NavIdent("C123456"));
-        avtale2.setStatus(Status.KLAR_FOR_OPPSTART);
+        avtale2.endreStatus(Status.KLAR_FOR_OPPSTART);
         avtaleRepository.save(avtale2);
 
         Avtale avtale3 = TestData.enAvtaleMedAltUtfylt();
         avtale3.setVeilederNavIdent(new NavIdent("D123456"));
-        avtale3.setStatus(Status.PÅBEGYNT);
+        avtale3.endreStatus(Status.PÅBEGYNT);
         avtaleRepository.save(avtale3);
 
         Avtale avtale4 = TestData.enMentorAvtaleUsignert();
         avtale4.setVeilederNavIdent(new NavIdent("E123456"));
-        avtale4.setStatus(Status.MANGLER_GODKJENNING);
+        avtale4.endreStatus(Status.MANGLER_GODKJENNING);
         avtaleRepository.save(avtale4);
 
         Page<Avtale> resultat1 = avtaleRepository.sokEtterAvtale(null, null, null, null, null, null, Status.GJENNOMFØRES, false, PageRequest.of(0, 10));
