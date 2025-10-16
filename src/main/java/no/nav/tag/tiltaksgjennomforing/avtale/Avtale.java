@@ -102,7 +102,6 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -131,6 +130,9 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 @FieldNameConstants
 @Builder
 public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarEntitet {
+
+    private static final int OPPFOLGINGSVINDU_MND = 1;
+    private static final int OPPFOLGINGSINTERVALL_MND = 6;
 
     @Id
     @EqualsAndHashCode.Include
@@ -296,9 +298,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (Tiltakstype.VTAO.equals(this.getTiltakstype()) && this.gjeldendeInnhold.getStartDato() != null) {
             // Oppfølging skal skje TIDLIGST 6 mnd frem i tid.
             // Slik unngår vi at man feks må følge opp innen kort tid ved etterregistreringer.
-            LocalDate startPunktForBeregning = maksDato(this.gjeldendeInnhold.getStartDato(), Now.localDate());
-            LocalDate femMndFremITid = startPunktForBeregning.plusMonths(5);
-            this.setKreverOppfolgingFom(femMndFremITid);
+            LocalDate startpunktForBeregningAvVarsel = maksDato(this.gjeldendeInnhold.getStartDato(), Now.localDate());
+            LocalDate varselstidspunkt = startpunktForBeregningAvVarsel.plusMonths(OPPFOLGINGSINTERVALL_MND - OPPFOLGINGSVINDU_MND);
+            this.setKreverOppfolgingFom(varselstidspunkt);
         }
     }
 
@@ -530,7 +532,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     @JsonProperty
     public LocalDate getKreverOppfolgingFrist() {
-        return this.kreverOppfolgingFom == null ? null : this.kreverOppfolgingFom.plusMonths(1);
+        return this.kreverOppfolgingFom == null ? null : this.kreverOppfolgingFom.plusMonths(OPPFOLGINGSVINDU_MND);
     }
 
     private void sjekkOmAvtalenKanEndres() {
@@ -1500,10 +1502,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     public void godkjennOppfolgingAvAvtale(NavIdent utførtAv) {
         setOppfolgingVarselSendt(null);
-        // Når man utfører en oppfølging av VTAO, settes ny krever oppfølging med utgangspunkt med dagens dato hvis man er på etterskudd
-        // slik at man ikke får en ny oppfølging med èn gang, eller like etterpå.. Det vil alltid være 6mnd til neste.
-        LocalDate utgangspunktForBeregning = maksDato(Now.localDate(), getKreverOppfolgingFom());
-        setKreverOppfolgingFom(utgangspunktForBeregning.plusMonths(6));
+
+        // Når man utfører en oppfølging av VTAO, settes dato for ny oppfølging med utgangspunkt med dagens dato hvis man er på etterskudd
+        // slik at man ikke får en ny oppfølging med èn gang, eller like etterpå. Det vil alltid være 6mnd til neste.
+
+        LocalDate utgangspunktForBeregningAvNyFrist = maksDato(Now.localDate(), getKreverOppfolgingFrist());
+        LocalDate nyFrist = utgangspunktForBeregningAvNyFrist.plusMonths(OPPFOLGINGSINTERVALL_MND);
+
+        LocalDate varselTidspunkt = nyFrist.minusMonths(OPPFOLGINGSVINDU_MND);
+
+        setKreverOppfolgingFom(varselTidspunkt);
         utforEndring(new OppfolgingAvAvtaleGodkjent(this, utførtAv));
     }
 
