@@ -15,11 +15,13 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PostLoad;
 import jakarta.persistence.Transient;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
 import no.bekk.bekkopen.banking.KidnummerValidator;
@@ -169,7 +171,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     @Enumerated(EnumType.STRING)
     private Avtaleopphav opphav;
 
+    /**
+     * NB: Ønsker ikke å endre status direkte, kall heller .endreAvtale(),
+     * som også utfører nødvendige opprydninger.
+     */
     @Enumerated(EnumType.STRING)
+    @Setter(AccessLevel.NONE)
     private Status status = Status.PÅBEGYNT;
 
     private boolean godkjentForEtterregistrering;
@@ -292,6 +299,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
         oppdaterKreverOppfolgingFom();
         utforEndring(new AvtaleEndret(this, AvtaleHendelseUtførtAv.Rolle.fra(utfortAvRolle), identifikator));
+    }
+
+    public void endreStatus(Status nyStatus) {
+        if (nyStatus.erAvsluttetEllerAnnullert() && getKreverOppfolgingFom() != null) {
+            setOppfolgingVarselSendt(null);
+            setKreverOppfolgingFom(null);
+        }
+        this.status = nyStatus;
     }
 
     private void oppdaterKreverOppfolgingFom() {
@@ -580,7 +595,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private <T> void utforEndring(T event) {
-        this.status = Status.fra(this);
+        endreStatus(Status.fra(this));
         this.gjeldendeTilskuddsperiode = TilskuddPeriode.finnGjeldende(this);
         this.sistEndret = Now.instant();
 
@@ -630,7 +645,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         utforEndring(new GodkjentAvVeileder(this, utfortAv));
     }
 
-    private void inngåAvtale(Instant tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv ) {
+    private void inngåAvtale(Instant tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
         boolean mentorFeatureToggelEnabled = MentorTilskuddsperioderToggle.isEnabled();
         if (!utførtAvRolle.erInternBruker()) {
             throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_INNGAA_AVTALE);
@@ -775,7 +790,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         sjekkAtIkkeAvtaleErAnnullert();
 
         if (!felterSomIkkeErFyltUt().isEmpty()) {
-            log.warn("Avtale= {}, med type= {} har ikke alle felter fylt ut for godkjenning= {}", this.avtaleNr, this.tiltakstype, felterSomIkkeErFyltUt());
+            log.warn(
+                "Avtale= {}, med type= {} har ikke alle felter fylt ut for godkjenning= {}",
+                this.avtaleNr,
+                this.tiltakstype,
+                felterSomIkkeErFyltUt()
+            );
             throw new AltMåVæreFyltUtException();
         }
         if (List.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB)
