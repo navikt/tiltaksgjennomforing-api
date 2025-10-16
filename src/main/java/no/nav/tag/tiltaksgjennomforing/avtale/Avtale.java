@@ -294,7 +294,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     private void oppdaterKreverOppfolgingFom() {
         if (Tiltakstype.VTAO.equals(this.getTiltakstype()) && this.gjeldendeInnhold.getStartDato() != null) {
-            // Krever oppfølging bør ikke skje tidligere enn 6 mnd frem i tid. Kan skje lenger frem i tid hvis oppstartsdato er frem i tid.
+            // Oppfølging skal skje TIDLIGST 6 mnd frem i tid.
+            // Slik unngår vi at man feks må følge opp innen kort tid ved etterregistreringer.
             LocalDate startPunktForBeregning = maksDato(this.gjeldendeInnhold.getStartDato(), Now.localDate());
             LocalDate femMndFremITid = startPunktForBeregning.plusMonths(5);
             this.setKreverOppfolgingFom(femMndFremITid);
