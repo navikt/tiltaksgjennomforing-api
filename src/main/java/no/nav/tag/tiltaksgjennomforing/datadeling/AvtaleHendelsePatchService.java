@@ -36,7 +36,7 @@ public class AvtaleHendelsePatchService {
     public void sendAvtaleHendelseMeldingPåUtvalgAvtaler(List<UUID> avtaleIder) {
         AtomicInteger antallSendt = new AtomicInteger();
 
-        log.info("Henter utvalg av avtaler for å lage patchehendelsemeldinger");
+        log.info("Henter utvalg av avtaler for å lage patchehendelsemeldinger. Antall avtaler: {}", avtaleIder.size());
         List<Avtale> utvalgteAvtaler = avtaleRepository.findAllById(avtaleIder);
         log.info("Antall avtaler hentet: {}, looper og sender PATCH hendelsemeldinger", utvalgteAvtaler.size());
 
