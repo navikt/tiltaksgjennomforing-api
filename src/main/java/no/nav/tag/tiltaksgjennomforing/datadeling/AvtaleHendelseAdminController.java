@@ -8,9 +8,11 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -28,6 +30,12 @@ public class AvtaleHendelseAdminController {
         log.info("Sender hendelsemelding for en avtale {}", avtaleId);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         avtaleHendelsePatchService.sendAvtaleHendelseMeldingPåEnAvtale(avtale);
+    }
+
+    @PostMapping("send-melding-flere-avtaler")
+    public void sendMeldingForFlereAvtaler(@RequestBody List<UUID> avtaleIder) {
+        log.info("Sender hendelsemeldinger for utvalg av avtaler. Antall avtaler: {}", avtaleIder.size());
+        avtaleHendelsePatchService.sendAvtaleHendelseMeldingPåUtvalgAvtaler(avtaleIder);
     }
 
     @PostMapping("dry-send-melding-alle-avtaler")
