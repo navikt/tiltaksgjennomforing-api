@@ -87,6 +87,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditerbarEntitet;
+import no.nav.tag.tiltaksgjennomforing.oppfolging.Oppfolging;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.LonnstilskuddAvtaleBeregningStrategy;
@@ -316,23 +317,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
      */
     private void settFoersteOppfolgingstidspunkt() {
         if (Tiltakstype.VTAO.equals(this.getTiltakstype()) && this.gjeldendeInnhold.getStartDato() != null) {
-            // Oppfølging skal skje TIDLIGST 6 mnd frem i tid.
-            // Slik unngår vi at man feks må følge opp innen kort tid ved etterregistreringer.
-            LocalDate startpunktForBeregningAvVarsel = maksDato(this.gjeldendeInnhold.getStartDato(), Now.localDate());
-
-            // Frist vil være om 6 måneder, på slutten av måneden.
-            // Men ikke sett oppfølging dersom oppfølgingsfrist er etter avtalens sluttdato
-            YearMonth fristMnd = YearMonth.from(startpunktForBeregningAvVarsel.plusMonths(OPPFOLGINGSINTERVALL_6_MND));
-            LocalDate fristTidspunkt = fristMnd.atEndOfMonth();
-            if (fristTidspunkt.isBefore(this.getGjeldendeInnhold().getSluttDato())) {
-
-                // Varselstidspunktet er det vi faktisk lagrer, ikke fristen.
-                LocalDate varselstidspunkt = YearMonth.from(fristTidspunkt)
-                    .minusMonths(OPPFOLGINGSVINDU_1_MND)
-                    .atDay(1);
-                this.setKreverOppfolgingFom(varselstidspunkt);
-
-            }
+            Oppfolging oppfolging = Oppfolging.fra(this)
+                .nullstill()
+                .neste();
+            setKreverOppfolgingFom(oppfolging.getVarselstidspunkt());
         }
     }
 
@@ -564,10 +552,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     @JsonProperty
     public LocalDate getKreverOppfolgingFrist() {
-        // Fristen for oppfølging tilsvarer siste dag i måneden, måneden etter oppfolgingFom.
-        // Feks: oppfolgingFom = '2024-02-1' => frist '2024-03-31'
-        return this.kreverOppfolgingFom == null ? null :
-            YearMonth.from(kreverOppfolgingFom).plusMonths(OPPFOLGINGSVINDU_1_MND).atEndOfMonth();
+        return Oppfolging.fra(this).getOppfolgingsfrist();
     }
 
     private void sjekkOmAvtalenKanEndres() {
@@ -1547,21 +1532,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     public void godkjennOppfolgingAvAvtale(NavIdent utførtAv) {
         setOppfolgingVarselSendt(null);
 
-        // Når man utfører en oppfølging av VTAO, settes dato for ny oppfølging med utgangspunkt med dagens dato hvis man er på etterskudd
-        // slik at man ikke får en ny oppfølging med èn gang, eller like etterpå. Det vil alltid være minst 6mnd til neste.
-
-        LocalDate utgangspunktForBeregningAvNyFrist = maksDato(Now.localDate(), getKreverOppfolgingFrist());
-        YearMonth nyFristMnd = YearMonth.from(utgangspunktForBeregningAvNyFrist).plusMonths(OPPFOLGINGSINTERVALL_6_MND);
-        LocalDate nyFrist = nyFristMnd.atEndOfMonth();
-
-        if (nyFrist.isAfter(gjeldendeInnhold.getSluttDato())) {
-            // TODO: Her kunne vi i teorien bare plusset på 6mnd på forrige oppfolgingFom, men vi kan ha noen
-            // avtaler som har fått en dato som ikke er "første i måneden" grunnet en tidligere kodeendring.
-            LocalDate varselTidspunkt = nyFrist.minusMonths(OPPFOLGINGSVINDU_1_MND);
-            setKreverOppfolgingFom(varselTidspunkt.withDayOfMonth(1));
-        } else {
-            setKreverOppfolgingFom(null);
-        }
+        setKreverOppfolgingFom(Oppfolging.fra(this)
+            .neste()
+            .getVarselstidspunkt());
 
         utforEndring(new OppfolgingAvAvtaleGodkjent(this, utførtAv));
     }
