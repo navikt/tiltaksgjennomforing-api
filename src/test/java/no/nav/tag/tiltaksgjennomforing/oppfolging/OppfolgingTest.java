@@ -68,7 +68,7 @@ class OppfolgingTest {
 
     @Test
     void oppfolgingLengeOverFristFlytterVarselstidspunkt() {
-        // Dersom vi følger opp en avtale 1 mnd etter forrige frist skal ny dato også være forskjøvet med 1 mnd
+        // Dersom vi følger opp en avtale 1 mnd etter forrige frist skal ny frist også være forskjøvet med 1 mnd
         Now.fixedDate(LocalDate.of(2024, 1, 1));
 
         var startDato = LocalDate.of(2024, 1, 1);
@@ -120,6 +120,8 @@ class OppfolgingTest {
 
     @Test
     void sisteMuligeFrist() {
+        // Vi vil ikke ha oppfølging på samme dag som en avtale avsluttes, men gjerne én dag etter.
+        // I praksis kan en avtale dermed ha en siste tilskuddsperiode på én dags varighet, som vil kreve oppfølging.
         Now.fixedDate(LocalDate.of(2024, 1, 1));
 
         var startdato = LocalDate.of(2024, 1, 1);
