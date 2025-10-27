@@ -1334,7 +1334,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold = nyAvtaleInnholdVersjon;
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
         LocalDate kreverOppfolgingFrist = getKreverOppfolgingFrist();
-        if (kreverOppfolgingFom != null && kreverOppfolgingFrist.isAfter(nySluttDato)) {
+        if (kreverOppfolgingFrist != null && kreverOppfolgingFrist.isAfter(nySluttDato)) {
             setKreverOppfolgingFom(null);
         }
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
