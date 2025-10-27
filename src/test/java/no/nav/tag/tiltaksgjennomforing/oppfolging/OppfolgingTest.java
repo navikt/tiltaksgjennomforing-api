@@ -134,4 +134,28 @@ class OppfolgingTest {
         assertNull(ingenOppfolging.getVarselstidspunkt());
         assertEquals(oppfolging.getVarselstidspunkt(), LocalDate.of(2024, 6, 1));
     }
+
+    @Test
+    void ingenOppfolgingHvisIngenStartdatoEllerSluttdato() {
+        // Dersom man ikke har fylt inn start eller sluttdato på avtalen, så vil det ikke være noen oppfølging
+        Now.fixedDate(LocalDate.of(2024, 1, 1));
+
+
+        var startdato = LocalDate.of(2024, 1, 1);
+        var sluttdato = LocalDate.of(2025, 8, 1);
+
+        var ingenOppfolgingPgaAltMangler = new Oppfolging(null, null, null).neste();
+        assertNull(ingenOppfolgingPgaAltMangler.getVarselstidspunkt());
+        assertNull(ingenOppfolgingPgaAltMangler.getOppfolgingsfrist());
+
+        var oppfolgingPgaSluttdatoMangler = new Oppfolging(null, startdato, null).neste();
+        assertNull(oppfolgingPgaSluttdatoMangler.getVarselstidspunkt());
+        assertNull(oppfolgingPgaSluttdatoMangler.getOppfolgingsfrist());
+
+        var oppfolgingPgaStartdatoMangler = new Oppfolging(null, null, sluttdato).neste();
+        assertNull(oppfolgingPgaStartdatoMangler.getVarselstidspunkt());
+        assertNull(oppfolgingPgaStartdatoMangler.getOppfolgingsfrist());
+
+
+    }
 }

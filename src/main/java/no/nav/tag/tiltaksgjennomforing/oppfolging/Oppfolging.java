@@ -23,8 +23,16 @@ public class Oppfolging {
         this.varselstidspunkt = varselstidspunkt;
         this.avtaleStart = avtaleStart;
         this.avtaleSlutt = avtaleSlutt;
-        oppfolgingsfrist = varselstidspunkt == null ? null : YearMonth.from(varselstidspunkt).plusMonths(OPPFOLGINGSVINDU_1_MND).atEndOfMonth();
-        sisteMuligeVarselstidspunkt = YearMonth.from(avtaleSlutt).minusMonths(1).atDay(1);
+
+        if (avtaleStart == null || avtaleSlutt == null) {
+            oppfolgingsfrist = null;
+            sisteMuligeVarselstidspunkt = null;
+        } else {
+            oppfolgingsfrist = varselstidspunkt == null ? null : YearMonth.from(varselstidspunkt)
+                .plusMonths(OPPFOLGINGSVINDU_1_MND)
+                .atEndOfMonth();
+            sisteMuligeVarselstidspunkt = YearMonth.from(avtaleSlutt).minusMonths(1).atDay(1);
+        }
     }
 
     public Oppfolging nullstill() {
@@ -67,6 +75,10 @@ public class Oppfolging {
      * når en avtale har blitt etterregistrert, eller forrige oppfølging skjedde lenge over frist.
      */
     public Oppfolging neste() {
+        if (avtaleStart == null || avtaleSlutt == null) {
+            // Ingen "neste" oppfølging dersom avtale ikke har start/sluttdato
+            return this;
+        }
         LocalDate utgangspunktForBeregningAvNyFrist = maksDato(Now.localDate(), varselstidspunkt == null ? avtaleStart : oppfolgingsfrist);
         YearMonth nyFristMnd = YearMonth.from(utgangspunktForBeregningAvNyFrist).plusMonths(OPPFOLGINGSINTERVALL_6_MND);
         LocalDate nyFrist = nyFristMnd.atEndOfMonth();
