@@ -105,7 +105,6 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -121,7 +120,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.ForkortetGrunn.AVSLUTTET_I_ARENA;
-import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.maksDato;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
@@ -134,9 +132,6 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 @FieldNameConstants
 @Builder
 public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarEntitet {
-
-    private static final int OPPFOLGINGSVINDU_1_MND = 1;
-    private static final int OPPFOLGINGSINTERVALL_6_MND = 6;
 
     @Id
     @EqualsAndHashCode.Include
