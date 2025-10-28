@@ -47,12 +47,6 @@ public class AktivitetsplanAdminController {
     public void taOverAktivitetsplankortForFlereAvtaler(@RequestBody List<UUID> avtaleIder) {
         avtaleIder.forEach(avtale -> {
             taOverAktivitetsplankort(avtale);
-                try {
-                    // Kaller et par api-kall - unngå krøll, ta det litt med ro.
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
             });
     }
 
