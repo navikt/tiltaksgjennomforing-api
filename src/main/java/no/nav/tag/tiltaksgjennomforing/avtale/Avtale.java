@@ -15,11 +15,13 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PostLoad;
 import jakarta.persistence.Transient;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
 import no.bekk.bekkopen.banking.KidnummerValidator;
@@ -85,6 +87,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditerbarEntitet;
+import no.nav.tag.tiltaksgjennomforing.oppfolging.Oppfolging;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.LonnstilskuddAvtaleBeregningStrategy;
@@ -102,7 +105,6 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -118,7 +120,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.ForkortetGrunn.AVSLUTTET_I_ARENA;
-import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.maksDato;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
@@ -167,7 +168,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     @Enumerated(EnumType.STRING)
     private Avtaleopphav opphav;
 
+    /**
+     * NB: Ønsker ikke å endre status direkte, kall heller .endreAvtale(),
+     * som også utfører nødvendige opprydninger.
+     */
     @Enumerated(EnumType.STRING)
+    @Setter(AccessLevel.NONE)
     private Status status = Status.PÅBEGYNT;
 
     private boolean godkjentForEtterregistrering;
@@ -288,15 +294,28 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         getGjeldendeInnhold().endreAvtale(nyAvtale);
         nyeTilskuddsperioder();
 
-        oppdaterKreverOppfolgingFom();
+        settFoersteOppfolgingstidspunkt();
         utforEndring(new AvtaleEndret(this, AvtaleHendelseUtførtAv.Rolle.fra(utfortAvRolle), identifikator));
     }
 
-    private void oppdaterKreverOppfolgingFom() {
+    public void endreStatus(Status nyStatus) {
+        if (nyStatus.erAvsluttetEllerAnnullert() && getKreverOppfolgingFom() != null) {
+            setOppfolgingVarselSendt(null);
+            setKreverOppfolgingFom(null);
+        }
+        this.status = nyStatus;
+    }
+
+    /**
+     * Dersom tiltaket avtalen gjelder for krever oppfølging må vi sørge for at første oppfølging starter på riktig
+     * tidspunkt ved endringer i avtalen.
+     */
+    private void settFoersteOppfolgingstidspunkt() {
         if (Tiltakstype.VTAO.equals(this.getTiltakstype()) && this.gjeldendeInnhold.getStartDato() != null) {
-            LocalDate tidligstMuligeDato = maksDato(this.gjeldendeInnhold.getStartDato(), Now.localDate());
-            LocalDate sluttenAvMnd4MndFremITid = YearMonth.from(tidligstMuligeDato).plusMonths(4).atDay(1);
-            this.setKreverOppfolgingFom(sluttenAvMnd4MndFremITid);
+            Oppfolging oppfolging = Oppfolging.fra(this)
+                .nullstill()
+                .neste();
+            setKreverOppfolgingFom(oppfolging.getVarselstidspunkt());
         }
     }
 
@@ -528,9 +547,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     @JsonProperty
     public LocalDate getKreverOppfolgingFrist() {
-        return this.kreverOppfolgingFom == null ? null : YearMonth.from(this.kreverOppfolgingFom)
-            .plusMonths(1)
-            .atEndOfMonth();
+        return Oppfolging.fra(this).getOppfolgingsfrist();
     }
 
     private void sjekkOmAvtalenKanEndres() {
@@ -578,7 +595,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private <T> void utforEndring(T event) {
-        this.status = Status.fra(this);
+        endreStatus(Status.fra(this));
         this.gjeldendeTilskuddsperiode = TilskuddPeriode.finnGjeldende(this);
         this.sistEndret = Now.instant();
 
@@ -628,7 +645,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         utforEndring(new GodkjentAvVeileder(this, utfortAv));
     }
 
-    private void inngåAvtale(Instant tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv ) {
+    private void inngåAvtale(Instant tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
         boolean mentorFeatureToggelEnabled = MentorTilskuddsperioderToggle.isEnabled();
         if (!utførtAvRolle.erInternBruker()) {
             throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_INNGAA_AVTALE);
@@ -638,7 +655,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
         if (utførtAvRolle.erBeslutter() || !tiltakstype.skalBesluttes() || erAlleTilskuddsperioderBehandletIArena()) {
             gjeldendeInnhold.setAvtaleInngått(tidspunkt);
-            oppdaterKreverOppfolgingFom();
+            settFoersteOppfolgingstidspunkt();
             utforEndring(new AvtaleInngått(this, AvtaleHendelseUtførtAv.Rolle.fra(utførtAvRolle), utførtAv));
         }
     }
@@ -773,6 +790,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         sjekkAtIkkeAvtaleErAnnullert();
 
         if (!felterSomIkkeErFyltUt().isEmpty()) {
+            log.warn(
+                "Avtale= {}, med type= {} har ikke alle felter fylt ut for godkjenning= {}",
+                this.avtaleNr,
+                this.tiltakstype,
+                felterSomIkkeErFyltUt()
+            );
             throw new AltMåVæreFyltUtException();
         }
         if (List.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB)
@@ -1173,7 +1196,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             fikseLøpenumre(tilskuddsperioder, 1);
             tilskuddPeriode.addAll(tilskuddsperioder);
             setGjeldendeTilskuddsperiode(TilskuddPeriode.finnGjeldende(this));
-            oppdaterKreverOppfolgingFom();
+            settFoersteOppfolgingstidspunkt();
             return true;
         } else {
             log.atInfo()
@@ -1330,6 +1353,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         AvtaleInnhold nyAvtaleInnholdVersjon = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORKORTE);
         gjeldendeInnhold = nyAvtaleInnholdVersjon;
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
+        LocalDate kreverOppfolgingFrist = getKreverOppfolgingFrist();
+        if (kreverOppfolgingFrist != null && kreverOppfolgingFrist.isAfter(nySluttDato)) {
+            setKreverOppfolgingFom(null);
+        }
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         forkortTilskuddsperioder(nySluttDato);
         utforEndring(new AvtaleForkortetAvVeileder(
@@ -1499,7 +1526,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     public void godkjennOppfolgingAvAvtale(NavIdent utførtAv) {
         setOppfolgingVarselSendt(null);
-        setKreverOppfolgingFom(getKreverOppfolgingFom().plusMonths(6));
+
+        setKreverOppfolgingFom(Oppfolging.fra(this)
+            .neste()
+            .getVarselstidspunkt());
+
         utforEndring(new OppfolgingAvAvtaleGodkjent(this, utførtAv));
     }
 

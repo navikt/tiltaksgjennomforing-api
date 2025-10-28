@@ -43,3 +43,18 @@ Authorization: Bearer <TOKEN>
 POST http://localhost:12345/tiltaksgjennomforing-api/utvikler-admin/oppdater-gjeldende-tilskuddsperiode-for-avtaler
 Content-Type: application/json
 Authorization: Bearer <TOKEN>
+
+
+### Tar over aktivietsplankortet fra Arena og sender siste melding på nytt.
+# Husk å bytte ut UUID med avtalens id
+POST http://localhost:12345/tiltaksgjennomforing-api/utvikler-admin/aktivitetsplan/avtale/<UUID>/ta-over-kort
+Content-Type: application/json
+Authorization: Bearer <TOKEN>
+
+
+### Sender hendelsemelding for en avtale
+# Husk å bytte ut UUID med avtalens id
+POST http://localhost:12345/tiltaksgjennomforing-api/utvikler-admin/avtale-hendelse/send-melding-en-avtale/<UUID>
+Content-Type: application/json
+Authorization: Bearer <TOKEN>
+

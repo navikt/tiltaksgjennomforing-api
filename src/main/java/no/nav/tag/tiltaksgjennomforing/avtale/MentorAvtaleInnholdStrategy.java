@@ -25,13 +25,13 @@ public class MentorAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrat
         avtaleInnhold.setMentorTimelonn(nyAvtale.getMentorTimelonn());
         avtaleInnhold.setHarFamilietilknytning(nyAvtale.getHarFamilietilknytning());
         avtaleInnhold.setFamilietilknytningForklaring(nyAvtale.getFamilietilknytningForklaring());
-
+        avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
 
         if (MentorTilskuddsperioderToggle.isEnabled()) {
+            avtaleInnhold.setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
             avtaleInnhold.setFeriepengesats(nyAvtale.getFeriepengesats());
             avtaleInnhold.setOtpSats(nyAvtale.getOtpSats());
             avtaleInnhold.setArbeidsgiveravgift(nyAvtale.getArbeidsgiveravgift());
-            avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
         }
 
         super.endre(nyAvtale);
@@ -54,8 +54,6 @@ public class MentorAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrat
         alleFelter.put(AvtaleInnhold.Fields.arbeidsgiverFornavn, avtaleInnhold.getArbeidsgiverFornavn());
         alleFelter.put(AvtaleInnhold.Fields.arbeidsgiverEtternavn, avtaleInnhold.getArbeidsgiverEtternavn());
         alleFelter.put(AvtaleInnhold.Fields.arbeidsgiverTlf, avtaleInnhold.getArbeidsgiverTlf());
-        alleFelter.put(AvtaleInnhold.Fields.arbeidsgiverKontonummer, avtaleInnhold.getArbeidsgiverKontonummer());
-        alleFelter.put(Fields.stillingstype, avtaleInnhold.getStillingstype());
 
         alleFelter.put(AvtaleInnhold.Fields.veilederFornavn, avtaleInnhold.getVeilederFornavn());
         alleFelter.put(AvtaleInnhold.Fields.veilederEtternavn, avtaleInnhold.getVeilederEtternavn());
@@ -74,6 +72,7 @@ public class MentorAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrat
         alleFelter.put(Fields.mentorTlf, avtaleInnhold.getMentorTlf());
 
         if (MentorTilskuddsperioderToggle.isEnabled()) {
+            alleFelter.put(AvtaleInnhold.Fields.arbeidsgiverKontonummer, avtaleInnhold.getArbeidsgiverKontonummer());
             alleFelter.put(AvtaleInnhold.Fields.feriepengesats, avtaleInnhold.getFeriepengesats());
             alleFelter.put(AvtaleInnhold.Fields.otpSats, avtaleInnhold.getOtpSats());
             alleFelter.put(AvtaleInnhold.Fields.arbeidsgiveravgift, avtaleInnhold.getArbeidsgiveravgift());

@@ -54,12 +54,9 @@ class MentorTilskuddsperioderTest {
         assertThat(MentorTilskuddsperioderToggle.isEnabled()).isFalse();
     }
 
-
-
     @Test
     void avtaleInngåttMentorTilskuddsperioder() throws JsonProcessingException {
         MentorTilskuddsperioderToggle.setValue(true);
-
 
         Avtale avtale = TestData.enMentorAvtaleUsignert();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
@@ -122,7 +119,8 @@ class MentorTilskuddsperioderTest {
         Set<String> mentorTilskuddsperioderFelter = Set.of(
             AvtaleInnhold.Fields.arbeidsgiveravgift,
             AvtaleInnhold.Fields.otpSats,
-            AvtaleInnhold.Fields.feriepengesats
+            AvtaleInnhold.Fields.feriepengesats,
+            AvtaleInnhold.Fields.arbeidsgiverKontonummer
         );
 
         Set<String> mentorfelter = new HashSet<>(Set.of(
@@ -146,9 +144,7 @@ class MentorTilskuddsperioderTest {
             AvtaleInnhold.Fields.tilrettelegging,
             AvtaleInnhold.Fields.oppfolging,
             AvtaleInnhold.Fields.mentorTlf,
-            AvtaleInnhold.Fields.harFamilietilknytning,
-            AvtaleInnhold.Fields.arbeidsgiverKontonummer,
-            AvtaleInnhold.Fields.stillingstype
+            AvtaleInnhold.Fields.harFamilietilknytning
         ));
 
         Avtale avtale = Avtale.opprett(

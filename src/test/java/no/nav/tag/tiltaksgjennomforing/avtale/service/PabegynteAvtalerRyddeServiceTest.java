@@ -163,32 +163,32 @@ class PabegynteAvtalerRyddeServiceTest {
         Now.fixedDate(LocalDate.of(2025, 1, 1));
 
         Avtale avtale1  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avtale1.setStatus(Status.ANNULLERT);
+        avtale1.endreStatus(Status.ANNULLERT);
         avtale1.setSistEndret(ZonedDateTime.of(2024, 10, 8, 12, 0, 0, 0, ZoneId.systemDefault()).toInstant());
         avtaleRepository.save(avtale1);
 
         Avtale avtale2  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avtale2.setStatus(Status.KLAR_FOR_OPPSTART);
+        avtale2.endreStatus(Status.KLAR_FOR_OPPSTART);
         avtale2.setSistEndret(ZonedDateTime.of(2024, 10, 6, 12, 0, 0, 0, ZoneId.systemDefault()).toInstant());
         avtaleRepository.save(avtale2);
 
         Avtale avtale3  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avtale3.setStatus(Status.GJENNOMFØRES);
+        avtale3.endreStatus(Status.GJENNOMFØRES);
         avtale3.setSistEndret(ZonedDateTime.of(2024, 10, 5, 12, 0, 0, 0, ZoneId.systemDefault()).toInstant());
         avtaleRepository.save(avtale3);
 
         Avtale avtale4  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avtale4.setStatus(Status.AVSLUTTET);
+        avtale4.endreStatus(Status.AVSLUTTET);
         avtale4.setSistEndret(ZonedDateTime.of(2024, 10, 4, 12, 0, 0, 0, ZoneId.systemDefault()).toInstant());
         avtaleRepository.save(avtale4);
 
         Avtale avtale5  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avtale5.setStatus(Status.MANGLER_GODKJENNING);
+        avtale5.endreStatus(Status.MANGLER_GODKJENNING);
         avtale5.setSistEndret(ZonedDateTime.of(2024, 10, 3, 12, 0, 0, 0, ZoneId.systemDefault()).toInstant());
         avtaleRepository.save(avtale5);
 
         Avtale avtale6  = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        avtale6.setStatus(Status.PÅBEGYNT);
+        avtale6.endreStatus(Status.PÅBEGYNT);
         avtale6.setSistEndret(ZonedDateTime.of(2024, 10, 2, 12, 0, 0, 0, ZoneId.systemDefault()).toInstant());
         avtaleRepository.save(avtale6);
 
