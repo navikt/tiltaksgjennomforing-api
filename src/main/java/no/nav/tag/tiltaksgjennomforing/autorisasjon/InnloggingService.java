@@ -83,7 +83,8 @@ public class InnloggingService {
                 persondataService,
                 norg2Client,
                 eregService,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                regelmotor
             );
         }
         if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.VEILEDER) {
@@ -100,7 +101,8 @@ public class InnloggingService {
                 adGruppeTilganger,
                 veilarboppfolgingService,
                 featureToggleService,
-                eregService
+                eregService,
+                regelmotor
             );
         }
         if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.BESLUTTER) {
@@ -120,7 +122,8 @@ public class InnloggingService {
                 tilgangskontrollService,
                 norg2Client,
                 persondataService,
-                adGruppeTilganger
+                adGruppeTilganger,
+                regelmotor
             );
         }
 

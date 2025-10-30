@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
+import no.nav.tag.tiltaksgjennomforing.avtale.regelmotor.Regelmotor;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
@@ -42,6 +43,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     private final Norg2Client norg2Client;
     private final EregService eregService;
     private final VeilarboppfolgingService veilarboppfolgingService;
+    private final Regelmotor regelmotor;
 
     public Arbeidsgiver(
             Fnr identifikator,
@@ -51,7 +53,8 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             PersondataService persondataService,
             Norg2Client norg2Client,
             EregService eregService,
-            VeilarboppfolgingService veilarboppfolgingService
+            VeilarboppfolgingService veilarboppfolgingService,
+            Regelmotor regelmotor
     ) {
         super(identifikator);
         this.altinnOrganisasjoner = altinnOrganisasjoner;
@@ -61,6 +64,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         this.norg2Client = norg2Client;
         this.eregService = eregService;
         this.veilarboppfolgingService = veilarboppfolgingService;
+        this.regelmotor = regelmotor;
     }
 
     private static Avtale fjernAnnullertGrunn(Avtale avtale) {

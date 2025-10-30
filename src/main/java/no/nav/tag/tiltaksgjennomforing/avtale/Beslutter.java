@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.regelmotor.Regelmotor;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -37,6 +38,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
     private final Set<NavEnhet> navEnheter;
     private final PersondataService persondataService;
     private final AdGruppeTilganger adGruppeTilganger;
+    private final Regelmotor regelmotor;
 
     public Beslutter(
         NavIdent identifikator,
@@ -45,7 +47,8 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         TilgangskontrollService tilgangskontrollService,
         Norg2Client norg2Client,
         PersondataService persondataService,
-        AdGruppeTilganger adGruppeTilganger
+        AdGruppeTilganger adGruppeTilganger,
+        Regelmotor regelmotor
     ) {
         super(identifikator);
         this.azureOid = azureOid;
@@ -54,6 +57,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         this.norg2Client = norg2Client;
         this.persondataService = persondataService;
         this.adGruppeTilganger = adGruppeTilganger;
+        this.regelmotor = regelmotor;
     }
 
     public void godkjennTilskuddsperiode(Avtale avtale, String enhet) {

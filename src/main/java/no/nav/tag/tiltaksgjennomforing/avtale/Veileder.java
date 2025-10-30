@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.regelmotor.Regelmotor;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
@@ -54,6 +55,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     private final UUID azureOid;
     private final FeatureToggleService featureToggleService;
     private final EregService eregService;
+    private final Regelmotor regelmotor;
 
     public Veileder(
         NavIdent identifikator,
@@ -65,7 +67,8 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         AdGruppeTilganger adGruppeTilganger,
         VeilarboppfolgingService veilarboppfolgingService,
         FeatureToggleService featureToggleService,
-        EregService eregService
+        EregService eregService,
+        Regelmotor regelmotor
     ) {
 
         super(identifikator);
@@ -78,6 +81,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         this.veilarboppfolgingService = veilarboppfolgingService;
         this.featureToggleService = featureToggleService;
         this.eregService = eregService;
+        this.regelmotor = regelmotor;
     }
 
     @Override
