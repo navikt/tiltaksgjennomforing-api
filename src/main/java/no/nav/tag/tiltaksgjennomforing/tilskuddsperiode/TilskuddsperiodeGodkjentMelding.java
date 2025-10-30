@@ -54,6 +54,8 @@ public class TilskuddsperiodeGodkjentMelding {
     LocalDateTime godkjentTidspunkt;
     String arbeidsgiverKontonummer;
     String arbeidsgiverKid;
+    Integer mentorTimeLoenn;
+    Double mentorAntallTimer;
 
     public static TilskuddsperiodeGodkjentMelding create(Avtale avtale, TilskuddPeriode tilskuddsperiode, Integer resendingsnummer) {
         return new TilskuddsperiodeGodkjentMelding(
@@ -88,7 +90,9 @@ public class TilskuddsperiodeGodkjentMelding {
                 avtale.getGjeldendeInnhold().getVeilederEtternavn(),
                 DatoUtils.instantTilLocalDateTime(tilskuddsperiode.getGodkjentTidspunkt()),
                 avtale.getGjeldendeInnhold().getArbeidsgiverKontonummer(),
-                avtale.getGjeldendeInnhold().getArbeidsgiverKid()
+                avtale.getGjeldendeInnhold().getArbeidsgiverKid(),
+                avtale.getGjeldendeInnhold().getMentorTimelonn(),
+                avtale.getGjeldendeInnhold().getMentorAntallTimer()
         );
     }
 }
