@@ -104,46 +104,56 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
     }
 
 
-    private Integer convertBigDecimalToInt(BigDecimal value) {
+    Integer convertBigDecimalToInt(BigDecimal value) {
         return value == null ? null : value.setScale(0, RoundingMode.HALF_UP).intValue();
     }
 
-    private Integer getSumLonnsutgifter(Integer manedslonn, BigDecimal feriepengerBelop, BigDecimal obligTjenestepensjon, BigDecimal arbeidsgiveravgiftBelop) {
+    Integer getSumLonnsutgifter(
+        Integer manedslonn,
+        BigDecimal feriepengerBelop,
+        BigDecimal obligTjenestepensjon,
+        BigDecimal arbeidsgiveravgiftBelop
+    ) {
         if (erIkkeTomme(feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop)) {
             return manedslonn + convertBigDecimalToInt(feriepengerBelop.add(obligTjenestepensjon).add(arbeidsgiveravgiftBelop));
         }
         return null;
     }
 
-    private BigDecimal getArbeidsgiverAvgift(Integer manedslonn, BigDecimal feriepengerBelop, BigDecimal obligTjenestepensjon, BigDecimal arbeidsgiveravgift) {
+    BigDecimal getArbeidsgiverAvgift(
+        Integer manedslonn,
+        BigDecimal feriepengerBelop,
+        BigDecimal obligTjenestepensjon,
+        BigDecimal arbeidsgiveravgift
+    ) {
         if (erIkkeTomme(manedslonn, feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgift)) {
             return arbeidsgiveravgift.multiply(BigDecimal.valueOf(manedslonn).add(feriepengerBelop).add(obligTjenestepensjon));
         }
         return null;
     }
 
-    private BigDecimal getBeregnetOtpBelop(BigDecimal optSats, Integer manedslonn, BigDecimal feriepenger) {
+    BigDecimal getBeregnetOtpBelop(BigDecimal optSats, Integer manedslonn, BigDecimal feriepenger) {
         if (erIkkeTomme(optSats, manedslonn, feriepenger)) {
             return (optSats.multiply(BigDecimal.valueOf(manedslonn).add(feriepenger)));
         }
         return null;
     }
 
-    private BigDecimal getFeriepengerBelop(BigDecimal feriepengersats, Integer manedslonn) {
+    BigDecimal getFeriepengerBelop(BigDecimal feriepengersats, Integer manedslonn) {
         if (erIkkeTomme(feriepengersats, manedslonn)) {
             return (feriepengersats.multiply(BigDecimal.valueOf(manedslonn)));
         }
         return null;
     }
 
-    private BigDecimal toBigDecimal(Double value) {
+    BigDecimal toBigDecimal(Double value) {
         if (value == null) {
             return null;
         }
         return BigDecimal.valueOf(value);
     }
 
-    private Integer getLønnVedFullStilling(Integer sumUtgifter, BigDecimal stillingsProsent) {
+    Integer getLønnVedFullStilling(Integer sumUtgifter, BigDecimal stillingsProsent) {
         if (sumUtgifter == null || stillingsProsent == null || stillingsProsent.compareTo(BigDecimal.ZERO) == 0) {
             return null;
         }

@@ -8,7 +8,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -16,21 +15,38 @@ import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
-public class MentorLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
+public class MentortilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
     int MAKS_PROSENT = 100;
 
     @Override
     public void reberegnTotal(Avtale avtale) {
         AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
-        if (innhold.getMentorAntallTimer() != null
-            && innhold.getMentorTimelonn() != null) {
-            int manedslonn = beregnMånedligTilskudd(
-                innhold.getMentorAntallTimer(),
-                innhold.getMentorTimelonn());
-            innhold.setManedslonn(manedslonn);
-            innhold.setLonnstilskuddProsent(MAKS_PROSENT);
-        super.reberegnTotal(avtale);
+        if (innhold.getMentorAntallTimer() == null || innhold.getMentorTimelonn() == null) {
+            return;
         }
+        var maanedslonn = Double.valueOf(innhold.getMentorTimelonn() * innhold.getMentorAntallTimer()).intValue();
+        innhold.setManedslonn(maanedslonn);
+        BigDecimal feriepengerBelop = getFeriepengerBelop(innhold.getFeriepengesats(), maanedslonn);
+        BigDecimal obligTjenestepensjon = getBeregnetOtpBelop(
+            toBigDecimal(innhold.getOtpSats()),
+            innhold.getManedslonn(),
+            feriepengerBelop
+        );
+        BigDecimal arbeidsgiveravgiftBelop = getArbeidsgiverAvgift(
+            innhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon,
+            innhold.getArbeidsgiveravgift()
+        );
+        Integer sumLonnsutgifter = getSumLonnsutgifter(
+            innhold.getManedslonn(),
+            feriepengerBelop,
+            obligTjenestepensjon,
+            arbeidsgiveravgiftBelop
+        );
+        innhold.setFeriepengerBelop(convertBigDecimalToInt(feriepengerBelop));
+        innhold.setOtpBelop(convertBigDecimalToInt(obligTjenestepensjon));
+        innhold.setArbeidsgiveravgiftBelop(convertBigDecimalToInt(arbeidsgiveravgiftBelop));
+        innhold.setSumLonnsutgifter(sumLonnsutgifter);
+        innhold.setSumLonnstilskudd(sumLonnsutgifter);
     }
 
     @Override
@@ -40,14 +56,18 @@ public class MentorLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstil
             innhold.getStartDato(),
             innhold.getSluttDato(),
             innhold.getMentorAntallTimer(),
-            innhold.getMentorTimelonn()
+            innhold.getMentorTimelonn(),
+            innhold.getFeriepengesats(),
+            innhold.getArbeidsgiveravgift(),
+            innhold.getOtpSats(),
+            innhold.getSumLonnstilskudd()
         );
     }
 
 
     @Override
     public List<TilskuddPeriode> genererNyeTilskuddsperioder(Avtale avtale) {
-        if (!MentorTilskuddsperioderToggle.isEnabled()){
+        if (!MentorTilskuddsperioderToggle.isEnabled()) {
             return Collections.emptyList();
         }
 
@@ -61,19 +81,16 @@ public class MentorLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstil
 
         LocalDate start = innhold.getStartDato();
         LocalDate slutt = innhold.getSluttDato();
-        LocalDate redusertFra = innhold.getDatoForRedusertProsent();
-
-        Integer månedligTilskudd = beregnMånedligTilskudd(innhold.getMentorAntallTimer(), innhold.getMentorTimelonn());
 
         List<TilskuddPeriode> perioder = beregnTilskuddsperioderForAvtale(
             UUID.randomUUID(),
             avtale.getTiltakstype(),
-            månedligTilskudd,
+            innhold.getSumLonnstilskudd(),
             start,
             slutt,
             MAKS_PROSENT,
-            redusertFra,
-            månedligTilskudd
+            null,
+            avtale.getGjeldendeInnhold().getManedslonn100pst()
         );
         perioder.forEach(p -> p.setAvtale(avtale));
         perioder.forEach(p -> p.setEnhet(innhold.getEnhetKostnadssted()));
@@ -84,16 +101,14 @@ public class MentorLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstil
 
     @Override
     public Integer beregnTilskuddsbeløpForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
-        if (!nødvendigeFelterErUtfylt(avtale) || startDato == null || sluttDato == null) {
+        if (!nødvendigeFelterErUtfylt(avtale)) {
             return null;
         }
         AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
-        int månedsLonn = beregnMånedligTilskudd(innhold.getMentorAntallTimer(), innhold.getMentorTimelonn());
-        return LonnstilskuddAvtaleBeregningStrategy.beløpForPeriode(startDato, sluttDato, månedsLonn);
-    }
-
-    private Integer beregnMånedligTilskudd(double antalTimerIMåned, double timelonn) {
-        BigDecimal månedslonnBeregningFraTimerMedTimelonn = BigDecimal.valueOf(antalTimerIMåned).multiply(BigDecimal.valueOf(timelonn));
-        return månedslonnBeregningFraTimerMedTimelonn.setScale(0, RoundingMode.HALF_UP).intValue();
+        return LonnstilskuddAvtaleBeregningStrategy.beløpForPeriode(
+            startDato,
+            sluttDato,
+            innhold.getSumLonnstilskudd()
+        );
     }
 }

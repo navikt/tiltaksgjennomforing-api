@@ -1123,10 +1123,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         return this.hentBeregningStrategi().beregnTilskuddsbeløpForPeriode(this, startDato, sluttDato);
     }
 
-    private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
-        return this.hentBeregningStrategi().hentTilskuddsperioderForPeriode(this, startDato, sluttDato);
-    }
-
     private void nyeTilskuddsperioder() {
         List<TilskuddPeriode> nyeTilskuddsperioder = this.hentBeregningStrategi().genererNyeTilskuddsperioder(this);
         boolean harNyeTilskuddsperioder = !(tilskuddPeriode.equals(new TreeSet<>(nyeTilskuddsperioder)));
@@ -1182,10 +1178,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
                 }
             }
 
-            List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioder(
-                gjeldendeInnhold.getStartDato(),
-                gjeldendeInnhold.getSluttDato()
-            );
+            List<TilskuddPeriode> tilskuddsperioder = this.hentBeregningStrategi().genererNyeTilskuddsperioder(this);
+
             tilskuddsperioder.forEach(periode -> {
                 // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
                 // Eller skal det være startdato? Er jo den samme datoen som migreringsdato. hmm...
@@ -1207,44 +1201,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
                 );
             return false;
         }
-    }
-
-    public void reberegnUbehandledeTilskuddsperioder() {
-        krevEnAvTiltakstyper(
-            Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
-            Tiltakstype.VARIG_LONNSTILSKUDD,
-            Tiltakstype.SOMMERJOBB
-        );
-
-        // Finn første ubehandlede periode
-        //Optional<TilskuddPeriode> førsteUbehandledeTilskuddsperiode = tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET).findFirst();
-        // Fjern ubehandlede
-        for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
-            TilskuddPeriodeStatus status = tilskuddsperiode.getStatus();
-            if (status == TilskuddPeriodeStatus.UBEHANDLET) {
-                tilskuddPeriode.remove(tilskuddsperiode);
-            }
-        }
-
-        // Lag nye fra og med siste ikke ubehandlet + en dag
-        LocalDate startDato;
-        List<TilskuddPeriode> godkjentePerioder = tilskuddPeriode.stream()
-            .filter(t -> t.getStatus() == TilskuddPeriodeStatus.GODKJENT)
-            .sorted(Comparator.comparing(TilskuddPeriode::getLøpenummer))
-            .toList();
-
-        if (!godkjentePerioder.isEmpty()) {
-            startDato = godkjentePerioder.getLast().getSluttDato().plusDays(1);
-        } else {
-            startDato = tilskuddPeriode.stream().findFirst().map(TilskuddPeriode::getStartDato).orElse(null);
-        }
-
-        List<TilskuddPeriode> nyetilskuddsperioder = beregnTilskuddsperioder(
-            startDato,
-            gjeldendeInnhold.getSluttDato()
-        );
-        tilskuddPeriode.addAll(nyetilskuddsperioder);
-        fikseLøpenumre(tilskuddPeriode.stream().toList(), 1);
     }
 
     public void lagNyGodkjentTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {

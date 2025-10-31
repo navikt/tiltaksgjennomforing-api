@@ -137,6 +137,6 @@ tiltaksgjennomforing:
     hendelse-aktivitetsplan:
       url: http://localhost:8090
   mentor-tilskuddsperioder:
-    enabled: false
+    enabled: true
 
 ELECTOR_PATH: null
