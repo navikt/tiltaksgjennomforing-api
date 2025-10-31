@@ -54,7 +54,7 @@ public class TilskuddsperiodeGodkjentMelding {
     LocalDateTime godkjentTidspunkt;
     String arbeidsgiverKontonummer;
     String arbeidsgiverKid;
-    Integer mentorTimeLoenn;
+    Integer mentorTimelonn;
     Double mentorAntallTimer;
     String mentorFornavn;
     String mentorEtternavn;
