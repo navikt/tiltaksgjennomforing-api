@@ -414,7 +414,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void endreOmMentor(EndreOmMentor endreOmMentor, Avtale avtale) {
         super.sjekkTilgang(avtale);
-        avtale.endreOmMentor(endreOmMentor, getIdentifikator());
+        avtale.endreOmMentor(endreOmMentor, getIdentifikator(), regelmotor);
     }
 
     public void endreKontaktinfo(EndreKontaktInformasjon endreKontaktInformasjon, Avtale avtale) {

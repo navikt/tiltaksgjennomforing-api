@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.regelmotor.Regelmotor;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
@@ -62,7 +63,7 @@ public class AvtalepartTest {
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),mock(Regelmotor.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -88,7 +89,7 @@ public class AvtalepartTest {
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
-            eregService
+            eregService,mock(Regelmotor.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -117,7 +118,7 @@ public class AvtalepartTest {
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),mock(Regelmotor.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -145,7 +146,7 @@ public class AvtalepartTest {
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),mock(Regelmotor.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -180,7 +181,7 @@ public class AvtalepartTest {
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),mock(Regelmotor.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -225,7 +226,7 @@ public class AvtalepartTest {
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
-            eregService
+            eregService,mock(Regelmotor.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -264,7 +265,7 @@ public class AvtalepartTest {
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),mock(Regelmotor.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());

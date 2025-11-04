@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.regelmotor.Regelmotor;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
@@ -92,8 +93,9 @@ public class AvtaleApiTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService,
-                mock(EregService.class)
-        );
+                mock(EregService.class),
+                mock(Regelmotor.class)
+            );
         when(tilgangskontrollService.hentSkrivetilgang(veileder,avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of());
         avtaleRepository.save(avtale);
@@ -128,7 +130,8 @@ public class AvtaleApiTest {
                 tilgangskontrollService,
                 norg2Client,
                 persondataService,
-                TestData.INGEN_AD_GRUPPER
+                TestData.INGEN_AD_GRUPPER,
+            mock(Regelmotor.class)
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(beslutter), any(Fnr.class))).thenReturn(true);
         when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of(ENHET_OPPFØLGING));

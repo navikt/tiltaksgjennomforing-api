@@ -9,6 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetMentor;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.regelmotor.Regelmotor;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -861,7 +862,7 @@ public class TestData {
     public static Arbeidsgiver enArbeidsgiver() {
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
-        return new Arbeidsgiver(Fnr.generer(1978, 9, 10), Set.of(), Map.of(), List.of(), persondataService, null, null, null);
+        return new Arbeidsgiver(Fnr.generer(1978, 9, 10), Set.of(), Map.of(), List.of(), persondataService, null, null, null,null);
     }
 
     public static Mentor enMentor(Avtale avtale) {
@@ -878,7 +879,8 @@ public class TestData {
                 mock(PersondataService.class),
                 null,
                 null,
-                null
+                null,
+            null
         );
     }
 
@@ -946,7 +948,8 @@ public class TestData {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService,
-                eregService
+                eregService,
+            null
         );
         when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
@@ -985,7 +988,7 @@ public class TestData {
         Norg2Client norg2Client = mock(Norg2Client.class);
         PersondataService persondataService = mock(PersondataService.class);
         NavIdent navIdent = new NavIdent("B999999");
-        var beslutter = new Beslutter(navIdent, UUID.randomUUID(), Set.of(), tilgangskontrollService, norg2Client, persondataService, TestData.INGEN_AD_GRUPPER);
+        var beslutter = new Beslutter(navIdent, UUID.randomUUID(), Set.of(), tilgangskontrollService, norg2Client, persondataService, TestData.INGEN_AD_GRUPPER,null);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(beslutter, avtale.getDeltakerFnr())).thenReturn(true);
         when(norg2Client.hentOppfølgingsEnhet(eq("0000"))).thenReturn(new Norg2OppfølgingResponse(0, "0000", "Oslo", Norg2EnhetStatus.AKTIV));
         when(norg2Client.hentOppfølgingsEnhet(eq("0906"))).thenReturn(new Norg2OppfølgingResponse(906, "0906", "Oslo", Norg2EnhetStatus.AKTIV));
@@ -1105,7 +1108,8 @@ public class TestData {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService,
-                mock(EregService.class)
+                mock(EregService.class),
+            mock(Regelmotor.class)
         );
         when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
@@ -1125,7 +1129,8 @@ public class TestData {
                 TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
                 featureToggleService,
-                mock(EregService.class)
+                mock(EregService.class),
+            mock(Regelmotor.class)
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,

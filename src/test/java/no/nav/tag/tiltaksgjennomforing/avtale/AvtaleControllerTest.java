@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.regelmotor.Regelmotor;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -144,7 +145,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                eregService,
+                mock(Regelmotor.class)
             );
         værInnloggetSom(
             veileder
@@ -175,7 +177,7 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),mock(Regelmotor.class)
         );
         værInnloggetSom(veileder);
         Avtale exampleAvtale = Avtale.builder()
@@ -219,7 +221,7 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),mock(Regelmotor.class)
         );
         værInnloggetSom(veileder);
 
@@ -259,7 +261,7 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),mock(Regelmotor.class)
         );
         værInnloggetSom(veileder);
 
@@ -291,7 +293,7 @@ public class AvtaleControllerTest {
                         persondataService,
                         null,
                         null,
-                        null
+                        null,null
                 )
         );
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
@@ -323,7 +325,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                eregService
+                eregService,
+                mock(Regelmotor.class)
         );
 
         værInnloggetSom(veileder);
@@ -388,7 +391,7 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),mock(Regelmotor.class)
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
@@ -466,7 +469,7 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),mock(Regelmotor.class)
         );
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = Fnr.generer(1978, 9, 10);
@@ -498,7 +501,7 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),mock(Regelmotor.class)
         );
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = Fnr.generer(1956, 7, 8);
@@ -527,7 +530,7 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),mock(Regelmotor.class)
         );
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = Fnr.generer(1978, 9, 10);
@@ -552,7 +555,7 @@ public class AvtaleControllerTest {
                 null,
                 null,
                 null,
-                null
+                null,null
         );
         værInnloggetSom(arbeidsgiver);
         assertThatThrownBy(
@@ -603,7 +606,7 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),mock(Regelmotor.class)
         );
         værInnloggetSom(veileder);
         when(kontoregisterService.hentKontonummer(anyString())).thenReturn("990983666");
@@ -637,7 +640,7 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),mock(Regelmotor.class)
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
@@ -669,7 +672,7 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),mock(Regelmotor.class)
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.hentSkrivetilgang(
@@ -700,7 +703,7 @@ public class AvtaleControllerTest {
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             featureToggleServiceMock,
-            mock(EregService.class)
+            mock(EregService.class),mock(Regelmotor.class)
         );
         værInnloggetSom(veileder);
 

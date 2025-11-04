@@ -73,6 +73,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAvslått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
+import no.nav.tag.tiltaksgjennomforing.avtale.regelmotor.Regelmotor;
+import no.nav.tag.tiltaksgjennomforing.avtale.regelmotor.Tiltaksmotor;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
@@ -1655,13 +1657,15 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         utforEndring(new InkluderingstilskuddEndret(this, utførtAv));
     }
 
-    public void endreOmMentor(EndreOmMentor endreOmMentor, NavIdent utførtAv) {
-        sjekkAtIkkeAvtaleErAnnullert();
-        krevEnAvTiltakstyper(Tiltakstype.MENTOR);
-
-        if (!erGodkjentAvVeileder()) {
+    public void endreOmMentor(EndreOmMentor endreOmMentor, NavIdent utførtAv, Regelmotor regelmotor) {
+        Tiltaksmotor tiltaksmotor = regelmotor.hent(this);
+        tiltaksmotor.evaluer();
+        //sjekkAtIkkeAvtaleErAnnullert();
+        //krevEnAvTiltakstyper(Tiltakstype.MENTOR);
+        /*
+         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OM_MENTOR_IKKE_INNGAATT_AVTALE);
-        }
+        }*/
         if (Utils.erNoenTomme(
             endreOmMentor.getMentorFornavn(), endreOmMentor.getMentorEtternavn(),
             endreOmMentor.getMentorTlf(), endreOmMentor.getMentorTimelonn(),
@@ -1730,4 +1734,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             .plus(84, ChronoUnit.DAYS)
             .isBefore(Now.instant());
     }
+
+
+    // ***** MILLAD ENDRINGER ***** //
+    public Tiltakstype getTiltakstype() {return tiltakstype;}
+    public Status getStatus() {return status;}
 }

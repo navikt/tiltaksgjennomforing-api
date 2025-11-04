@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
+import no.nav.tag.tiltaksgjennomforing.avtale.regelmotor.Regelmotor;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
@@ -100,7 +101,9 @@ public class ArbeidsgiverTest {
                 persondataService,
                 norg2Client,
                 eregService,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+
+            mock(Regelmotor.class)
         );
 
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
@@ -121,7 +124,8 @@ public class ArbeidsgiverTest {
                 null,
                 null,
                 null,
-                null
+                null,
+            null
         );
         assertThatThrownBy(
                 () -> arbeidsgiver.avvisDatoerTilbakeITid(avtale, Now.localDate().minusDays(1), null)
@@ -139,7 +143,7 @@ public class ArbeidsgiverTest {
                 null,
                 null,
                 null,
-                null
+                null,null
         );
         assertThatThrownBy(
                 () -> arbeidsgiver.avvisDatoerTilbakeITid(avtale, Now.localDate(), Now.localDate().minusDays(1))
@@ -159,7 +163,7 @@ public class ArbeidsgiverTest {
                 persondataService,
                 null,
                 null,
-                null
+                null,null
         );
         OpprettAvtale opprettAvtale = new OpprettAvtale(new Fnr("12345678910"), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING);
         assertFeilkode(Feilkode.IKKE_TILGANG_TIL_DELTAKER_ARBEIDSGIVER, () -> arbeidsgiver.opprettAvtale(opprettAvtale));
@@ -189,7 +193,8 @@ public class ArbeidsgiverTest {
                 persondataService,
                 norg2Client,
                 eregService,
-            veilarboppfolgingService
+            veilarboppfolgingService,
+            null
         );
         OpprettAvtale opprettAvtale = new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING);
         arbeidsgiver.opprettAvtale(opprettAvtale);
@@ -216,7 +221,8 @@ public class ArbeidsgiverTest {
                 persondataService,
                 null,
                 null,
-                null
+                null,
+            null
         );
         assertFeilkode(Feilkode.IKKE_TILGANG_TIL_AVTALE, () -> arbeidsgiver.hentAvtale(avtaleRepository, avtale.getId()));
     }
@@ -242,7 +248,8 @@ public class ArbeidsgiverTest {
                 persondataService,
                 null,
                 null,
-                null
+                null,
+            null
         );
         arbeidsgiver.hentAvtale(avtaleRepository, avtale.getId());
     }
@@ -270,7 +277,7 @@ public class ArbeidsgiverTest {
                 persondataService,
                 null,
                 null,
-                null
+                null,null
         );
         Arbeidsgiver arbeidsgiverMedAdressesperreTilgang = new Arbeidsgiver(
                 null,
@@ -280,7 +287,7 @@ public class ArbeidsgiverTest {
                 persondataService,
                 null,
                 null,
-                null
+                null,null
         );
         Page<BegrensetAvtale> begrensetAvtales = arbeidsgiverUtenAdressesperreTilgang.hentBegrensedeAvtalerMedLesetilgang(avtaleRepository, new AvtaleQueryParameter(), PageRequest.of(0, 100));
         Page<BegrensetAvtale> begrensetAvtales2 = arbeidsgiverMedAdressesperreTilgang.hentBegrensedeAvtalerMedLesetilgang(avtaleRepository, new AvtaleQueryParameter(), PageRequest.of(0, 100));

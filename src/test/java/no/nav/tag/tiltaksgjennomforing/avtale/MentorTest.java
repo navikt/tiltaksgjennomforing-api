@@ -5,9 +5,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.regelmotor.Regelmotor;
+import no.nav.tag.tiltaksgjennomforing.avtale.regelmotor.mentor.MentorRegel;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -37,6 +40,7 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.jsonHarVe
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -53,6 +57,8 @@ public class MentorTest {
     private AvtaleRepository avtaleRepository;
     @Autowired
     ObjectMapper mapper;
+    @Autowired
+    private Regelmotor regelmotor;
 
     private final Pageable pageable = PageRequest.of(0, 100);
 
@@ -150,7 +156,8 @@ public class MentorTest {
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),
+            regelmotor
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -178,7 +185,8 @@ public class MentorTest {
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),
+            regelmotor
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -215,7 +223,8 @@ public class MentorTest {
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),
+            regelmotor
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -234,6 +243,90 @@ public class MentorTest {
 
     private MockHttpServletResponse hentAvtaleForMentor(Mentor mentor, UUID avtaleId) throws Exception {
         return getForPart(mockMvc, mentor, "/avtaler/" + avtaleId);
+    }
+
+
+    // MILLAD NYE ENDRINGER ////
+
+
+    @Test
+    public void endreOmMentor__IKKE_endre_om_avtalen_er_annullert() {
+        Avtale avtale = TestData.enMentorAvtaleSignert();
+        avtale.annuller(TestData.enVeileder(avtale), "Fordi jeg vil det");
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
+        EndreOmMentor endreOmMentor = new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5.0, 500);
+
+        Veileder veileder = new Veileder(
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            mock(Norg2Client.class),
+            Set.of(new NavEnhet("4802", "Trysil")),
+            TestData.INGEN_AD_GRUPPER,
+            mock(VeilarboppfolgingService.class),
+            mock(FeatureToggleService.class),
+            mock(EregService.class),
+            regelmotor
+        );
+
+        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+        FeilkodeException ex = assertThrows(FeilkodeException.class, () -> veileder.endreOmMentor(endreOmMentor,avtale));
+        assertThat(ex.getFeilkode()).isEqualTo(Feilkode.KAN_IKKE_ENDRE_ANNULLERT_AVTALE);
+    }
+
+
+    @Test
+    public void endreOmMentor__IKKE_endre_IKKE_MENTOR_avtaler() {
+        Avtale avtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
+        EndreOmMentor endreOmMentor = new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5.0, 500);
+
+        Veileder veileder = new Veileder(
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            mock(Norg2Client.class),
+            Set.of(new NavEnhet("4802", "Trysil")),
+            TestData.INGEN_AD_GRUPPER,
+            mock(VeilarboppfolgingService.class),
+            mock(FeatureToggleService.class),
+            mock(EregService.class),
+            regelmotor
+        );
+
+        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+        FeilkodeException ex = assertThrows(FeilkodeException.class, () -> veileder.endreOmMentor(endreOmMentor,avtale));
+        assertThat(ex.getFeilkode()).isEqualTo(Feilkode.KAN_IKKE_ENDRE_FEIL_TILTAKSTYPE);
+    }
+
+    @Test
+    public void endreOmMentor__IKKE_endre_IKKE_INNGÅTT_AVTALE() {
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
+        EndreOmMentor endreOmMentor = new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5.0, 500);
+
+        Veileder veileder = new Veileder(
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            mock(Norg2Client.class),
+            Set.of(new NavEnhet("4802", "Trysil")),
+            TestData.INGEN_AD_GRUPPER,
+            mock(VeilarboppfolgingService.class),
+            mock(FeatureToggleService.class),
+            mock(EregService.class),
+            regelmotor
+        );
+
+        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+        FeilkodeException ex = assertThrows(FeilkodeException.class, () -> veileder.endreOmMentor(endreOmMentor,avtale));
+        assertThat(ex.getFeilkode()).isEqualTo(Feilkode.KAN_IKKE_ENDRE_OM_MENTOR_IKKE_INNGAATT_AVTALE);
     }
 
 }

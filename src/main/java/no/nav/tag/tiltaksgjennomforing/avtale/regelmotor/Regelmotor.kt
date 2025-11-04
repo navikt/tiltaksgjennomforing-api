@@ -1,23 +1,39 @@
-package no.nav.tag.tiltaksgjennomforing.avtale.regelmotor;
+package no.nav.tag.tiltaksgjennomforing.avtale.regelmotor
 
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold
+import no.nav.tag.tiltaksgjennomforing.avtale.regelmotor.mentor.MentorRegel
+import org.springframework.stereotype.Component
 
 @Component
-public class Regelmotor {
-    private final List<IRegel> rules;
+class Regelmotor() {
+    //TODO: Legg til flere tiltakstyper her etterhvert som de blir implementert
+    fun hent(avtale: Avtale): Tiltaksmotor = MentorRegel(avtale).motor
+}
 
-    public Regelmotor(List<IRegel> regler) {
-        this.rules = regler;
+// --- Regelmotor ---
+class Tiltaksregel(
+    val beskrivelse: String,
+    val betingelse: () -> Boolean,
+    val innhold: () -> AvtaleInnhold
+)
+
+class Tiltaksmotor(val avtale: Avtale) {
+    private val regler = mutableListOf<Tiltaksregel>()
+
+    fun regel(
+        beskrivelse: String,
+        betingelse: () -> Boolean,
+        innhold: () -> AvtaleInnhold
+    ) {
+        regler += Tiltaksregel(beskrivelse, betingelse, innhold)
     }
 
-    public List<String> vurder(Avtale avtale){
-        return rules.stream()
-            .filter(rule -> rule.vurder(avtale))
-            .map(IRegel::beskrivelse)
-            .collect(Collectors.toList());
+    fun evaluer() {
+        regler.filter { it.betingelse() }
     }
 }
+
+// --- DSL inngangspunkt ---
+fun tiltak(avtale: Avtale, init: Tiltaksmotor.(Avtale) -> Unit): Tiltaksmotor =
+    Tiltaksmotor(avtale).apply { init(avtale) }

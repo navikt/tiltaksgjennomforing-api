@@ -16,6 +16,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.regelmotor.Regelmotor;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
@@ -101,7 +102,7 @@ public class InnloggetBrukerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService,
-                mock(EregService.class)
+                mock(EregService.class),mock(Regelmotor.class)
         );
 
         assertThat(veileder.harTilgangTilAvtale(avtale).erTillat()).isTrue();
@@ -121,7 +122,7 @@ public class InnloggetBrukerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService,
-                mock(EregService.class)
+                mock(EregService.class),mock(Regelmotor.class)
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,
@@ -143,7 +144,7 @@ public class InnloggetBrukerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService,
-                mock(EregService.class)
+                mock(EregService.class),mock(Regelmotor.class)
         );
         when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
         assertThat(veileder.harTilgangTilAvtale(avtale).erTillat()).isTrue();
@@ -161,7 +162,7 @@ public class InnloggetBrukerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService,
-                mock(EregService.class)
+                mock(EregService.class),mock(Regelmotor.class)
         );
         when(tilgangskontrollService.hentSkrivetilgang(
                 veileder,
@@ -182,7 +183,8 @@ public class InnloggetBrukerTest {
                         persondataService,
                         null,
                         null,
-                        null
+                        null,
+                    null
                 ).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
     }
@@ -202,7 +204,7 @@ public class InnloggetBrukerTest {
                         TestData.INGEN_AD_GRUPPER,
                         veilarboppfolgingService,
                         featureToggleService,
-                        mock(EregService.class)
+                        mock(EregService.class),mock(Regelmotor.class)
                 ).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
     }
@@ -222,7 +224,7 @@ public class InnloggetBrukerTest {
                         TestData.INGEN_AD_GRUPPER,
                         veilarboppfolgingService,
                         featureToggleService,
-                        mock(EregService.class)
+                        mock(EregService.class),mock(Regelmotor.class)
                 ).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
     }
@@ -239,7 +241,7 @@ public class InnloggetBrukerTest {
                 persondataService,
                 null,
                 null,
-                null
+                null,null
             ).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
     }
@@ -256,7 +258,7 @@ public class InnloggetBrukerTest {
                 persondataService,
                 null,
                 null,
-                null
+                null,null
         );
         assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isTrue();
     }
@@ -274,7 +276,7 @@ public class InnloggetBrukerTest {
                 persondataService,
                 null,
                 null,
-                null
+                null,null
         );
         assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isFalse();
     }
@@ -314,7 +316,7 @@ public class InnloggetBrukerTest {
                 persondataService,
                 null,
                 null,
-                null
+                null,null
         );
 
         assertThat(arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isTrue();
@@ -332,7 +334,7 @@ public class InnloggetBrukerTest {
                 persondataService,
                 null,
                 null,
-                null
+                null,null
         );
         assertThat(arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isFalse();
     }
