@@ -51,6 +51,12 @@ POST http://localhost:12345/tiltaksgjennomforing-api/utvikler-admin/aktivitetspl
 Content-Type: application/json
 Authorization: Bearer <TOKEN>
 
+### Hent aktivitetsplan-id'en vi ville fått når vi tar over kort fra Arena/
+# Husk å bytte ut UUID med avtalens id
+POST http://localhost:12345/tiltaksgjennomforing-api/utvikler-admin/aktivitetsplan/avtale/<UUID>/hent-aktivitetsplan-id
+Content-Type: application/json
+Authorization: Bearer <TOKEN>
+
 
 ### Sender hendelsemelding for en avtale
 # Husk å bytte ut UUID med avtalens id
