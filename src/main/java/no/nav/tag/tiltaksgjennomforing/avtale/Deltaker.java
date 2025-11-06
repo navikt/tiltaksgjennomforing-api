@@ -26,7 +26,7 @@ public class Deltaker extends Avtalepart<Fnr> {
     @Override
     public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
         Avtale avtale = super.hentAvtale(avtaleRepository,avtaleId);
-        return skjulMentorFødselsnummer(avtale);
+        return skjulMentorFelterForDeltaker(avtale);
     }
 
     @Override
@@ -58,10 +58,18 @@ public class Deltaker extends Avtalepart<Fnr> {
         return new PageImpl<>(avtaleListe, avtalePage.getPageable(), avtaleListe.size());
     }
 
-    private Avtale skjulMentorFødselsnummer(Avtale avtale){
+    private Avtale skjulMentorFelterForDeltaker(Avtale avtale){
         if(avtale.getTiltakstype() == Tiltakstype.MENTOR) {
             avtale.setMentorFnr(null);
+            avtale.getGjeldendeInnhold().setArbeidsgiveravgift(null);
+            avtale.getGjeldendeInnhold().setArbeidsgiveravgiftBelop(null);
+            avtale.getGjeldendeInnhold().setFeriepengesats(null);
+            avtale.getGjeldendeInnhold().setFeriepengerBelop(null);
+            avtale.getGjeldendeInnhold().setLonnstilskuddProsent(null);
+            avtale.getGjeldendeInnhold().setManedslonn(null);
             avtale.getGjeldendeInnhold().setMentorTimelonn(null);
+            avtale.getGjeldendeInnhold().setOtpSats(null);
+            avtale.getGjeldendeInnhold().setOtpBelop(null);
         }
         return avtale;
     }
