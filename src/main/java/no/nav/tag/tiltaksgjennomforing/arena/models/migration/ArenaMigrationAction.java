@@ -35,6 +35,7 @@ public enum ArenaMigrationAction {
         Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
         Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
         boolean isFeilregistrert = avtale.isFeilregistrert();
+        boolean isSluttdatoIDagEllerFremtiden = agreementAggregate.isSluttdatoIDagEllerFremtiden();
 
         if (agreementAggregate.isDublett()) {
             return IGNORER;
@@ -59,8 +60,9 @@ public enum ArenaMigrationAction {
                     case null, default -> ANNULLER;
                 };
                 case AVLYST -> ANNULLER;
-                case AVSLUTT, GJENNOMFOR -> switch (deltakerstatuskode) {
-                    case FULLF, GJENN, TILBUD -> AVSLUTT;
+                case AVSLUTT, GJENNOMFOR -> switch(deltakerstatuskode) {
+                    case FULLF -> AVSLUTT;
+                    case GJENN, TILBUD -> isSluttdatoIDagEllerFremtiden ? OPPDATER : AVSLUTT;
                     case null, default -> ANNULLER;
                 };
                 case null, default -> throw new IllegalStateException(formatExceptionMsg(tiltakstatuskode, deltakerstatuskode));
