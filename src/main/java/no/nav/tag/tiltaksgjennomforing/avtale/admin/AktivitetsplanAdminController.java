@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -55,6 +56,13 @@ public class AktivitetsplanAdminController {
 
         Integer deltakerId = deltakerIder.stream().findFirst().orElseThrow(RessursFinnesIkkeException::new);
         return aktivitetArenaAclClient.getAktivitetsId(deltakerId);
+    }
+
+    @PostMapping("/ta-over-flere-kort")
+    public void taOverAktivitetsplankortForFlereAvtaler(@RequestBody List<UUID> avtaleIder) {
+        avtaleIder.forEach(avtale -> {
+            taOverAktivitetsplankort(avtale);
+            });
     }
 
     /*
