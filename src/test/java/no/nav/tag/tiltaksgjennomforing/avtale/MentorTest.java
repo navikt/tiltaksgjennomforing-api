@@ -65,6 +65,17 @@ public class MentorTest {
     public void endreAvtale_av_veileder_fra_opphav_arena_og_start_dato_er_allerede_satt_skal_ikke_kunne_endres(){
         // GITT
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.ARENA);
+        Avtale arenaAvtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.ARENA);
+        arenaAvtale.getGjeldendeInnhold().setStartDato(LocalDate.now().minusYears(1));
+
+        ArenaRyddeAvtale arenaRyddeAvtale = new ArenaRyddeAvtale();
+        arenaRyddeAvtale.setAvtale(arenaAvtale);
+        arenaRyddeAvtale.setMigreringsdato(LocalDate.now());
+
+        avtale.setArenaRyddeAvtale(arenaRyddeAvtale);
+        avtale.getGjeldendeInnhold().setAvtale(avtale);
+
+        avtale.setGodkjentForEtterregistrering(true); // DENNE SETTES TIL TRUE UNDER ARENA MIGRERING
         avtale.getGjeldendeInnhold().setStartDato(LocalDate.now().minusYears(2));
         avtale.getGjeldendeInnhold().setSluttDato(LocalDate.now().plusYears(1));
 
@@ -73,16 +84,25 @@ public class MentorTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setStartDato(ønsketStartDato_2_maaneder_tilbake);
         // SÅ
-        assertThrows(FeilkodeException.class,() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
+        assertFeilkode(Feilkode.KAN_IKKE_ENDRE_AVTALE_MED_OPPHAV_ARENA_OG_STARTDATO_ALLEREDE_SATT,() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
     }
 
     @Test
     public void endreAvtale_av_veileder_fra_opphav_arena_og_start_dato_er_IKKE_satt_skal_avtalen_dato_kunne_endres(){
         // GITT
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.ARENA);
+        Avtale arenaAvtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.ARENA);
+
+        ArenaRyddeAvtale arenaRyddeAvtale = new ArenaRyddeAvtale();
+        arenaRyddeAvtale.setAvtale(arenaAvtale);
+        arenaRyddeAvtale.setMigreringsdato(LocalDate.now());
+
+        avtale.setArenaRyddeAvtale(arenaRyddeAvtale);
+        avtale.getGjeldendeInnhold().setAvtale(avtale);
+
+        avtale.setGodkjentForEtterregistrering(true); // DENNE SETTES TIL TRUE UNDER ARENA MIGRERING
         avtale.getGjeldendeInnhold().setStartDato(null);
         avtale.getGjeldendeInnhold().setSluttDato(null);
-        avtale.setGodkjentForEtterregistrering(true);
 
         //NÅR
         val ønsketStartDato_2_maaneder_tilbake = LocalDate.now().minusMonths(2);
@@ -96,25 +116,6 @@ public class MentorTest {
         assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(ønsketStartDato_2_maaneder_tilbake.plusMonths(1));
     }
 
-    @Test
-    public void endreAvtale_av_veileder_fra_opphav_arena_og_start_dato_er_LIK_NY_START_DATO_ENDRING_skal_Avtalen_endres(){
-        //GITT
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.ARENA);
-        val ønsketStartDato_2_maaneder_tilbake = LocalDate.now().minusMonths(2);
-        avtale.getGjeldendeInnhold().setStartDato(ønsketStartDato_2_maaneder_tilbake);
-        avtale.getGjeldendeInnhold().setSluttDato(ønsketStartDato_2_maaneder_tilbake.plusMonths(1));
-        avtale.setGodkjentForEtterregistrering(true);
-
-        //NÅR
-        EndreAvtale endreAvtale = new EndreAvtale();
-        endreAvtale.setStartDato(ønsketStartDato_2_maaneder_tilbake);
-        endreAvtale.setSluttDato(ønsketStartDato_2_maaneder_tilbake.plusMonths(2));
-
-        //SÅ
-        assertDoesNotThrow(() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
-        assertThat(avtale.getGjeldendeInnhold().getStartDato()).isEqualTo(ønsketStartDato_2_maaneder_tilbake);
-        assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(ønsketStartDato_2_maaneder_tilbake.plusMonths(2));
-    }
     @Test
     public void hentAlleAvtalerMedMuligTilgang__mentor_en_avtale() throws Exception {
 
