@@ -1,11 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
 public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
     final AvtaleInnhold avtaleInnhold;
@@ -16,6 +21,16 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
 
     @Override
     public void endre(EndreAvtale nyAvtale) {
+        final Avtale avtale = avtaleInnhold.getAvtale();
+        final ArenaRyddeAvtale arenaRyddeAvtale = avtale.getArenaRyddeAvtale();
+
+        if(avtale.erOpphavArena()
+            && arenaRyddeAvtale != null
+            && arenaRyddeAvtale.getAvtale() != null
+            && arenaRyddeAvtale.getAvtale().getGjeldendeInnhold() != null
+            && arenaRyddeAvtale.getAvtale().getGjeldendeInnhold().getStartDato() != null){
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_AVTALE_MED_OPPHAV_ARENA_OG_STARTDATO_ALLEREDE_SATT);
+        }
         avtaleInnhold.setDeltakerFornavn(nyAvtale.getDeltakerFornavn());
         avtaleInnhold.setDeltakerEtternavn(nyAvtale.getDeltakerEtternavn());
         avtaleInnhold.setDeltakerTlf(nyAvtale.getDeltakerTlf());

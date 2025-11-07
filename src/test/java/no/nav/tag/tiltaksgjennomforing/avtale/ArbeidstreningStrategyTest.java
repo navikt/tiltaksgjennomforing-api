@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.bekk.bekkopen.person.FodselsnummerValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,16 +26,20 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold.Fields.tilret
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold.Fields.veilederEtternavn;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold.Fields.veilederFornavn;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold.Fields.veilederTlf;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAvtaleMedAltUtfylt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ArbeidstreningStrategyTest {
 
+    private Avtale avtale;
     private AvtaleInnhold avtaleInnhold;
     private AvtaleInnholdStrategy strategy;
 
     @BeforeEach
     public void setUp() {
-        avtaleInnhold = new AvtaleInnhold();
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
+        avtale = enArbeidstreningAvtaleMedAltUtfylt();
+        avtaleInnhold = avtale.getGjeldendeInnhold();
         strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, Tiltakstype.ARBEIDSTRENING);
     }
 
