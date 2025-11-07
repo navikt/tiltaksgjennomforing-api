@@ -24,11 +24,11 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
         final Avtale avtale = avtaleInnhold.getAvtale();
         final ArenaRyddeAvtale arenaRyddeAvtale = avtale.getArenaRyddeAvtale();
 
-        if(avtale.erOpphavArena() &&
-        erIkkeTomme(arenaRyddeAvtale,
-            arenaRyddeAvtale.getAvtale(),
-            arenaRyddeAvtale.getAvtale().getGjeldendeInnhold(),
-            arenaRyddeAvtale.getAvtale().getGjeldendeInnhold().getStartDato())){
+        if(avtale.erOpphavArena()
+            && arenaRyddeAvtale != null
+            && arenaRyddeAvtale.getAvtale() != null
+            && arenaRyddeAvtale.getAvtale().getGjeldendeInnhold() != null
+            && arenaRyddeAvtale.getAvtale().getGjeldendeInnhold().getStartDato() != null){
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_AVTALE_MED_OPPHAV_ARENA_OG_STARTDATO_ALLEREDE_SATT);
         }
         avtaleInnhold.setDeltakerFornavn(nyAvtale.getDeltakerFornavn());
