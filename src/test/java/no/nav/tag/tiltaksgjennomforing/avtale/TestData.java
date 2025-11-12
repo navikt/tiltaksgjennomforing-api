@@ -831,6 +831,8 @@ public class TestData {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.023));
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setFeriepengesats(BigDecimal.valueOf(0.03));
+        endreAvtale.setMentorValgtLonnstypeBelop(875_000);
+        endreAvtale.setMentorValgtLonnstype(MentorValgtLonnstype.ÅRSLØNN);
         return endreAvtale;
     }
 

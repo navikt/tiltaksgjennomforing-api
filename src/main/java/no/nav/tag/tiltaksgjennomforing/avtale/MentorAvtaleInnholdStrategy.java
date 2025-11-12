@@ -1,13 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold.Fields;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentorTimelonnBeregning;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentortilskuddAvtaleBeregningStrategy;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MentorAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy {
-    private MentortilskuddAvtaleBeregningStrategy mentorBeregningStrategy;
+    private final MentortilskuddAvtaleBeregningStrategy mentorBeregningStrategy;
 
     public MentorAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
@@ -32,6 +33,12 @@ public class MentorAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrat
             avtaleInnhold.setFeriepengesats(nyAvtale.getFeriepengesats());
             avtaleInnhold.setOtpSats(nyAvtale.getOtpSats());
             avtaleInnhold.setArbeidsgiveravgift(nyAvtale.getArbeidsgiveravgift());
+            avtaleInnhold.setMentorValgtLonnstype(nyAvtale.getMentorValgtLonnstype());
+            avtaleInnhold.setMentorValgtLonnstypeBelop(nyAvtale.getMentorValgtLonnstypeBelop());
+
+            if (nyAvtale.getMentorValgtLonnstype() != null && nyAvtale.getMentorValgtLonnstypeBelop() != null && nyAvtale.getStillingprosent() != null) {
+                avtaleInnhold.setMentorTimelonn(MentorTimelonnBeregning.beregnMentorTimelonn(nyAvtale.getMentorValgtLonnstype(), nyAvtale.getMentorValgtLonnstypeBelop(), nyAvtale.getStillingprosent()));
+            }
         }
 
         super.endre(nyAvtale);
@@ -77,6 +84,8 @@ public class MentorAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrat
             alleFelter.put(AvtaleInnhold.Fields.feriepengesats, avtaleInnhold.getFeriepengesats());
             alleFelter.put(AvtaleInnhold.Fields.otpSats, avtaleInnhold.getOtpSats());
             alleFelter.put(AvtaleInnhold.Fields.arbeidsgiveravgift, avtaleInnhold.getArbeidsgiveravgift());
+            alleFelter.put(AvtaleInnhold.Fields.mentorValgtLonnstype, avtaleInnhold.getMentorValgtLonnstype());
+            alleFelter.put(AvtaleInnhold.Fields.mentorValgtLonnstypeBelop, avtaleInnhold.getMentorValgtLonnstypeBelop());
         }
 
         alleFelter.put(AvtaleInnhold.Fields.harFamilietilknytning, avtaleInnhold.getHarFamilietilknytning());
