@@ -814,7 +814,6 @@ public class TestData {
         endreAvtale.setStillingstype(Stillingstype.FAST);
         endreAvtale.setAntallDagerPerUke(BigDecimal.valueOf(5));
         endreAvtale.setManedslonn(null);
-        endreAvtale.setMentorAntallTimer(null);
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
