@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
@@ -11,13 +12,18 @@ import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.convertBigDecimalToInt;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.toBigDecimal;
 
-public class GenerellLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAvtaleBeregningStrategy {
+public class GenerellLonnstilskuddAvtaleBeregningStrategy implements BeregningStrategy {
 
     public List<TilskuddPeriode> genererNyeTilskuddsperioder(Avtale avtale) {
         if (avtale.erAvtaleInngått()) {
@@ -25,7 +31,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         }
 
         AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
-        if (Utils.erNoenTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnstilskudd())) {
+        if (!nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder(avtale)) {
             return Collections.emptyList();
         }
 
@@ -57,11 +63,11 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
 
     public void reberegnTotal(Avtale avtale) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
-        BigDecimal feriepengerBelop = getFeriepengerBelop(avtaleInnhold.getFeriepengesats(), avtaleInnhold.getManedslonn());
-        BigDecimal obligTjenestepensjon = getBeregnetOtpBelop(toBigDecimal(avtaleInnhold.getOtpSats()), avtaleInnhold.getManedslonn(), feriepengerBelop);
-        BigDecimal arbeidsgiveravgiftBelop = getArbeidsgiverAvgift(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon,
+        BigDecimal feriepengerBelop = BeregningStrategy.getFeriepengerBelop(avtaleInnhold.getFeriepengesats(), avtaleInnhold.getManedslonn());
+        BigDecimal obligTjenestepensjon = BeregningStrategy.getBeregnetOtpBelop(toBigDecimal(avtaleInnhold.getOtpSats()), avtaleInnhold.getManedslonn(), feriepengerBelop);
+        BigDecimal arbeidsgiveravgiftBelop = BeregningStrategy.getArbeidsgiverAvgift(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon,
                 avtaleInnhold.getArbeidsgiveravgift());
-        Integer sumLonnsutgifter = getSumLonnsutgifter(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop);
+        Integer sumLonnsutgifter = BeregningStrategy.getSumLonnsutgifter(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop);
         Integer sumlønnTilskudd = getSumLonnsTilskudd(sumLonnsutgifter, avtaleInnhold.getLonnstilskuddProsent());
         Integer månedslønnFullStilling = getLønnVedFullStilling(sumLonnsutgifter, avtaleInnhold.getStillingprosent());
         avtaleInnhold.setFeriepengerBelop(convertBigDecimalToInt(feriepengerBelop));
@@ -72,8 +78,46 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         avtaleInnhold.setManedslonn100pst(månedslønnFullStilling);
     }
 
+    public List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(UUID id, Tiltakstype tiltakstype, Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
+        if (datoForRedusertProsent == null) {
+            // Ingen reduserte peridoder   -----60-----60------60------ |
+            return BeregningStrategy.lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
+                Integer beløp = BeregningStrategy.beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMåned);
+                return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), lonnstilskuddprosent);
+            }).collect(Collectors.toList());
+        } else {
+            if (datoFraOgMed.isBefore(datoForRedusertProsent.plusDays(1)) && datoTilOgMed.isAfter(datoForRedusertProsent.minusDays(1))) {
+                // Både ikke reduserte og reduserte   ---60---60-----50----|--50----50-----
+                List<TilskuddPeriode> tilskuddperioderFørRedusering = BeregningStrategy.lagPeriode(datoFraOgMed, datoForRedusertProsent.minusDays(1)).stream().map(datoPar -> {
+                    Integer beløp = BeregningStrategy.beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMåned);
+                    return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), lonnstilskuddprosent);
+                }).toList();
+
+                List<TilskuddPeriode> tilskuddperioderEtterRedusering = BeregningStrategy.lagPeriode(datoForRedusertProsent, datoTilOgMed).stream().map(datoPar -> {
+                    Integer beløp = BeregningStrategy.beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMånedRedusert);
+                    return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), BeregningStrategy.getRedusertLonnstilskuddprosent(tiltakstype, lonnstilskuddprosent));
+                }).toList();
+
+                ArrayList<TilskuddPeriode> tilskuddsperioder = new ArrayList<>();
+                tilskuddsperioder.addAll(tilskuddperioderFørRedusering);
+                tilskuddsperioder.addAll(tilskuddperioderEtterRedusering);
+                return tilskuddsperioder;
+            } else if (datoFraOgMed.isAfter(datoForRedusertProsent)) {
+                // Kun redusete peridoer      ---60----60----60---50---|--50----50---50--50--
+                List<TilskuddPeriode> tilskuddperioderEtterRedusering = BeregningStrategy.lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
+                    Integer beløp = BeregningStrategy.beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMånedRedusert);
+                    return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), BeregningStrategy.getRedusertLonnstilskuddprosent(tiltakstype, lonnstilskuddprosent));
+                }).toList();
+                return new ArrayList<>(tilskuddperioderEtterRedusering);
+            } else {
+                throw new FeilkodeException(Feilkode.FORLENG_MIDLERTIDIG_IKKE_TILGJENGELIG);
+            }
+        }
+
+    }
+
     @Override
-    public boolean nødvendigeFelterErUtfylt(Avtale avtale) {
+    public boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(Avtale avtale) {
         var gjeldendeInnhold = avtale.getGjeldendeInnhold();
         return Utils.erIkkeTomme(
                 gjeldendeInnhold.getStartDato(),
@@ -84,6 +128,13 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
                 gjeldendeInnhold.getManedslonn(),
                 gjeldendeInnhold.getOtpSats());
     }
+
+    @Override
+    public boolean nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder(Avtale avtale) {
+        AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
+        return Utils.erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnstilskudd());
+    }
+
 
     public List<TilskuddPeriode> hentTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
         AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
@@ -101,56 +152,6 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         tilskuddsperioder.forEach(t -> t.setEnhet(gjeldendeInnhold.getEnhetKostnadssted()));
         tilskuddsperioder.forEach(t -> t.setEnhetsnavn(gjeldendeInnhold.getEnhetsnavnKostnadssted()));
         return tilskuddsperioder;
-    }
-
-
-    Integer convertBigDecimalToInt(BigDecimal value) {
-        return value == null ? null : value.setScale(0, RoundingMode.HALF_UP).intValue();
-    }
-
-    Integer getSumLonnsutgifter(
-        Integer manedslonn,
-        BigDecimal feriepengerBelop,
-        BigDecimal obligTjenestepensjon,
-        BigDecimal arbeidsgiveravgiftBelop
-    ) {
-        if (erIkkeTomme(feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop)) {
-            return manedslonn + convertBigDecimalToInt(feriepengerBelop.add(obligTjenestepensjon).add(arbeidsgiveravgiftBelop));
-        }
-        return null;
-    }
-
-    BigDecimal getArbeidsgiverAvgift(
-        Integer manedslonn,
-        BigDecimal feriepengerBelop,
-        BigDecimal obligTjenestepensjon,
-        BigDecimal arbeidsgiveravgift
-    ) {
-        if (erIkkeTomme(manedslonn, feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgift)) {
-            return arbeidsgiveravgift.multiply(BigDecimal.valueOf(manedslonn).add(feriepengerBelop).add(obligTjenestepensjon));
-        }
-        return null;
-    }
-
-    BigDecimal getBeregnetOtpBelop(BigDecimal optSats, Integer manedslonn, BigDecimal feriepenger) {
-        if (erIkkeTomme(optSats, manedslonn, feriepenger)) {
-            return (optSats.multiply(BigDecimal.valueOf(manedslonn).add(feriepenger)));
-        }
-        return null;
-    }
-
-    BigDecimal getFeriepengerBelop(BigDecimal feriepengersats, Integer manedslonn) {
-        if (erIkkeTomme(feriepengersats, manedslonn)) {
-            return (feriepengersats.multiply(BigDecimal.valueOf(manedslonn)));
-        }
-        return null;
-    }
-
-    BigDecimal toBigDecimal(Double value) {
-        if (value == null) {
-            return null;
-        }
-        return BigDecimal.valueOf(value);
     }
 
     Integer getLønnVedFullStilling(Integer sumUtgifter, BigDecimal stillingsProsent) {

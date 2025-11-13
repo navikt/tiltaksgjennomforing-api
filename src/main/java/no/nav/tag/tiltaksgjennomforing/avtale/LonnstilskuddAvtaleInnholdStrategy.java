@@ -5,7 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.GenerellLonnstilskuddAvtaleBeregningStrategy;
-import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.LonnstilskuddAvtaleBeregningStrategy;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class LonnstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
 
-    private LonnstilskuddAvtaleBeregningStrategy beregningStrategy;
+    private BeregningStrategy beregningStrategy;
 
     public LonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);

@@ -89,9 +89,8 @@ import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditerbarEntitet;
 import no.nav.tag.tiltaksgjennomforing.oppfolging.Oppfolging;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
-import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.LonnstilskuddAvtaleBeregningStrategy;
-import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.TilskuddsperioderBeregningStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
@@ -203,7 +202,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     @JsonIgnore
     @Transient
-    private AtomicReference<LonnstilskuddAvtaleBeregningStrategy> lonnstilskuddAvtaleBeregningStrategy = new AtomicReference<>();
+    private AtomicReference<BeregningStrategy> beregningStrategy = new AtomicReference<>();
 
     private LocalDate kreverOppfolgingFom = null;
 
@@ -1116,7 +1115,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     protected Integer beregnTilskuddsprosentForPeriode(LocalDate sluttDato) {
-        return this.hentBeregningStrategi().beregnTilskuddsprosentForPeriode(this, sluttDato);
+        return BeregningStrategy.tilskuddprosentForPeriode(
+            sluttDato,
+            tiltakstype,
+            gjeldendeInnhold.getDatoForRedusertProsent(),
+            gjeldendeInnhold.getLonnstilskuddProsent()
+        );
     }
 
     protected Integer beregnTilskuddsbeløpForPeriode(LocalDate startDato, LocalDate sluttDato) {
@@ -1133,7 +1137,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private boolean sjekkRyddingAvTilskuddsperioder() {
-        if (!this.hentBeregningStrategi().nødvendigeFelterErUtfylt(this)) {
+        if (!this.hentBeregningStrategi().nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(this)) {
             return false;
         }
         // Statuser som skal få tilskuddsperioder
@@ -1178,7 +1182,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
                 }
             }
 
-            List<TilskuddPeriode> tilskuddsperioder = this.hentBeregningStrategi().genererNyeTilskuddsperioder(this);
+            List<TilskuddPeriode> tilskuddsperioder = this.hentBeregningStrategi().hentTilskuddsperioderForPeriode(this, gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato()); //.genererNyeTilskuddsperioder(this);
 
             tilskuddsperioder.forEach(periode -> {
                 // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
@@ -1670,8 +1674,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         return this.fnrOgBedrift;
     }
 
-    protected LonnstilskuddAvtaleBeregningStrategy hentBeregningStrategi() {
-        return this.lonnstilskuddAvtaleBeregningStrategy.updateAndGet(strategy -> strategy == null ? TilskuddsperioderBeregningStrategyFactory.create(
+    protected BeregningStrategy hentBeregningStrategi() {
+        return this.beregningStrategy.updateAndGet(strategy -> strategy == null ? BeregningStrategy.create(
             tiltakstype) : strategy);
     }
 

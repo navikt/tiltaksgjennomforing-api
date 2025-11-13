@@ -2,17 +2,17 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold.Fields;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentorTimelonnBeregning;
-import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentortilskuddAvtaleBeregningStrategy;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentorBeregningStrategy;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class MentorAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy {
-    private final MentortilskuddAvtaleBeregningStrategy mentorBeregningStrategy;
+public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
+    private MentorBeregningStrategy mentorBeregningStrategy;
 
     public MentorAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
-        mentorBeregningStrategy = new MentortilskuddAvtaleBeregningStrategy();
+        mentorBeregningStrategy = new MentorBeregningStrategy();
     }
 
     @Override
@@ -40,9 +40,11 @@ public class MentorAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrat
                 avtaleInnhold.setMentorTimelonn(MentorTimelonnBeregning.beregnMentorTimelonn(nyAvtale.getMentorValgtLonnstype(), nyAvtale.getMentorValgtLonnstypeBelop(), nyAvtale.getStillingprosent()));
             }
         }
-
         super.endre(nyAvtale);
-        regnUtTotalLonnstilskudd();
+
+        if (MentorTilskuddsperioderToggle.isEnabled()) {
+            regnUtTotalLonnstilskudd();
+        }
     }
 
     @Override
