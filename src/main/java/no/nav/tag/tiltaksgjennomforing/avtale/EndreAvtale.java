@@ -70,6 +70,8 @@ public class EndreAvtale {
     private Double mentorAntallTimer;
     private String mentorTlf;
     private Integer mentorTimelonn;
+    private Integer mentorValgtLonnstypeBelop;
+    private MentorValgtLonnstype mentorValgtLonnstype;
 
     public RefusjonKontaktperson getRefusjonKontaktperson() {
         if (refusjonKontaktpersonTlf == null && refusjonKontaktpersonFornavn == null && refusjonKontaktpersonEtternavn == null) {
@@ -136,7 +138,9 @@ public class EndreAvtale {
                 innhold.getMentorOppgaver(),
                 innhold.getMentorAntallTimer(),
                 innhold.getMentorTlf(),
-                innhold.getMentorTimelonn()
+                innhold.getMentorTimelonn(),
+                innhold.getMentorValgtLonnstypeBelop(),
+                innhold.getMentorValgtLonnstype()
         );
     }
 }

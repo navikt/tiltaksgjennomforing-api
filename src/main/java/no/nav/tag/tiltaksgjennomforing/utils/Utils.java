@@ -5,6 +5,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
@@ -63,5 +65,16 @@ public class Utils {
 
     public static boolean equalsMenIkkeNull(Object a, Object b) {
         return a != null && b != null && Objects.equals(a, b);
+    }
+
+    public static BigDecimal toBigDecimal(Double value) {
+        if (value == null) {
+            return null;
+        }
+        return BigDecimal.valueOf(value);
+    }
+
+    public static Integer convertBigDecimalToInt(BigDecimal value) {
+        return value == null ? null : value.setScale(0, RoundingMode.HALF_UP).intValue();
     }
 }

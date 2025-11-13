@@ -58,7 +58,7 @@ public class MentorAvtaleBeregningStrategyTest {
         assertThat(avtale.beregnTilskuddsbeløpForPeriode(fra, til)).isEqualTo(forventetBeløpForPeriode);
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(1);
         int forventetSumLonnstilskuddaForMentorAvtaler = forventetBeløpForPeriode + feriepengerBelop + forventetOptBelop + arbeidsgiverAvgiftBelop;
-        assertThat(avtale.getGjeldendeInnhold().getSumLonnstilskudd()).isEqualTo(
+        assertThat(avtale.getGjeldendeInnhold().getSumLonnsutgifter()).isEqualTo(
             forventetSumLonnstilskuddaForMentorAvtaler);
         Now.resetClock();
     }

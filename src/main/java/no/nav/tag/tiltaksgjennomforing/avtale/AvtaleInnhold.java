@@ -90,6 +90,8 @@ public class AvtaleInnhold {
     private String mentorOppgaver;
     private Double mentorAntallTimer;
     private Integer mentorTimelonn;
+    private Integer mentorValgtLonnstypeBelop;
+    private MentorValgtLonnstype mentorValgtLonnstype;
     private String mentorTlf;
 
     // Lønnstilskudd

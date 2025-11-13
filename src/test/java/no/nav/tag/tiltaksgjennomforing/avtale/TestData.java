@@ -814,7 +814,6 @@ public class TestData {
         endreAvtale.setStillingstype(Stillingstype.FAST);
         endreAvtale.setAntallDagerPerUke(BigDecimal.valueOf(5));
         endreAvtale.setManedslonn(null);
-        endreAvtale.setMentorAntallTimer(null);
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
@@ -831,6 +830,8 @@ public class TestData {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.023));
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setFeriepengesats(BigDecimal.valueOf(0.03));
+        endreAvtale.setMentorValgtLonnstypeBelop(875_000);
+        endreAvtale.setMentorValgtLonnstype(MentorValgtLonnstype.ÅRSLØNN);
         return endreAvtale;
     }
 
