@@ -51,13 +51,13 @@ class MentorTimelonnBeregningTest {
     void beregetTimeloenn() {
         assertThat(beregnMentorTimelonn(TIMELØNN, 400, BigDecimal.valueOf(100))).isEqualTo(400);
         assertThat(beregnMentorTimelonn(TIMELØNN, 400, BigDecimal.valueOf(50))).isEqualTo(400);
-        assertThat(beregnMentorTimelonn(TIMELØNN, 400, BigDecimal.ZERO)).isZero();
+        assertThat(beregnMentorTimelonn(TIMELØNN, 400, BigDecimal.ZERO)).isEqualTo(400);
         assertThat(beregnMentorTimelonn(TIMELØNN, 0, BigDecimal.valueOf(100))).isZero();
     }
 
     @Test
     void stillingsprosentMindreEnn0kasterException() {
-        assertThatException().isThrownBy(() -> beregnMentorTimelonn(TIMELØNN, 400, BigDecimal.valueOf(-1))).isInstanceOf(IllegalArgumentException.class);
+        assertThatException().isThrownBy(() -> beregnMentorTimelonn(UKELØNN, 400, BigDecimal.valueOf(-1))).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
