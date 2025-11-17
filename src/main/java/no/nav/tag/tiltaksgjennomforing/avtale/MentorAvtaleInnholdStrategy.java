@@ -36,7 +36,7 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
             avtaleInnhold.setMentorValgtLonnstype(nyAvtale.getMentorValgtLonnstype());
             avtaleInnhold.setMentorValgtLonnstypeBelop(nyAvtale.getMentorValgtLonnstypeBelop());
 
-            if (nyAvtale.getMentorValgtLonnstype() != null && nyAvtale.getMentorValgtLonnstypeBelop() != null && nyAvtale.getStillingprosent() != null) {
+            if (nyAvtale.getMentorValgtLonnstype() != null && nyAvtale.getMentorValgtLonnstypeBelop() != null) {
                 avtaleInnhold.setMentorTimelonn(MentorTimelonnBeregning.beregnMentorTimelonn(nyAvtale.getMentorValgtLonnstype(), nyAvtale.getMentorValgtLonnstypeBelop(), nyAvtale.getStillingprosent()));
             }
         }

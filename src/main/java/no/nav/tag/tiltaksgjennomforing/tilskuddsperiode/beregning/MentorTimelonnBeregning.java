@@ -15,12 +15,16 @@ public class MentorTimelonnBeregning {
     private static final int BEREGNING_SKALA = 10;
 
     public static int beregnMentorTimelonn(MentorValgtLonnstype mentorValgtLonnstype, int mentorValgtLonnstypeBelop, BigDecimal stillingsprosent) {
-        if (stillingsprosent == null || stillingsprosent.compareTo(BigDecimal.ZERO) == 0) {
-            return 0;
-        }
-
         if (mentorValgtLonnstypeBelop < 0) {
             throw new IllegalArgumentException("mentorValgtLonnstypeBelop < 0");
+        }
+
+        if(mentorValgtLonnstype == MentorValgtLonnstype.TIMELØNN) {
+            return mentorValgtLonnstypeBelop;
+        }
+
+        if (stillingsprosent == null || stillingsprosent.compareTo(BigDecimal.ZERO) == 0) {
+            return 0;
         }
 
         if (stillingsprosent.compareTo(BigDecimal.ZERO) < 0) {
