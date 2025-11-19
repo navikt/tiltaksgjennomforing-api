@@ -62,7 +62,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         LocalDate startDato,
         LocalDate sluttDato
     ) {
-        return List.of();
+        return List.of(); // TODO: Fiks denne!!!!!
     }
 
     private List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Integer tilskuddsbeløpPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
