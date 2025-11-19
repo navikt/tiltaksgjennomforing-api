@@ -39,19 +39,10 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
             if (nyAvtale.getMentorValgtLonnstype() != null && nyAvtale.getMentorValgtLonnstypeBelop() != null) {
                 avtaleInnhold.setMentorTimelonn(MentorTimelonnBeregning.beregnMentorTimelonn(nyAvtale.getMentorValgtLonnstype(), nyAvtale.getMentorValgtLonnstypeBelop(), nyAvtale.getStillingprosent()));
             }
+            mentorBeregningStrategy.reberegnTotal(avtaleInnhold.getAvtale());
         }
         super.endre(nyAvtale);
-
-        if (MentorTilskuddsperioderToggle.isEnabled()) {
-            regnUtTotalLonnstilskudd();
-        }
     }
-
-    @Override
-    public void regnUtTotalLonnstilskudd() {
-        mentorBeregningStrategy.reberegnTotal(avtaleInnhold.getAvtale());
-    }
-
 
     @Override
     public Map<String, Object> alleFelterSomMåFyllesUt() {
