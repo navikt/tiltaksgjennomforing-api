@@ -7,13 +7,17 @@ import no.nav.tag.tiltaksgjennomforing.arena.client.hendelse.HendelseAktivitetsp
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaAgreementMigrationRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
+
+import static org.springframework.http.ResponseEntity.ok;
 
 @ProtectedWithClaims(issuer = "azure-access-token", claimMap = { "groups=fb516b74-0f2e-4b62-bad8-d70b82c3ae0b" })
 @RestController
@@ -26,11 +30,24 @@ public class AktivitetsplanAdminController {
     private final ArenaAgreementMigrationRepository arenaAgreementMigrationRepository;
 
     /*
-     * Tar over aktivietsplankortet fra Arena og sender siste melding på nytt.
-     * Brukes dersom et tiltak ikke ble migrert fra Arena, men Aktivietsplankortet ennå henger igjen med feil status.
+     * Tar over aktivitetsplankortet fra Arena og sender siste melding på nytt.
+     * Brukes dersom et tiltak ikke ble migrert fra Arena, men Aktivitetsplankortet ennå henger igjen med feil status.
      */
     @PostMapping("/avtale/{avtaleId}/ta-over-kort")
     public void taOverAktivitetsplankort(@PathVariable UUID avtaleId) {
+        UUID aktivitetsplanId = hentAktivitetsplanIdForAvtale(avtaleId);
+        hendelseAktivitetsplanClient.putAktivitetsplanId(avtaleId, aktivitetsplanId, true);
+    }
+
+    /*
+     * Hent aktivitetsplan-id som vi vil brukt dersom vi tok over kort fra Arena.
+     */
+    @PostMapping("/avtale/{avtaleId}/hent-aktivitetsplan-id")
+    public ResponseEntity<UUID> hentAktivitetsplanId(@PathVariable UUID avtaleId) {
+        return ok(hentAktivitetsplanIdForAvtale(avtaleId));
+    }
+
+    private UUID hentAktivitetsplanIdForAvtale(UUID avtaleId) {
         List<Integer> deltakerIder = arenaAgreementMigrationRepository.findTiltakdeltakerIdFromAvtaleId(avtaleId);
 
         if (deltakerIder.size() > 1) {
@@ -38,8 +55,14 @@ public class AktivitetsplanAdminController {
         }
 
         Integer deltakerId = deltakerIder.stream().findFirst().orElseThrow(RessursFinnesIkkeException::new);
-        UUID aktivitetsplanId = aktivitetArenaAclClient.getAktivitetsId(deltakerId);
-        hendelseAktivitetsplanClient.putAktivitetsplanId(avtaleId, aktivitetsplanId, true);
+        return aktivitetArenaAclClient.getAktivitetsId(deltakerId);
+    }
+
+    @PostMapping("/ta-over-flere-kort")
+    public void taOverAktivitetsplankortForFlereAvtaler(@RequestBody List<UUID> avtaleIder) {
+        avtaleIder.forEach(avtale -> {
+            taOverAktivitetsplankort(avtale);
+            });
     }
 
     /*

@@ -33,6 +33,24 @@ public class AvtaleHendelsePatchService {
     }
 
     @Async
+    public void sendAvtaleHendelseMeldingPåUtvalgAvtaler(List<UUID> avtaleIder) {
+        AtomicInteger antallSendt = new AtomicInteger();
+
+        log.info("Henter utvalg av avtaler for å lage patchehendelsemeldinger. Antall avtaler: {}", avtaleIder.size());
+        List<Avtale> utvalgteAvtaler = avtaleRepository.findAllById(avtaleIder);
+        log.info("Antall avtaler hentet: {}, looper og sender PATCH hendelsemeldinger", utvalgteAvtaler.size());
+
+        utvalgteAvtaler.forEach(avtale -> {
+            lagMelding(avtale);
+            antallSendt.getAndIncrement();
+            if (antallSendt.get() % 10 == 0) {
+                log.info("Gått igjennom {} antall avtaler", antallSendt.get());
+            }
+        });
+        log.info("Sendt totalt {} antall PATCH hendelsemeldinger for {} avtaler", antallSendt.get(), utvalgteAvtaler.size());
+    }
+
+    @Async
     public void sendAvtaleHendelseMeldingPåAlleAvtaler() {
         AtomicInteger antallSendt = new AtomicInteger();
 
