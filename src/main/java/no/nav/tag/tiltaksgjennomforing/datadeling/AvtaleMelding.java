@@ -12,7 +12,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Inkluderingstilskuddsutgift;
 import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
-import no.nav.tag.tiltaksgjennomforing.avtale.MentorValgtLonnstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
@@ -95,8 +94,6 @@ public class AvtaleMelding {
     Double mentorAntallTimer;
     Integer mentorTimelonn;
     String mentorTlf;
-    Integer mentorValgtLonnstypeBelop;
-    MentorValgtLonnstype mentorValgtLonnstype;
 
     // Lønnstilskudd
     String arbeidsgiverKontonummer;
@@ -204,8 +201,6 @@ public class AvtaleMelding {
         avtaleMelding.setMentorOppgaver(avtaleInnhold.getMentorOppgaver());
         avtaleMelding.setMentorAntallTimer(avtaleInnhold.getMentorAntallTimer());
         avtaleMelding.setMentorTimelonn(avtaleInnhold.getMentorTimelonn());
-        avtaleMelding.setMentorValgtLonnstype(avtaleInnhold.getMentorValgtLonnstype());
-        avtaleMelding.setMentorValgtLonnstypeBelop(avtaleInnhold.getMentorValgtLonnstypeBelop());
         avtaleMelding.setMentorTlf(avtaleInnhold.getMentorTlf());
         avtaleMelding.setArbeidsgiverKontonummer(avtaleInnhold.getArbeidsgiverKontonummer());
         avtaleMelding.setLonnstilskuddProsent(avtaleInnhold.getLonnstilskuddProsent());
