@@ -33,6 +33,8 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setMentorOppgaver(avtale.getGjeldendeInnhold().getMentorOppgaver());
         avtaleTilJournalfoering.setMentorAntallTimer(avtale.getGjeldendeInnhold().getMentorAntallTimer());
         avtaleTilJournalfoering.setMentorTimelonn(avtale.getGjeldendeInnhold().getMentorTimelonn());
+        avtaleTilJournalfoering.setMentorValgtLonnstype(avtaleInnhold.getMentorValgtLonnstype());
+        avtaleTilJournalfoering.setMentorValgtLonnstypeBelop(avtaleInnhold.getMentorValgtLonnstypeBelop());
         avtaleTilJournalfoering.setGodkjentAvArbeidsgiver(DatoUtils.instantTilLocalDate(avtaleInnhold.getGodkjentAvArbeidsgiver()));
         avtaleTilJournalfoering.setGodkjentAvVeileder(DatoUtils.instantTilLocalDate(avtaleInnhold.getGodkjentAvVeileder()));
         avtaleTilJournalfoering.setGodkjentAvDeltaker(DatoUtils.instantTilLocalDate(avtaleInnhold.getGodkjentAvDeltaker()));

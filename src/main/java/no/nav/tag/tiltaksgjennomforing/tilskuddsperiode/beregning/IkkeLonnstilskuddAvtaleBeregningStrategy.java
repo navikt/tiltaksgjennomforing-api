@@ -13,13 +13,10 @@ import java.util.List;
 import java.util.UUID;
 
 @Slf4j
-public class IkkeLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAvtaleBeregningStrategy {
+public class IkkeLonnstilskuddAvtaleBeregningStrategy implements BeregningStrategy {
 
     @Override
     public List<TilskuddPeriode> genererNyeTilskuddsperioder(Avtale avtale) { return Collections.emptyList(); }
-
-    @Override
-    public List<TilskuddPeriode> hentTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {return Collections.emptyList(); }
 
     @Override
     public void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {}
@@ -38,7 +35,17 @@ public class IkkeLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAv
     }
 
     @Override
-    public boolean nødvendigeFelterErUtfylt(Avtale avtale) {
+    public boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(Avtale avtale) {
         return true;
+    }
+
+    @Override
+    public boolean nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder(Avtale avtale) {
+        return false;
+    }
+
+    @Override
+    public List<TilskuddPeriode> hentTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
+        return List.of();
     }
 }

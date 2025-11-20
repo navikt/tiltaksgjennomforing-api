@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class LonnstilskuddAvtaleBeregningStrategyTest {
+public class BeregningStrategyTest {
 
     @BeforeEach
     public void setup() {

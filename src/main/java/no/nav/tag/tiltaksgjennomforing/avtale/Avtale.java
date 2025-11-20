@@ -89,9 +89,8 @@ import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditerbarEntitet;
 import no.nav.tag.tiltaksgjennomforing.oppfolging.Oppfolging;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
-import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.LonnstilskuddAvtaleBeregningStrategy;
-import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.TilskuddsperioderBeregningStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
@@ -203,7 +202,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     @JsonIgnore
     @Transient
-    private AtomicReference<LonnstilskuddAvtaleBeregningStrategy> lonnstilskuddAvtaleBeregningStrategy = new AtomicReference<>();
+    private AtomicReference<BeregningStrategy> beregningStrategy = new AtomicReference<>();
 
     private LocalDate kreverOppfolgingFom = null;
 
@@ -1116,15 +1115,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     protected Integer beregnTilskuddsprosentForPeriode(LocalDate sluttDato) {
-        return this.hentBeregningStrategi().beregnTilskuddsprosentForPeriode(this, sluttDato);
+        return BeregningStrategy.tilskuddprosentForPeriode(
+            sluttDato,
+            tiltakstype,
+            gjeldendeInnhold.getDatoForRedusertProsent(),
+            gjeldendeInnhold.getLonnstilskuddProsent()
+        );
     }
 
     protected Integer beregnTilskuddsbeløpForPeriode(LocalDate startDato, LocalDate sluttDato) {
         return this.hentBeregningStrategi().beregnTilskuddsbeløpForPeriode(this, startDato, sluttDato);
-    }
-
-    private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
-        return this.hentBeregningStrategi().hentTilskuddsperioderForPeriode(this, startDato, sluttDato);
     }
 
     private void nyeTilskuddsperioder() {
@@ -1137,7 +1137,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private boolean sjekkRyddingAvTilskuddsperioder() {
-        if (!this.hentBeregningStrategi().nødvendigeFelterErUtfylt(this)) {
+        if (!this.hentBeregningStrategi().nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(this)) {
+            // TODO: Her blir det trøbbel i migrering pga start og sluttdato. her må vi refaktorere litt!!
             return false;
         }
         // Statuser som skal få tilskuddsperioder
@@ -1182,10 +1183,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
                 }
             }
 
-            List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioder(
-                gjeldendeInnhold.getStartDato(),
-                gjeldendeInnhold.getSluttDato()
-            );
+            List<TilskuddPeriode> tilskuddsperioder = this.hentBeregningStrategi().hentTilskuddsperioderForPeriode(this, gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato()); //.genererNyeTilskuddsperioder(this);
+
             tilskuddsperioder.forEach(periode -> {
                 // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
                 // Eller skal det være startdato? Er jo den samme datoen som migreringsdato. hmm...
@@ -1207,44 +1206,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
                 );
             return false;
         }
-    }
-
-    public void reberegnUbehandledeTilskuddsperioder() {
-        krevEnAvTiltakstyper(
-            Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
-            Tiltakstype.VARIG_LONNSTILSKUDD,
-            Tiltakstype.SOMMERJOBB
-        );
-
-        // Finn første ubehandlede periode
-        //Optional<TilskuddPeriode> førsteUbehandledeTilskuddsperiode = tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET).findFirst();
-        // Fjern ubehandlede
-        for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
-            TilskuddPeriodeStatus status = tilskuddsperiode.getStatus();
-            if (status == TilskuddPeriodeStatus.UBEHANDLET) {
-                tilskuddPeriode.remove(tilskuddsperiode);
-            }
-        }
-
-        // Lag nye fra og med siste ikke ubehandlet + en dag
-        LocalDate startDato;
-        List<TilskuddPeriode> godkjentePerioder = tilskuddPeriode.stream()
-            .filter(t -> t.getStatus() == TilskuddPeriodeStatus.GODKJENT)
-            .sorted(Comparator.comparing(TilskuddPeriode::getLøpenummer))
-            .toList();
-
-        if (!godkjentePerioder.isEmpty()) {
-            startDato = godkjentePerioder.getLast().getSluttDato().plusDays(1);
-        } else {
-            startDato = tilskuddPeriode.stream().findFirst().map(TilskuddPeriode::getStartDato).orElse(null);
-        }
-
-        List<TilskuddPeriode> nyetilskuddsperioder = beregnTilskuddsperioder(
-            startDato,
-            gjeldendeInnhold.getSluttDato()
-        );
-        tilskuddPeriode.addAll(nyetilskuddsperioder);
-        fikseLøpenumre(tilskuddPeriode.stream().toList(), 1);
     }
 
     public void lagNyGodkjentTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
@@ -1714,8 +1675,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         return this.fnrOgBedrift;
     }
 
-    protected LonnstilskuddAvtaleBeregningStrategy hentBeregningStrategi() {
-        return this.lonnstilskuddAvtaleBeregningStrategy.updateAndGet(strategy -> strategy == null ? TilskuddsperioderBeregningStrategyFactory.create(
+    protected BeregningStrategy hentBeregningStrategi() {
+        return this.beregningStrategy.updateAndGet(strategy -> strategy == null ? BeregningStrategy.create(
             tiltakstype) : strategy);
     }
 

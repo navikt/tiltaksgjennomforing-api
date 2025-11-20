@@ -191,15 +191,6 @@ public class AdminController {
         avtaleRepository.save(avtale);
     }
 
-    @PostMapping("/reberegn-ubehandlede-tilskuddsperioder/{avtaleId}")
-    @Transactional
-    public void reberegnUbehandledeTilskuddsperioder(@PathVariable("avtaleId") UUID avtaleId) {
-        log.info("Reberegner ubehandlede tilskuddsperioder for avtale: {}", avtaleId);
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        avtale.reberegnUbehandledeTilskuddsperioder();
-        avtaleRepository.save(avtale);
-    }
-
     @PostMapping("/finn-avtaler-med-tilskuddsperioder-feil-datoer")
     public void finnTilskuddsperioderMedFeilDatoer() {
         log.info("Finner avtaler som har tilskuddsperioder med mindre startdato enn en periode med lavere løpenummer");

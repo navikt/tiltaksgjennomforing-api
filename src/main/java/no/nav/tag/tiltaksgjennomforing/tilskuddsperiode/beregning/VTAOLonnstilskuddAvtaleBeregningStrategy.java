@@ -22,7 +22,7 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
     private final LocalDate STANDARD_MIGRERINGSDATO = LocalDate.of(2025, 7, 1);
 
     @Override
-    public boolean nødvendigeFelterErUtfylt(Avtale avtale) {
+    public boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(Avtale avtale) {
         var gjeldendeInnhold = avtale.getGjeldendeInnhold();
         return Utils.erIkkeTomme(
             gjeldendeInnhold.getStartDato(),
@@ -76,13 +76,13 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
         LocalDate datoFraOgMed,
         LocalDate datoTilOgMed
     ) {
-        return LonnstilskuddAvtaleBeregningStrategy.lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
+        return BeregningStrategy.lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
             Integer beløp;
             var sats = VTAO_SATS.hentGjeldendeSats(datoPar.getStart());
             if (sats == null) {
                 beløp = null;
             } else {
-                beløp = LonnstilskuddAvtaleBeregningStrategy.beløpForPeriode(
+                beløp = BeregningStrategy.beløpForPeriode(
                     datoPar.getStart(),
                     datoPar.getSlutt(),
                     sats
@@ -113,6 +113,6 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
         if (vtaoSats == null) {
             return null;
         }
-        return LonnstilskuddAvtaleBeregningStrategy.beløpForPeriode(startDato, sluttDato, vtaoSats);
+        return BeregningStrategy.beløpForPeriode(startDato, sluttDato, vtaoSats);
     }
 }
