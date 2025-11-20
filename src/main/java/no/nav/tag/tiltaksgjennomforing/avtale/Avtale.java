@@ -1138,6 +1138,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     private boolean sjekkRyddingAvTilskuddsperioder() {
         if (!this.hentBeregningStrategi().nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(this)) {
+            // TODO: Her blir det trøbbel i migrering pga start og sluttdato. her må vi refaktorere litt!!
             return false;
         }
         // Statuser som skal få tilskuddsperioder

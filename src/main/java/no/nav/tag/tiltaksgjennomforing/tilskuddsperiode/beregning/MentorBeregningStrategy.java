@@ -21,7 +21,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
     @Override
     public void reberegnTotal(Avtale avtale) {
         AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
-        if (innhold.getMentorAntallTimer() == null || innhold.getMentorTimelonn() == null) {
+        if (!nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(avtale)) {
             return;
         }
         var mentorsMånedslønn = Double.valueOf(innhold.getMentorTimelonn() * innhold.getMentorAntallTimer()).intValue();
@@ -40,8 +40,6 @@ public class MentorBeregningStrategy implements BeregningStrategy {
     public boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(Avtale avtale) {
         AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
         return Utils.erIkkeTomme(
-            innhold.getStartDato(),
-            innhold.getSluttDato(),
             innhold.getMentorAntallTimer(),
             innhold.getMentorTimelonn(),
             innhold.getFeriepengesats(),
@@ -62,7 +60,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         LocalDate startDato,
         LocalDate sluttDato
     ) {
-        return List.of(); // TODO: Fiks denne!!!!!
+        return List.of(); // TODO: Fiks denne!!!!! FØR MIGRERING!!
     }
 
     private List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Integer tilskuddsbeløpPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
