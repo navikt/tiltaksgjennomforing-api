@@ -22,7 +22,7 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 
-@Profile("!" + Miljø.LOCAL)
+@Profile({Miljø.DEV_FSS, Miljø.PROD_FSS})
 @Slf4j
 @Component
 @RequiredArgsConstructor
