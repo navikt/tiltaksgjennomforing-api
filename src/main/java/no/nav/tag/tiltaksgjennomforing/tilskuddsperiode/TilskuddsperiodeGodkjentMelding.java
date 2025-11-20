@@ -56,8 +56,6 @@ public class TilskuddsperiodeGodkjentMelding {
     String arbeidsgiverKid;
     Integer mentorTimelonn;
     Double mentorAntallTimer;
-    String mentorFornavn;
-    String mentorEtternavn;
 
     public static TilskuddsperiodeGodkjentMelding create(Avtale avtale, TilskuddPeriode tilskuddsperiode, Integer resendingsnummer) {
         return new TilskuddsperiodeGodkjentMelding(
@@ -94,9 +92,7 @@ public class TilskuddsperiodeGodkjentMelding {
                 avtale.getGjeldendeInnhold().getArbeidsgiverKontonummer(),
                 avtale.getGjeldendeInnhold().getArbeidsgiverKid(),
                 avtale.getGjeldendeInnhold().getMentorTimelonn(),
-                avtale.getGjeldendeInnhold().getMentorAntallTimer(),
-                avtale.getGjeldendeInnhold().getMentorFornavn(),
-                avtale.getGjeldendeInnhold().getMentorEtternavn()
+                avtale.getGjeldendeInnhold().getMentorAntallTimer()
         );
     }
 }
