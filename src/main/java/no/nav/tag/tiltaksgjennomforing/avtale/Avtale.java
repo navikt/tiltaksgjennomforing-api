@@ -881,6 +881,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold.setDeltakerEtternavn(formaterer.getEtternavn());
     }
 
+    public void leggTilMentorNavn(Navn navn) {
+        NavnFormaterer formaterer = new NavnFormaterer(navn);
+        gjeldendeInnhold.setMentorFornavn(formaterer.getFornavn());
+        gjeldendeInnhold.setMentorEtternavn(formaterer.getEtternavn());
+    }
+
     @JsonProperty
     public Set<String> felterSomIkkeErFyltUt() {
         return getGjeldendeInnhold().felterSomIkkeErFyltUt();
