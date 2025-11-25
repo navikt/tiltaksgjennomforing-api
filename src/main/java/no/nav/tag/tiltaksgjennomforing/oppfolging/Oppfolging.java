@@ -70,9 +70,9 @@ public class Oppfolging {
 
     public static Oppfolging fra(AvtaleDTO avtale) {
         return new Oppfolging(
-            avtale.getKreverOppfolgingFom(),
-            avtale.getGjeldendeInnhold().getStartDato(),
-            avtale.getGjeldendeInnhold().getSluttDato()
+            avtale.kreverOppfolgingFom(),
+            avtale.gjeldendeInnhold().startDato(),
+            avtale.gjeldendeInnhold().sluttDato()
         );
     }
 

@@ -2,28 +2,14 @@ package no.nav.tag.tiltaksgjennomforing.avtale.transportlag;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.annotation.Nullable;
-import jakarta.persistence.Convert;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Transient;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
-import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNrConverter;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.avtale.FnrConverter;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneAvArbeidsgiverGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.avtale.NavIdentConverter;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
@@ -38,76 +24,95 @@ import java.time.LocalDate;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-@Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@AllArgsConstructor
 @FieldNameConstants
-@Builder
-public class AvtaleDTO implements AuditerbarEntitet {
+public record AvtaleDTO(
+    UUID id,
 
-    private UUID id;
-    @Convert(converter = FnrConverter.class)
-    private Fnr deltakerFnr;
-    @Convert(converter = FnrConverter.class)
-    private Fnr mentorFnr;
-    @Convert(converter = BedriftNrConverter.class)
-    private BedriftNr bedriftNr;
-    @Convert(converter = NavIdentConverter.class)
-    private NavIdent veilederNavIdent;
+    Fnr deltakerFnr,
 
-    private Tiltakstype tiltakstype;
+    Fnr mentorFnr,
 
-    private Instant opprettetTidspunkt;
+    BedriftNr bedriftNr,
 
-    private Integer avtaleNr;
+    NavIdent veilederNavIdent,
 
-    private AvtaleInnholdDTO gjeldendeInnhold;
+    Tiltakstype tiltakstype,
 
-    private Instant sistEndret;
-    private Instant annullertTidspunkt;
-    private String annullertGrunn;
-    private String enhetGeografisk;
-    private String enhetsnavnGeografisk;
-    private String enhetOppfolging;
-    private String enhetsnavnOppfolging;
-    private boolean erRyddeAvtale;
+    Instant opprettetTidspunkt,
 
-    private Avtaleopphav opphav;
+    Integer avtaleNr,
 
-    /**
-     * NB: Ønsker ikke å endre status direkte, kall heller .endreAvtale(),
-     * som også utfører nødvendige opprydninger.
-     */
-    @Setter(AccessLevel.NONE)
-    private Status status = Status.PÅBEGYNT;
+    AvtaleInnholdDTO gjeldendeInnhold,
 
-    private boolean godkjentForEtterregistrering;
+    Instant sistEndret,
+    Instant annullertTidspunkt,
+    String annullertGrunn,
+    String enhetGeografisk,
+    String enhetsnavnGeografisk,
+    String enhetOppfolging,
+    String enhetsnavnOppfolging,
+    boolean erRyddeAvtale,
 
-    @Enumerated(EnumType.STRING)
-    private Kvalifiseringsgruppe kvalifiseringsgruppe;
-    @Enumerated(EnumType.STRING)
-    private Formidlingsgruppe formidlingsgruppe;
+    Avtaleopphav opphav,
 
-    @Nullable
-    private TilskuddPeriode gjeldendeTilskuddsperiode;
+    Status status,
 
-    private SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
-    private boolean feilregistrert;
+    boolean godkjentForEtterregistrering,
+
+    Kvalifiseringsgruppe kvalifiseringsgruppe,
+    Formidlingsgruppe formidlingsgruppe,
+
+    TilskuddPeriodeDTO gjeldendeTilskuddsperiode,
+
+    SortedSet<TilskuddPeriodeDTO> tilskuddPeriode,
+    boolean feilregistrert,
 
     @JsonIgnore
-    @Transient
-    private FnrOgBedrift fnrOgBedrift;
 
-    private LocalDate kreverOppfolgingFom = null;
+    FnrOgBedrift fnrOgBedrift,
 
-    private Instant oppfolgingVarselSendt = null;
+    LocalDate kreverOppfolgingFom,
 
-    public AvtaleDTO(Avtale avtale) {
-        this.id = avtale.getId();
-        this.deltakerFnr = avtale.getDeltakerFnr();
-        this.mentorFnr = avtale.getMentorFnr();
+    Instant oppfolgingVarselSendt
+) implements AuditerbarEntitet {
+
+    public AvtaleDTO(
+        Avtale avtale
+    ) {
+        this(
+            avtale.getId(),
+            avtale.getDeltakerFnr(),
+            avtale.getMentorFnr(),
+            avtale.getBedriftNr(),
+            avtale.getVeilederNavIdent(),
+            avtale.getTiltakstype(),
+            avtale.getOpprettetTidspunkt(),
+            avtale.getAvtaleNr(),
+            new AvtaleInnholdDTO(avtale.getGjeldendeInnhold()),
+            avtale.getSistEndret(),
+            avtale.getAnnullertTidspunkt(),
+            avtale.getAnnullertGrunn(),
+            avtale.getEnhetGeografisk(),
+            avtale.getEnhetsnavnGeografisk(),
+            avtale.getEnhetOppfolging(),
+            avtale.getEnhetsnavnOppfolging(),
+            avtale.erRyddeAvtale(),
+            avtale.getOpphav(),
+            avtale.getStatus(),
+            avtale.isGodkjentForEtterregistrering(),
+            avtale.getKvalifiseringsgruppe(),
+            avtale.getFormidlingsgruppe(),
+            avtale.getGjeldendeTilskuddsperiode() == null ? null : new TilskuddPeriodeDTO(avtale.getGjeldendeTilskuddsperiode()),
+            avtale.getTilskuddPeriode().stream().map(TilskuddPeriodeDTO::new).collect(Collectors.toCollection(TreeSet::new)),
+            avtale.isFeilregistrert(),
+            avtale.getFnrOgBedrift(),
+            avtale.getKreverOppfolgingFom(),
+            avtale.getOppfolgingVarselSendt()
+        );
     }
+
 
     @JsonProperty
     public boolean erLaast() {
@@ -116,7 +121,7 @@ public class AvtaleDTO implements AuditerbarEntitet {
 
     @JsonProperty
     public boolean erGodkjentAvDeltaker() {
-        return gjeldendeInnhold.getGodkjentAvDeltaker() != null;
+        return gjeldendeInnhold.godkjentAvDeltaker() != null;
     }
 
     @JsonProperty
@@ -124,82 +129,82 @@ public class AvtaleDTO implements AuditerbarEntitet {
         if (gjeldendeInnhold == null) {
             return false;
         }
-        return gjeldendeInnhold.getGodkjentTaushetserklæringAvMentor() != null;
+        return gjeldendeInnhold.godkjentTaushetserklæringAvMentor() != null;
     }
 
     @JsonProperty
     public boolean erGodkjentAvArbeidsgiver() {
-        return gjeldendeInnhold.getGodkjentAvArbeidsgiver() != null;
+        return gjeldendeInnhold.godkjentAvArbeidsgiver() != null;
     }
 
     @JsonProperty
     public boolean erGodkjentAvVeileder() {
-        return gjeldendeInnhold.getGodkjentAvVeileder() != null;
+        return gjeldendeInnhold.godkjentAvVeileder() != null;
     }
 
     @JsonProperty
     public boolean erAvtaleInngått() {
-        return gjeldendeInnhold.getAvtaleInngått() != null;
+        return gjeldendeInnhold.avtaleInngått() != null;
     }
 
     @JsonProperty
     public Instant godkjentAvDeltaker() {
-        return gjeldendeInnhold.getGodkjentAvDeltaker();
+        return gjeldendeInnhold.godkjentAvDeltaker();
     }
 
     @JsonProperty
     public Instant godkjentAvMentor() {
-        return gjeldendeInnhold.getGodkjentTaushetserklæringAvMentor();
+        return gjeldendeInnhold.godkjentTaushetserklæringAvMentor();
     }
 
     @JsonProperty
     public Instant godkjentAvArbeidsgiver() {
-        return gjeldendeInnhold.getGodkjentAvArbeidsgiver();
+        return gjeldendeInnhold.godkjentAvArbeidsgiver();
     }
 
     @JsonProperty
     public Instant godkjentAvVeileder() {
-        return gjeldendeInnhold.getGodkjentAvVeileder();
+        return gjeldendeInnhold.godkjentAvVeileder();
     }
 
     @JsonProperty
     public Instant godkjentAvBeslutter() {
-        return gjeldendeInnhold.getGodkjentAvBeslutter();
+        return gjeldendeInnhold.godkjentAvBeslutter();
     }
 
     @JsonProperty
-    private Instant avtaleInngått() {
-        return gjeldendeInnhold.getAvtaleInngått();
+    Instant avtaleInngått() {
+        return gjeldendeInnhold.avtaleInngått();
     }
 
     @JsonProperty
-    private NavIdent godkjentAvNavIdent() {
-        return gjeldendeInnhold.getGodkjentAvNavIdent();
+    NavIdent godkjentAvNavIdent() {
+        return gjeldendeInnhold.godkjentAvNavIdent();
     }
 
     @JsonProperty
-    private NavIdent godkjentAvBeslutterNavIdent() {
-        return gjeldendeInnhold.getGodkjentAvBeslutterNavIdent();
+    NavIdent godkjentAvBeslutterNavIdent() {
+        return gjeldendeInnhold.godkjentAvBeslutterNavIdent();
     }
 
     @JsonProperty
-    private GodkjentPaVegneGrunn godkjentPaVegneGrunn() {
-        return gjeldendeInnhold.getGodkjentPaVegneGrunn();
+    GodkjentPaVegneGrunn godkjentPaVegneGrunn() {
+        return gjeldendeInnhold.godkjentPaVegneGrunn();
     }
 
     @JsonProperty
-    private boolean godkjentPaVegneAv() {
-        return gjeldendeInnhold.isGodkjentPaVegneAv();
+    boolean godkjentPaVegneAv() {
+        return gjeldendeInnhold.godkjentPaVegneAv();
     }
 
     @JsonProperty
-    private GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn() {
-        return gjeldendeInnhold.getGodkjentPaVegneAvArbeidsgiverGrunn();
+    GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn() {
+        return gjeldendeInnhold.godkjentPaVegneAvArbeidsgiverGrunn();
     }
 
     @JsonProperty
-    private boolean godkjentPaVegneAvArbeidsgiver() {
-        return gjeldendeInnhold.isGodkjentPaVegneAvArbeidsgiver();
+    boolean godkjentPaVegneAvArbeidsgiver() {
+        return gjeldendeInnhold().godkjentPaVegneAvArbeidsgiver();
     }
 
     @JsonProperty
@@ -209,7 +214,17 @@ public class AvtaleDTO implements AuditerbarEntitet {
 
     @JsonProperty
     public boolean erUfordelt() {
-        return this.getVeilederNavIdent() == null;
+        return this.veilederNavIdent() == null;
+    }
+
+    @Override
+    public UUID getId() {
+        return id;
+    }
+
+    @Override
+    public Instant getSistEndret() {
+        return sistEndret;
     }
 
     @Override

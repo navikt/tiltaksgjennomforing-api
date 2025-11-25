@@ -1,11 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.transportlag;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnholdType;
@@ -22,115 +18,179 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 // Lombok
-@Data
 @Builder(toBuilder = true)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@AllArgsConstructor
-@NoArgsConstructor
 @FieldNameConstants
-public class AvtaleInnholdDTO {
-    private Integer versjon;
+public record AvtaleInnholdDTO(
+    Integer versjon,
 
-    private String deltakerFornavn;
-    private String deltakerEtternavn;
-    private String deltakerTlf;
-    private String bedriftNavn;
-    private String arbeidsgiverFornavn;
-    private String arbeidsgiverEtternavn;
-    private String arbeidsgiverTlf;
-    private String veilederFornavn;
-    private String veilederEtternavn;
-    private String veilederTlf;
-    private String oppfolging;
-    private String tilrettelegging;
-    private LocalDate startDato;
-    private LocalDate sluttDato;
-    private BigDecimal stillingprosent;
-    private String journalpostId;
-    private String arbeidsoppgaver;
-    private String stillingstittel;
-    private Integer stillingStyrk08;
-    private Integer stillingKonseptId;
-    private BigDecimal antallDagerPerUke;
+    String deltakerFornavn,
+    String deltakerEtternavn,
+    String deltakerTlf,
+    String bedriftNavn,
+    String arbeidsgiverFornavn,
+    String arbeidsgiverEtternavn,
+    String arbeidsgiverTlf,
+    String veilederFornavn,
+    String veilederEtternavn,
+    String veilederTlf,
+    String oppfolging,
+    String tilrettelegging,
+    LocalDate startDato,
+    LocalDate sluttDato,
+    BigDecimal stillingprosent,
+    String journalpostId,
+    String arbeidsoppgaver,
+    String stillingstittel,
+    Integer stillingStyrk08,
+    Integer stillingKonseptId,
+    BigDecimal antallDagerPerUke,
 
-    private RefusjonKontaktperson refusjonKontaktperson;
+    RefusjonKontaktperson refusjonKontaktperson,
 
     // Mentor
-    private String mentorFornavn;
-    private String mentorEtternavn;
-    private String mentorOppgaver;
-    private Double mentorAntallTimer;
-    private Integer mentorTimelonn;
-    private Integer mentorValgtLonnstypeBelop;
-    private MentorValgtLonnstype mentorValgtLonnstype;
-    private String mentorTlf;
+    String mentorFornavn,
+    String mentorEtternavn,
+    String mentorOppgaver,
+    Double mentorAntallTimer,
+    Integer mentorTimelonn,
+    Integer mentorValgtLonnstypeBelop,
+    MentorValgtLonnstype mentorValgtLonnstype,
+    String mentorTlf,
 
     // Lønnstilskudd
-    private String arbeidsgiverKontonummer;
-    private String arbeidsgiverKid;
-    private Integer lonnstilskuddProsent;
-    private Integer manedslonn;
-    private BigDecimal feriepengesats;
-    private BigDecimal arbeidsgiveravgift;
-    private Boolean harFamilietilknytning;
-    private String familietilknytningForklaring;
-    private Integer feriepengerBelop;
-    private Double otpSats;
-    private Integer otpBelop;
-    private Integer arbeidsgiveravgiftBelop;
-    private Integer sumLonnsutgifter;
-    private Integer sumLonnstilskudd;
-    private Integer manedslonn100pst;
-    private Integer sumLønnstilskuddRedusert;
-    private LocalDate datoForRedusertProsent;
-    private Stillingstype stillingstype;
+    String arbeidsgiverKontonummer,
+    String arbeidsgiverKid,
+    Integer lonnstilskuddProsent,
+    Integer manedslonn,
+    BigDecimal feriepengesats,
+    BigDecimal arbeidsgiveravgift,
+    Boolean harFamilietilknytning,
+    String familietilknytningForklaring,
+    Integer feriepengerBelop,
+    Double otpSats,
+    Integer otpBelop,
+    Integer arbeidsgiveravgiftBelop,
+    Integer sumLonnsutgifter,
+    Integer sumLonnstilskudd,
+    Integer manedslonn100pst,
+    Integer sumLønnstilskuddRedusert,
+    LocalDate datoForRedusertProsent,
+    Stillingstype stillingstype,
 
     // Arbeidstrening
-    private List<Maal> maal = new ArrayList<>();
+    List<MaalDTO> maal,
 
     // Inkluderingstilskudd
-    private List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift = new ArrayList<>();
-    private String inkluderingstilskuddBegrunnelse;
+    List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift,
+    String inkluderingstilskuddBegrunnelse,
+    Instant godkjentAvDeltaker,
+    Instant godkjentTaushetserklæringAvMentor,
+    Instant godkjentAvArbeidsgiver,
+    Instant godkjentAvVeileder,
+    Instant godkjentAvBeslutter,
+    Instant avtaleInngått,
+    Instant ikrafttredelsestidspunkt,
+    NavIdent godkjentAvNavIdent,
+    NavIdent godkjentAvBeslutterNavIdent,
+
+    // Kostnadssted
+    String enhetKostnadssted,
+    String enhetsnavnKostnadssted,
+
+    GodkjentPaVegneGrunn godkjentPaVegneGrunn,
+    boolean godkjentPaVegneAv,
+
+    GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn,
+    boolean godkjentPaVegneAvArbeidsgiver,
+
+    AvtaleInnholdType innholdType
+) {
 
     public AvtaleInnholdDTO(AvtaleInnhold dbEntitet) {
+        this(
+            dbEntitet.getVersjon(),
+            dbEntitet.getDeltakerFornavn(),
+            dbEntitet.getDeltakerEtternavn(),
+            dbEntitet.getDeltakerTlf(),
+            dbEntitet.getBedriftNavn(),
+            dbEntitet.getArbeidsgiverFornavn(),
+            dbEntitet.getArbeidsgiverEtternavn(),
+            dbEntitet.getArbeidsgiverTlf(),
+            dbEntitet.getVeilederFornavn(),
+            dbEntitet.getVeilederEtternavn(),
+            dbEntitet.getVeilederTlf(),
+            dbEntitet.getOppfolging(),
+            dbEntitet.getTilrettelegging(),
+            dbEntitet.getStartDato(),
+            dbEntitet.getSluttDato(),
+            dbEntitet.getStillingprosent(),
+            dbEntitet.getJournalpostId(),
+            dbEntitet.getArbeidsoppgaver(),
+            dbEntitet.getStillingstittel(),
+            dbEntitet.getStillingStyrk08(),
+            dbEntitet.getStillingKonseptId(),
+            dbEntitet.getAntallDagerPerUke(),
+            dbEntitet.getRefusjonKontaktperson(),
+            dbEntitet.getMentorFornavn(),
+            dbEntitet.getMentorEtternavn(),
+            dbEntitet.getMentorOppgaver(),
+            dbEntitet.getMentorAntallTimer(),
+            dbEntitet.getMentorTimelonn(),
+            dbEntitet.getMentorValgtLonnstypeBelop(),
+            dbEntitet.getMentorValgtLonnstype(),
+            dbEntitet.getMentorTlf(),
+            dbEntitet.getArbeidsgiverKontonummer(),
+            dbEntitet.getArbeidsgiverKid(),
+            dbEntitet.getLonnstilskuddProsent(),
+            dbEntitet.getManedslonn(),
+            dbEntitet.getFeriepengesats(),
+            dbEntitet.getArbeidsgiveravgift(),
+            dbEntitet.getHarFamilietilknytning(),
+            dbEntitet.getFamilietilknytningForklaring(),
+            dbEntitet.getFeriepengerBelop(),
+            dbEntitet.getOtpSats(),
+            dbEntitet.getOtpBelop(),
+            dbEntitet.getArbeidsgiveravgiftBelop(),
+            dbEntitet.getSumLonnsutgifter(),
+            dbEntitet.getSumLonnstilskudd(),
+            dbEntitet.getManedslonn100pst(),
+            dbEntitet.getSumLønnstilskuddRedusert(),
+            dbEntitet.getDatoForRedusertProsent(),
+            dbEntitet.getStillingstype(),
+            dbEntitet.getMaal().stream().map(MaalDTO::new).toList(),
+            dbEntitet.getInkluderingstilskuddsutgift(),
+            dbEntitet.getInkluderingstilskuddBegrunnelse(),
+            dbEntitet.getGodkjentAvDeltaker(),
+            dbEntitet.getGodkjentTaushetserklæringAvMentor(),
+            dbEntitet.getGodkjentAvArbeidsgiver(),
+            dbEntitet.getGodkjentAvVeileder(),
+            dbEntitet.getGodkjentAvBeslutter(),
+            dbEntitet.getAvtaleInngått(),
+            dbEntitet.getIkrafttredelsestidspunkt(),
+            dbEntitet.getGodkjentAvNavIdent(),
+            dbEntitet.getGodkjentAvBeslutterNavIdent(),
+            dbEntitet.getEnhetKostnadssted(),
+            dbEntitet.getEnhetsnavnKostnadssted(),
+            dbEntitet.getGodkjentPaVegneGrunn(),
+            dbEntitet.isGodkjentPaVegneAv(),
+            dbEntitet.getGodkjentPaVegneAvArbeidsgiverGrunn(),
+            dbEntitet.isGodkjentPaVegneAvArbeidsgiver(),
+            dbEntitet.getInnholdType()
+        );
     }
 
     @JsonProperty
     public Integer inkluderingstilskuddTotalBeløp() {
         return inkluderingstilskuddsutgift.stream()
-                .map(Inkluderingstilskuddsutgift::getBeløp)
-                .reduce(0, Integer::sum);
+            .map(Inkluderingstilskuddsutgift::getBeløp)
+            .reduce(0, Integer::sum);
     }
 
     @JsonProperty
     public Integer inkluderingstilskuddSats() {
         return InkluderingstilskuddStrategy.getInkluderingstilskuddSats(this.sluttDato);
     }
-
-    // Godkjenning
-    private Instant godkjentAvDeltaker;
-    private Instant godkjentTaushetserklæringAvMentor;
-    private Instant godkjentAvArbeidsgiver;
-    private Instant godkjentAvVeileder;
-    private Instant godkjentAvBeslutter;
-    private Instant avtaleInngått;
-    private Instant ikrafttredelsestidspunkt;
-    private NavIdent godkjentAvNavIdent;
-    private NavIdent godkjentAvBeslutterNavIdent;
-
-    // Kostnadssted
-    private String enhetKostnadssted;
-    private String enhetsnavnKostnadssted;
-
-    private GodkjentPaVegneGrunn godkjentPaVegneGrunn;
-    private boolean godkjentPaVegneAv;
-
-    private GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn;
-    private boolean godkjentPaVegneAvArbeidsgiver;
-
-    private AvtaleInnholdType innholdType;
 }

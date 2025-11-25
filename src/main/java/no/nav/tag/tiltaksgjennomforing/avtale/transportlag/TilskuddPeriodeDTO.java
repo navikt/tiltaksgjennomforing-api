@@ -2,17 +2,13 @@ package no.nav.tag.tiltaksgjennomforing.avtale.transportlag;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.ToString;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avslagsårsak;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonStatus;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
@@ -22,33 +18,27 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@EqualsAndHashCode
-public class TilskuddPeriodeDTO implements Comparable<TilskuddPeriodeDTO> {
-    private static final LocalDate JAN_2026 = LocalDate.of(2026, 1, 1);
+public record TilskuddPeriodeDTO(
 
-    private UUID id = UUID.randomUUID();
+    UUID id,
 
     @JsonIgnore
     @ToString.Exclude
-    private Avtale avtale;
+    Avtale avtale,
 
-    private Integer beløp;
+    Integer beløp,
     @NonNull
-    private LocalDate startDato;
+    LocalDate startDato,
     @NonNull
-    private LocalDate sluttDato;
+    LocalDate sluttDato,
 
-    private NavIdent godkjentAvNavIdent;
+    NavIdent godkjentAvNavIdent,
 
-    private Instant godkjentTidspunkt;
+    Instant godkjentTidspunkt,
 
     /**
      * "Enhet" i denne konteksten er oppfølgingsenheten til deltaker;
@@ -58,30 +48,55 @@ public class TilskuddPeriodeDTO implements Comparable<TilskuddPeriodeDTO> {
      * <p>
      * <b>Eksempel:</b> 1702 (Nav Inn-Trøndelag)
      */
-    private String enhet;
-    private String enhetsnavn;
+    String enhet,
+    String enhetsnavn,
 
-    private Integer lonnstilskuddProsent;
+    Integer lonnstilskuddProsent,
 
-    private Set<Avslagsårsak> avslagsårsaker = EnumSet.noneOf(Avslagsårsak.class);
+    Set<Avslagsårsak> avslagsårsaker,
 
-    private String avslagsforklaring;
-    private NavIdent avslåttAvNavIdent;
-    private Instant avslåttTidspunkt;
-    private Integer løpenummer = 1;
+    String avslagsforklaring,
+    NavIdent avslåttAvNavIdent,
+    Instant avslåttTidspunkt,
+    Integer løpenummer,
 
-    private TilskuddPeriodeStatus status = TilskuddPeriodeStatus.UBEHANDLET;
+    TilskuddPeriodeStatus status,
 
-    private RefusjonStatus refusjonStatus = null;
+    RefusjonStatus refusjonStatus,
 
-    private boolean aktiv = true;
+    boolean aktiv
+) implements Comparable<TilskuddPeriodeDTO> {
+    private static final LocalDate JAN_2026 = LocalDate.of(2026, 1, 1);
+
+    public TilskuddPeriodeDTO(TilskuddPeriode periode) {
+        this(
+            periode.getId(),
+            periode.getAvtale(),
+            periode.getBeløp(),
+            periode.getStartDato(),
+            periode.getSluttDato(),
+            periode.getGodkjentAvNavIdent(),
+            periode.getGodkjentTidspunkt(),
+            periode.getEnhet(),
+            periode.getEnhetsnavn(),
+            periode.getLonnstilskuddProsent(),
+            periode.getAvslagsårsaker(),
+            periode.getAvslagsforklaring(),
+            periode.getAvslåttAvNavIdent(),
+            periode.getAvslåttTidspunkt(),
+            periode.getLøpenummer(),
+            periode.getStatus(),
+            periode.getRefusjonStatus(),
+            periode.isAktiv()
+        );
+    }
 
     private void sjekkOmKanBehandles() {
         if (status != TilskuddPeriodeStatus.UBEHANDLET) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
         }
         if (Now.localDate().isBefore(kanBesluttesFom())
-            || getBeløp() == null) {
+            || beløp() == null) {
             // beløp kan være null når vi fortsatt ikke har sats for en VTAO-avtale
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_BEHANDLE_FOR_TIDLIG);
         }
@@ -94,6 +109,7 @@ public class TilskuddPeriodeDTO implements Comparable<TilskuddPeriodeDTO> {
         var startDatoMinus3Mnd = startDato.minusMonths(3);
         return startDatoMinus3Mnd.isBefore(TilskuddPeriodeDTO.JAN_2026) ? TilskuddPeriodeDTO.JAN_2026 : startDatoMinus3Mnd;
     }
+
     private boolean startDatoErI2026() {
         return startDato.isAfter(JAN_2026.minusDays(1));
     }
@@ -111,31 +127,6 @@ public class TilskuddPeriodeDTO implements Comparable<TilskuddPeriodeDTO> {
         return startDato.minusMonths(3);
     }
 
-    void godkjenn(NavIdent beslutter, String enhet) {
-        sjekkOmKanBehandles();
-
-        setGodkjentTidspunkt(Now.instant());
-        setGodkjentAvNavIdent(beslutter);
-        setEnhet(enhet);
-        setStatus(TilskuddPeriodeStatus.GODKJENT);
-    }
-
-    void avslå(NavIdent beslutter, EnumSet<Avslagsårsak> avslagsårsaker, String avslagsforklaring) {
-        sjekkOmKanBehandles();
-        if (avslagsforklaring.isBlank()) {
-            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_AVSLAGSFORKLARING_PAAKREVD);
-        }
-        if (avslagsårsaker.isEmpty()) {
-            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_INGEN_AVSLAGSAARSAKER);
-        }
-
-        setAvslåttTidspunkt(Now.instant());
-        setAvslåttAvNavIdent(beslutter);
-        this.avslagsårsaker.addAll(avslagsårsaker);
-        setAvslagsforklaring(avslagsforklaring);
-        setStatus(TilskuddPeriodeStatus.AVSLÅTT);
-    }
-
     @JsonProperty
     public boolean kanBehandles() {
         try {
@@ -149,28 +140,28 @@ public class TilskuddPeriodeDTO implements Comparable<TilskuddPeriodeDTO> {
     @Override
     public int compareTo(@NotNull TilskuddPeriodeDTO o) {
         return new CompareToBuilder()
-            .append(this.getLøpenummer(), o.getLøpenummer())
-            .append(this.getStartDato(), o.getStartDato())
-            .append(this.getSluttDato(), o.getSluttDato())
-            .append(this.isAktiv(), o.isAktiv())
-            .append(this.getStatus(), o.getStatus())
-            .append(this.getRefusjonStatus(), o.getRefusjonStatus())
-            .append(this.getBeløp(), o.getBeløp())
-            .append(this.getAvtale(), o.getAvtale())
-            .append(this.getGodkjentTidspunkt(), o.getGodkjentTidspunkt())
-            .append(this.getEnhet(), o.getEnhet())
-            .append(this.getEnhetsnavn(), o.getEnhetsnavn())
-            .append(this.getLonnstilskuddProsent(), o.getLonnstilskuddProsent())
-            .append(this.getAvslåttTidspunkt(), o.getAvslåttTidspunkt())
-            .append(this.getAvslagsforklaring(), o.getAvslagsforklaring())
-            .append(this.getAvslagsårsaker().toString(), o.getAvslagsårsaker().toString())
+            .append(this.løpenummer(), o.løpenummer())
+            .append(this.startDato(), o.startDato())
+            .append(this.sluttDato(), o.sluttDato())
+            .append(this.aktiv(), o.aktiv())
+            .append(this.status(), o.status())
+            .append(this.refusjonStatus(), o.refusjonStatus())
+            .append(this.beløp(), o.beløp())
+            .append(this.avtale(), o.avtale())
+            .append(this.godkjentTidspunkt(), o.godkjentTidspunkt())
+            .append(this.enhet(), o.enhet())
+            .append(this.enhetsnavn(), o.enhetsnavn())
+            .append(this.lonnstilskuddProsent(), o.lonnstilskuddProsent())
+            .append(this.avslåttTidspunkt(), o.avslåttTidspunkt())
+            .append(this.avslagsforklaring(), o.avslagsforklaring())
+            .append(this.avslagsårsaker().toString(), o.avslagsårsaker().toString())
             .append(
-                Optional.ofNullable(this.getGodkjentAvNavIdent()).map(NavIdent::asString).orElse(null),
-                Optional.ofNullable(o.getGodkjentAvNavIdent()).map(NavIdent::asString).orElse(null)
+                Optional.ofNullable(this.godkjentAvNavIdent()).map(NavIdent::asString).orElse(null),
+                Optional.ofNullable(o.godkjentAvNavIdent()).map(NavIdent::asString).orElse(null)
             )
             .append(
-                Optional.ofNullable(this.getAvslåttAvNavIdent()).map(NavIdent::asString).orElse(null),
-                Optional.ofNullable(o.getAvslåttAvNavIdent()).map(NavIdent::asString).orElse(null)
+                Optional.ofNullable(this.avslåttAvNavIdent()).map(NavIdent::asString).orElse(null),
+                Optional.ofNullable(o.avslåttAvNavIdent()).map(NavIdent::asString).orElse(null)
             )
             .toComparison();
     }

@@ -584,8 +584,8 @@ public class AvtaleControllerTest {
         værInnloggetSom(arbeidsgiver);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         AvtaleDTO hentetAvtale = avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER, null);
-        assertThat(hentetAvtale.getEnhetGeografisk()).isNull();
-        assertThat(hentetAvtale.getEnhetOppfolging()).isNull();
+        assertThat(hentetAvtale.enhetGeografisk()).isNull();
+        assertThat(hentetAvtale.enhetOppfolging()).isNull();
     }
 
 
