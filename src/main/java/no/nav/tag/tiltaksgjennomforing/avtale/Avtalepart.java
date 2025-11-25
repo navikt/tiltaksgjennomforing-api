@@ -221,7 +221,7 @@ public abstract class Avtalepart<T extends Identifikator> {
     }
 
     private boolean harTilgangTilMentorArenaMigrering(Avtale avtale) {
-        boolean skalSkjules = (rolle() != Avtalerolle.VEILEDER && rolle() != Avtalerolle.BESLUTTER)
+        boolean skalSkjules = (!rolle().erInternBruker())
             && avtale.getTiltakstype() == Tiltakstype.MENTOR
             && avtale.getOpphav() == Avtaleopphav.ARENA;
 
