@@ -69,7 +69,7 @@ public abstract class Avtalepart<T extends Identifikator> {
             .stream()
             .filter(this::avtalenEksisterer)
             .filter(this.harTilgangTilAvtale(avtaler.getContent()))
-            .filter(avtale -> !skalSkjulesMentorArenaMigrering(avtale))
+            .filter(this::harTilgangTilMentorArenaMigrering)
             .toList();
 
         if (queryParametre.erSokPaEnkeltperson() && avtalerMedTilgang.isEmpty()) {
@@ -220,7 +220,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
     }
 
-    private boolean skalSkjulesMentorArenaMigrering(Avtale avtale) {
+    private boolean harTilgangTilMentorArenaMigrering(Avtale avtale) {
         boolean skalSkjules = (rolle() != Avtalerolle.VEILEDER && rolle() != Avtalerolle.BESLUTTER)
             && avtale.getTiltakstype() == Tiltakstype.MENTOR
             && avtale.getOpphav() == Avtaleopphav.ARENA;
@@ -228,7 +228,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         if (skalSkjules) {
             log.info("Skjuler mentor Arena avtale {} for rolle {}", avtale.getAvtaleNr(), rolle());
         }
-        return skalSkjules;
+        return !skalSkjules;
     }
 
 }
