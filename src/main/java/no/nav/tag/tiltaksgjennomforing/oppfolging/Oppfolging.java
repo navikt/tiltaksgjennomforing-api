@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.oppfolging;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.time.LocalDate;
@@ -60,6 +61,14 @@ public class Oppfolging {
     }
 
     public static Oppfolging fra(Avtale avtale) {
+        return new Oppfolging(
+            avtale.getKreverOppfolgingFom(),
+            avtale.getGjeldendeInnhold().getStartDato(),
+            avtale.getGjeldendeInnhold().getSluttDato()
+        );
+    }
+
+    public static Oppfolging fra(AvtaleDTO avtale) {
         return new Oppfolging(
             avtale.getKreverOppfolgingFom(),
             avtale.getGjeldendeInnhold().getStartDato(),
