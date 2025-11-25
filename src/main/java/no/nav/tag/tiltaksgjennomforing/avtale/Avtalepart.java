@@ -115,7 +115,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         if (!avtalenEksisterer(avtale)) {
             throw new RessursFinnesIkkeException();
         }
-        if (skalSkjulesMentorArenaMigrering(avtale)) {
+        if (!harTilgangTilMentorArenaMigrering(avtale)) {
             log.info("Forsøk på tilgang til skjult mentoravtale med opphav Arena for migrering. AvtaleNr: {}", avtale.getAvtaleNr());
             throw new RessursFinnesIkkeException();
         }
