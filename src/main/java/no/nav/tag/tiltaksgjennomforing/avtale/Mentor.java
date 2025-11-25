@@ -54,6 +54,7 @@ public class Mentor extends Avtalepart<Fnr> {
         if (!avtale.erGodkjentTaushetserklæringAvMentor())
             throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_AVTALE);
         skjulSensitivData(avtale);
+        skjulMentorFelterForMentor(avtale);
         return avtale;
     }
 
@@ -64,6 +65,21 @@ public class Mentor extends Avtalepart<Fnr> {
             pageable
         );
         return avtaler;
+    }
+
+    private void skjulMentorFelterForMentor(Avtale avtale){
+            avtale.getGjeldendeInnhold().setArbeidsgiveravgift(null);
+            avtale.getGjeldendeInnhold().setArbeidsgiveravgiftBelop(null);
+            avtale.getGjeldendeInnhold().setFeriepengesats(null);
+            avtale.getGjeldendeInnhold().setFeriepengerBelop(null);
+            avtale.getGjeldendeInnhold().setLonnstilskuddProsent(null);
+            avtale.getGjeldendeInnhold().setManedslonn(null);
+            avtale.getGjeldendeInnhold().setOtpSats(null);
+            avtale.getGjeldendeInnhold().setOtpBelop(null);
+            avtale.getGjeldendeInnhold().setMentorValgtLonnstype(null);
+            avtale.getGjeldendeInnhold().setMentorValgtLonnstypeBelop(null);
+            avtale.getTilskuddPeriode().forEach(tilskuddPeriode ->
+                tilskuddPeriode.setBeløp(null));
     }
 
     @Override
