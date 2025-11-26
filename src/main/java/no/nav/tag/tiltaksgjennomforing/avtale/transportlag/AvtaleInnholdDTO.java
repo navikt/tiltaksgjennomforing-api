@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 // Lombok
 @Builder(toBuilder = true)
@@ -106,7 +107,8 @@ public record AvtaleInnholdDTO(
     GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn,
     boolean godkjentPaVegneAvArbeidsgiver,
 
-    AvtaleInnholdType innholdType
+    AvtaleInnholdType innholdType,
+    Set<String> felterSomIkkeErFyltUt
 ) {
 
     public AvtaleInnholdDTO(AvtaleInnhold dbEntitet) {
@@ -178,7 +180,8 @@ public record AvtaleInnholdDTO(
             dbEntitet.isGodkjentPaVegneAv(),
             dbEntitet.getGodkjentPaVegneAvArbeidsgiverGrunn(),
             dbEntitet.isGodkjentPaVegneAvArbeidsgiver(),
-            dbEntitet.getInnholdType()
+            dbEntitet.getInnholdType(),
+            dbEntitet.felterSomIkkeErFyltUt()
         );
     }
 
