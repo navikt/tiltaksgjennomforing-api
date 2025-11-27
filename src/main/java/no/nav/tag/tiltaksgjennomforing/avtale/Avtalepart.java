@@ -69,7 +69,7 @@ public abstract class Avtalepart<T extends Identifikator> {
             .stream()
             .filter(this::avtalenEksisterer)
             .filter(this.harTilgangTilAvtale(avtaler.getContent()))
-            .filter(this::harTilgangTilMentorArenaMigrering)
+            .filter(this::mentorAvtaleUnderMigreringSkalVises)
             .toList();
 
         if (queryParametre.erSokPaEnkeltperson() && avtalerMedTilgang.isEmpty()) {
@@ -115,7 +115,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         if (!avtalenEksisterer(avtale)) {
             throw new RessursFinnesIkkeException();
         }
-        if (!harTilgangTilMentorArenaMigrering(avtale)) {
+        if (!mentorAvtaleUnderMigreringSkalVises(avtale)) {
             log.info("Forsøk på tilgang til skjult mentoravtale med opphav Arena for migrering. AvtaleNr: {}", avtale.getAvtaleNr());
             throw new RessursFinnesIkkeException();
         }
@@ -220,15 +220,26 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
     }
 
-    private boolean harTilgangTilMentorArenaMigrering(Avtale avtale) {
-        boolean skalSkjules = (!rolle().erInternBruker())
-            && avtale.getTiltakstype() == Tiltakstype.MENTOR
+    private boolean erAvtaleMigrertMentorArena(Avtale avtale) {
+        return avtale.getTiltakstype() == Tiltakstype.MENTOR
             && avtale.getOpphav() == Avtaleopphav.ARENA;
-
-        if (skalSkjules) {
-            log.info("Skjuler mentor Arena avtale {} for rolle {}", avtale.getAvtaleNr(), rolle());
-        }
-        return !skalSkjules;
     }
 
+    private boolean mentorAvtaleUnderMigreringSkalVises(Avtale avtale) {
+        boolean erMentorArena = erAvtaleMigrertMentorArena(avtale);
+
+        if (!erMentorArena) {
+            return true;
+        }
+
+        boolean erInternRolle = rolle().erInternBruker();
+
+        boolean utFylltUntattFamiljeTilknyting =  avtale.erKlarForVisningAvMigrertMentorAvtale();
+
+        if (!erInternRolle && !utFylltUntattFamiljeTilknyting) {
+            log.info("Skjult mentoravtale med opphav Arena for migrering. Rolle: {}, AvtaleNr: {}", rolle(), avtale.getAvtaleNr());
+        }
+
+        return erInternRolle || utFylltUntattFamiljeTilknyting;
+    }
 }

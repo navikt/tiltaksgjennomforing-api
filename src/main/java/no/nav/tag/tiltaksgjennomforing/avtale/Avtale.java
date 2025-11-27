@@ -811,6 +811,25 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
     }
 
+    public boolean sjekkOmAlltErFylltUtUntattFamiljeTilknyting() {
+
+        if (!felterSomIkkeErFyltUt().stream().filter(x -> !x.equals("harFamilietilknytning")).toList().isEmpty()) {
+            log.warn(
+                "Avtale= {}, med type= {} har ikke alle felter fylt ut for visning= {}",
+                this.avtaleNr,
+                this.tiltakstype,
+                felterSomIkkeErFyltUt()
+            );
+            return false;
+        }
+        log.info("Migrert mentoravtale {} er klar for visning.", this.avtaleNr);
+        return true;
+    }
+
+    public boolean erKlarForVisningAvMigrertMentorAvtale() {
+            return sjekkOmAlltErFylltUtUntattFamiljeTilknyting();
+    }
+
     public void annuller(Veileder veileder, String annullerGrunn) {
         annuller(annullerGrunn, veileder.getNavIdent());
     }
