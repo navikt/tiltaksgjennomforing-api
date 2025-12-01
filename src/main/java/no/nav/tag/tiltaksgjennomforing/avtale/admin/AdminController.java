@@ -321,6 +321,17 @@ public class AdminController {
         );
     }
 
+    @GetMapping("/sjekk-diskresjon-bolk")
+    public Map<Fnr, Diskresjonskode> sjekkDiskresjon(@RequestBody Set<String> fnrs) {
+        Set<Fnr> gyldigeFnrs = fnrs.stream()
+            .filter(Fnr::erGyldigFnr)
+            .map(Fnr::new)
+            .collect(Collectors.toSet());
+
+        Map<Fnr, Diskresjonskode> diskresjonskodeMap = persondataService.hentDiskresjonskoder(gyldigeFnrs);
+        return diskresjonskodeMap;
+    }
+
     @PostMapping("/oppdaterte-avtalekrav")
     public void oppdaterteAvtalekrav(@RequestBody AvtaleKravRequest avtaleKravRequest) {
         adminService.oppdaterteAvtalekrav(avtaleKravRequest.avtaleKravTidspunkt());
