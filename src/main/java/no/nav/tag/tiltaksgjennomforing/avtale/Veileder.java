@@ -491,4 +491,10 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     public NavIdent getNavIdent() {
         return getIdentifikator();
     }
+
+    public void oppdaterMentorFnrForMigrertAvtale(Fnr mentorFnr, Avtale avtale) {
+        super.erAvtaleMigrertMentorArena(avtale);
+        super.sjekkTilgang(avtale);
+        avtale.setMentorFnr(mentorFnr);
+    }
 }
