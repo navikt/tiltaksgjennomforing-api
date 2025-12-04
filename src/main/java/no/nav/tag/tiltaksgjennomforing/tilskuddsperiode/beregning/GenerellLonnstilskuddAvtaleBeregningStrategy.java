@@ -69,7 +69,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements BeregningSt
                 avtaleInnhold.getArbeidsgiveravgift());
         Integer sumLonnsutgifter = BeregningStrategy.getSumLonnsutgifter(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop);
         Integer sumlønnTilskudd = getSumLonnsTilskudd(sumLonnsutgifter, avtaleInnhold.getLonnstilskuddProsent());
-        Integer månedslønnFullStilling = getLønnVedFullStilling(sumLonnsutgifter, avtaleInnhold.getStillingprosent());
+        Integer månedslønnFullStilling = getLønnVedFullStilling(avtaleInnhold.getManedslonn(), avtaleInnhold.getStillingprosent());
         avtaleInnhold.setFeriepengerBelop(convertBigDecimalToInt(feriepengerBelop));
         avtaleInnhold.setOtpBelop(convertBigDecimalToInt(obligTjenestepensjon));
         avtaleInnhold.setArbeidsgiveravgiftBelop(convertBigDecimalToInt(arbeidsgiveravgiftBelop));
@@ -154,11 +154,11 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements BeregningSt
         return tilskuddsperioder;
     }
 
-    Integer getLønnVedFullStilling(Integer sumUtgifter, BigDecimal stillingsProsent) {
-        if (sumUtgifter == null || stillingsProsent == null || stillingsProsent.compareTo(BigDecimal.ZERO) == 0) {
+    Integer getLønnVedFullStilling(Integer manedslonn, BigDecimal stillingsProsent) {
+        if (manedslonn == null || stillingsProsent == null || stillingsProsent.compareTo(BigDecimal.ZERO) == 0) {
             return null;
         }
-        return BigDecimal.valueOf(sumUtgifter).multiply(new BigDecimal(100)).divide(stillingsProsent, RoundingMode.HALF_UP).intValue();
+        return BigDecimal.valueOf(manedslonn).multiply(new BigDecimal(100)).divide(stillingsProsent, RoundingMode.HALF_UP).intValue();
     }
 
     Integer getSumLonnsTilskudd(Integer sumLonnsutgifter, Integer lonnstilskuddProsent) {
