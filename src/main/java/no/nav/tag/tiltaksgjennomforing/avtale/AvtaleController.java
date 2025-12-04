@@ -33,6 +33,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -291,7 +292,14 @@ public class AvtaleController {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
             .map(sjekkeSistEndret(sistEndret))
-            .orElseThrow(RessursFinnesIkkeException::new);avtalepart.endreAvtale(endreAvtale, avtale);
+            .orElseThrow(RessursFinnesIkkeException::new);
+
+//        if (avtale.getOpphav() == Avtaleopphav.ARENA && avtale.getTiltakstype() == Tiltakstype.MENTOR){
+//            avtalepart.endreAvtale(endreAvtale, avtale, () -> avtalepart.endreMentorFnrArenaMigrertAvtale(avtale, endreAvtale.));
+//        } else {
+//            avtalepart.endreAvtale(endreAvtale, avtale);
+//        }
+//
         Avtale lagretAvtale = avtaleRepository.save(avtale);
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
     }
@@ -915,5 +923,21 @@ public class AvtaleController {
             avtale
         );
         return avtaleRepository.save(avtale);
+    }
+
+    @PatchMapping("/{avtaleId}/oppdater-mentor-fnr")
+    public void oppdaterMentorFnr(
+        @PathVariable("avtaleId") UUID avtaleId,
+        @RequestBody String nyttMentorFnr,
+        @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret
+    ) {
+        Fnr mentorFnr = new Fnr(nyttMentorFnr);
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+            .map(sjekkeSistEndret(sistEndret))
+            .orElseThrow(RessursFinnesIkkeException::new);
+
+        veileder.oppdaterMentorFnrForMigrertAvtale(mentorFnr, avtale);
+        avtaleRepository.save(avtale);
     }
 }
