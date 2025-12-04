@@ -161,11 +161,11 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         }
     }
 
-    private LocalDate tidligstIAaretUtenVedtattBudsjett() {
+    private LocalDate kanBesluttesFoerstINyttBudsjettAar() {
         var startDatoMinus3Mnd = startDato.minusMonths(3);
         return startDatoMinus3Mnd.isBefore(TilskuddPeriode.JAN_2027) ? TilskuddPeriode.JAN_2027 : startDatoMinus3Mnd;
     }
-    private boolean startDatoErIAarUtenVedtattBudsjett() {
+    private boolean harIkkeBudsjettForPerioden() {
         return startDato.isAfter(JAN_2027.minusDays(1));
     }
 
@@ -173,10 +173,10 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     private LocalDate kanBesluttesFom() {
 
         // TODO: Må oppdateres før årsskifte 2026/2027
-        if (startDatoErIAarUtenVedtattBudsjett()) {
+        if (harIkkeBudsjettForPerioden()) {
             // Er perioden i et år som ikke har vedtatt budsjett kan man heller ikke godkjenne før det nye året starter
             // (feks kan man ikke godkjenne januar-perioden i oktober)
-            return tidligstIAaretUtenVedtattBudsjett();
+            return kanBesluttesFoerstINyttBudsjettAar();
         }
         if (løpenummer == 1) {
             // Første tilskuddsperiode må godkjennes for at avtale skal kunne inngås, og kan derfor godkjennes tidligere,

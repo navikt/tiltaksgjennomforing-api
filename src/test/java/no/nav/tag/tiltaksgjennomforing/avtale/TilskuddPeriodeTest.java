@@ -84,31 +84,31 @@ class TilskuddPeriodeTest {
         assertThat(tilskuddPeriode.erUtbetalt()).isTrue();
     }
 
-    static final Integer NESTE_AAR = 2027;
-    static final Integer NAAVAERENDE_AAR = NESTE_AAR - 1;
+    static final Integer AAR_UTEN_VEDTATT_BUDSJETT = 2027;
+    static final Integer AAR_MED_VEDTATT_BUDSJETT = AAR_UTEN_VEDTATT_BUDSJETT - 1;
 
     @Test
     void kan_ikke_beslutte_for_neste_aar() {
         // Første tilskuddsperiode kan alltid godkjennes tidligere enn 3 mnd før startdato,
         // men det er ikke ønskelig å åpne for dette for tilskuddsperioder som starter "neste år" grunnet
         // uavklart budsjett.
-        Now.fixedDate(LocalDate.of(NAAVAERENDE_AAR, 1, 1));
+        Now.fixedDate(LocalDate.of(AAR_MED_VEDTATT_BUDSJETT, 1, 1));
         TilskuddPeriode tilskuddPeriode = TestData.enTilskuddPeriode();
         tilskuddPeriode.setStatus(TilskuddPeriodeStatus.UBEHANDLET);
 
-        tilskuddPeriode.setStartDato(LocalDate.of(NAAVAERENDE_AAR - 1, 1, 1));
+        tilskuddPeriode.setStartDato(LocalDate.of(AAR_MED_VEDTATT_BUDSJETT - 1, 1, 1));
         assertThat(tilskuddPeriode.kanBehandles()).isTrue();
 
-        tilskuddPeriode.setStartDato(LocalDate.of(NAAVAERENDE_AAR, 12, 31));
+        tilskuddPeriode.setStartDato(LocalDate.of(AAR_MED_VEDTATT_BUDSJETT, 12, 31));
         assertThat(tilskuddPeriode.kanBehandles()).isTrue();
 
-        tilskuddPeriode.setStartDato(LocalDate.of(NESTE_AAR, 1, 1));
+        tilskuddPeriode.setStartDato(LocalDate.of(AAR_UTEN_VEDTATT_BUDSJETT, 1, 1));
         assertThat(tilskuddPeriode.kanBehandles()).isFalse();
 
-        tilskuddPeriode.setStartDato(LocalDate.of(NESTE_AAR, 6, 1));
+        tilskuddPeriode.setStartDato(LocalDate.of(AAR_UTEN_VEDTATT_BUDSJETT, 6, 1));
         assertThat(tilskuddPeriode.kanBehandles()).isFalse();
 
-        tilskuddPeriode.setStartDato(LocalDate.of(NESTE_AAR + 1, 6, 1));
+        tilskuddPeriode.setStartDato(LocalDate.of(AAR_UTEN_VEDTATT_BUDSJETT + 1, 6, 1));
         assertThat(tilskuddPeriode.kanBehandles()).isFalse();
 
         Now.resetClock();
@@ -119,27 +119,27 @@ class TilskuddPeriodeTest {
         // Alle tilskuddsperioder etter første kan godkjennes innen 3 mnd før startdato,
         // men det er ikke ønskelig å åpne for dette for tilskuddsperioder som starter "neste år" grunnet
         // uavklart budsjett.
-        Now.fixedDate(LocalDate.of(NAAVAERENDE_AAR, 9, 1));
+        Now.fixedDate(LocalDate.of(AAR_MED_VEDTATT_BUDSJETT, 9, 1));
         TilskuddPeriode tilskuddPeriode = TestData.enTilskuddPeriode();
         tilskuddPeriode.setStatus(TilskuddPeriodeStatus.UBEHANDLET);
         tilskuddPeriode.setLøpenummer(2);
 
-        tilskuddPeriode.setStartDato(LocalDate.of(NAAVAERENDE_AAR - 1, 1, 1));
+        tilskuddPeriode.setStartDato(LocalDate.of(AAR_MED_VEDTATT_BUDSJETT - 1, 1, 1));
         assertThat(tilskuddPeriode.kanBehandles()).isTrue();
 
-        tilskuddPeriode.setStartDato(LocalDate.of(NAAVAERENDE_AAR, 11, 30));
+        tilskuddPeriode.setStartDato(LocalDate.of(AAR_MED_VEDTATT_BUDSJETT, 11, 30));
         assertThat(tilskuddPeriode.kanBehandles()).isTrue();
 
-        tilskuddPeriode.setStartDato(LocalDate.of(NAAVAERENDE_AAR, 12, 31));
+        tilskuddPeriode.setStartDato(LocalDate.of(AAR_MED_VEDTATT_BUDSJETT, 12, 31));
         assertThat(tilskuddPeriode.kanBehandles()).isFalse();
 
-        tilskuddPeriode.setStartDato(LocalDate.of(NESTE_AAR, 1, 1));
+        tilskuddPeriode.setStartDato(LocalDate.of(AAR_UTEN_VEDTATT_BUDSJETT, 1, 1));
         assertThat(tilskuddPeriode.kanBehandles()).isFalse();
 
-        tilskuddPeriode.setStartDato(LocalDate.of(NESTE_AAR, 6, 1));
+        tilskuddPeriode.setStartDato(LocalDate.of(AAR_UTEN_VEDTATT_BUDSJETT, 6, 1));
         assertThat(tilskuddPeriode.kanBehandles()).isFalse();
 
-        tilskuddPeriode.setStartDato(LocalDate.of(NESTE_AAR + 1, 6, 1));
+        tilskuddPeriode.setStartDato(LocalDate.of(AAR_UTEN_VEDTATT_BUDSJETT + 1, 6, 1));
         assertThat(tilskuddPeriode.kanBehandles()).isFalse();
 
         Now.resetClock();
