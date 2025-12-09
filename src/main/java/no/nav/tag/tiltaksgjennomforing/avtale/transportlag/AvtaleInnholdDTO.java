@@ -107,8 +107,7 @@ public record AvtaleInnholdDTO(
     GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn,
     boolean godkjentPaVegneAvArbeidsgiver,
 
-    AvtaleInnholdType innholdType,
-    Set<String> felterSomIkkeErFyltUt
+    AvtaleInnholdType innholdType
 ) {
 
     public AvtaleInnholdDTO(AvtaleInnhold dbEntitet) {
@@ -180,8 +179,7 @@ public record AvtaleInnholdDTO(
             dbEntitet.isGodkjentPaVegneAv(),
             dbEntitet.getGodkjentPaVegneAvArbeidsgiverGrunn(),
             dbEntitet.isGodkjentPaVegneAvArbeidsgiver(),
-            dbEntitet.getInnholdType(),
-            dbEntitet.felterSomIkkeErFyltUt()
+            dbEntitet.getInnholdType()
         );
     }
 

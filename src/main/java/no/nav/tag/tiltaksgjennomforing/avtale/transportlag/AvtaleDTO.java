@@ -21,6 +21,7 @@ import no.nav.tag.tiltaksgjennomforing.oppfolging.Oppfolging;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -75,7 +76,8 @@ public record AvtaleDTO(
 
     LocalDate kreverOppfolgingFom,
 
-    Instant oppfolgingVarselSendt
+    Instant oppfolgingVarselSendt,
+    Set<String> felterSomIkkeErFyltUt
 ) implements AuditerbarEntitet {
 
     public AvtaleDTO(
@@ -109,7 +111,8 @@ public record AvtaleDTO(
             avtale.isFeilregistrert(),
             avtale.getFnrOgBedrift(),
             avtale.getKreverOppfolgingFom(),
-            avtale.getOppfolgingVarselSendt()
+            avtale.getOppfolgingVarselSendt(),
+            avtale.felterSomIkkeErFyltUt()
         );
     }
 
