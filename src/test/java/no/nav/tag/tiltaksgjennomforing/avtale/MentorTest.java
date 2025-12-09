@@ -2,14 +2,12 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import lombok.val;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -41,7 +39,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -62,29 +59,31 @@ public class MentorTest {
     private final Pageable pageable = PageRequest.of(0, 100);
 
     @Test
-    public void endreAvtale_av_veileder_fra_opphav_arena_og_start_dato_er_allerede_satt_skal_ikke_kunne_endres(){
+    public void endreAvtaleUnderMigreringTillaterIkkeNyStartdato(){
         // GITT
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.ARENA);
-        Avtale arenaAvtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.ARENA);
-        arenaAvtale.getGjeldendeInnhold().setStartDato(LocalDate.now().minusYears(1));
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.VEILEDER, TestData.enNavIdent());
+        EndreAvtale endring = TestData.endrePåAlleMentorFelter();
 
-        ArenaRyddeAvtale arenaRyddeAvtale = new ArenaRyddeAvtale();
-        arenaRyddeAvtale.setAvtale(arenaAvtale);
-        arenaRyddeAvtale.setMigreringsdato(LocalDate.now());
+        avtale.endreAvtale(endring, Avtalerolle.VEILEDER);
 
-        avtale.setArenaRyddeAvtale(arenaRyddeAvtale);
+        avtale.godkjennForArbeidsgiver(TestData.enArbeidsgiver(avtale).getIdentifikator());
+        avtale.godkjennForDeltaker(TestData.enDeltaker(avtale).getIdentifikator());
+        avtale.godkjennForMentor(TestData.enMentor(avtale).getIdentifikator());
+        avtale.godkjennForVeileder(TestData.enNavIdent());
+
         avtale.getGjeldendeInnhold().setAvtale(avtale);
+        avtale.endreAvtaleArena(EndreAvtaleArena.builder().build());
 
-        avtale.setGodkjentForEtterregistrering(true); // DENNE SETTES TIL TRUE UNDER ARENA MIGRERING
-        avtale.getGjeldendeInnhold().setStartDato(LocalDate.now().minusYears(2));
-        avtale.getGjeldendeInnhold().setSluttDato(LocalDate.now().plusYears(1));
+        // TODO: Disse burde ikke være nødvendig når vi har løst oppgaven med å "gjenåpne" avtaler under migrering
+        avtale.endreStatus(Status.PÅBEGYNT);
+        avtale.opphevGodkjenningerSomVeileder();
 
         // NÅR
-        val ønsketStartDato_2_maaneder_tilbake = LocalDate.now().minusMonths(2);
+        var startDato_2_maaneder_frem = LocalDate.now().plusMonths(2);
         EndreAvtale endreAvtale = new EndreAvtale();
-        endreAvtale.setStartDato(ønsketStartDato_2_maaneder_tilbake);
+        endreAvtale.setStartDato(startDato_2_maaneder_frem);
         // SÅ
-        assertFeilkode(Feilkode.KAN_IKKE_ENDRE_AVTALE_MED_OPPHAV_ARENA_OG_STARTDATO_ALLEREDE_SATT,() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
+        assertFeilkode(Feilkode.KAN_IKKE_ENDRE_STARTDATO_FOR_AVTALE_UNDER_MIGRERING,() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
     }
 
     @Test
@@ -105,7 +104,7 @@ public class MentorTest {
         avtale.getGjeldendeInnhold().setSluttDato(null);
 
         //NÅR
-        val ønsketStartDato_2_maaneder_tilbake = LocalDate.now().minusMonths(2);
+        var ønsketStartDato_2_maaneder_tilbake = LocalDate.now().minusMonths(2);
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setStartDato(ønsketStartDato_2_maaneder_tilbake);
         endreAvtale.setSluttDato(ønsketStartDato_2_maaneder_tilbake.plusMonths(1));

@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -129,8 +130,8 @@ public class AvtaleInnhold {
     @JsonProperty
     public Integer inkluderingstilskuddTotalBeløp() {
         return inkluderingstilskuddsutgift.stream()
-                .map(Inkluderingstilskuddsutgift::getBeløp)
-                .reduce(0, Integer::sum);
+            .map(Inkluderingstilskuddsutgift::getBeløp)
+            .reduce(0, Integer::sum);
     }
 
     @JsonProperty
@@ -180,13 +181,13 @@ public class AvtaleInnhold {
 
     public AvtaleInnhold nyGodkjentVersjon(AvtaleInnholdType innholdType) {
         AvtaleInnhold nyVersjon = toBuilder()
-                .id(UUID.randomUUID())
-                .maal(kopiAvMål())
-                .inkluderingstilskuddsutgift(kopiAvInkluderingstilskuddsutgifer())
-                .journalpostId(null)
-                .versjon(versjon + 1)
-                .innholdType(innholdType)
-                .build();
+            .id(UUID.randomUUID())
+            .maal(kopiAvMål())
+            .inkluderingstilskuddsutgift(kopiAvInkluderingstilskuddsutgifer())
+            .journalpostId(null)
+            .versjon(versjon + 1)
+            .innholdType(innholdType)
+            .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
         nyVersjon.getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(nyVersjon));
         return nyVersjon;
@@ -210,10 +211,10 @@ public class AvtaleInnhold {
 
     public Set<String> felterSomIkkeErFyltUt() {
         return innholdStrategi().alleFelterSomMåFyllesUt()
-                .entrySet().stream()
-                .filter(entry -> erTom(entry.getValue()))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
+            .entrySet().stream()
+            .filter(entry -> erTom(entry.getValue()))
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toSet());
     }
 
     private AvtaleInnholdStrategy innholdStrategi() {
@@ -279,5 +280,10 @@ public class AvtaleInnhold {
         setMentorAntallTimer(endreOmMentor.getMentorAntallTimer());
         setMentorTimelonn(endreOmMentor.getMentorTimelonn());
         setMentorOppgaver(endreOmMentor.getMentorOppgaver());
+    }
+
+    public boolean erGjenåpnetIForbindelseMedMigrering() {
+        return Objects.equals(getInnholdType(), AvtaleInnholdType.ENDRET_AV_ARENA)
+            && (avtale.getStatus().equals(Status.PÅBEGYNT) || avtale.getStatus().equals(Status.MANGLER_GODKJENNING));
     }
 }
