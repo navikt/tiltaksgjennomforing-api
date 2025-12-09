@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ArenaTiltakdeltakerRepository extends JpaRepository<ArenaTiltakdeltaker, Integer> {
     List<ArenaTiltakdeltaker> findByPersonId(Integer personId);
+
+    List<ArenaTiltakdeltaker> findByTiltakdeltakerId(Integer tiltakdeltakerId);
 }

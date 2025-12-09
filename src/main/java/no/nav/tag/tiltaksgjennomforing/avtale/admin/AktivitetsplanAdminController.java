@@ -1,10 +1,15 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.admin;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.arena.client.acl.AktivitetArenaAclClient;
 import no.nav.tag.tiltaksgjennomforing.arena.client.hendelse.HendelseAktivitetsplanClient;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakdeltaker;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaAgreementMigrationRepository;
+import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaOrdsFnrRepository;
+import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaTiltakdeltakerRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +24,7 @@ import java.util.UUID;
 
 import static org.springframework.http.ResponseEntity.ok;
 
+@Slf4j
 @ProtectedWithClaims(issuer = "azure-access-token", claimMap = { "groups=fb516b74-0f2e-4b62-bad8-d70b82c3ae0b" })
 @RestController
 @RequestMapping("/utvikler-admin/aktivitetsplan")
@@ -28,6 +34,8 @@ public class AktivitetsplanAdminController {
     private final AktivitetArenaAclClient aktivitetArenaAclClient;
     private final HendelseAktivitetsplanClient hendelseAktivitetsplanClient;
     private final ArenaAgreementMigrationRepository arenaAgreementMigrationRepository;
+    private final ArenaTiltakdeltakerRepository arenaTiltakdeltakerRepository;
+    private final ArenaOrdsFnrRepository arenaOrdsFnrRepository;
 
     /*
      * Tar over aktivitetsplankortet fra Arena og sender siste melding på nytt.
@@ -47,7 +55,18 @@ public class AktivitetsplanAdminController {
         return ok(hentAktivitetsplanIdForAvtale(avtaleId));
     }
 
-    private UUID hentAktivitetsplanIdForAvtale(UUID avtaleId) {
+    private boolean erMissMatchFnr (UUID avtaleId) {
+        // Finn fnr fra Arena-gjennomføring
+        Integer deltakerId = finnDeltakerIdForAvtale(avtaleId);
+        ArenaTiltakdeltaker arenaTiltakdeltaker = arenaTiltakdeltakerRepository.findByTiltakdeltakerId(deltakerId).getFirst();
+        String fnrIArena = arenaOrdsFnrRepository.findByPersonId(arenaTiltakdeltaker.getPersonId()).getFirst().getFnr();
+        // Finn fnr fra avtale
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        // Sammenlign
+        return !avtale.getDeltakerFnr().asString().equals(fnrIArena);
+    }
+
+    private Integer finnDeltakerIdForAvtale(UUID avtaleId) {
         List<Integer> deltakerIder = arenaAgreementMigrationRepository.findTiltakdeltakerIdFromAvtaleId(avtaleId);
 
         if (deltakerIder.size() > 1) {
@@ -55,11 +74,24 @@ public class AktivitetsplanAdminController {
         }
 
         Integer deltakerId = deltakerIder.stream().findFirst().orElseThrow(RessursFinnesIkkeException::new);
+        return deltakerId;
+    }
+
+    private UUID hentAktivitetsplanIdForAvtale(UUID avtaleId) {
+        Integer deltakerId = finnDeltakerIdForAvtale(avtaleId);
         return aktivitetArenaAclClient.getAktivitetsId(deltakerId);
     }
 
     @PostMapping("/ta-over-flere-kort")
-    public void taOverAktivitetsplankortForFlereAvtaler(@RequestBody List<UUID> avtaleIder) {
+    public void taOverAktivitetsplankortForFlereAvtaler(@RequestBody List<UUID> avtaleIder, boolean dryRun) {
+        List<UUID> utenMissmatch = avtaleIder.stream().filter(avtaleId -> !erMissMatchFnr(avtaleId)).toList();
+        List<UUID> medMissMatch = avtaleIder.stream().filter(this::erMissMatchFnr).toList();
+        log.info("Kjører ta-over-flere-kort for {} avtaler uten fnr-missmatch (av totalt {})", utenMissmatch.size(), avtaleIder.size());
+        log.info("Avtaler med fnr-missmatch: {}", medMissMatch);
+        if (dryRun) {
+            log.info("Dry run - gjør ingen endringer");
+            return;
+        }
         avtaleIder.forEach(avtale -> {
             taOverAktivitetsplankort(avtale);
             });
