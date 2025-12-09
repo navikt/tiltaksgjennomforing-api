@@ -11,7 +11,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneAvArbeidsgiverGrunn
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
