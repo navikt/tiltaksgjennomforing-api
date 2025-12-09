@@ -54,7 +54,9 @@ public class AktivitetsplanAdminController {
     public ResponseEntity<UUID> hentAktivitetsplanId(@PathVariable UUID avtaleId) {
         return ok(hentAktivitetsplanIdForAvtale(avtaleId));
     }
-
+    /** I enkelte tilfeller har veiledere opprettet 2, (eller flere) tiltak hos oss, det har dukket opp 2 forbered tiltaksgjennomføringer i Arena,
+     * med fnr som en kommentar, men veileder har puttet fnr fra avtale 1  i avtale 2 i arena og omvendt.
+     * Arena takler ikke nye meldinger på missmatch fnr-saker.**/
     private boolean erMissMatchFnr (UUID avtaleId) {
         // Finn fnr fra Arena-gjennomføring
         Integer deltakerId = finnDeltakerIdForAvtale(avtaleId);
