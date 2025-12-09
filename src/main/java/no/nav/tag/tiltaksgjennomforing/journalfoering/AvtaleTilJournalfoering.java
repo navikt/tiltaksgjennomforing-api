@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.Inkluderingstilskuddsutgift;
-import no.nav.tag.tiltaksgjennomforing.avtale.MentorValgtLonnstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
@@ -85,7 +84,7 @@ public class AvtaleTilJournalfoering {
     private Double mentorAntallTimer;
     private Integer mentorTimelonn;
     private Integer mentorValgtLonnstypeBelop;
-    private MentorValgtLonnstype mentorValgtLonnstype;
+    private String mentorValgtLonnstype;
 
     private List<MaalTilJournalfoering> maal = new ArrayList<>();
     private List<OppgaveTilJournalFoering> oppgaver = new ArrayList<>();
