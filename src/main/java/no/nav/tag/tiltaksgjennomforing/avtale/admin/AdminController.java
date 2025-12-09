@@ -191,15 +191,6 @@ public class AdminController {
         avtaleRepository.save(avtale);
     }
 
-    @PostMapping("/reberegn-ubehandlede-tilskuddsperioder/{avtaleId}")
-    @Transactional
-    public void reberegnUbehandledeTilskuddsperioder(@PathVariable("avtaleId") UUID avtaleId) {
-        log.info("Reberegner ubehandlede tilskuddsperioder for avtale: {}", avtaleId);
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        avtale.reberegnUbehandledeTilskuddsperioder();
-        avtaleRepository.save(avtale);
-    }
-
     @PostMapping("/finn-avtaler-med-tilskuddsperioder-feil-datoer")
     public void finnTilskuddsperioderMedFeilDatoer() {
         log.info("Finner avtaler som har tilskuddsperioder med mindre startdato enn en periode med lavere løpenummer");
@@ -328,6 +319,17 @@ public class AdminController {
             "gjeldendeSide", pagable.getNumber(),
             "avtaler", avtalerMedDiskresjon
         );
+    }
+
+    @GetMapping("/sjekk-diskresjon-bolk")
+    public Map<Fnr, Diskresjonskode> sjekkDiskresjon(@RequestBody Set<String> fnrs) {
+        Set<Fnr> gyldigeFnrs = fnrs.stream()
+            .filter(Fnr::erGyldigFnr)
+            .map(Fnr::new)
+            .collect(Collectors.toSet());
+
+        Map<Fnr, Diskresjonskode> diskresjonskodeMap = persondataService.hentDiskresjonskoder(gyldigeFnrs);
+        return diskresjonskodeMap;
     }
 
     @PostMapping("/oppdaterte-avtalekrav")

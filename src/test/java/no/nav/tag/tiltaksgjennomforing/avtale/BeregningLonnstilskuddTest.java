@@ -182,7 +182,7 @@ class BeregningLonnstilskuddTest {
         strategy.endre(endreAvtale);
 
         // THEN
-        assertThat(avtaleInnhold.getManedslonn100pst()).isEqualTo(22950);
+        assertThat(avtaleInnhold.getManedslonn100pst()).isEqualTo(20000);
     }
 
 }

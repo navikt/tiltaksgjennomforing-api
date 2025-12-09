@@ -12,7 +12,6 @@ public interface AvtaleInnholdStrategy {
         throw new RuntimeException("Ikke implementert");
     }
     default void endreAvtaleInnholdMedKvalifiseringsgruppe(EndreAvtale endreAvtale, Kvalifiseringsgruppe kvalifiseringsgruppe) {}
-    default void regnUtTotalLonnstilskudd() {}
 
     default void reUtregnRedusertProsentOgSum() {}
     Map<String, Object> alleFelterSomMåFyllesUt();
