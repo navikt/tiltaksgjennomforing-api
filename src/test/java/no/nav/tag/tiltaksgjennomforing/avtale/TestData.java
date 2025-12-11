@@ -176,6 +176,10 @@ public class TestData {
     public static Avtale enVtaoArenaAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.opprett(lagOpprettAvtale(Tiltakstype.VTAO), Avtaleopphav.ARENA, veilderNavIdent);
+        // OBS: Avtale må ha startdato satt fra Arena, fordi endreAvtale ikke tillater endringer på dette feltet
+        // når avtalen er blitt opprettet av Arena.
+        // TODO: Skal en avtale med opphav Arena bli generert på en mer realistisk måte, feks ved å kalle ArenaMigreringService.createAvtale(..)?
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate());
         avtale.endreAvtale(endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER);
         avtale.setDeltakerFnr(new Fnr("17120276662"));
         avtale.getGjeldendeInnhold().setDeltakerFornavn("ARENA");
