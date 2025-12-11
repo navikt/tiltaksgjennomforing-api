@@ -25,6 +25,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,7 @@ import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.getForPart;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.jsonHarVerdi;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
@@ -55,6 +57,34 @@ public class MentorTest {
     ObjectMapper mapper;
 
     private final Pageable pageable = PageRequest.of(0, 100);
+
+    @Test
+    public void endreAvtaleUnderMigreringTillaterIkkeNyStartdato(){
+        // GITT
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.VEILEDER, TestData.enNavIdent());
+        EndreAvtale endring = TestData.endrePåAlleMentorFelter();
+
+        avtale.endreAvtale(endring, Avtalerolle.VEILEDER);
+
+        avtale.godkjennForArbeidsgiver(TestData.enArbeidsgiver(avtale).getIdentifikator());
+        avtale.godkjennForDeltaker(TestData.enDeltaker(avtale).getIdentifikator());
+        avtale.godkjennForMentor(TestData.enMentor(avtale).getIdentifikator());
+        avtale.godkjennForVeileder(TestData.enNavIdent());
+
+        avtale.getGjeldendeInnhold().setAvtale(avtale);
+        avtale.endreAvtaleArena(EndreAvtaleArena.builder().build());
+
+        // TODO: Disse burde ikke være nødvendig når vi har løst oppgaven med å "gjenåpne" avtaler under migrering
+        avtale.endreStatus(Status.PÅBEGYNT);
+        avtale.opphevGodkjenningerSomVeileder();
+
+        // NÅR
+        var startDato_2_maaneder_frem = LocalDate.now().plusMonths(2);
+        EndreAvtale endreAvtale = new EndreAvtale();
+        endreAvtale.setStartDato(startDato_2_maaneder_frem);
+        // SÅ
+        assertFeilkode(Feilkode.KAN_IKKE_ENDRE_STARTDATO_FOR_AVTALE_ENDRET_AV_ARENA,() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
+    }
 
     @Test
     public void hentAlleAvtalerMedMuligTilgang__mentor_en_avtale() throws Exception {
