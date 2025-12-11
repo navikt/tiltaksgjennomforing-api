@@ -83,36 +83,7 @@ public class MentorTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setStartDato(startDato_2_maaneder_frem);
         // SÅ
-        assertFeilkode(Feilkode.KAN_IKKE_ENDRE_STARTDATO_FOR_AVTALE_UNDER_MIGRERING,() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
-    }
-
-    @Test
-    public void endreAvtale_av_veileder_fra_opphav_arena_og_start_dato_er_IKKE_satt_skal_avtalen_dato_kunne_endres(){
-        // GITT
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.ARENA);
-        Avtale arenaAvtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.ARENA);
-
-        ArenaRyddeAvtale arenaRyddeAvtale = new ArenaRyddeAvtale();
-        arenaRyddeAvtale.setAvtale(arenaAvtale);
-        arenaRyddeAvtale.setMigreringsdato(LocalDate.now());
-
-        avtale.setArenaRyddeAvtale(arenaRyddeAvtale);
-        avtale.getGjeldendeInnhold().setAvtale(avtale);
-
-        avtale.setGodkjentForEtterregistrering(true); // DENNE SETTES TIL TRUE UNDER ARENA MIGRERING
-        avtale.getGjeldendeInnhold().setStartDato(null);
-        avtale.getGjeldendeInnhold().setSluttDato(null);
-
-        //NÅR
-        var ønsketStartDato_2_maaneder_tilbake = LocalDate.now().minusMonths(2);
-        EndreAvtale endreAvtale = new EndreAvtale();
-        endreAvtale.setStartDato(ønsketStartDato_2_maaneder_tilbake);
-        endreAvtale.setSluttDato(ønsketStartDato_2_maaneder_tilbake.plusMonths(1));
-
-        // SÅ
-        assertDoesNotThrow(() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
-        assertThat(avtale.getGjeldendeInnhold().getStartDato()).isEqualTo(ønsketStartDato_2_maaneder_tilbake);
-        assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(ønsketStartDato_2_maaneder_tilbake.plusMonths(1));
+        assertFeilkode(Feilkode.KAN_IKKE_ENDRE_STARTDATO_FOR_AVTALE_ENDRET_AV_ARENA,() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
     }
 
     @Test

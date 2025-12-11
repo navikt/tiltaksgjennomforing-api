@@ -21,9 +21,9 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
     public void endre(EndreAvtale nyAvtale) {
         final Avtale avtale = avtaleInnhold.getAvtale();
 
-        if (avtale.getGjeldendeInnhold().erGjenåpnetIForbindelseMedMigrering()
+        if (avtale.erOpprettetEllerEndretAvArena()
             && !Objects.equals(avtaleInnhold.getStartDato(), nyAvtale.getStartDato())) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STARTDATO_FOR_AVTALE_UNDER_MIGRERING);
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STARTDATO_FOR_AVTALE_ENDRET_AV_ARENA);
         }
 
         avtaleInnhold.setDeltakerFornavn(nyAvtale.getDeltakerFornavn());
