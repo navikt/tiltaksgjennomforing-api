@@ -281,15 +281,4 @@ public class AvtaleInnhold {
         setMentorTimelonn(endreOmMentor.getMentorTimelonn());
         setMentorOppgaver(endreOmMentor.getMentorOppgaver());
     }
-
-    /**
-     * Avtaler som opprettes under migrering (ikke eksisterte hos oss) vil IKKE ha avtaleinnholdstype = "ENDRET_AV_ARENA",
-     * så derfor sjekker vi opphav i de tilfellene.
-     */
-    @JsonProperty
-    public boolean erGjenåpnetIForbindelseMedMigrering() {
-        return (Objects.equals(getInnholdType(), AvtaleInnholdType.ENDRET_AV_ARENA)
-            || avtale.getOpphav() == Avtaleopphav.ARENA)
-            && (avtale.getStatus().equals(Status.PÅBEGYNT) || avtale.getStatus().equals(Status.MANGLER_GODKJENNING));
-    }
 }
