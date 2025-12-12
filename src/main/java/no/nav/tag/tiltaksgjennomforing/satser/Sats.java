@@ -12,23 +12,27 @@ import java.util.Objects;
 import java.util.TreeMap;
 
 public class Sats {
-
     public static final Sats INKLUDERINGSTILSKUDD_SATS = new Sats(List.of(
-            new SatsPeriodeData(
-                    154_800,
-                    LocalDate.of(2025, 1, 1),
-                    null
-            ),
-            new SatsPeriodeData(
-                    149_100,
-                    LocalDate.of(2024, 1, 1),
-                    LocalDate.of(2024, 12, 31)
-            ),
-            new SatsPeriodeData(
-                    143_900,
-                    LocalDate.of(2000, 1, 1),
-                    LocalDate.of(2023, 12, 31)
-            )
+        new SatsPeriodeData(
+            160_400,
+            LocalDate.of(2026, 1, 1),
+            null
+        ),
+        new SatsPeriodeData(
+            154_800,
+            LocalDate.of(2025, 1, 1),
+            LocalDate.of(2025, 12, 31)
+        ),
+        new SatsPeriodeData(
+            149_100,
+            LocalDate.of(2024, 1, 1),
+            LocalDate.of(2024, 12, 31)
+        ),
+        new SatsPeriodeData(
+            143_900,
+            LocalDate.of(2000, 1, 1),
+            LocalDate.of(2023, 12, 31)
+        )
     ));
 
     /**
@@ -40,24 +44,29 @@ public class Sats {
      * og deployet.
      */
     public static final Sats VTAO_SATS = new Sats(List.of(
-            new SatsPeriodeData(
-                    7_067,
-                    LocalDate.of(2025, 1, 1),
-                    LocalDate.of(2025, 12, 31)
-            ),
-            new SatsPeriodeData(
-                    6_808,
-                    LocalDate.of(2024, 1, 1),
-                    LocalDate.of(2024, 12, 31)
-            ), new SatsPeriodeData(
-                    6_428,
-                    LocalDate.of(2023, 1, 1),
-                    LocalDate.of(2023, 12, 31)
-            ), new SatsPeriodeData(
-                    6_241,
-                    LocalDate.of(2022, 1, 1),
-                    LocalDate.of(2022, 12, 31)
-            )
+        new SatsPeriodeData(
+            7_321,
+            LocalDate.of(2026, 1, 1),
+            LocalDate.of(2026, 12, 31)
+        ),
+        new SatsPeriodeData(
+            7_067,
+            LocalDate.of(2025, 1, 1),
+            LocalDate.of(2025, 12, 31)
+        ),
+        new SatsPeriodeData(
+            6_808,
+            LocalDate.of(2024, 1, 1),
+            LocalDate.of(2024, 12, 31)
+        ), new SatsPeriodeData(
+            6_428,
+            LocalDate.of(2023, 1, 1),
+            LocalDate.of(2023, 12, 31)
+        ), new SatsPeriodeData(
+            6_241,
+            LocalDate.of(2022, 1, 1),
+            LocalDate.of(2022, 12, 31)
+        )
     ));
 
     private final NavigableMap<LocalDate, Integer> satsePerioder;
@@ -81,8 +90,12 @@ public class Sats {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Sats sats = (Sats) o;
         return Objects.equals(satsePerioder, sats.satsePerioder);
@@ -121,13 +134,13 @@ public class Sats {
         NavigableMap<LocalDate, Integer> m = new TreeMap<>();
 
         satserEntitet.stream()
-                .sorted(Comparator.comparing(SatsPeriodeData::gyldigFraOgMed))
-                .forEach(sats -> {
-                    m.put(sats.gyldigFraOgMed(), sats.satsVerdi());
-                    if (sats.gyldigTilOgMed() != null) {
-                        m.put(sats.gyldigTilOgMed().plusDays(1), null);
-                    }
-                });
+            .sorted(Comparator.comparing(SatsPeriodeData::gyldigFraOgMed))
+            .forEach(sats -> {
+                m.put(sats.gyldigFraOgMed(), sats.satsVerdi());
+                if (sats.gyldigTilOgMed() != null) {
+                    m.put(sats.gyldigTilOgMed().plusDays(1), null);
+                }
+            });
 
         return m;
     }

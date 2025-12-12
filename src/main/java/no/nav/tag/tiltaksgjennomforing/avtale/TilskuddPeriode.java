@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode
 public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
-    private static final LocalDate JAN_2026 = LocalDate.of(2026, 1, 1);
+    private static final LocalDate JAN_2027 = LocalDate.of(2027, 1, 1);
 
     @Id
     private UUID id = UUID.randomUUID();
@@ -161,22 +161,26 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         }
     }
 
-    private LocalDate tidligstI2026() {
+    private LocalDate kanBesluttesTidligstInnenforAarUtenVedtattBudsjett() {
         var startDatoMinus3Mnd = startDato.minusMonths(3);
-        return startDatoMinus3Mnd.isBefore(TilskuddPeriode.JAN_2026) ? TilskuddPeriode.JAN_2026 : startDatoMinus3Mnd;
+        return startDatoMinus3Mnd.isBefore(TilskuddPeriode.JAN_2027) ? TilskuddPeriode.JAN_2027 : startDatoMinus3Mnd;
     }
-    private boolean startDatoErI2026() {
-        return startDato.isAfter(JAN_2026.minusDays(1));
+    private boolean harIkkeBudsjettForPerioden() {
+        return startDato.isAfter(JAN_2027.minusDays(1));
     }
 
     @JsonProperty
     private LocalDate kanBesluttesFom() {
-        // Ikke tillat godkjenning av tilskuddsperioder etter 2026 før budsjettet er vedtatt
-        // TODO: Må oppdateres før årsskifte 2025/2026
-        if (startDatoErI2026()) {
-            return tidligstI2026();
+
+        // TODO: Må oppdateres før årsskifte 2026/2027
+        if (harIkkeBudsjettForPerioden()) {
+            // Er perioden i et år som ikke har vedtatt budsjett kan man heller ikke godkjenne før det nye året starter
+            // (feks kan man ikke godkjenne januar-perioden i oktober)
+            return kanBesluttesTidligstInnenforAarUtenVedtattBudsjett();
         }
         if (løpenummer == 1) {
+            // Første tilskuddsperiode må godkjennes for at avtale skal kunne inngås, og kan derfor godkjennes tidligere,
+            // men ikke før budsjett er vedtatt for perioden
             return LocalDate.MIN;
         }
         return startDato.minusMonths(3);
