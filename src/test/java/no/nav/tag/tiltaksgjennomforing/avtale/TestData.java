@@ -192,6 +192,8 @@ public class TestData {
         avtale.setDeltakerFnr(new Fnr("17120276662"));
         avtale.getGjeldendeInnhold().setDeltakerFornavn("ARENA2");
         avtale.getGjeldendeInnhold().setDeltakerEtternavn("Opphav2");
+        // Kan ikke endre startdato på arena-avtale, så endringen i endreAvtale feiler uten denne
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate());
         EndreAvtale endreAvtale = new EndreAvtale();
         endreKontaktInfo(endreAvtale);
         endreAvtale.setStillingstittel("Butikkbetjent");
