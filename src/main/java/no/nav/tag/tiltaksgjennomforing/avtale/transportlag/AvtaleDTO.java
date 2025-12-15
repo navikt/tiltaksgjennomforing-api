@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.transportlag;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -54,6 +55,7 @@ public record AvtaleDTO(
     LocalDate kreverOppfolgingFom,
     Instant oppfolgingVarselSendt,
     Set<String> felterSomIkkeErFyltUt,
+    boolean erOpprettetEllerEndretAvArena,
     TilskuddPeriodeDTO gjeldendeTilskuddsperiode
 ) implements AuditerbarEntitet {
 
@@ -91,6 +93,7 @@ public record AvtaleDTO(
             avtale.getKreverOppfolgingFom(),
             avtale.getOppfolgingVarselSendt(),
             avtale.felterSomIkkeErFyltUt(),
+            avtale.erOpprettetEllerEndretAvArena(),
             avtale.getGjeldendeTilskuddsperiode() == null ? null : new TilskuddPeriodeDTO(avtale.getGjeldendeTilskuddsperiode())
         );
     }
@@ -209,6 +212,7 @@ public record AvtaleDTO(
         return sistEndret;
     }
 
+    @JsonIgnore
     @Override
     public FnrOgBedrift getFnrOgBedrift() {
         return new FnrOgBedrift(deltakerFnr, bedriftNr);
