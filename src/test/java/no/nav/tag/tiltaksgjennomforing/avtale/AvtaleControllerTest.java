@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -582,9 +583,9 @@ public class AvtaleControllerTest {
         var arbeidsgiver = TestData.enArbeidsgiver(avtale);
         værInnloggetSom(arbeidsgiver);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        Avtale hentetAvtale = avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER, null);
-        assertThat(hentetAvtale.getEnhetGeografisk()).isNull();
-        assertThat(hentetAvtale.getEnhetOppfolging()).isNull();
+        AvtaleDTO hentetAvtale = avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER, null);
+        assertThat(hentetAvtale.enhetGeografisk()).isNull();
+        assertThat(hentetAvtale.enhetOppfolging()).isNull();
     }
 
 

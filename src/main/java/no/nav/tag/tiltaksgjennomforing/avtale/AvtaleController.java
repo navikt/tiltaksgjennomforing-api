@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleInnholdDTO;
 import no.nav.tag.tiltaksgjennomforing.dokgen.DokgenService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
@@ -79,10 +81,10 @@ public class AvtaleController {
 
     @AuditLogging("Hent detaljer for avtale om arbeidsmarkedstiltak")
     @GetMapping("/{avtaleId}")
-    public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart, @RequestHeader(value = "referer", required = false) final String referer) {
+    public AvtaleDTO hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart, @RequestHeader(value = "referer", required = false) final String referer) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         sendMetrikkPåPage(referer);
-        return avtalepart.hentAvtale(avtaleRepository, id);
+        return new AvtaleDTO(avtalepart.hentAvtale(avtaleRepository, id));
     }
 
     private void sendMetrikkPåPage(String referer) {
@@ -111,23 +113,26 @@ public class AvtaleController {
 
     @AuditLogging("Hent detaljer for avtale om arbeidsmarkedstiltak")
     @GetMapping("/avtaleNr/{avtaleNr}")
-    public Avtale hentFraAvtaleNr(@PathVariable("avtaleNr") int avtaleNr, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+    public AvtaleDTO hentFraAvtaleNr(@PathVariable("avtaleNr") int avtaleNr, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        return avtalepart.hentAvtaleFraAvtaleNr(avtaleRepository, avtaleNr);
+        return new AvtaleDTO(avtalepart.hentAvtaleFraAvtaleNr(avtaleRepository, avtaleNr));
     }
 
     @GetMapping("/{avtaleId}/versjoner")
-    public List<AvtaleInnhold> hentVersjoner(
+    public List<AvtaleInnholdDTO> hentVersjoner(
             @PathVariable("avtaleId") UUID id,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart
     ) {
-        return innloggingService
+        List<AvtaleInnhold> avtaleversjoner = innloggingService
                 .hentAvtalepart(innloggetPart)
                 .hentAvtaleVersjoner(
                         avtaleRepository,
                         avtaleInnholdRepository,
                         id
                 );
+        return avtaleversjoner.stream()
+            .map(AvtaleInnholdDTO::new)
+            .toList();
     }
 
     @GetMapping
@@ -300,7 +305,7 @@ public class AvtaleController {
 
     @AuditLogging("Test endring av avtale om arbeidsmarkedstiltak")
     @PutMapping("/{avtaleId}/dry-run")
-    public Avtale endreAvtaleDryRun(
+    public AvtaleDTO endreAvtaleDryRun(
             @PathVariable("avtaleId") UUID avtaleId,
             @RequestBody EndreAvtale endreAvtale,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart
@@ -308,7 +313,7 @@ public class AvtaleController {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         avtalepart.endreAvtale(endreAvtale, avtale);
-        return avtale;
+        return new AvtaleDTO(avtale);
     }
 
     @PostMapping("/{avtaleId}/opphev-godkjenninger")
@@ -486,7 +491,7 @@ public class AvtaleController {
 
     @AuditLogging("Test forkortelse av avtale om arbeidsmarkedstiltak")
     @PostMapping("/{avtaleId}/forkort-dry-run")
-    public Avtale forkortAvtaleDryRun(
+    public AvtaleDTO forkortAvtaleDryRun(
             @PathVariable("avtaleId") UUID avtaleId,
             @RequestBody ForkortAvtale forkortAvtale
     ) {
@@ -494,7 +499,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId)
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.forkortAvtale(avtale, forkortAvtale.getSluttDato(), ForkortetGrunn.av("dry run", ""));
-        return avtale;
+        return new AvtaleDTO(avtale);
     }
 
     @PostMapping("/{avtaleId}/forleng")
@@ -514,7 +519,7 @@ public class AvtaleController {
 
     @AuditLogging("Test forlengelse av avtale om arbeidsmarkedstiltak")
     @PostMapping("/{avtaleId}/forleng-dry-run")
-    public Avtale forlengAvtaleDryRun(
+    public AvtaleDTO forlengAvtaleDryRun(
             @PathVariable("avtaleId") UUID avtaleId,
             @RequestBody ForlengAvtale forlengAvtale
     ) {
@@ -522,7 +527,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId)
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.forlengAvtale(forlengAvtale.getSluttDato(), avtale);
-        return avtale;
+        return new AvtaleDTO(avtale);
     }
 
     @PostMapping("/{avtaleId}/endre-maal")
@@ -646,14 +651,14 @@ public class AvtaleController {
 
     @AuditLogging("Test endring av tilskuddsberegning på avtale om arbeidsmarkedstiltak")
     @PostMapping("/{avtaleId}/endre-tilskuddsberegning-dry-run")
-    public Avtale endreTilskuddsberegningDryRun(
+    public AvtaleDTO endreTilskuddsberegningDryRun(
             @PathVariable("avtaleId") UUID avtaleId,
             @RequestBody EndreTilskuddsberegning endreTilskuddsberegning
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreTilskuddsberegning(endreTilskuddsberegning, avtale);
-        return avtale;
+        return new AvtaleDTO(avtale);
     }
 
     @PostMapping("/{avtaleId}/send-tilbake-til-beslutter")
@@ -717,7 +722,7 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/annuller")
     @Transactional
-    public Avtale annuller(
+    public AvtaleDTO annuller(
             @PathVariable("avtaleId") UUID avtaleId,
             @RequestBody AnnullertInfo annullertInfo,
             @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret
@@ -728,7 +733,7 @@ public class AvtaleController {
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.annullerAvtale(annullertInfo.getAnnullertGrunn(), avtale);
         avtaleRepository.save(avtale);
-        return avtale;
+        return new AvtaleDTO(avtale);
     }
 
     @PostMapping("/{avtaleId}/del-med-avtalepart")
@@ -793,12 +798,12 @@ public class AvtaleController {
 
     @AuditLogging("Justering av migreringsdato i avtale om arbeidsmarkedstiltak")
     @PostMapping("/{avtaleId}/juster-arena-migreringsdato/dry-run")
-    public Avtale justerArenaMigreringsdatoDryRun(@PathVariable("avtaleId") UUID avtaleId, @RequestBody JusterArenaMigreringsdato justerArenaMigreringsdato) {
+    public AvtaleDTO justerArenaMigreringsdatoDryRun(@PathVariable("avtaleId") UUID avtaleId, @RequestBody JusterArenaMigreringsdato justerArenaMigreringsdato) {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         Veileder veileder = innloggingService.hentVeileder();
         veileder.sjekkTilgang(avtale);
         avtale.nyeTilskuddsperioderEtterMigreringFraArena(justerArenaMigreringsdato.getMigreringsdato());
-        return avtale;
+        return new AvtaleDTO(avtale);
     }
 
     @PostMapping("/{avtaleId}/godkjenn-tilskuddsperiode")
@@ -819,7 +824,7 @@ public class AvtaleController {
     @AuditLogging(value = "Oppdater avtale om arbeidsmarkedstiltak", type = EventType.UPDATE)
     @PostMapping("/{avtaleId}/set-om-avtalen-kan-etterregistreres")
     @Transactional
-    public Avtale setOmAvtalenKanEtterregistreres(
+    public AvtaleDTO setOmAvtalenKanEtterregistreres(
         @PathVariable("avtaleId") UUID avtaleId,
         @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret
     ) {
@@ -828,13 +833,13 @@ public class AvtaleController {
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         beslutter.setOmAvtalenKanEtterregistreres(avtale);
-        return avtaleRepository.save(avtale);
+        return new AvtaleDTO(avtaleRepository.save(avtale));
     }
 
     @AuditLogging(value = "Oppdater avtale om arbeidsmarkedstiltak", type = EventType.UPDATE)
     @PostMapping("/{avtaleId}/endre-kostnadssted")
     @Transactional
-    public Avtale endreKostnadssted(
+    public AvtaleDTO endreKostnadssted(
             @PathVariable("avtaleId") UUID avtaleId,
             @RequestBody EndreKostnadsstedRequest endreKostnadsstedRequest,
             @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret
@@ -844,7 +849,7 @@ public class AvtaleController {
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.oppdatereKostnadssted(avtale, norg2Client, endreKostnadsstedRequest.getEnhet());
-        return avtaleRepository.save(avtale);
+        return new AvtaleDTO(avtaleRepository.save(avtale));
     }
 
     @PostMapping("/{avtaleId}/avslag-tilskuddsperiode")
@@ -865,7 +870,7 @@ public class AvtaleController {
 
     @AuditLogging(value = "Oppdater avtale om arbeidsmarkedstiltak", type = EventType.UPDATE)
     @PostMapping({"/{avtaleId}/oppdaterOppfølgingsEnhet", "/{avtaleId}/oppdater-oppfolgingsenhet"})
-    public Avtale oppdaterOppfølgingsEnhet(
+    public AvtaleDTO oppdaterOppfølgingsEnhet(
             @PathVariable("avtaleId") UUID avtaleId,
             @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret
     ) {
@@ -874,7 +879,7 @@ public class AvtaleController {
             .map(sjekkeSistEndret(sistEndret))
             .orElseThrow(RessursFinnesIkkeException::new);
         veileder.oppdaterOppfølgingOgGeoEnhetEtterForespørsel(avtale);
-        return avtaleRepository.save(avtale);
+        return new AvtaleDTO(avtaleRepository.save(avtale));
     }
 
     @GetMapping("/{avtaleId}/krever-aktsomhet")
@@ -894,7 +899,7 @@ public class AvtaleController {
 
     @PutMapping("/{avtaleId}/kid-og-kontonummer")
     @Transactional
-    public Avtale endreKidOgKontonummer(
+    public AvtaleDTO endreKidOgKontonummer(
         @PathVariable("avtaleId") UUID avtaleId,
         @RequestBody EndreKidOgKontonummer endreKidOgKontonummer,
         @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret
@@ -919,6 +924,6 @@ public class AvtaleController {
             new EndreKidOgKontonummer(kontonummer, kid),
             avtale
         );
-        return avtaleRepository.save(avtale);
+        return new AvtaleDTO(avtaleRepository.save(avtale));
     }
 }
