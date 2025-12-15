@@ -170,7 +170,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     }
 
     @JsonProperty
-    private LocalDate kanBesluttesFom() {
+    public LocalDate kanBesluttesFom() {
 
         // TODO: Må oppdateres før årsskifte 2026/2027
         if (harIkkeBudsjettForPerioden()) {

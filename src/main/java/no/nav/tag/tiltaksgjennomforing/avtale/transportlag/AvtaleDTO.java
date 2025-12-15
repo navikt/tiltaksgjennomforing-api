@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.transportlag;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -29,23 +28,14 @@ import java.util.stream.Collectors;
 @FieldNameConstants
 public record AvtaleDTO(
     UUID id,
-
     Fnr deltakerFnr,
-
     Fnr mentorFnr,
-
     BedriftNr bedriftNr,
-
     NavIdent veilederNavIdent,
-
     Tiltakstype tiltakstype,
-
     Instant opprettetTidspunkt,
-
     Integer avtaleNr,
-
     AvtaleInnholdDTO gjeldendeInnhold,
-
     Instant sistEndret,
     Instant annullertTidspunkt,
     String annullertGrunn,
@@ -54,29 +44,17 @@ public record AvtaleDTO(
     String enhetOppfolging,
     String enhetsnavnOppfolging,
     boolean erRyddeAvtale,
-
     Avtaleopphav opphav,
-
     Status status,
-
     boolean godkjentForEtterregistrering,
-
     Kvalifiseringsgruppe kvalifiseringsgruppe,
     Formidlingsgruppe formidlingsgruppe,
-
-    TilskuddPeriodeDTO gjeldendeTilskuddsperiode,
-
     SortedSet<TilskuddPeriodeDTO> tilskuddPeriode,
     boolean feilregistrert,
-
-    @JsonIgnore
-
-    FnrOgBedrift fnrOgBedrift,
-
     LocalDate kreverOppfolgingFom,
-
     Instant oppfolgingVarselSendt,
-    Set<String> felterSomIkkeErFyltUt
+    Set<String> felterSomIkkeErFyltUt,
+    TilskuddPeriodeDTO gjeldendeTilskuddsperiode
 ) implements AuditerbarEntitet {
 
     public AvtaleDTO(
@@ -105,13 +83,15 @@ public record AvtaleDTO(
             avtale.isGodkjentForEtterregistrering(),
             avtale.getKvalifiseringsgruppe(),
             avtale.getFormidlingsgruppe(),
-            avtale.getGjeldendeTilskuddsperiode() == null ? null : new TilskuddPeriodeDTO(avtale.getGjeldendeTilskuddsperiode()),
-            avtale.getTilskuddPeriode().stream().map(TilskuddPeriodeDTO::new).collect(Collectors.toCollection(TreeSet::new)),
+            avtale.getTilskuddPeriode()
+                .stream()
+                .map(TilskuddPeriodeDTO::new)
+                .collect(Collectors.toCollection(TreeSet::new)),
             avtale.isFeilregistrert(),
-            avtale.getFnrOgBedrift(),
             avtale.getKreverOppfolgingFom(),
             avtale.getOppfolgingVarselSendt(),
-            avtale.felterSomIkkeErFyltUt()
+            avtale.felterSomIkkeErFyltUt(),
+            avtale.getGjeldendeTilskuddsperiode() == null ? null : new TilskuddPeriodeDTO(avtale.getGjeldendeTilskuddsperiode())
         );
     }
 
@@ -231,7 +211,7 @@ public record AvtaleDTO(
 
     @Override
     public FnrOgBedrift getFnrOgBedrift() {
-        return this.fnrOgBedrift;
+        return new FnrOgBedrift(deltakerFnr, bedriftNr);
     }
 
 }

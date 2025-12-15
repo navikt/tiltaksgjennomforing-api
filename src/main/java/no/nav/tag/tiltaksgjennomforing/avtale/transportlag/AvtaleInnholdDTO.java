@@ -9,7 +9,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneAvArbeidsgiverGrunn
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.InkluderingstilskuddStrategy;
 import no.nav.tag.tiltaksgjennomforing.avtale.Inkluderingstilskuddsutgift;
-import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
 import no.nav.tag.tiltaksgjennomforing.avtale.MentorValgtLonnstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
@@ -19,7 +18,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 // Lombok
 @Builder(toBuilder = true)
