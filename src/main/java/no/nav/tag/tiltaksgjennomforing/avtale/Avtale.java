@@ -1697,4 +1697,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             .plus(84, ChronoUnit.DAYS)
             .isBefore(Now.instant());
     }
+
+    @JsonProperty
+    public boolean erOpprettetEllerEndretAvArena() {
+        return getGjeldendeInnhold().getInnholdType() == AvtaleInnholdType.ENDRET_AV_ARENA
+            || getOpphav() == Avtaleopphav.ARENA;
+    }
 }

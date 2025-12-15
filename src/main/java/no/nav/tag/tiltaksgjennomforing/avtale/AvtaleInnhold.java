@@ -129,8 +129,8 @@ public class AvtaleInnhold {
     @JsonProperty
     public Integer inkluderingstilskuddTotalBeløp() {
         return inkluderingstilskuddsutgift.stream()
-                .map(Inkluderingstilskuddsutgift::getBeløp)
-                .reduce(0, Integer::sum);
+            .map(Inkluderingstilskuddsutgift::getBeløp)
+            .reduce(0, Integer::sum);
     }
 
     @JsonProperty
@@ -180,13 +180,13 @@ public class AvtaleInnhold {
 
     public AvtaleInnhold nyGodkjentVersjon(AvtaleInnholdType innholdType) {
         AvtaleInnhold nyVersjon = toBuilder()
-                .id(UUID.randomUUID())
-                .maal(kopiAvMål())
-                .inkluderingstilskuddsutgift(kopiAvInkluderingstilskuddsutgifer())
-                .journalpostId(null)
-                .versjon(versjon + 1)
-                .innholdType(innholdType)
-                .build();
+            .id(UUID.randomUUID())
+            .maal(kopiAvMål())
+            .inkluderingstilskuddsutgift(kopiAvInkluderingstilskuddsutgifer())
+            .journalpostId(null)
+            .versjon(versjon + 1)
+            .innholdType(innholdType)
+            .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
         nyVersjon.getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(nyVersjon));
         return nyVersjon;
@@ -210,10 +210,10 @@ public class AvtaleInnhold {
 
     public Set<String> felterSomIkkeErFyltUt() {
         return innholdStrategi().alleFelterSomMåFyllesUt()
-                .entrySet().stream()
-                .filter(entry -> erTom(entry.getValue()))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
+            .entrySet().stream()
+            .filter(entry -> erTom(entry.getValue()))
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toSet());
     }
 
     private AvtaleInnholdStrategy innholdStrategi() {

@@ -1,11 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
     final AvtaleInnhold avtaleInnhold;
@@ -16,6 +19,13 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
 
     @Override
     public void endre(EndreAvtale nyAvtale) {
+        final Avtale avtale = avtaleInnhold.getAvtale();
+
+        if (avtale.erOpprettetEllerEndretAvArena()
+            && !Objects.equals(avtaleInnhold.getStartDato(), nyAvtale.getStartDato())) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STARTDATO_FOR_AVTALE_ENDRET_AV_ARENA);
+        }
+
         avtaleInnhold.setDeltakerFornavn(nyAvtale.getDeltakerFornavn());
         avtaleInnhold.setDeltakerEtternavn(nyAvtale.getDeltakerEtternavn());
         avtaleInnhold.setDeltakerTlf(nyAvtale.getDeltakerTlf());
@@ -55,10 +65,19 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
         alleFelter.put(AvtaleInnhold.Fields.sluttDato, avtaleInnhold.getSluttDato());
         alleFelter.put(AvtaleInnhold.Fields.oppfolging, avtaleInnhold.getOppfolging());
         alleFelter.put(AvtaleInnhold.Fields.tilrettelegging, avtaleInnhold.getTilrettelegging());
-        if(avtaleInnhold.getRefusjonKontaktperson() != null){
-            alleFelter.put(Fields.refusjonKontaktpersonFornavn, avtaleInnhold.getRefusjonKontaktperson().getRefusjonKontaktpersonFornavn());
-            alleFelter.put(Fields.refusjonKontaktpersonEtternavn, avtaleInnhold.getRefusjonKontaktperson().getRefusjonKontaktpersonEtternavn());
-            alleFelter.put(Fields.refusjonKontaktpersonTlf, avtaleInnhold.getRefusjonKontaktperson().getRefusjonKontaktpersonTlf());
+        if (avtaleInnhold.getRefusjonKontaktperson() != null) {
+            alleFelter.put(
+                Fields.refusjonKontaktpersonFornavn,
+                avtaleInnhold.getRefusjonKontaktperson().getRefusjonKontaktpersonFornavn()
+            );
+            alleFelter.put(
+                Fields.refusjonKontaktpersonEtternavn,
+                avtaleInnhold.getRefusjonKontaktperson().getRefusjonKontaktpersonEtternavn()
+            );
+            alleFelter.put(
+                Fields.refusjonKontaktpersonTlf,
+                avtaleInnhold.getRefusjonKontaktperson().getRefusjonKontaktpersonTlf()
+            );
         }
         return alleFelter;
     }

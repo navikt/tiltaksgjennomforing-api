@@ -176,7 +176,36 @@ public class TestData {
     public static Avtale enVtaoArenaAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.opprett(lagOpprettAvtale(Tiltakstype.VTAO), Avtaleopphav.ARENA, veilderNavIdent);
+        // OBS: Avtale må ha startdato satt fra Arena, fordi endreAvtale ikke tillater endringer på dette feltet
+        // når avtalen er blitt opprettet av Arena.
+        // TODO: Skal en avtale med opphav Arena bli generert på en mer realistisk måte, feks ved å kalle ArenaMigreringService.createAvtale(..)?
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate());
         avtale.endreAvtale(endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER);
+        avtale.setDeltakerFnr(new Fnr("17120276662"));
+        avtale.getGjeldendeInnhold().setDeltakerFornavn("ARENA");
+        avtale.getGjeldendeInnhold().setDeltakerEtternavn("Opphav");
+        return avtale;
+    }
+    public static Avtale enMentorArenaAvtaleMedAltUtfylt() {
+        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        Avtale avtale = Avtale.opprett(lagOpprettAvtale(Tiltakstype.MENTOR), Avtaleopphav.ARENA, veilderNavIdent);
+        avtale.setDeltakerFnr(new Fnr("17120276662"));
+        avtale.getGjeldendeInnhold().setDeltakerFornavn("ARENA2");
+        avtale.getGjeldendeInnhold().setDeltakerEtternavn("Opphav2");
+        EndreAvtale endreAvtale = new EndreAvtale();
+        endreKontaktInfo(endreAvtale);
+        endreAvtale.setStillingstittel("Butikkbetjent");
+        endreAvtale.setStillingStyrk08(5223);
+        endreAvtale.setStillingKonseptId(112968);
+        endreAvtale.setArbeidsoppgaver("Butikkarbeid");
+        endreAvtale.setStillingprosent(BigDecimal.valueOf(50.5));
+        endreAvtale.setAntallDagerPerUke(BigDecimal.valueOf(5.0));
+        endreAvtale.getMaal().add(TestData.etMaal());
+        endreAvtale.setStartDato(Now.localDate());
+        endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(4).minusDays(1));
+        endreAvtale.setTilrettelegging("Ingen");
+        endreAvtale.setOppfolging("Telefon hver uke");
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         return avtale;
     }
 
