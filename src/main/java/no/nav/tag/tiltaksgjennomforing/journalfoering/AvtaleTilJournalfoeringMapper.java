@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
+import no.nav.tag.tiltaksgjennomforing.avtale.MentorValgtLonnstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 
@@ -33,7 +34,7 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setMentorOppgaver(avtale.getGjeldendeInnhold().getMentorOppgaver());
         avtaleTilJournalfoering.setMentorAntallTimer(avtale.getGjeldendeInnhold().getMentorAntallTimer());
         avtaleTilJournalfoering.setMentorTimelonn(avtale.getGjeldendeInnhold().getMentorTimelonn());
-        avtaleTilJournalfoering.setMentorValgtLonnstype(avtaleInnhold.getMentorValgtLonnstype());
+        avtaleTilJournalfoering.setMentorValgtLonnstype(mentorValgtLonnstypeTekst(avtaleInnhold.getMentorValgtLonnstype()));
         avtaleTilJournalfoering.setMentorValgtLonnstypeBelop(avtaleInnhold.getMentorValgtLonnstypeBelop());
         avtaleTilJournalfoering.setGodkjentAvArbeidsgiver(DatoUtils.instantTilLocalDate(avtaleInnhold.getGodkjentAvArbeidsgiver()));
         avtaleTilJournalfoering.setGodkjentAvVeileder(DatoUtils.instantTilLocalDate(avtaleInnhold.getGodkjentAvVeileder()));
@@ -135,5 +136,12 @@ public class AvtaleTilJournalfoeringMapper {
             list1.add(maalToMaalTilJournalfoering(maal));
         }
         return list1;
+    }
+
+    private static String mentorValgtLonnstypeTekst(MentorValgtLonnstype mentorValgtLonnstype) {
+        if (mentorValgtLonnstype == null) {
+            return null;
+        }
+        return mentorValgtLonnstype.toString().substring(0, 1).toUpperCase() + mentorValgtLonnstype.toString().substring(1).toLowerCase();
     }
 }
