@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.transportlag;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
 import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnholdType;
@@ -20,7 +19,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 // Lombok
-@Builder(toBuilder = true)
 @FieldNameConstants
 public record AvtaleInnholdDTO(
     Integer versjon,
