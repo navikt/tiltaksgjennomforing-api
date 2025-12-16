@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.admin;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.arena.client.acl.AktivitetArenaAclClient;
 import no.nav.tag.tiltaksgjennomforing.arena.client.hendelse.HendelseAktivitetsplanClient;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 import static org.springframework.http.ResponseEntity.ok;
 
+@Slf4j
 @ProtectedWithClaims(issuer = "azure-access-token", claimMap = { "groups=fb516b74-0f2e-4b62-bad8-d70b82c3ae0b" })
 @RestController
 @RequestMapping("/utvikler-admin/aktivitetsplan")
@@ -60,8 +62,10 @@ public class AktivitetsplanAdminController {
 
     @PostMapping("/ta-over-flere-kort")
     public void taOverAktivitetsplankortForFlereAvtaler(@RequestBody List<UUID> avtaleIder) {
+        log.info("Tar over aktivitetsplankort for {} avtaler", avtaleIder.size());
         avtaleIder.forEach(avtale -> {
             taOverAktivitetsplankort(avtale);
+            log.info("Tatt over aktivitetsplankort for avtale {}", avtale);
             });
     }
 
