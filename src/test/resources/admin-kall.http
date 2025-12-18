@@ -1,7 +1,7 @@
 ### Annuller en tilskuddsperiode
-# Husk å bytte ut UUID med tilskuddsperiodens id, og SESSION_ID med sesjons-id'en du får fra cookies i frontend
-POST https://tiltaksgjennomforing.intern.nav.no/tiltaksgjennomforing/api/utvikler-admin/annuller-tilskuddsperiode/<UUID>
-Cookie: io.nais.wonderwall.session=<SESSION_ID>
+# Husk å bytte ut UUID med tilskuddsperiodens id, og TOKEN med ad-tokenet man lager i az-cli
+POST http://localhost:12345/tiltaksgjennomforing-api/utvikler-admin/annuller-tilskuddsperiode/<TILSKUDDSPERIODE_ID>
+Authorization: Bearer <TOKEN>
 
 ### Lag tilskuddsperioder for en enkelt avtale
 # Husk å bytte ut UUID med avtalens id, og SESSION_ID med sesjons-id'en du får fra cookies i frontend
