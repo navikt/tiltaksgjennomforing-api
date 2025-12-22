@@ -69,6 +69,7 @@ public abstract class Avtalepart<T extends Identifikator> {
             .stream()
             .filter(this::avtalenEksisterer)
             .filter(this.harTilgangTilAvtale(avtaler.getContent()))
+            .filter(this::mentorAvtaleUnderMigreringSkalVises)
             .toList();
 
         if (queryParametre.erSokPaEnkeltperson() && avtalerMedTilgang.isEmpty()) {
@@ -112,6 +113,10 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     public void sjekkTilgang(Avtale avtale) {
         if (!avtalenEksisterer(avtale)) {
+            throw new RessursFinnesIkkeException();
+        }
+        if (!mentorAvtaleUnderMigreringSkalVises(avtale)) {
+            log.info("Forsøk på tilgang til skjult mentoravtale med opphav Arena for migrering. AvtaleNr: {}", avtale.getAvtaleNr());
             throw new RessursFinnesIkkeException();
         }
         if (harTilgangTilAvtale(avtale) instanceof Tilgang.Avvis avvis) {
@@ -213,5 +218,28 @@ public abstract class Avtalepart<T extends Identifikator> {
                     )
             );
         }
+    }
+
+    private boolean erAvtaleMigrertMentorArena(Avtale avtale) {
+        return avtale.getTiltakstype() == Tiltakstype.MENTOR
+            && avtale.getOpphav() == Avtaleopphav.ARENA;
+    }
+
+    private boolean mentorAvtaleUnderMigreringSkalVises(Avtale avtale) {
+        boolean erMentorArena = erAvtaleMigrertMentorArena(avtale);
+
+        if (!erMentorArena) {
+            return true;
+        }
+
+        boolean erInternRolle = rolle().erInternBruker();
+
+        boolean utFylltUntattFamiljeTilknyting =  avtale.erKlarForVisningAvMigrertMentorAvtale();
+
+        if (!erInternRolle && !utFylltUntattFamiljeTilknyting) {
+            log.info("Skjult mentoravtale med opphav Arena for migrering. Rolle: {}, AvtaleNr: {}", rolle(), avtale.getAvtaleNr());
+        }
+
+        return erInternRolle || utFylltUntattFamiljeTilknyting;
     }
 }
