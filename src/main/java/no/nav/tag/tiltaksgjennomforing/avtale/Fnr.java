@@ -35,7 +35,7 @@ public class Fnr extends Identifikator {
     public static boolean erGyldigFnr(String verdi) {
         if (FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS) {
             return switch (verdi) {
-                case "12345678910", "00000000000", "11111111111", "99999999999", "23090170723" -> true;
+                case "12345678910", "00000000000", "11111111111", "99999999999", "23090170723", "23090170712" -> true;
                 case null, default -> FodselsnummerValidator.isValid(verdi);
             };
         }
