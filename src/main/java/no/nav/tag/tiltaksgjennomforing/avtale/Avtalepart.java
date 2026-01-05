@@ -36,9 +36,14 @@ public abstract class Avtalepart<T extends Identifikator> {
         // For mentor-avtaler som er opprettet i Arena skal eksterne parter kun se avtalen
         // når alt unntatt familietilknytning er utfylt (som ikke kan utføres av veileder)
         if (!rolle().erInternBruker() && erMigrertMentorAvtale(avtale)) {
-            return avtale.mentorKlarForVisning();
+            return mentorAvtaleErKlarForVisningForEksterne(avtale);
         }
         return !avtale.isFeilregistrert();
+    }
+
+    private boolean mentorAvtaleErKlarForVisningForEksterne(Avtale avtale) {
+        return avtale.felterSomIkkeErFyltUt().stream()
+            .allMatch(x -> x.equals("harFamilietilknytning"));
     }
 
     abstract Tilgang harTilgangTilAvtale(Avtale avtale);
