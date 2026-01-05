@@ -37,8 +37,12 @@ public abstract class Avtalepart<T extends Identifikator> {
     }
 
     protected boolean mentorAvtaleErKlarForVisningForEksterne(Avtale avtale) {
-        return avtale.felterSomIkkeErFyltUt().stream()
+        var altErFyltUtEllerKunFamilietilknytningMangler = avtale.felterSomIkkeErFyltUt().stream()
             .allMatch(x -> x.equals("harFamilietilknytning"));
+        if (!altErFyltUtEllerKunFamilietilknytningMangler) {
+            log.info("Mentor-avtale skjult for avtalepart={} avtale-id={}", rolle(), avtale.getId());
+        }
+        return altErFyltUtEllerKunFamilietilknytningMangler;
     }
 
     abstract Tilgang harTilgangTilAvtale(Avtale avtale);
