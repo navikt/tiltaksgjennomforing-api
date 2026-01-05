@@ -298,7 +298,8 @@ public class AvtaleController {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
             .map(sjekkeSistEndret(sistEndret))
-            .orElseThrow(RessursFinnesIkkeException::new);avtalepart.endreAvtale(endreAvtale, avtale);
+            .orElseThrow(RessursFinnesIkkeException::new);
+        avtalepart.endreAvtale(endreAvtale, avtale);
         Avtale lagretAvtale = avtaleRepository.save(avtale);
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
     }
