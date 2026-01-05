@@ -33,6 +33,11 @@ public abstract class Avtalepart<T extends Identifikator> {
     private final T identifikator;
 
     public boolean avtalenEksisterer(Avtale avtale) {
+        // For mentor-avtaler som er opprettet i Arena skal eksterne parter kun se avtalen
+        // når alt unntatt familietilknytning er utfylt (som ikke kan utføres av veileder)
+        if (!rolle().erInternBruker() && erMigrertMentorAvtale(avtale)) {
+            return avtale.mentorKlarForVisning();
+        }
         return !avtale.isFeilregistrert();
     }
 
@@ -165,8 +170,8 @@ public abstract class Avtalepart<T extends Identifikator> {
             throw new KanIkkeOppheveException();
         }
         boolean AlleParterHarIkkeGodkjentAvtale = !avtale.erGodkjentAvVeileder() &&
-                !avtale.erGodkjentAvArbeidsgiver() &&
-                !avtale.erGodkjentAvDeltaker();
+            !avtale.erGodkjentAvArbeidsgiver() &&
+            !avtale.erGodkjentAvDeltaker();
 
         if (AlleParterHarIkkeGodkjentAvtale) {
             throw new KanIkkeOppheveException();
@@ -213,5 +218,10 @@ public abstract class Avtalepart<T extends Identifikator> {
                     )
             );
         }
+    }
+
+    private boolean erMigrertMentorAvtale(Avtale avtale) {
+        return avtale.getTiltakstype() == Tiltakstype.MENTOR
+            && avtale.getOpphav() == Avtaleopphav.ARENA;
     }
 }
