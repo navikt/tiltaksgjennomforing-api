@@ -811,11 +811,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
     }
 
-    public boolean mentorKlarForVisning() {
-        return felterSomIkkeErFyltUt().stream()
-            .anyMatch(x -> !x.equals("harFamilietilknytning"));
-    }
-
     public void annuller(Veileder veileder, String annullerGrunn) {
         annuller(annullerGrunn, veileder.getNavIdent());
     }
