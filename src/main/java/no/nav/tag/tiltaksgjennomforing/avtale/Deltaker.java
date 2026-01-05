@@ -43,6 +43,9 @@ public class Deltaker extends Avtalepart<Fnr> {
 
     @Override
     public boolean avtalenEksisterer(Avtale avtale) {
+        if (erMigrertMentorAvtale(avtale)) {
+            return mentorAvtaleErKlarForVisningForEksterne(avtale);
+        }
         return super.avtalenEksisterer(avtale);
     }
 
