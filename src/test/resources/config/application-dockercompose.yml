@@ -46,7 +46,7 @@ tiltaksgjennomforing:
   kafka:
     enabled: true
   mentor-tilskuddsperioder:
-    enabled: false
+    enabled: true
 
   altinn-tilgangsstyring:
     uri: http://localhost:8090/altinn-tilgangsstyring
