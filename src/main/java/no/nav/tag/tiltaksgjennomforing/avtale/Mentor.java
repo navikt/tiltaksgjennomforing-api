@@ -67,7 +67,7 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     public boolean avtalenEksisterer(Avtale avtale) {
-        if (erMigrertMentorAvtale(avtale) && !mentorAvtaleErKlarForVisningForEksterne(avtale)) {
+        if (erMentorAvtaleMedOpphavArena(avtale) && !mentorAvtaleErKlarForVisningForEksterne(avtale)) {
             return false;
         }
         return super.avtalenEksisterer(avtale);
