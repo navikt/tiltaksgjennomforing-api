@@ -51,11 +51,7 @@ public class Deltaker extends Avtalepart<Fnr> {
 
     @Override
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable) {
-        Page<Avtale> avtalePage = avtaleRepository.findAllByDeltakerFnrAndFeilregistrertIsFalse(getIdentifikator(), pageable);
-
-        List<Avtale> avtaleListe = avtalePage.stream().toList();
-
-        return new PageImpl<>(avtaleListe, avtalePage.getPageable(), avtaleListe.size());
+        return avtaleRepository.findAllByDeltakerFnrAndFeilregistrertIsFalse(getIdentifikator(), pageable);
     }
 
     private Avtale skjulMentorFelterForDeltaker(Avtale avtale){
