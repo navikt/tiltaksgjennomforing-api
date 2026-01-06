@@ -188,7 +188,7 @@ public class TestData {
     }
     public static Avtale enMentorArenaAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        Avtale avtale = Avtale.opprett(lagOpprettAvtale(Tiltakstype.MENTOR), Avtaleopphav.ARENA, veilderNavIdent);
+        Avtale avtale = Avtale.opprett(lagOpprettMentorAvtale(Tiltakstype.MENTOR), Avtaleopphav.ARENA, veilderNavIdent);
         avtale.setDeltakerFnr(new Fnr("17120276662"));
         avtale.getGjeldendeInnhold().setDeltakerFornavn("ARENA2");
         avtale.getGjeldendeInnhold().setDeltakerEtternavn("Opphav2");
@@ -196,6 +196,14 @@ public class TestData {
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate());
         EndreAvtale endreAvtale = new EndreAvtale();
         endreKontaktInfo(endreAvtale);
+        endreMentorInfo(endreAvtale);
+        endreAvtale.setMentorValgtLonnstype(MentorValgtLonnstype.ÅRSLØNN);
+        endreAvtale.setMentorValgtLonnstypeBelop(600_000);
+        endreAvtale.setStillingprosent(BigDecimal.valueOf(100.0));
+        endreAvtale.setArbeidsgiverKontonummer("12345678901");
+        endreAvtale.setFeriepengesats(BigDecimal.valueOf(13.0));
+        endreAvtale.setArbeidsgiveravgift(BigDecimal.valueOf(8.0));
+        endreAvtale.setOtpSats(0.05);
         endreAvtale.setStillingstittel("Butikkbetjent");
         endreAvtale.setStillingStyrk08(5223);
         endreAvtale.setStillingKonseptId(112968);

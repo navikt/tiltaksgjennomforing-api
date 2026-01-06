@@ -8,6 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -39,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -59,9 +61,15 @@ public class MentorTest {
     private final Pageable pageable = PageRequest.of(0, 100);
 
     @Test
-    public void endreAvtaleUnderMigreringTillaterIkkeNyStartdato(){
+    public void endreAvtaleUnderMigreringTillaterIkkeNyStartdato() {
         // GITT
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.VEILEDER, TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(
+            new OpprettAvtale(
+                TestData.etFodselsnummer(),
+                TestData.etBedriftNr(),
+                Tiltakstype.MENTOR
+            ), Avtaleopphav.VEILEDER, TestData.enNavIdent()
+        );
         EndreAvtale endring = TestData.endrePåAlleMentorFelter();
 
         avtale.endreAvtale(endring, Avtalerolle.VEILEDER);
@@ -83,7 +91,10 @@ public class MentorTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setStartDato(startDato_2_maaneder_frem);
         // SÅ
-        assertFeilkode(Feilkode.KAN_IKKE_ENDRE_STARTDATO_FOR_AVTALE_ENDRET_AV_ARENA,() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
+        assertFeilkode(
+            Feilkode.KAN_IKKE_ENDRE_STARTDATO_FOR_AVTALE_ENDRET_AV_ARENA,
+            () -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER)
+        );
     }
 
     @Test
@@ -119,8 +130,11 @@ public class MentorTest {
         var respons = hentAvtaleForMentor(mentor, avtaleSignert.getId());
         var avtaleJson = mapper.readTree(respons.getContentAsString(StandardCharsets.UTF_8));
 
-        assertEquals(avtaleJson.get("deltakerFnr"), ((ObjectNode) originalJson.deepCopy()).putNull("deltakerFnr").get("deltakerFnr"),
-                "Når vi fjerner fnr fra det opprinnelige testobjektet skal det matche responsen");
+        assertEquals(
+            avtaleJson.get("deltakerFnr"),
+            ((ObjectNode) originalJson.deepCopy()).putNull("deltakerFnr").get("deltakerFnr"),
+            "Når vi fjerner fnr fra det opprinnelige testobjektet skal det matche responsen"
+        );
         assertFalse(jsonHarVerdi(respons.getContentAsString(), deltakerFnr));
     }
 
@@ -155,7 +169,7 @@ public class MentorTest {
         AvtaleQueryParameter avtalePredicate = new AvtaleQueryParameter();
         // NÅR
         when(avtaleRepository.findAllByMentorFnr(any(), eq(pageable))).thenReturn(new PageImpl<>(List.of(avtale)));
-        List<BegrensetAvtale> avtalerMinimal  = mentor
+        List<BegrensetAvtale> avtalerMinimal = mentor
             .hentBegrensedeAvtalerMedLesetilgang(avtaleRepository, avtalePredicate, pageable)
             .getContent();
 
@@ -183,7 +197,10 @@ public class MentorTest {
             mock(EregService.class)
         );
 
-        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+        when(tilgangskontrollService.hentSkrivetilgang(
+            veileder,
+            avtale.getDeltakerFnr()
+        )).thenReturn(new Tilgang.Tillat());
 
         arbeidsgiver.godkjennAvtale(avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
@@ -211,7 +228,10 @@ public class MentorTest {
             mock(EregService.class)
         );
 
-        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+        when(tilgangskontrollService.hentSkrivetilgang(
+            veileder,
+            avtale.getDeltakerFnr()
+        )).thenReturn(new Tilgang.Tillat());
 
         arbeidsgiver.godkjennAvtale(avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
@@ -248,14 +268,64 @@ public class MentorTest {
             mock(EregService.class)
         );
 
-        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+        when(tilgangskontrollService.hentSkrivetilgang(
+            veileder,
+            avtale.getDeltakerFnr()
+        )).thenReturn(new Tilgang.Tillat());
 
         arbeidsgiver.godkjennAvtale(avtale);
         assertThat(avtale.erAvtaleInngått()).isFalse();
         assertFeilkode(
-                Feilkode.KAN_IKKE_ENDRE_OM_MENTOR_IKKE_INNGAATT_AVTALE,
-                () -> veileder.endreOmMentor(new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5.0, 500), avtale)
+            Feilkode.KAN_IKKE_ENDRE_OM_MENTOR_IKKE_INNGAATT_AVTALE,
+            () -> veileder.endreOmMentor(
+                new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5.0, 500),
+                avtale
+            )
         );
+    }
+
+    @Test
+    public void mentor_skal_ikke_se_mentoravtaler_opprettet_av_arena_som_ikke_er_fylt_ut() {
+        Avtale altFyltUtUtenomFamilieTilknytning = TestData.enMentorArenaAvtaleMedAltUtfylt();
+
+        Avtale ingentingFyltUt = Avtale.opprett(
+            new OpprettMentorAvtale(
+                new Fnr("00000000000"),
+                altFyltUtUtenomFamilieTilknytning.getMentorFnr(),
+                TestData.etBedriftNr(),
+                Tiltakstype.MENTOR,
+                Avtalerolle.VEILEDER
+            ), Avtaleopphav.ARENA, TestData.enNavIdent()
+        );
+
+        altFyltUtUtenomFamilieTilknytning.getGjeldendeInnhold().setHarFamilietilknytning(null);
+        altFyltUtUtenomFamilieTilknytning.getGjeldendeInnhold().setFamilietilknytningForklaring(null);
+        Mentor mentor = TestData.enMentor(ingentingFyltUt);
+        AvtaleQueryParameter avtalePredicate = new AvtaleQueryParameter();
+
+        // Enkeltoppslag
+        when(avtaleRepository.findById(eq(ingentingFyltUt.getId())))
+            .thenReturn(Optional.of(ingentingFyltUt));
+        when(avtaleRepository.findById(eq(altFyltUtUtenomFamilieTilknytning.getId())))
+            .thenReturn(Optional.of(altFyltUtUtenomFamilieTilknytning));
+        assertThrows(
+            RessursFinnesIkkeException.class,
+            () -> mentor.hentAvtale(avtaleRepository, ingentingFyltUt.getId())
+        );
+        mentor.godkjennAvtale(altFyltUtUtenomFamilieTilknytning);
+        assertEquals(altFyltUtUtenomFamilieTilknytning, mentor.hentAvtale(avtaleRepository, altFyltUtUtenomFamilieTilknytning.getId()));
+
+        // Listeoppslag
+        when(avtaleRepository.findAllByMentorFnr(any(), eq(pageable))).thenReturn(new PageImpl<>(List.of(
+            ingentingFyltUt,
+            altFyltUtUtenomFamilieTilknytning
+        )));
+        List<BegrensetAvtale> avtalerMinimal = mentor
+            .hentBegrensedeAvtalerMedLesetilgang(avtaleRepository, avtalePredicate, pageable)
+            .getContent();
+
+        assertThat(avtalerMinimal).hasSize(1);
+        assertThat(avtalerMinimal.getFirst().id()).isEqualTo(altFyltUtUtenomFamilieTilknytning.getId());
     }
 
     private MockHttpServletResponse hentAvtalerForMentor(Mentor mentor) throws Exception {
