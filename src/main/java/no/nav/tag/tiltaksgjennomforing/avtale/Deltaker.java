@@ -43,7 +43,7 @@ public class Deltaker extends Avtalepart<Fnr> {
 
     @Override
     public boolean avtalenEksisterer(Avtale avtale) {
-        if (erMigrertMentorAvtale(avtale) && !mentorAvtaleErKlarForVisningForEksterne(avtale)) {
+        if (avtale.getOpphav() == Avtaleopphav.ARENA && !avtale.erAvtaleInngått()) {
             return false;
         }
         return super.avtalenEksisterer(avtale);
@@ -53,10 +53,7 @@ public class Deltaker extends Avtalepart<Fnr> {
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable) {
         Page<Avtale> avtalePage = avtaleRepository.findAllByDeltakerFnrAndFeilregistrertIsFalse(getIdentifikator(), pageable);
 
-        List<Avtale> avtaleListe = avtalePage
-            .stream()
-            .filter(avtale -> avtale.getOpphav() != Avtaleopphav.ARENA || avtale.erAvtaleInngått())
-            .toList();
+        List<Avtale> avtaleListe = avtalePage.stream().toList();
 
         return new PageImpl<>(avtaleListe, avtalePage.getPageable(), avtaleListe.size());
     }
