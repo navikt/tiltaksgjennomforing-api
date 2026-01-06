@@ -224,7 +224,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
     }
 
-    protected boolean erMigrertMentorAvtale(Avtale avtale) {
+    protected boolean erMentorAvtaleMedOpphavArena(Avtale avtale) {
         return avtale.getTiltakstype() == Tiltakstype.MENTOR
             && avtale.getOpphav() == Avtaleopphav.ARENA;
     }
