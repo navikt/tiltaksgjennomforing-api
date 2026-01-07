@@ -115,7 +115,7 @@ public class CachingConfigMockTest {
                     CacheConfig.VEILARBOPPFOLGING_CACHE,
                     CacheConfig.NORGNAVN_CACHE,
                     CacheConfig.NORG_GEO_ENHET,
-                    CacheConfig.AXSYS_CACHE
+                    CacheConfig.ENTRAPROXY_CACHE
             );
         }
     }

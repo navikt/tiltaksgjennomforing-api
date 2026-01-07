@@ -102,8 +102,6 @@ tiltaksgjennomforing:
     username: foo
     password: bar
     rest-uri: http://localhost:8090/sts/sts/token
-  axsys:
-    uri: http://localhost:8090/axsys
   consumer:
     system:
       id: testsystem
@@ -138,5 +136,7 @@ tiltaksgjennomforing:
       url: http://localhost:8090
   mentor-tilskuddsperioder:
     enabled: true
+  entraproxy:
+    uri: http://localhost:8090/entraproxy
 
 ELECTOR_PATH: null
