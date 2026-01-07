@@ -9,9 +9,9 @@ import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleInnholdDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.OppdaterMentorFnrRequest;
 import no.nav.tag.tiltaksgjennomforing.dokgen.DokgenService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
@@ -25,6 +25,7 @@ import no.nav.tag.tiltaksgjennomforing.persondata.aktsomhet.Aktsomhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.aktsomhet.AktsomhetService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +37,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -73,7 +75,6 @@ public class AvtaleController {
     private final Norg2Client norg2Client;
     private final KontoregisterService kontoregisterService;
     private final DokgenService dokgenService;
-    private final VeilarboppfolgingService veilarboppfolgingService;
     private final FilterSokRepository filterSokRepository;
     private final MeterRegistry meterRegistry;
     private final AktsomhetService aktsomhetService;
@@ -925,6 +926,28 @@ public class AvtaleController {
             new EndreKidOgKontonummer(kontonummer, kid),
             avtale
         );
+        return new AvtaleDTO(avtaleRepository.save(avtale));
+    }
+
+    @PatchMapping("/{avtaleId}/oppdater-mentor-fnr")
+    public AvtaleDTO oppdaterMentorFnr(
+        @PathVariable("avtaleId") UUID avtaleId,
+        @RequestBody OppdaterMentorFnrRequest mentorFnrRequest,
+        @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret
+    ) {
+        Fnr mentorFnr = mentorFnrRequest.mentorFnr();
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+            .map(sjekkeSistEndret(sistEndret))
+            .orElseThrow(RessursFinnesIkkeException::new);
+
+        veileder.oppdaterMentorFnrForMigrertAvtale(mentorFnr, avtale);
+        Navn mentorNavn = persondataService.hentNavn(mentorFnr);
+        EndreAvtale endreAvtale = EndreAvtale.fraAvtale(avtale);
+        endreAvtale.setMentorFornavn(mentorNavn.fornavn());
+        endreAvtale.setMentorEtternavn(mentorNavn.etternavn());
+        veileder.endreAvtale(endreAvtale, avtale);
+
         return new AvtaleDTO(avtaleRepository.save(avtale));
     }
 }
