@@ -63,7 +63,7 @@ public class ByEnhetStrategyTest {
     }
 
     @Test
-    public void skal_kaste_exception_hvis_axsys_kaster_exception() {
+    public void skal_kaste_exception_hvis_entraproxy_kaster_exception() {
         when(entraproxyService.hentEnheterNavAnsattHarTilgangTil(any())).thenThrow(new RestClientException("mock exception"));
         assertThatThrownBy(() -> new ByEnhetStrategy(entraproxyService).isEnabled(Map.of(PARAM, "1234"), unleashContext)).isInstanceOf(RestClientException.class);
     }
