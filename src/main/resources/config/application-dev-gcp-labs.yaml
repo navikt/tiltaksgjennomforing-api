@@ -59,10 +59,6 @@ tiltaksgjennomforing:
     apiGwApiKey: foo
   ereg:
     uri: http://tiltaksgjennomforing-wiremock/ereg
-  sts:
-    username: foo
-    password: bar
-    rest-uri: http://tiltaksgjennomforing-wiremock/sts/sts/token
   oppgave:
     oppgave-uri: http://tiltaksgjennomforing-wiremock/api/v1/oppgaver
   veilarboppfolging:

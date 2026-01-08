@@ -144,10 +144,6 @@ tiltaksgjennomforing:
     adressesperreServiceEdition: 7
   ereg:
     uri: https://ereg-services.dev.intern.nav.no/api/v2/organisasjon
-  sts:
-    username: ${tiltaksgjennomforing.serviceuser.username}
-    password: ${tiltaksgjennomforing.serviceuser.password}
-    rest-uri: http://security-token-service.default.svc.nais.local/rest/v1/sts/token
   oppgave:
     oppgave-uri: https://oppgave.dev.intern.nav.no/api/v1/oppgaver
   unleash:

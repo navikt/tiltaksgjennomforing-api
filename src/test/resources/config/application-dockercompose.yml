@@ -66,10 +66,6 @@ tiltaksgjennomforing:
     vtaoServiceEdition: 6
   ereg:
     uri: http://localhost:8090/ereg
-  sts:
-    username: foo
-    password: bar
-    rest-uri: http://localhost:8090/sts/sts/token
   consumer:
     system:
       id: testsystem
