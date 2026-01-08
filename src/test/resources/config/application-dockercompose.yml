@@ -70,8 +70,6 @@ tiltaksgjennomforing:
     username: foo
     password: bar
     rest-uri: http://localhost:8090/sts/sts/token
-  axsys:
-    uri: http://localhost:8090/axsys
   consumer:
     system:
       id: testsystem
@@ -88,6 +86,8 @@ tiltaksgjennomforing:
       url: http://localhost:8090/norg2/api/v1/enhet/
   dokgen:
     uri: http://localhost:9000/template/tiltak-avtale/create-pdf
+  entraproxy:
+    uri: http://localhost:8090/entraproxy
 
 no.nav.security.jwt:
   issuer:

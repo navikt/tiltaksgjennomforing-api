@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet;
+package no.nav.tag.tiltaksgjennomforing.enhet.entra;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -8,8 +8,7 @@ import java.net.URI;
 
 @Data
 @Component
-@ConfigurationProperties(prefix = "tiltaksgjennomforing.axsys")
-public class AxsysProperties {
+@ConfigurationProperties(prefix = "tiltaksgjennomforing.entraproxy")
+public class EntraproxyProperties {
     private URI uri;
-    private String navConsumerId;
 }

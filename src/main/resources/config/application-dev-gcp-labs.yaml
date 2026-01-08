@@ -63,8 +63,6 @@ tiltaksgjennomforing:
     username: foo
     password: bar
     rest-uri: http://tiltaksgjennomforing-wiremock/sts/sts/token
-  axsys:
-    uri: http://tiltaksgjennomforing-wiremock/axsys
   oppgave:
     oppgave-uri: http://tiltaksgjennomforing-wiremock/api/v1/oppgaver
   veilarboppfolging:
@@ -97,5 +95,7 @@ tiltaksgjennomforing:
       url: http://tiltaksgjennomforing-wiremock/aktivitet-arena-acl
   mentor-tilskuddsperioder:
     enabled: false
+  entraproxy:
+    uri: http://tiltaksgjennomforing-wiremock/entraproxy
 
 ELECTOR_PATH: null

@@ -1,0 +1,32 @@
+{
+  "mappings": [
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/entraproxy/api/v1/enhet/ansatt/[X,Z]123456"
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"enhetnummer\":\"0906\",\"navn\":\"NAV Storebyen\"},{\"enhetnummer\":\"0904\",\"navn\":\"NAV Lillebyen\"}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 2,
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/entraproxy/api/v1/enhet/ansatt/[A-Z]{1}[0-9]{6}"
+      },
+      "response": {
+        "status": 200,
+        "body": "[]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

@@ -4,6 +4,7 @@ import io.getunleash.UnleashContext;
 import io.getunleash.strategy.Strategy;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.enhet.entra.EntraproxyService;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -19,7 +20,7 @@ import static java.util.stream.Collectors.toList;
 public class ByEnhetStrategy implements Strategy {
 
     static final String PARAM = "valgtEnhet";
-    private final AxsysService axsysService;
+    private final EntraproxyService entraproxyService;
 
     @Override
     public String getName() {
@@ -39,8 +40,10 @@ public class ByEnhetStrategy implements Strategy {
         if (!NavIdent.erNavIdent(currentUserId)) {
             return List.of();
         }
-        return axsysService.hentEnheterNavAnsattHarTilgangTil(new NavIdent(currentUserId)).stream()
-                .map(enhet -> enhet.getVerdi()).collect(toList());
+        return entraproxyService.hentEnheterNavAnsattHarTilgangTil(new NavIdent(currentUserId))
+            .stream()
+            .map(NavEnhet::getVerdi)
+            .collect(toList());
     }
 
 }

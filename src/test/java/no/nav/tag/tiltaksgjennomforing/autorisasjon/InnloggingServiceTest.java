@@ -7,9 +7,9 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.Arbeid
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.enhet.entra.EntraproxyService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,7 +45,7 @@ public class InnloggingServiceTest {
     private AltinnTilgangsstyringService altinnTilgangsstyringService;
 
     @Mock
-    private AxsysService axsysService;
+    private EntraproxyService entraproxyService;
 
     @Mock
     private SystembrukerProperties systembrukerProperties;
@@ -97,7 +97,7 @@ public class InnloggingServiceTest {
     @Test
     public void hentInnloggetBruker__er_nav_ansatt_og_har_enhet() {
         InnloggetVeileder navAnsatt = TestData.enInnloggetVeileder();
-        when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of(ENHET_OPPFØLGING));
+        when(entraproxyService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of(ENHET_OPPFØLGING));
         værInnloggetVeileder(navAnsatt);
 
         assertThat(innloggingService.hentInnloggetBruker(Avtalerolle.VEILEDER)).isEqualTo(navAnsatt);
@@ -106,7 +106,7 @@ public class InnloggingServiceTest {
     @Test
     public void hentInnloggetBruker__er_nav_ansatt_og_beslutter() {
         InnloggetBeslutter navAnsatt = TestData.enInnloggetBeslutter();
-        when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of(ENHET_OPPFØLGING));
+        when(entraproxyService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of(ENHET_OPPFØLGING));
         værInnloggetBeslutter(navAnsatt);
         assertThat(innloggingService.hentInnloggetBruker(Avtalerolle.BESLUTTER)).isEqualTo(navAnsatt);
     }

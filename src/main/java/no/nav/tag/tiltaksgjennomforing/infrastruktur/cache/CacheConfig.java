@@ -13,7 +13,7 @@ import java.time.Duration;
 @EnableCaching
 public class CacheConfig {
 
-    public static final String AXSYS_CACHE = "axsys_cache";
+    public static final String ENTRAPROXY_CACHE = "entraproxy_cache";
 
     public static final String NORGNAVN_CACHE = "norgnavn_cache";
 

@@ -94,6 +94,14 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      entraproxy:
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: api://dev-gcp.sikkerhetstjenesten.entra-proxy/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
 
 tiltaksgjennomforing:
   persondata:
@@ -140,9 +148,6 @@ tiltaksgjennomforing:
     username: ${tiltaksgjennomforing.serviceuser.username}
     password: ${tiltaksgjennomforing.serviceuser.password}
     rest-uri: http://security-token-service.default.svc.nais.local/rest/v1/sts/token
-  axsys:
-    uri: https://axsys.nais.preprod.local/api/v1/tilgang
-    nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
   oppgave:
     oppgave-uri: https://oppgave.dev.intern.nav.no/api/v1/oppgaver
   unleash:
@@ -179,3 +184,5 @@ tiltaksgjennomforing:
       url: https://tiltak-hendelse-aktivitetsplan.intern.dev.nav.no
   mentor-tilskuddsperioder:
     enabled: true
+  entraproxy:
+    uri: https://entraproxy.intern.dev.nav.no

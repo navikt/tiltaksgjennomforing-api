@@ -105,6 +105,6 @@ caches:
     - name: veilarboppfolging_cache
       expiryInMinutes: 5
       maximumSize: 1000
-    - name: axsys_cache
+    - name: entraproxy_cache
       expiryInMinutes: 60
       maximumSize: 1000

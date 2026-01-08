@@ -5,9 +5,9 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.entra.EntraproxyService;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditConsoleLogger;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -60,7 +60,7 @@ public class AvtaleApiTest {
     ObjectMapper mapper = new ObjectMapper();
 
     @MockBean
-    AxsysService axsysService;
+    EntraproxyService entraproxyService;
     @Mock
     VeilarboppfolgingService veilarboppfolgingService;
     @Mock
@@ -95,7 +95,7 @@ public class AvtaleApiTest {
                 mock(EregService.class)
         );
         when(tilgangskontrollService.hentSkrivetilgang(veileder,avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
-        when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of());
+        when(entraproxyService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of());
         avtaleRepository.save(avtale);
         var res = hentAvtaleForVeileder(veileder, avtale.getId());
         assertEquals(200, res.getStatus());
@@ -131,7 +131,7 @@ public class AvtaleApiTest {
                 TestData.INGEN_AD_GRUPPER
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(beslutter), any(Fnr.class))).thenReturn(true);
-        when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of(ENHET_OPPFØLGING));
+        when(entraproxyService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of(ENHET_OPPFØLGING));
 
         var respons = hentAvtaleListeForBeslutterPåNavEnhet(beslutter, ENHET_OPPFØLGING.getVerdi());
 

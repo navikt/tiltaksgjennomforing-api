@@ -21,13 +21,13 @@ import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.entra.EntraproxyService;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.exceptions.RolleHarIkkeTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.RolleHarIkkeTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -50,7 +50,7 @@ public class InnloggingService {
     private final TilgangskontrollService tilgangskontrollService;
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
-    private final AxsysService axsysService;
+    private final EntraproxyService entraproxyService;
     private final VeilarboppfolgingService veilarboppfolgingService;
     private final ArbeidsgiverTokenStrategyFactory arbeidsgiverTokenStrategyFactory;
     private final FeatureToggleService featureToggleService;
@@ -127,7 +127,7 @@ public class InnloggingService {
     }
 
     private Set<NavEnhet> hentNavEnheter(NavIdent navIdent) {
-        return new HashSet<>(axsysService.hentEnheterNavAnsattHarTilgangTil(navIdent));
+        return new HashSet<>(entraproxyService.hentEnheterNavAnsattHarTilgangTil(navIdent));
     }
 
     public Veileder hentVeileder() {
