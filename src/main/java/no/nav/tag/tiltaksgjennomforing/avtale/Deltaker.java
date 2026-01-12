@@ -68,6 +68,8 @@ public class Deltaker extends Avtalepart<Fnr> {
             avtale.getGjeldendeInnhold().setLonnstilskuddProsent(null);
             avtale.getGjeldendeInnhold().setManedslonn(null);
             avtale.getGjeldendeInnhold().setMentorTimelonn(null);
+            avtale.getGjeldendeInnhold().setMentorValgtLonnstype(null);
+            avtale.getGjeldendeInnhold().setMentorValgtLonnstypeBelop(null);
             avtale.getGjeldendeInnhold().setOtpSats(null);
             avtale.getGjeldendeInnhold().setOtpBelop(null);
         }
