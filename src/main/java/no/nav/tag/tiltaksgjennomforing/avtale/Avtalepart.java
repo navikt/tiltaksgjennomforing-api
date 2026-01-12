@@ -36,6 +36,15 @@ public abstract class Avtalepart<T extends Identifikator> {
         return !avtale.isFeilregistrert();
     }
 
+    protected boolean mentorAvtaleErKlarForVisningForEksterne(Avtale avtale) {
+        var altErFyltUtEllerKunFamilietilknytningMangler = avtale.felterSomIkkeErFyltUt().stream()
+            .allMatch(x -> x.equals(AvtaleInnhold.Fields.harFamilietilknytning));
+        if (!altErFyltUtEllerKunFamilietilknytningMangler) {
+            log.info("Mentor-avtale skjult for avtalepart={} avtale-id={}", rolle(), avtale.getId());
+        }
+        return altErFyltUtEllerKunFamilietilknytningMangler;
+    }
+
     abstract Tilgang harTilgangTilAvtale(Avtale avtale);
 
     abstract Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler);
@@ -165,8 +174,8 @@ public abstract class Avtalepart<T extends Identifikator> {
             throw new KanIkkeOppheveException();
         }
         boolean AlleParterHarIkkeGodkjentAvtale = !avtale.erGodkjentAvVeileder() &&
-                !avtale.erGodkjentAvArbeidsgiver() &&
-                !avtale.erGodkjentAvDeltaker();
+            !avtale.erGodkjentAvArbeidsgiver() &&
+            !avtale.erGodkjentAvDeltaker();
 
         if (AlleParterHarIkkeGodkjentAvtale) {
             throw new KanIkkeOppheveException();
@@ -213,5 +222,10 @@ public abstract class Avtalepart<T extends Identifikator> {
                     )
             );
         }
+    }
+
+    protected boolean erMentorAvtaleMedOpphavArena(Avtale avtale) {
+        return avtale.getTiltakstype() == Tiltakstype.MENTOR
+            && avtale.getOpphav() == Avtaleopphav.ARENA;
     }
 }

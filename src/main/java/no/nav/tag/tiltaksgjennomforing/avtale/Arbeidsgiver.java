@@ -178,6 +178,9 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         if (avtale.getOpphav().equals(Avtaleopphav.ARENA) && !avtale.erAvtaleInngått()) {
             return false;
         }
+        if (erMentorAvtaleMedOpphavArena(avtale) && !mentorAvtaleErKlarForVisningForEksterne(avtale)) {
+            return false;
+        }
         return super.avtalenEksisterer(avtale);
     }
 
