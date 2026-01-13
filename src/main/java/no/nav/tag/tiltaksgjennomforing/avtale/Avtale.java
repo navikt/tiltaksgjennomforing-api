@@ -711,6 +711,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (Avtaleopphav.ARENA != opphav) {
             throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_OPPHAV);
         }
+        if (Tiltakstype.MENTOR == tiltakstype) {
+            throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_TILTAKSTYPE);
+        }
         if (erGodkjentAvArbeidsgiver()) {
             throw new FeilkodeException(Feilkode.ARBEIDSGIVER_HAR_GODKJENT);
         }
@@ -742,6 +745,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         sjekkGjeldendeStartogSluttDato();
         if (Avtaleopphav.ARENA != opphav) {
             throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_OPPHAV);
+        }
+        if (Tiltakstype.MENTOR == tiltakstype) {
+            throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_TILTAKSTYPE);
         }
         if (erGodkjentAvDeltaker()) {
             throw new DeltakerHarGodkjentException();
