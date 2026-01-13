@@ -948,6 +948,8 @@ public class AvtaleController {
         endreAvtale.setMentorEtternavn(mentorNavn.etternavn());
         veileder.endreAvtale(endreAvtale, avtale);
 
-        return new AvtaleDTO(avtaleRepository.save(avtale));
+        avtaleRepository.save(avtale);
+
+        return new AvtaleDTO(veileder.hentAvtale(avtaleRepository, avtaleId));
     }
 }
