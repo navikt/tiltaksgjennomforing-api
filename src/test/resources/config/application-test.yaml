@@ -82,10 +82,6 @@ tiltaksgjennomforing:
     apiGwApiKey: foo
   ereg:
     uri: http://localhost:8090/ereg
-  sts:
-    username: foo
-    password: bar
-    rest-uri: http://localhost:8090/sts/sts/token
   persondata:
     uri: http://localhost:8090/persondata
   oppgave:
