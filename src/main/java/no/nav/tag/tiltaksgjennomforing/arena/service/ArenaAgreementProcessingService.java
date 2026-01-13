@@ -228,8 +228,17 @@ public class ArenaAgreementProcessingService {
                     .stillingprosent(agreementAggregate.getProsentDeltid().orElse(null))
                     .handling(EndreAvtaleArena.Handling.map(action));
 
-                if (!agreementAggregate.isSluttdatoBeforeStartdato() && !agreementAggregate.isDeltakerForGammelPaaSluttDato()) {
+                boolean isSkalAvsluttes = ArenaMigrationAction.AVSLUTT.equals(action);
+                boolean isValidSluttdato = !agreementAggregate.isSluttdatoBeforeStartdato() && !agreementAggregate.isDeltakerForGammelPaaSluttDato();
+                if (isSkalAvsluttes || isValidSluttdato) {
                     endreAvtaleBuilder.sluttdato(agreementAggregate.findSluttdato().orElse(null));
+                } else {
+                    log.info(
+                        "Setter ikke sluttdato på avtalen. {}",
+                        agreementAggregate.isSluttdatoBeforeStartdato() ?
+                            "Sluttdato er før startdato" :
+                            "Deltaker er for gammel på sluttdato"
+                    );
                 }
 
                 log.info(

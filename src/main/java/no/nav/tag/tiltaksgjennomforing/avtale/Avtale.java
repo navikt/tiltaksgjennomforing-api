@@ -344,23 +344,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
 
         EndreAvtaleArena.Handling action = endreAvtaleArena.getHandling();
-        if (EndreAvtaleArena.Handling.OPPDATER == action && endreAvtaleArena.compareTo(this) == 0) {
-            log.atInfo()
-                .addKeyValue("avtaleId", getId().toString())
-                .log("Endringer fra Arena er lik innholdet i avtalen. Beholder avtalen uendret.");
-            registerEvent(new AvtaleEndretAvArena(this));
-            return;
-        }
-
         if (EndreAvtaleArena.Handling.ANNULLER == action) {
             annuller(AnnullertGrunn.ANNULLERT_I_ARENA, Identifikator.ARENA);
             return;
         }
 
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRET_AV_ARENA);
-        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
 
         if (EndreAvtaleArena.Handling.AVSLUTT == action) {
+            getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
+
             LocalDate sluttDato = Stream.of(endreAvtaleArena.getSluttdato(), gjeldendeInnhold.getSluttDato())
                 .filter(dato -> dato.isBefore(LocalDate.now()))
                 .findFirst()
@@ -398,6 +391,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         setAnnullertGrunn(null);
         setFeilregistrert(false);
         nyeTilskuddsperioder();
+        setGodkjentForEtterregistrering(true);
+
+        getGjeldendeInnhold().setAvtaleInngått(null);
+        getGjeldendeInnhold().setIkrafttredelsestidspunkt(null);
+        opphevGodkjenninger();
+
+        this.status = Status.fra(this);
 
         if (isForlengelse) {
             utforEndring(new AvtaleForlengetAvArena(this));

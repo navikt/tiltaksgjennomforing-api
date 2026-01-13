@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "PUT",
-    "urlPathPattern": "/tiltak-hendelse-aktivitetsplan/api/aktivitetsplan-id"
+    "urlPathPattern": "/tiltak-hendelse-aktivitetsplan/api/avtale/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/aktivitetsplan-id"
   },
   "response": {
     "status": 204
