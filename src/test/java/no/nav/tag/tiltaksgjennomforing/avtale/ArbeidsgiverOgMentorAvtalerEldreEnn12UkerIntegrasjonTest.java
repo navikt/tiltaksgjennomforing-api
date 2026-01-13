@@ -72,6 +72,7 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
     // ARBEIDSGIVER //
 
     @Test
+    @Transactional
     public void skal_returnere_avtale_som_er_i_db() {
         Avtale avtale = avtaleRepository.save(TestData.enArbeidstreningAvtale());
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
@@ -193,6 +194,7 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
 
 
     @Test
+    @Transactional
     public void mentor_hentAlleAvtalerMedMuligTilgang_skal_returnere_en_avtale_som_er_IKKE_eldre_enn_12_uker_fra_db() {
         Avtale avtale = TestData.enMentorAvtaleSignert();
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusMonths(3));
