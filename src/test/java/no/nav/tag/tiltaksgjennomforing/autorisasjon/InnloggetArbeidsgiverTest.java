@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,8 +47,8 @@ public class InnloggetArbeidsgiverTest {
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
 
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        Avtale hentetAvtale = arbeidsgiver.hentAvtale(avtaleRepository, avtale.getId());
-        assertThat(hentetAvtale.getAnnullertGrunn()).isNull();
+        AvtaleDTO hentetAvtale = new AvtaleDTO(arbeidsgiver.hentAvtale(avtaleRepository, avtale.getId())).maskerFelterForAvtalePart(arbeidsgiver);
+        assertThat(hentetAvtale.annullertGrunn()).isNull();
     }
 
     @Test
@@ -58,7 +59,7 @@ public class InnloggetArbeidsgiverTest {
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
 
         when(avtaleRepository.findAllByBedriftNr(eq(Set.of(avtale.getBedriftNr())), any())).thenReturn(new PageImpl<>(List.of(avtale)));
-        List<Avtale> hentetAvtaler = arbeidsgiver.hentAvtalerForMinSideArbeidsgiver(avtaleRepository, avtale.getBedriftNr());
-        assertThat(hentetAvtaler.get(0).getAnnullertGrunn()).isNull();
+        List<AvtaleDTO> hentetAvtaler = arbeidsgiver.hentAvtalerForMinSideArbeidsgiver(avtaleRepository, avtale.getBedriftNr());
+        assertThat(hentetAvtaler.getFirst().annullertGrunn()).isNull();
     }
 }

@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
@@ -100,6 +101,11 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             .toList();
 
         return new PageImpl<>(begrensedeAvtaler, pageable, avtaler.getTotalElements());
+    }
+
+    @Override
+    public AvtaleDTO maskerFelterForAvtalepart(AvtaleDTO avtaleDTO) {
+        return avtaleDTO;
     }
 
     @Override

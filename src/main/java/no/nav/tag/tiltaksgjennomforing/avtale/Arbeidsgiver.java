@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
@@ -44,14 +45,14 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     private final VeilarboppfolgingService veilarboppfolgingService;
 
     public Arbeidsgiver(
-            Fnr identifikator,
-            Set<AltinnReportee> altinnOrganisasjoner,
-            Map<BedriftNr, Collection<Tiltakstype>> tilganger,
-            List<BedriftNr> adressesperreTilgang,
-            PersondataService persondataService,
-            Norg2Client norg2Client,
-            EregService eregService,
-            VeilarboppfolgingService veilarboppfolgingService
+        Fnr identifikator,
+        Set<AltinnReportee> altinnOrganisasjoner,
+        Map<BedriftNr, Collection<Tiltakstype>> tilganger,
+        List<BedriftNr> adressesperreTilgang,
+        PersondataService persondataService,
+        Norg2Client norg2Client,
+        EregService eregService,
+        VeilarboppfolgingService veilarboppfolgingService
     ) {
         super(identifikator);
         this.altinnOrganisasjoner = altinnOrganisasjoner;
@@ -61,17 +62,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         this.norg2Client = norg2Client;
         this.eregService = eregService;
         this.veilarboppfolgingService = veilarboppfolgingService;
-    }
-
-    private static Avtale fjernAnnullertGrunn(Avtale avtale) {
-        avtale.setAnnullertGrunn(null);
-        return avtale;
-    }
-
-    private static Avtale fjernKvalifiseringsgruppe(Avtale avtale) {
-        avtale.setKvalifiseringsgruppe(null);
-        avtale.setFormidlingsgruppe(null);
-        return avtale;
     }
 
     @Override
@@ -135,41 +125,48 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     private Map<Avtale, Tilgang> tilgangTilAvtaler(List<Avtale> avtaler) {
         // Arbeidsgiver henter alltid en eller flere avtaler på samme bedriftNr, derav anyMatch.
-        boolean harAdressesperretilgang = avtaler.stream().anyMatch(avtale -> adressesperreTilgang.contains(avtale.getBedriftNr()));
+        boolean harAdressesperretilgang = avtaler.stream()
+            .anyMatch(avtale -> adressesperreTilgang.contains(avtale.getBedriftNr()));
         Set<Fnr> unikeFnrIAvtaler = avtaler.stream().map(Avtale::getDeltakerFnr).collect(Collectors.toSet());
         // Slå opp PDL i bolk hvis man ikke har adressesperretilgang
-        Map<Fnr, Diskresjonskode> diskresjonskodeMap = !harAdressesperretilgang ? persondataService.hentDiskresjonskoder(unikeFnrIAvtaler) : Collections.emptyMap();
+        Map<Fnr, Diskresjonskode> diskresjonskodeMap = !harAdressesperretilgang ? persondataService.hentDiskresjonskoder(
+            unikeFnrIAvtaler) : Collections.emptyMap();
 
         Map<Avtale, Tilgang> tilgangsmappe = avtaler.stream()
-            .collect(Collectors.toMap(avtale -> avtale, avtale -> {
-                boolean deltakerHarAdressesperre = diskresjonskodeMap.getOrDefault(avtale.getDeltakerFnr(), Diskresjonskode.UGRADERT).erKode6Eller7();
-                if (!harAdressesperretilgang && deltakerHarAdressesperre) {
-                    return new Tilgang.Avvis(
-                        Avslagskode.IKKE_TILGANG_TIL_DELTAKER,
-                        "Deltaker har adressesperre og arbeidsgiver har ikke adressesperretilgang i bedrift"
-                    );
-                }
+            .collect(Collectors.toMap(
+                avtale -> avtale, avtale -> {
+                    boolean deltakerHarAdressesperre = diskresjonskodeMap.getOrDefault(
+                        avtale.getDeltakerFnr(),
+                        Diskresjonskode.UGRADERT
+                    ).erKode6Eller7();
+                    if (!harAdressesperretilgang && deltakerHarAdressesperre) {
+                        return new Tilgang.Avvis(
+                            Avslagskode.IKKE_TILGANG_TIL_DELTAKER,
+                            "Deltaker har adressesperre og arbeidsgiver har ikke adressesperretilgang i bedrift"
+                        );
+                    }
 
-                if (avtale.harSluttdatoPassertMedMerEnn12Uker()) {
-                    return new Tilgang.Avvis(
-                        Avslagskode.SLUTTDATO_PASSERT,
-                        "Sluttdato har passert med mer enn 12 uker"
-                    );
+                    if (avtale.harSluttdatoPassertMedMerEnn12Uker()) {
+                        return new Tilgang.Avvis(
+                            Avslagskode.SLUTTDATO_PASSERT,
+                            "Sluttdato har passert med mer enn 12 uker"
+                        );
+                    }
+                    if (avtale.erAnnullertForMerEnn12UkerSiden()) {
+                        return new Tilgang.Avvis(
+                            Avslagskode.UTGATT,
+                            "Annullert for mer enn 12 uker siden"
+                        );
+                    }
+                    if (!harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype())) {
+                        return new Tilgang.Avvis(
+                            Avslagskode.IKKE_TILGANG_PAA_TILTAK,
+                            "Ikke tilgang på tiltak i valgt bedrift"
+                        );
+                    }
+                    return new Tilgang.Tillat();
                 }
-                if (avtale.erAnnullertForMerEnn12UkerSiden()) {
-                    return new Tilgang.Avvis(
-                        Avslagskode.UTGATT,
-                        "Annullert for mer enn 12 uker siden"
-                    );
-                }
-                if (!harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype())) {
-                    return new Tilgang.Avvis(
-                        Avslagskode.IKKE_TILGANG_PAA_TILTAK,
-                        "Ikke tilgang på tiltak i valgt bedrift"
-                    );
-                }
-                return new Tilgang.Tillat();
-            }));
+            ));
         return tilgangsmappe;
     }
 
@@ -182,6 +179,15 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             return false;
         }
         return super.avtalenEksisterer(avtale);
+    }
+
+    @Override
+    public AvtaleDTO maskerFelterForAvtalepart(AvtaleDTO avtaleDTO) {
+        return avtaleDTO.toBuilder()
+            .annullertGrunn(null)
+            .kvalifiseringsgruppe(null)
+            .formidlingsgruppe(null)
+            .build();
     }
 
     private boolean harTilgangPåTiltakIBedrift(BedriftNr bedriftNr, Tiltakstype tiltakstype) {
@@ -203,7 +209,11 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     @Override
-    Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable) {
+    Page<Avtale> hentAlleAvtalerMedMuligTilgang(
+        AvtaleRepository avtaleRepository,
+        AvtaleQueryParameter queryParametre,
+        Pageable pageable
+    ) {
         if (tilganger.isEmpty()) {
             return Page.empty();
         }
@@ -239,15 +249,16 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         return avtaler;
     }
 
-    public List<Avtale> hentAvtalerForMinSideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {
+    public List<AvtaleDTO> hentAvtalerForMinSideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {
         long start = System.currentTimeMillis();
 
-        List<Avtale> liste = avtaleRepository.findAllByBedriftNr(Set.of(bedriftNr), Pageable.unpaged())
-                .stream()
-                .filter(this::avtalenEksisterer)
-                .filter(avtale -> this.harTilgangTilAvtale(avtale).erTillat())
-                .map(Arbeidsgiver::fjernAnnullertGrunn)
-                .collect(Collectors.toList());
+        List<AvtaleDTO> liste = avtaleRepository.findAllByBedriftNr(Set.of(bedriftNr), Pageable.unpaged())
+            .stream()
+            .filter(this::avtalenEksisterer)
+            .filter(avtale -> this.harTilgangTilAvtale(avtale).erTillat())
+            .map(AvtaleDTO::new)
+            .map(this::maskerFelterForAvtalepart)
+            .collect(Collectors.toList());
 
         if (System.currentTimeMillis() - start > 10_000) {
             log.warn("Det tok mer enn 10 sek å hente {} avtaler for bedrift {}", liste.size(), bedriftNr.asString());
@@ -261,7 +272,10 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             throw new TilgangskontrollException("Har ikke tilgang på tiltak i valgt bedrift");
         }
         if (!harTilgangPåDeltakerIBedrift(opprettAvtale.getBedriftNr(), opprettAvtale.getDeltakerFnr())) {
-            throw new IkkeTilgangTilDeltakerException(opprettAvtale.getDeltakerFnr(), Feilkode.IKKE_TILGANG_TIL_DELTAKER_ARBEIDSGIVER);
+            throw new IkkeTilgangTilDeltakerException(
+                opprettAvtale.getDeltakerFnr(),
+                Feilkode.IKKE_TILGANG_TIL_DELTAKER_ARBEIDSGIVER
+            );
         }
 
         Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.ARBEIDSGIVER);
@@ -288,7 +302,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             if (e.getFeilkode() == Feilkode.FANT_IKKE_INNSATSBEHOV || e.getFeilkode() == Feilkode.HENTING_AV_INNSATSBEHOV_FEILET) {
                 log.warn(
                     "Fant ikke innsatsbehov ved henting av oppfølgingstatus for avtale opprettet av arbeidsgiver " +
-                    "Med melding: {}. Fortsetter uten.",
+                        "Med melding: {}. Fortsetter uten.",
                     e.getMessage()
                 );
             } else {
@@ -305,10 +319,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     @Override
     public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
-        Avtale avtale = super.hentAvtale(avtaleRepository, avtaleId);
-        fjernAnnullertGrunn(avtale);
-        fjernKvalifiseringsgruppe(avtale);
-        return avtale;
+        return super.hentAvtale(avtaleRepository, avtaleId);
     }
 
 }

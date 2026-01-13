@@ -4,10 +4,10 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RolleHarIkkeTilgangException;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -25,8 +25,7 @@ public class Deltaker extends Avtalepart<Fnr> {
 
     @Override
     public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
-        Avtale avtale = super.hentAvtale(avtaleRepository,avtaleId);
-        return skjulMentorFelterForDeltaker(avtale);
+        return super.hentAvtale(avtaleRepository, avtaleId);
     }
 
     @Override
@@ -50,22 +49,31 @@ public class Deltaker extends Avtalepart<Fnr> {
     }
 
     @Override
-    Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable) {
+    Page<Avtale> hentAlleAvtalerMedMuligTilgang(
+        AvtaleRepository avtaleRepository,
+        AvtaleQueryParameter queryParametre,
+        Pageable pageable
+    ) {
         return avtaleRepository.findAllByDeltakerFnrAndFeilregistrertIsFalse(getIdentifikator(), pageable);
     }
 
-    private Avtale skjulMentorFelterForDeltaker(Avtale avtale){
-        if(avtale.getTiltakstype() == Tiltakstype.MENTOR) {
-            avtale.setMentorFnr(null);
-            avtale.getGjeldendeInnhold().setArbeidsgiveravgift(null);
-            avtale.getGjeldendeInnhold().setArbeidsgiveravgiftBelop(null);
-            avtale.getGjeldendeInnhold().setFeriepengesats(null);
-            avtale.getGjeldendeInnhold().setFeriepengerBelop(null);
-            avtale.getGjeldendeInnhold().setLonnstilskuddProsent(null);
-            avtale.getGjeldendeInnhold().setManedslonn(null);
-            avtale.getGjeldendeInnhold().setMentorTimelonn(null);
-            avtale.getGjeldendeInnhold().setOtpSats(null);
-            avtale.getGjeldendeInnhold().setOtpBelop(null);
+    @Override
+    public AvtaleDTO maskerFelterForAvtalepart(AvtaleDTO avtale) {
+        if (avtale.tiltakstype() == Tiltakstype.MENTOR) {
+            return avtale.toBuilder()
+                .mentorFnr(null)
+                .gjeldendeInnhold(avtale.gjeldendeInnhold().toBuilder()
+                    .arbeidsgiveravgift(null)
+                    .arbeidsgiveravgiftBelop(null)
+                    .feriepengesats(null)
+                    .feriepengerBelop(null)
+                    .lonnstilskuddProsent(null)
+                    .manedslonn(null)
+                    .mentorTimelonn(null)
+                    .otpSats(null)
+                    .otpBelop(null)
+                    .build())
+                .build();
         }
         return avtale;
     }
