@@ -2,9 +2,10 @@ package no.nav.tag.tiltaksgjennomforing.avtale.transportlag;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.experimental.FieldNameConstants;
+import lombok.Builder;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneAvArbeidsgiverGrunn;
@@ -26,7 +27,7 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@FieldNameConstants
+@Builder(toBuilder = true)
 public record AvtaleDTO(
     UUID id,
     Fnr deltakerFnr,
@@ -56,7 +57,9 @@ public record AvtaleDTO(
     Instant oppfolgingVarselSendt,
     Set<String> felterSomIkkeErFyltUt,
     boolean erOpprettetEllerEndretAvArena,
-    TilskuddPeriodeDTO gjeldendeTilskuddsperiode
+    TilskuddPeriodeDTO gjeldendeTilskuddsperiode,
+    @JsonIgnore
+    FnrOgBedrift fnrOgBedrift
 ) implements AuditerbarEntitet {
 
     public AvtaleDTO(
@@ -94,7 +97,8 @@ public record AvtaleDTO(
             avtale.getOppfolgingVarselSendt(),
             avtale.felterSomIkkeErFyltUt(),
             avtale.erOpprettetEllerEndretAvArena(),
-            avtale.getGjeldendeTilskuddsperiode() == null ? null : new TilskuddPeriodeDTO(avtale.getGjeldendeTilskuddsperiode())
+            avtale.getGjeldendeTilskuddsperiode() == null ? null : new TilskuddPeriodeDTO(avtale.getGjeldendeTilskuddsperiode()),
+            new FnrOgBedrift(avtale.getDeltakerFnr(), avtale.getBedriftNr())
         );
     }
 
@@ -212,10 +216,13 @@ public record AvtaleDTO(
         return sistEndret;
     }
 
-    @JsonIgnore
     @Override
+    @JsonIgnore
     public FnrOgBedrift getFnrOgBedrift() {
-        return new FnrOgBedrift(deltakerFnr, bedriftNr);
+        return fnrOgBedrift;
     }
 
+    public AvtaleDTO maskerFelterForAvtalePart(Avtalepart avtalepart) {
+        return avtalepart.maskerFelterForAvtalepart(this);
+    }
 }

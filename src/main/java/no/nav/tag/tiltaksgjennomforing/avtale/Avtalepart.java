@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -44,6 +45,8 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
         return altErFyltUtEllerKunFamilietilknytningMangler;
     }
+
+    public abstract AvtaleDTO maskerFelterForAvtalepart(AvtaleDTO avtaleDTO);
 
     abstract Tilgang harTilgangTilAvtale(Avtale avtale);
 

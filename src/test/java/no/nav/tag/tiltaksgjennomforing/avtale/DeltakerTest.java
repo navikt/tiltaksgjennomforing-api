@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
@@ -44,9 +45,9 @@ public class DeltakerTest {
         Deltaker deltaker = TestData.enDeltaker(avtale);
         when(avtaleRepository.findById(any())).thenReturn(Optional.of(avtale));
 
-        Avtale avtaler = deltaker.hentAvtale(avtaleRepository, avtale.getId());
-        assertThat(avtaler.getMentorFnr()).isNull();
-        assertThat(avtaler.getGjeldendeInnhold().getMentorTimelonn()).isNull();
+        AvtaleDTO avtaleDTO = new AvtaleDTO(deltaker.hentAvtale(avtaleRepository, avtale.getId())).maskerFelterForAvtalePart(deltaker);
+        assertThat(avtaleDTO.mentorFnr()).isNull();
+        assertThat(avtaleDTO.gjeldendeInnhold().mentorTimelonn()).isNull();
     }
 
     @Test

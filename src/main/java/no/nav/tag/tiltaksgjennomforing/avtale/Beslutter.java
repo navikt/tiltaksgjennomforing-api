@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -74,6 +75,11 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
     public void setOmAvtalenKanEtterregistreres(Avtale avtale) {
         sjekkTilgang(avtale);
         avtale.togglegodkjennEtterregistrering(getIdentifikator());
+    }
+
+    @Override
+    public AvtaleDTO maskerFelterForAvtalepart(AvtaleDTO avtaleDTO) {
+        return avtaleDTO;
     }
 
     @Override

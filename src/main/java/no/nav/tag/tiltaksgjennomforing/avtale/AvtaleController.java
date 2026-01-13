@@ -85,7 +85,9 @@ public class AvtaleController {
     public AvtaleDTO hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart, @RequestHeader(value = "referer", required = false) final String referer) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         sendMetrikkPåPage(referer);
-        return new AvtaleDTO(avtalepart.hentAvtale(avtaleRepository, id));
+        return avtalepart.maskerFelterForAvtalepart(
+            new AvtaleDTO(avtalepart.hentAvtale(avtaleRepository, id))
+        );
     }
 
     private void sendMetrikkPåPage(String referer) {
@@ -276,14 +278,16 @@ public class AvtaleController {
             @PathVariable("avtaleId") UUID avtaleId,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart
     ) {
-        Avtale avtale = innloggingService.hentAvtalepart(innloggetPart).hentAvtale(avtaleRepository, avtaleId);
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+        AvtaleDTO avtale = new AvtaleDTO(avtalepart.hentAvtale(avtaleRepository, avtaleId))
+            .maskerFelterForAvtalePart(avtalepart);
         if (!avtale.erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LASTE_NED_PDF);
         }
         byte[] avtalePdf = dokgenService.avtalePdf(avtale, innloggetPart);
         HttpHeaders header = new HttpHeaders();
         header.setContentType(MediaType.APPLICATION_PDF);
-        header.set(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=Avtale om " + avtale.getTiltakstype().getBeskrivelse() + ".pdf");
+        header.set(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=Avtale om " + avtale.tiltakstype().getBeskrivelse() + ".pdf");
         header.setContentLength(avtalePdf.length);
         return new HttpEntity<>(avtalePdf, header);
     }
@@ -369,7 +373,7 @@ public class AvtaleController {
     // Arbeidsgiver-operasjoner
 
     @GetMapping("/min-side-arbeidsgiver")
-    public List<Avtale> hentAlleAvtalerForMinSideArbeidsgiver(@RequestParam("bedriftNr") BedriftNr bedriftNr) {
+    public List<AvtaleDTO> hentAlleAvtalerForMinSideArbeidsgiver(@RequestParam("bedriftNr") BedriftNr bedriftNr) {
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
         return arbeidsgiver.hentAvtalerForMinSideArbeidsgiver(avtaleRepository, bedriftNr);
     }
