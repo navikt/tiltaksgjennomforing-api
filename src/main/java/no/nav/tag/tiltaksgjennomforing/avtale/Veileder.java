@@ -493,7 +493,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     public void oppdaterMentorFnrForMigrertAvtale(Fnr mentorFnr, Avtale avtale) {
-        if (!super.erMentorAvtaleMedOpphavArena(avtale)) {
+        if (!super.erMentorAvtaleMedOpphavArena(avtale) || avtale.godkjentAvMentor() != null) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE);
         }
         super.sjekkTilgang(avtale);
