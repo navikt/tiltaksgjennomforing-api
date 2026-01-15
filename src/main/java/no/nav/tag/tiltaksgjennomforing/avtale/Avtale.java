@@ -645,7 +645,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private void inngåAvtale(Instant tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
-        boolean mentorFeatureToggelEnabled = MentorTilskuddsperioderToggle.isEnabled();
         if (!utførtAvRolle.erInternBruker()) {
             throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_INNGAA_AVTALE);
         }
@@ -1356,6 +1355,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
 
+        // Forlenging vil "nullstille" oppfølging til å være 6 mnd fra dagens dato.
+        settFoersteOppfolgingstidspunkt();
+
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         forlengTilskuddsperioder(gammelSluttDato, nySluttDato);
         utforEndring(new AvtaleForlengetAvVeileder(this, utførtAv));
@@ -1498,13 +1500,17 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void godkjennOppfolgingAvAvtale(NavIdent utførtAv) {
-        setOppfolgingVarselSendt(null);
-
-        setKreverOppfolgingFom(Oppfolging.fra(this)
+        var nyOppfolgingsdato = Oppfolging.fra(this)
             .neste()
-            .getVarselstidspunkt());
+            .getVarselstidspunkt();
+
+        if (nyOppfolgingsdato != null) {
+            setOppfolgingVarselSendt(null);
+        }
+        setKreverOppfolgingFom(nyOppfolgingsdato);
 
         utforEndring(new OppfolgingAvAvtaleGodkjent(this, utførtAv));
+
     }
 
     public void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse, NavIdent utførtAv) {
