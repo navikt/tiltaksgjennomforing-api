@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
@@ -82,12 +83,16 @@ public class ArbeidsgiverTest {
 
     @Test
     public void oprettAvtale__setter_startverdier_på_avtale() {
-        OpprettAvtale opprettAvtale = new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING);
+        OpprettAvtale opprettAvtale = new OpprettAvtale(
+            TestData.etFodselsnummer(),
+            TestData.etBedriftNr(),
+            Tiltakstype.ARBEIDSTRENING
+        );
 
         PersondataService persondataService = mock(PersondataService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
-        EregService eregService  = mock(EregService.class);
-        VeilarboppfolgingService veilarboppfolgingService  = mock(VeilarboppfolgingService.class);
+        EregService eregService = mock(EregService.class);
+        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
 
         Norg2GeoResponse navEnhet = new Norg2GeoResponse("Nav Grorud", "0411");
         when(norg2Client.hentGeografiskEnhet(any())).thenReturn(navEnhet);
@@ -95,27 +100,31 @@ public class ArbeidsgiverTest {
         when(persondataService.hentGeografiskTilknytning(any())).thenReturn(Optional.of("0904"));
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
-        when(veilarboppfolgingService.hentOppfolgingsstatus(any(Fnr.class))).thenReturn(new Oppfølgingsstatus(null, null, "0411"));
+        when(veilarboppfolgingService.hentOppfolgingsstatus(any(Fnr.class))).thenReturn(new Oppfølgingsstatus(
+            null,
+            null,
+            "0411"
+        ));
 
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-                TestData.etFodselsnummer(),
-                Set.of(
-                    new AltinnReportee(
-                        "",
-                        "",
-                        null,
-                        TestData.etBedriftNr().asString(),
-                        null,
-                        null,
-                        null
-                    )
-                ),
-                Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-                List.of(),
-                persondataService,
-                norg2Client,
-                eregService,
-                veilarboppfolgingService
+            TestData.etFodselsnummer(),
+            Set.of(
+                new AltinnReportee(
+                    "",
+                    "",
+                    null,
+                    TestData.etBedriftNr().asString(),
+                    null,
+                    null,
+                    null
+                )
+            ),
+            Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
+            List.of(),
+            persondataService,
+            norg2Client,
+            eregService,
+            veilarboppfolgingService
         );
 
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
@@ -129,17 +138,17 @@ public class ArbeidsgiverTest {
     public void endreAvtale_validererFraDato() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
         );
         assertThatThrownBy(
-                () -> arbeidsgiver.avvisDatoerTilbakeITid(avtale, Now.localDate().minusDays(1), null)
+            () -> arbeidsgiver.avvisDatoerTilbakeITid(avtale, Now.localDate().minusDays(1), null)
         ).isInstanceOf(VarighetDatoErTilbakeITidException.class);
     }
 
@@ -147,17 +156,17 @@ public class ArbeidsgiverTest {
     public void endreAvtale_validererTilDato() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
         );
         assertThatThrownBy(
-                () -> arbeidsgiver.avvisDatoerTilbakeITid(avtale, Now.localDate(), Now.localDate().minusDays(1))
+            () -> arbeidsgiver.avvisDatoerTilbakeITid(avtale, Now.localDate(), Now.localDate().minusDays(1))
         ).isInstanceOf(VarighetDatoErTilbakeITidException.class);
     }
 
@@ -167,17 +176,24 @@ public class ArbeidsgiverTest {
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
 
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-                null,
-                null,
-                Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-                List.of(),
-                persondataService,
-                null,
-                null,
-                null
+            null,
+            null,
+            Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
+            List.of(),
+            persondataService,
+            null,
+            null,
+            null
         );
-        OpprettAvtale opprettAvtale = new OpprettAvtale(new Fnr("12345678910"), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING);
-        assertFeilkode(Feilkode.IKKE_TILGANG_TIL_DELTAKER_ARBEIDSGIVER, () -> arbeidsgiver.opprettAvtale(opprettAvtale));
+        OpprettAvtale opprettAvtale = new OpprettAvtale(
+            new Fnr("12345678910"),
+            TestData.etBedriftNr(),
+            Tiltakstype.ARBEIDSTRENING
+        );
+        assertFeilkode(
+            Feilkode.IKKE_TILGANG_TIL_DELTAKER_ARBEIDSGIVER,
+            () -> arbeidsgiver.opprettAvtale(opprettAvtale)
+        );
     }
 
     @Test
@@ -189,24 +205,32 @@ public class ArbeidsgiverTest {
 
         Norg2Client norg2Client = mock(Norg2Client.class);
 
-        EregService eregService  = mock(EregService.class);
+        EregService eregService = mock(EregService.class);
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
 
-        VeilarboppfolgingService veilarboppfolgingService  = mock(VeilarboppfolgingService.class);
-        when(veilarboppfolgingService.hentOppfolgingsstatus(any(Fnr.class))).thenReturn(new Oppfølgingsstatus(null, null, "0411"));
+        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        when(veilarboppfolgingService.hentOppfolgingsstatus(any(Fnr.class))).thenReturn(new Oppfølgingsstatus(
+            null,
+            null,
+            "0411"
+        ));
 
         List<BedriftNr> adressesperreTilganger = List.of(TestData.etBedriftNr());
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-                null,
-                null,
-                Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-                adressesperreTilganger,
-                persondataService,
-                norg2Client,
-                eregService,
+            null,
+            null,
+            Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
+            adressesperreTilganger,
+            persondataService,
+            norg2Client,
+            eregService,
             veilarboppfolgingService
         );
-        OpprettAvtale opprettAvtale = new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING);
+        OpprettAvtale opprettAvtale = new OpprettAvtale(
+            TestData.etFodselsnummer(),
+            TestData.etBedriftNr(),
+            Tiltakstype.ARBEIDSTRENING
+        );
         arbeidsgiver.opprettAvtale(opprettAvtale);
     }
 
@@ -221,19 +245,25 @@ public class ArbeidsgiverTest {
         // PDL Adressepserre og navn mock
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
-        when(persondataService.hentDiskresjonskoder(any())).thenReturn(Map.of(avtale.getDeltakerFnr(), Diskresjonskode.STRENGT_FORTROLIG));
+        when(persondataService.hentDiskresjonskoder(any())).thenReturn(Map.of(
+            avtale.getDeltakerFnr(),
+            Diskresjonskode.STRENGT_FORTROLIG
+        ));
 
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-                null,
-                null,
-                Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-                emptyList(),
-                persondataService,
-                null,
-                null,
-                null
+            null,
+            null,
+            Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
+            emptyList(),
+            persondataService,
+            null,
+            null,
+            null
         );
-        assertFeilkode(Feilkode.IKKE_TILGANG_TIL_AVTALE, () -> arbeidsgiver.hentAvtale(avtaleRepository, avtale.getId()));
+        assertFeilkode(
+            Feilkode.IKKE_TILGANG_TIL_AVTALE,
+            () -> arbeidsgiver.hentAvtale(avtaleRepository, avtale.getId())
+        );
     }
 
     @Test
@@ -250,14 +280,14 @@ public class ArbeidsgiverTest {
 
         List<BedriftNr> adressesperreTilganger = List.of(TestData.etBedriftNr());
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-                null,
-                null,
-                Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-                adressesperreTilganger,
-                persondataService,
-                null,
-                null,
-                null
+            null,
+            null,
+            Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
+            adressesperreTilganger,
+            persondataService,
+            null,
+            null,
+            null
         );
         arbeidsgiver.hentAvtale(avtaleRepository, avtale.getId());
     }
@@ -273,32 +303,43 @@ public class ArbeidsgiverTest {
 
         // PDL Adressepserre og navn mock
         PersondataService persondataService = mock(PersondataService.class);
-        when(persondataService.hentDiskresjonskoder(any())).thenReturn(Map.of(avtale.getDeltakerFnr(), Diskresjonskode.STRENGT_FORTROLIG));
+        when(persondataService.hentDiskresjonskoder(any())).thenReturn(Map.of(
+            avtale.getDeltakerFnr(),
+            Diskresjonskode.STRENGT_FORTROLIG
+        ));
 
 
         List<BedriftNr> adressesperreTilganger = List.of(TestData.etBedriftNr());
         Arbeidsgiver arbeidsgiverUtenAdressesperreTilgang = new Arbeidsgiver(
-                null,
-                null,
-                Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-                emptyList(),
-                persondataService,
-                null,
-                null,
-                null
+            null,
+            null,
+            Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
+            emptyList(),
+            persondataService,
+            null,
+            null,
+            null
         );
         Arbeidsgiver arbeidsgiverMedAdressesperreTilgang = new Arbeidsgiver(
-                null,
-                null,
-                Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-                adressesperreTilganger,
-                persondataService,
-                null,
-                null,
-                null
+            null,
+            null,
+            Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
+            adressesperreTilganger,
+            persondataService,
+            null,
+            null,
+            null
         );
-        Page<BegrensetAvtale> begrensetAvtales = arbeidsgiverUtenAdressesperreTilgang.hentBegrensedeAvtalerMedLesetilgang(avtaleRepository, new AvtaleQueryParameter(), PageRequest.of(0, 100));
-        Page<BegrensetAvtale> begrensetAvtales2 = arbeidsgiverMedAdressesperreTilgang.hentBegrensedeAvtalerMedLesetilgang(avtaleRepository, new AvtaleQueryParameter(), PageRequest.of(0, 100));
+        Page<BegrensetAvtale> begrensetAvtales = arbeidsgiverUtenAdressesperreTilgang.hentBegrensedeAvtalerMedLesetilgang(
+            avtaleRepository,
+            new AvtaleQueryParameter(),
+            PageRequest.of(0, 100)
+        );
+        Page<BegrensetAvtale> begrensetAvtales2 = arbeidsgiverMedAdressesperreTilgang.hentBegrensedeAvtalerMedLesetilgang(
+            avtaleRepository,
+            new AvtaleQueryParameter(),
+            PageRequest.of(0, 100)
+        );
         assertThat(begrensetAvtales.getContent().size()).isEqualTo(0);
         assertThat(begrensetAvtales2.getContent().size()).isEqualTo(1);
     }
@@ -332,7 +373,15 @@ public class ArbeidsgiverTest {
             () -> mentor.hentAvtale(avtaleRepository, ingentingFyltUt.getId())
         );
         mentor.godkjennAvtale(altFyltUtUtenomFamilieTilknytning);
-        assertEquals(altFyltUtUtenomFamilieTilknytning, mentor.hentAvtale(avtaleRepository, altFyltUtUtenomFamilieTilknytning.getId()));
+        var altFyltUtUtenomFamilieTilknytningOgUtenDeltakerFnr = new AvtaleDTO(altFyltUtUtenomFamilieTilknytning)
+            .toBuilder()
+            .deltakerFnr(null)
+            .build();
+
+        assertEquals(
+            altFyltUtUtenomFamilieTilknytningOgUtenDeltakerFnr,
+            mentor.hentAvtale(avtaleRepository, altFyltUtUtenomFamilieTilknytning.getId())
+        );
 
         // Listeoppslag
         when(avtaleRepository.findAllByMentorFnr(any(), eq(pageable))).thenReturn(new PageImpl<>(List.of(

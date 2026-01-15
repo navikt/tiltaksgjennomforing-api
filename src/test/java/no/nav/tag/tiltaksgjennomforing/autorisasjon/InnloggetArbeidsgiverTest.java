@@ -47,7 +47,7 @@ public class InnloggetArbeidsgiverTest {
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
 
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        AvtaleDTO hentetAvtale = new AvtaleDTO(arbeidsgiver.hentAvtale(avtaleRepository, avtale.getId())).maskerFelterForAvtalePart(arbeidsgiver);
+        AvtaleDTO hentetAvtale = arbeidsgiver.hentAvtale(avtaleRepository, avtale.getId());
         assertThat(hentetAvtale.annullertGrunn()).isNull();
     }
 

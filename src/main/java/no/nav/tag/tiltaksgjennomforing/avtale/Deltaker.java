@@ -24,11 +24,6 @@ public class Deltaker extends Avtalepart<Fnr> {
     }
 
     @Override
-    public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
-        return super.hentAvtale(avtaleRepository, avtaleId);
-    }
-
-    @Override
     public Tilgang harTilgangTilAvtale(Avtale avtale) {
         return Utils.equalsMenIkkeNull(avtale.getDeltakerFnr(), getIdentifikator())
             ? new Tilgang.Tillat()

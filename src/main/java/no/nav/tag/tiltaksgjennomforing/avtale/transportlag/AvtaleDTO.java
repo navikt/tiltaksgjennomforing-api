@@ -221,8 +221,4 @@ public record AvtaleDTO(
     public FnrOgBedrift getFnrOgBedrift() {
         return fnrOgBedrift;
     }
-
-    public AvtaleDTO maskerFelterForAvtalePart(Avtalepart avtalepart) {
-        return avtalepart.maskerFelterForAvtalepart(this);
-    }
 }
