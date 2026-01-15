@@ -316,10 +316,4 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             .map(Organisasjon::getBedriftNavn)
             .ifPresent(avtale::leggTilBedriftNavn);
     }
-
-    @Override
-    public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
-        return super.hentAvtale(avtaleRepository, avtaleId);
-    }
-
 }

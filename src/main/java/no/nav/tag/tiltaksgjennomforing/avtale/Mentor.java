@@ -50,8 +50,8 @@ public class Mentor extends Avtalepart<Fnr> {
     }
 
     @Override
-    public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
-        Avtale avtale = super.hentAvtale(avtaleRepository, avtaleId);
+    public AvtaleDTO hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
+        AvtaleDTO avtale = super.hentAvtale(avtaleRepository, avtaleId);
         if (!avtale.erGodkjentTaushetserklæringAvMentor()) {
             throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_AVTALE);
         }

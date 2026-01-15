@@ -45,7 +45,7 @@ public class DeltakerTest {
         Deltaker deltaker = TestData.enDeltaker(avtale);
         when(avtaleRepository.findById(any())).thenReturn(Optional.of(avtale));
 
-        AvtaleDTO avtaleDTO = new AvtaleDTO(deltaker.hentAvtale(avtaleRepository, avtale.getId())).maskerFelterForAvtalePart(deltaker);
+        AvtaleDTO avtaleDTO = deltaker.hentAvtale(avtaleRepository, avtale.getId());
         assertThat(avtaleDTO.mentorFnr()).isNull();
         assertThat(avtaleDTO.gjeldendeInnhold().mentorTimelonn()).isNull();
     }
@@ -53,7 +53,13 @@ public class DeltakerTest {
     @Test
     public void deltaker_alder_ikke_eldre_enn_72() {
         Now.fixedDate(LocalDate.of(2021, 1, 20));
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(new Fnr("30015521534"), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(
+            new OpprettAvtale(
+                new Fnr("30015521534"),
+                TestData.etBedriftNr(),
+                Tiltakstype.VARIG_LONNSTILSKUDD
+            ), Avtaleopphav.VEILEDER, TestData.enNavIdent()
+        );
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
         endreAvtale.setSluttDato(LocalDate.of(2028, 1, 30));

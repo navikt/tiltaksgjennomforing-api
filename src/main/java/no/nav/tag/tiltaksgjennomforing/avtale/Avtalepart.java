@@ -90,16 +90,16 @@ public abstract class Avtalepart<T extends Identifikator> {
         return new PageImpl<>(avtalerMedTilgang, avtaler.getPageable(), avtaler.getTotalElements());
     }
 
-    public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
+    public AvtaleDTO hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         sjekkTilgang(avtale);
-        return avtale;
+        return maskerFelterForAvtalepart(new AvtaleDTO(avtale));
     }
 
-    public Avtale hentAvtaleFraAvtaleNr(AvtaleRepository avtaleRepository, int avtaleNr) {
+    public AvtaleDTO hentAvtaleFraAvtaleNr(AvtaleRepository avtaleRepository, int avtaleNr) {
         Avtale avtale = avtaleRepository.findByAvtaleNr(avtaleNr).orElseThrow(RessursFinnesIkkeException::new);
         sjekkTilgang(avtale);
-        return avtale;
+        return maskerFelterForAvtalepart(new AvtaleDTO(avtale));
     }
 
     public List<AvtaleInnhold> hentAvtaleVersjoner(AvtaleRepository avtaleRepository, AvtaleInnholdRepository avtaleInnholdRepository, UUID avtaleId) {

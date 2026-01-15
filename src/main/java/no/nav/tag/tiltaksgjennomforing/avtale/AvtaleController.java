@@ -85,9 +85,7 @@ public class AvtaleController {
     public AvtaleDTO hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart, @RequestHeader(value = "referer", required = false) final String referer) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         sendMetrikkPåPage(referer);
-        return avtalepart.maskerFelterForAvtalepart(
-            new AvtaleDTO(avtalepart.hentAvtale(avtaleRepository, id))
-        );
+        return avtalepart.hentAvtale(avtaleRepository, id);
     }
 
     private void sendMetrikkPåPage(String referer) {
@@ -118,7 +116,7 @@ public class AvtaleController {
     @GetMapping("/avtaleNr/{avtaleNr}")
     public AvtaleDTO hentFraAvtaleNr(@PathVariable("avtaleNr") int avtaleNr, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        return new AvtaleDTO(avtalepart.hentAvtaleFraAvtaleNr(avtaleRepository, avtaleNr));
+        return avtalepart.hentAvtaleFraAvtaleNr(avtaleRepository, avtaleNr);
     }
 
     @GetMapping("/{avtaleId}/versjoner")
@@ -279,8 +277,7 @@ public class AvtaleController {
             @CookieValue("innlogget-part") Avtalerolle innloggetPart
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        AvtaleDTO avtale = new AvtaleDTO(avtalepart.hentAvtale(avtaleRepository, avtaleId))
-            .maskerFelterForAvtalePart(avtalepart);
+        AvtaleDTO avtale = avtalepart.hentAvtale(avtaleRepository, avtaleId);
         if (!avtale.erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LASTE_NED_PDF);
         }
@@ -319,7 +316,7 @@ public class AvtaleController {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         avtalepart.endreAvtale(endreAvtale, avtale);
-        return new AvtaleDTO(avtale);
+        return avtalepart.maskerFelterForAvtalepart(new AvtaleDTO(avtale));
     }
 
     @PostMapping("/{avtaleId}/opphev-godkjenninger")
@@ -384,8 +381,8 @@ public class AvtaleController {
             @CookieValue("innlogget-part") Avtalerolle innloggetPart
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Avtale avtale = avtalepart.hentAvtale(avtaleRepository, avtaleId);
-        return kontoregisterService.hentKontonummer(avtale.getBedriftNr().asString());
+        AvtaleDTO avtale = avtalepart.hentAvtale(avtaleRepository, avtaleId);
+        return kontoregisterService.hentKontonummer(avtale.bedriftNr().asString());
     }
 
     @PostMapping("/opprett-som-arbeidsgiver")
