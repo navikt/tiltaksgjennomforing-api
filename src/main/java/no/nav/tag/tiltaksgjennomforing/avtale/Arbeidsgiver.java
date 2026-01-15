@@ -172,11 +172,13 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     @Override
     public boolean avtalenEksisterer(Avtale avtale) {
-        if (avtale.getOpphav().equals(Avtaleopphav.ARENA) && !avtale.erAvtaleInngått()) {
-            return false;
-        }
-        if (erMentorAvtaleMedOpphavArena(avtale) && !mentorAvtaleErKlarForVisningForEksterne(avtale)) {
-            return false;
+        if (avtale.getOpphav() == Avtaleopphav.ARENA) {
+            if (avtale.getTiltakstype() == Tiltakstype.MENTOR && !mentorAvtaleErKlarForVisningForEksterne(avtale)) {
+                return false;
+            }
+            if (avtale.getTiltakstype() != Tiltakstype.MENTOR && !avtale.erAvtaleInngått()) {
+                return false;
+            }
         }
         return super.avtalenEksisterer(avtale);
     }

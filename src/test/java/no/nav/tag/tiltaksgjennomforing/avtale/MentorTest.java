@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -313,7 +314,13 @@ public class MentorTest {
             () -> mentor.hentAvtale(avtaleRepository, ingentingFyltUt.getId())
         );
         mentor.godkjennAvtale(altFyltUtUtenomFamilieTilknytning);
-        assertEquals(altFyltUtUtenomFamilieTilknytning, mentor.hentAvtale(avtaleRepository, altFyltUtUtenomFamilieTilknytning.getId()));
+
+        var altFyltUtUtenomFamilieTilknytningOgUtenDeltakerFnr = new AvtaleDTO(altFyltUtUtenomFamilieTilknytning)
+            .toBuilder().deltakerFnr(null).build();
+        assertEquals(
+            altFyltUtUtenomFamilieTilknytningOgUtenDeltakerFnr,
+            mentor.hentAvtale(avtaleRepository, altFyltUtUtenomFamilieTilknytning.getId())
+        );
 
         // Listeoppslag
         when(avtaleRepository.findAllByMentorFnr(any(), eq(pageable))).thenReturn(new PageImpl<>(List.of(
