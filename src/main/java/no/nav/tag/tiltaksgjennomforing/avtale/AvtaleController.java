@@ -951,6 +951,6 @@ public class AvtaleController {
 
         avtaleRepository.save(avtale);
 
-        return new AvtaleDTO(veileder.hentAvtale(avtaleRepository, avtaleId));
+        return veileder.hentAvtale(avtaleRepository, avtaleId);
     }
 }
