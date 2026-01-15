@@ -65,6 +65,8 @@ public class Deltaker extends Avtalepart<Fnr> {
                     .lonnstilskuddProsent(null)
                     .manedslonn(null)
                     .mentorTimelonn(null)
+                    .mentorValgtLonnstype(null)
+                    .mentorValgtLonnstypeBelop(null)
                     .otpSats(null)
                     .otpBelop(null)
                     .build())
