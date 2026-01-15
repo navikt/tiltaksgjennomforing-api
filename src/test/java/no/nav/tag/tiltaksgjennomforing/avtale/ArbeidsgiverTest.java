@@ -360,7 +360,6 @@ public class ArbeidsgiverTest {
 
         altFyltUtUtenomFamilieTilknytning.getGjeldendeInnhold().setHarFamilietilknytning(null);
         altFyltUtUtenomFamilieTilknytning.getGjeldendeInnhold().setFamilietilknytningForklaring(null);
-        Mentor mentor = TestData.enMentor(ingentingFyltUt);
         AvtaleQueryParameter avtalePredicate = new AvtaleQueryParameter();
 
         // Enkeltoppslag
@@ -368,27 +367,40 @@ public class ArbeidsgiverTest {
             .thenReturn(Optional.of(ingentingFyltUt));
         when(avtaleRepository.findById(eq(altFyltUtUtenomFamilieTilknytning.getId())))
             .thenReturn(Optional.of(altFyltUtUtenomFamilieTilknytning));
+        PersondataService persondataService = mock(PersondataService.class);
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
+            null,
+            null,
+            Map.of(
+                TestData.etBedriftNr(),
+                Set.of(Tiltakstype.MENTOR),
+                new BedriftNr("999999999"),
+                Set.of(Tiltakstype.MENTOR)
+            ),
+            List.of(),
+            persondataService,
+            null,
+            null,
+            null
+        );
+
         assertThrows(
             RessursFinnesIkkeException.class,
-            () -> mentor.hentAvtale(avtaleRepository, ingentingFyltUt.getId())
+            () -> arbeidsgiver.hentAvtale(avtaleRepository, ingentingFyltUt.getId())
         );
-        mentor.godkjennAvtale(altFyltUtUtenomFamilieTilknytning);
-        var altFyltUtUtenomFamilieTilknytningOgUtenDeltakerFnr = new AvtaleDTO(altFyltUtUtenomFamilieTilknytning)
-            .toBuilder()
-            .deltakerFnr(null)
-            .build();
-
         assertEquals(
-            altFyltUtUtenomFamilieTilknytningOgUtenDeltakerFnr,
-            mentor.hentAvtale(avtaleRepository, altFyltUtUtenomFamilieTilknytning.getId())
+            new AvtaleDTO(altFyltUtUtenomFamilieTilknytning),
+            arbeidsgiver.hentAvtale(avtaleRepository, altFyltUtUtenomFamilieTilknytning.getId())
         );
 
         // Listeoppslag
-        when(avtaleRepository.findAllByMentorFnr(any(), eq(pageable))).thenReturn(new PageImpl<>(List.of(
+        when(avtaleRepository.findAllByBedriftNr(any(), eq(pageable))).thenReturn(new PageImpl<>(List.of(
             ingentingFyltUt,
             altFyltUtUtenomFamilieTilknytning
         )));
-        List<BegrensetAvtale> avtalerMinimal = mentor
+        List<BegrensetAvtale> avtalerMinimal = arbeidsgiver
             .hentBegrensedeAvtalerMedLesetilgang(avtaleRepository, avtalePredicate, pageable)
             .getContent();
 
