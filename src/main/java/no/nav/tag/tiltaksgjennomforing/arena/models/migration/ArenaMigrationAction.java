@@ -15,14 +15,13 @@ public enum ArenaMigrationAction {
 
     public static ArenaMigrationAction map(ArenaAgreementAggregate agreementAggregate) {
         Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
-        boolean isSluttdatoIDagEllerFremtiden = agreementAggregate.isSluttdatoIDagEllerFremtiden();
 
         if (agreementAggregate.isDublett()) {
             return IGNORER;
         }
 
         return switch (deltakerstatuskode) {
-            case GJENN, TILBUD -> isSluttdatoIDagEllerFremtiden ? OPPRETT : IGNORER;
+            case GJENN, TILBUD -> OPPRETT;
             case null, default -> IGNORER;
         };
     }
@@ -65,15 +64,15 @@ public enum ArenaMigrationAction {
                     case GJENN, TILBUD -> isSluttdatoIDagEllerFremtiden ? OPPDATER : AVSLUTT;
                     case null, default -> ANNULLER;
                 };
-                case null, default -> throw new IllegalStateException(formatExceptionMsg(tiltakstatuskode, deltakerstatuskode));
+                case null, default -> throw new IllegalStateException(formatExceptionMsg(avtalestatus, tiltakstatuskode, deltakerstatuskode));
             };
-            case null, default -> throw new IllegalStateException(formatExceptionMsg(tiltakstatuskode, deltakerstatuskode));
+            case null, default -> throw new IllegalStateException(formatExceptionMsg(avtalestatus, tiltakstatuskode, deltakerstatuskode));
         };
 
     }
 
-    private static String formatExceptionMsg(Tiltakstatuskode tiltakstatuskode, Deltakerstatuskode deltakerstatuskode) {
-        return "Fikk ugyldig kombinasjon av tiltakstatuskode" + tiltakstatuskode + " og deltakerstatuskode " +
-            deltakerstatuskode + " fra Arena";
+    private static String formatExceptionMsg(Status status, Tiltakstatuskode tiltakstatuskode, Deltakerstatuskode deltakerstatuskode) {
+        return "Fikk ugyldig kombinasjon av tiltakstatuskode " + tiltakstatuskode + " og deltakerstatuskode " +
+            deltakerstatuskode + " fra Arena på avtale med status " + status;
     }
 }
