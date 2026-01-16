@@ -110,6 +110,17 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         avtaleInnhold.setFeriepengesats(endreTilskuddsberegning.getFeriepengesats());
         avtaleInnhold.setMentorAntallTimer(endreTilskuddsberegning.getMentorAntallTimer());
         avtaleInnhold.setMentorTimelonn(endreTilskuddsberegning.getMentorTimelonn());
+
+        if (MentorTilskuddsperioderToggle.isEnabled()) {
+            avtaleInnhold.setStillingprosent(endreTilskuddsberegning.getStillingprosent());
+            avtaleInnhold.setMentorValgtLonnstype(endreTilskuddsberegning.getMentorValgtLonnstype());
+            avtaleInnhold.setMentorValgtLonnstypeBelop(endreTilskuddsberegning.getMentorValgtLonnstypeBelop());
+
+            if (endreTilskuddsberegning.getMentorValgtLonnstype() != null && endreTilskuddsberegning.getMentorValgtLonnstypeBelop() != null) {
+                avtaleInnhold.setMentorTimelonn(MentorTimelonnBeregning.beregnMentorTimelonn(endreTilskuddsberegning.getMentorValgtLonnstype(), endreTilskuddsberegning.getMentorValgtLonnstypeBelop(), endreTilskuddsberegning.getStillingprosent()));
+            }
+        }
+
         reberegnTotal(avtale);
     }
 
