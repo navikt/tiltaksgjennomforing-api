@@ -25,6 +25,7 @@ import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
+import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.springframework.data.domain.Page;
@@ -345,14 +346,25 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     public void sjekkOgOppdaterOppfølgningsstatusForAvtale(Avtale avtale) {
+        boolean harSluttdatoPassert = DatoUtils.harDatoPassert(avtale.getGjeldendeInnhold().getSluttDato());
+        if (harSluttdatoPassert) {
+            return;
+        }
+
         Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         if (oppfølgingsstatus == null) {
             return;
         }
+
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
     }
 
     private void sjekkOmBedriftErGyldigOgOppdaterNavn(Avtale avtale) {
+        boolean harSluttdatoPassert = DatoUtils.harDatoPassert(avtale.getGjeldendeInnhold().getSluttDato());
+        if (harSluttdatoPassert) {
+            return;
+        }
+
         Optional.ofNullable(eregService.hentVirksomhet(avtale.getBedriftNr()))
             .map(Organisasjon::getBedriftNavn)
             .ifPresent(avtale::leggTilBedriftNavn);
