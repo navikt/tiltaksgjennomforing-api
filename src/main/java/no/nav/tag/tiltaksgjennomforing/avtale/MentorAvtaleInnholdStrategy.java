@@ -21,7 +21,7 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setMentorFornavn(nyAvtale.getMentorFornavn());
         avtaleInnhold.setMentorEtternavn(nyAvtale.getMentorEtternavn());
         avtaleInnhold.setMentorOppgaver(nyAvtale.getMentorOppgaver());
-        avtaleInnhold.setMentorAntallTimer(nyAvtale.getMentorAntallTimer());
+        avtaleInnhold.setMentorAntallTimerPerMaaned(nyAvtale.getMentorAntallTimer());
         avtaleInnhold.setMentorTlf(nyAvtale.getMentorTlf());
         avtaleInnhold.setMentorTimelonn(nyAvtale.getMentorTimelonn());
         avtaleInnhold.setHarFamilietilknytning(nyAvtale.getHarFamilietilknytning());
@@ -68,7 +68,7 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
         alleFelter.put(AvtaleInnhold.Fields.mentorFornavn, avtaleInnhold.getMentorFornavn());
         alleFelter.put(AvtaleInnhold.Fields.mentorEtternavn, avtaleInnhold.getMentorEtternavn());
         alleFelter.put(AvtaleInnhold.Fields.mentorOppgaver, avtaleInnhold.getMentorOppgaver());
-        alleFelter.put(AvtaleInnhold.Fields.mentorAntallTimer, avtaleInnhold.getMentorAntallTimer());
+        alleFelter.put(Fields.mentorAntallTimerPerMaaned, avtaleInnhold.getMentorAntallTimerPerMaaned());
         alleFelter.put(AvtaleInnhold.Fields.mentorTimelonn, avtaleInnhold.getMentorTimelonn());
         alleFelter.put(Fields.mentorTlf, avtaleInnhold.getMentorTlf());
 

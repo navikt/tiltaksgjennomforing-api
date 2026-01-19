@@ -137,7 +137,7 @@ public record AvtaleInnholdDTO(
             dbEntitet.getMentorFornavn(),
             dbEntitet.getMentorEtternavn(),
             dbEntitet.getMentorOppgaver(),
-            dbEntitet.getMentorAntallTimer(),
+            dbEntitet.getMentorAntallTimerPerMaaned(),
             dbEntitet.getMentorTimelonn(),
             dbEntitet.getMentorValgtLonnstypeBelop(),
             dbEntitet.getMentorValgtLonnstype(),

@@ -136,7 +136,7 @@ public class EndreAvtale {
                 innhold.getMentorFornavn(),
                 innhold.getMentorEtternavn(),
                 innhold.getMentorOppgaver(),
-                innhold.getMentorAntallTimer(),
+                innhold.getMentorAntallTimerPerMaaned(),
                 innhold.getMentorTlf(),
                 innhold.getMentorTimelonn(),
                 innhold.getMentorValgtLonnstypeBelop(),
