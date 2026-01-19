@@ -244,7 +244,7 @@ public class MentorTest {
         assertThat(avtale.getGjeldendeInnhold().getMentorEtternavn()).isEqualTo("Persen");
         assertThat(avtale.getGjeldendeInnhold().getMentorTlf()).isEqualTo("12345678");
         assertThat(avtale.getGjeldendeInnhold().getMentorOppgaver()).isEqualTo("litt mentorering");
-        assertThat(avtale.getGjeldendeInnhold().getMentorAntallTimer()).isEqualTo(5);
+        assertThat(avtale.getGjeldendeInnhold().getMentorAntallTimerPerMaaned()).isEqualTo(5);
         assertThat(avtale.getGjeldendeInnhold().getMentorTimelonn()).isEqualTo(500);
         assertThat(avtale.getGjeldendeInnhold().getInnholdType()).isEqualTo(AvtaleInnholdType.ENDRE_OM_MENTOR);
     }

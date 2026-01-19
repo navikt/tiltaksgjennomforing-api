@@ -92,7 +92,7 @@ public class TilskuddsperiodeGodkjentMelding {
                 avtale.getGjeldendeInnhold().getArbeidsgiverKontonummer(),
                 avtale.getGjeldendeInnhold().getArbeidsgiverKid(),
                 avtale.getGjeldendeInnhold().getMentorTimelonn(),
-                avtale.getGjeldendeInnhold().getMentorAntallTimer()
+                avtale.getGjeldendeInnhold().getMentorAntallTimerPerMaaned()
         );
     }
 }

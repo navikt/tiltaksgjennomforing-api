@@ -199,7 +199,7 @@ public class AvtaleMelding {
         avtaleMelding.setMentorFornavn(avtaleInnhold.getMentorFornavn());
         avtaleMelding.setMentorEtternavn(avtaleInnhold.getMentorEtternavn());
         avtaleMelding.setMentorOppgaver(avtaleInnhold.getMentorOppgaver());
-        avtaleMelding.setMentorAntallTimer(avtaleInnhold.getMentorAntallTimer());
+        avtaleMelding.setMentorAntallTimer(avtaleInnhold.getMentorAntallTimerPerMaaned());
         avtaleMelding.setMentorTimelonn(avtaleInnhold.getMentorTimelonn());
         avtaleMelding.setMentorTlf(avtaleInnhold.getMentorTlf());
         avtaleMelding.setArbeidsgiverKontonummer(avtaleInnhold.getArbeidsgiverKontonummer());

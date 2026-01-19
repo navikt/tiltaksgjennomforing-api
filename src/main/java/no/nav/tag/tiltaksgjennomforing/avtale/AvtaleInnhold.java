@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -88,7 +89,8 @@ public class AvtaleInnhold {
     private String mentorFornavn;
     private String mentorEtternavn;
     private String mentorOppgaver;
-    private Double mentorAntallTimer;
+    @Column(name = "mentor_antall_timer")
+    private Double mentorAntallTimerPerMaaned;
     private Integer mentorTimelonn;
     private Integer mentorValgtLonnstypeBelop;
     private MentorValgtLonnstype mentorValgtLonnstype;
@@ -276,7 +278,7 @@ public class AvtaleInnhold {
         setMentorFornavn(endreOmMentor.getMentorFornavn());
         setMentorEtternavn(endreOmMentor.getMentorEtternavn());
         setMentorTlf(endreOmMentor.getMentorTlf());
-        setMentorAntallTimer(endreOmMentor.getMentorAntallTimer());
+        setMentorAntallTimerPerMaaned(endreOmMentor.getMentorAntallTimer());
         setMentorTimelonn(endreOmMentor.getMentorTimelonn());
         setMentorOppgaver(endreOmMentor.getMentorOppgaver());
     }

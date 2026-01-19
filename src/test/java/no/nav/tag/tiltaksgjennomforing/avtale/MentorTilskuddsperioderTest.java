@@ -143,7 +143,7 @@ class MentorTilskuddsperioderTest {
             AvtaleInnhold.Fields.mentorFornavn,
             AvtaleInnhold.Fields.mentorEtternavn,
             AvtaleInnhold.Fields.mentorOppgaver,
-            AvtaleInnhold.Fields.mentorAntallTimer,
+            AvtaleInnhold.Fields.mentorAntallTimerPerMaaned,
             AvtaleInnhold.Fields.mentorTimelonn,
             AvtaleInnhold.Fields.tilrettelegging,
             AvtaleInnhold.Fields.oppfolging,

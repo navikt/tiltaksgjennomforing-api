@@ -24,7 +24,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         if (!nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(avtale)) {
             return;
         }
-        var mentorsMånedslønn = Double.valueOf(innhold.getMentorTimelonn() * innhold.getMentorAntallTimer()).intValue();
+        var mentorsMånedslønn = Double.valueOf(innhold.getMentorTimelonn() * innhold.getMentorAntallTimerPerMaaned()).intValue();
 
         BigDecimal feriepengerBelop = BeregningStrategy.getFeriepengerBelop(innhold.getFeriepengesats(), mentorsMånedslønn);
         BigDecimal obligTjenestepensjon = BeregningStrategy.getBeregnetOtpBelop(toBigDecimal(innhold.getOtpSats()), mentorsMånedslønn, feriepengerBelop);
@@ -40,7 +40,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
     public boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(Avtale avtale) {
         AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
         return Utils.erIkkeTomme(
-            innhold.getMentorAntallTimer(),
+            innhold.getMentorAntallTimerPerMaaned(),
             innhold.getMentorTimelonn(),
             innhold.getFeriepengesats(),
             innhold.getArbeidsgiveravgift(),
@@ -108,7 +108,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         avtaleInnhold.setArbeidsgiveravgift(endreTilskuddsberegning.getArbeidsgiveravgift());
         avtaleInnhold.setOtpSats(endreTilskuddsberegning.getOtpSats());
         avtaleInnhold.setFeriepengesats(endreTilskuddsberegning.getFeriepengesats());
-        avtaleInnhold.setMentorAntallTimer(endreTilskuddsberegning.getMentorAntallTimer());
+        avtaleInnhold.setMentorAntallTimerPerMaaned(endreTilskuddsberegning.getMentorAntallTimer());
         avtaleInnhold.setMentorTimelonn(endreTilskuddsberegning.getMentorTimelonn());
         reberegnTotal(avtale);
     }
@@ -120,7 +120,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         }
         AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
 
-        int månedsLonn = beregnMånedligTilskudd(innhold.getMentorAntallTimer(), innhold.getMentorTimelonn());
+        int månedsLonn = beregnMånedligTilskudd(innhold.getMentorAntallTimerPerMaaned(), innhold.getMentorTimelonn());
         return BeregningStrategy.beløpForPeriode(startDato, sluttDato, månedsLonn);
     }
 
