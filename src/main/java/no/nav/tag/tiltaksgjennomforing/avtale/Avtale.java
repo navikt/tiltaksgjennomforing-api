@@ -1197,13 +1197,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
             List<TilskuddPeriode> tilskuddsperioder = this.hentBeregningStrategi().hentTilskuddsperioderForPeriode(this, gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato()); //.genererNyeTilskuddsperioder(this);
 
-            tilskuddsperioder.forEach(periode -> {
-                // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
-                // Eller skal det være startdato? Er jo den samme datoen som migreringsdato. hmm...
-                if (periode.getSluttDato().isBefore(migreringsDato)) {
-                    periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
-                }
-            });
+            BeregningStrategy.settBehandletIArena(migreringsDato, tilskuddsperioder);
+
             fikseLøpenumre(tilskuddsperioder, 1);
             tilskuddPeriode.addAll(tilskuddsperioder);
             setGjeldendeTilskuddsperiode(TilskuddPeriode.finnGjeldende(this));
