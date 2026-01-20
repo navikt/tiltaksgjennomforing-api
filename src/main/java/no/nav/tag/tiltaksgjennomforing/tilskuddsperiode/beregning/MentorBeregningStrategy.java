@@ -64,17 +64,21 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
         boolean mentorFeatureToggelEnabled = MentorTilskuddsperioderToggle.isEnabled();
 
+        if (mentorFeatureToggelEnabled && !Utils.erIkkeTomme(
+            innhold.getStillingprosent(),
+            innhold.getMentorValgtLonnstype(),
+            innhold.getMentorValgtLonnstypeBelop()
+        )) {
+            return false;
+        }
+
         return Utils.erIkkeTomme(
             innhold.getMentorAntallTimer(),
             innhold.getMentorTimelonn(),
             innhold.getFeriepengesats(),
             innhold.getArbeidsgiveravgift(),
             innhold.getOtpSats()
-        ) && (!mentorFeatureToggelEnabled || Utils.erIkkeTomme(
-            innhold.getStillingprosent(),
-            innhold.getMentorValgtLonnstype(),
-            innhold.getMentorValgtLonnstypeBelop()
-        ));
+        );
     }
 
     @Override
