@@ -1,22 +1,28 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.MentorTilskuddsperioderToggle;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.convertBigDecimalToInt;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.toBigDecimal;
 
 public class MentorBeregningStrategy implements BeregningStrategy {
+
+    private final LocalDate STANDARD_MIGRERINGSDATO = ArenaTiltakskode.MENTOR.getMigreringsdatoForTilskudd();
 
     @Override
     public void reberegnTotal(Avtale avtale) {
@@ -97,6 +103,13 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         perioder.forEach(p -> p.setAvtale(avtale));
         perioder.forEach(p -> p.setEnhet(innhold.getEnhetKostnadssted()));
         perioder.forEach(p -> p.setEnhetsnavn(innhold.getEnhetsnavnKostnadssted()));
+
+        perioder.forEach(periode -> {
+            if (periode.getSluttDato().isBefore(STANDARD_MIGRERINGSDATO)) {
+                periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
+            }
+        });
+
         fikseLøpenumre(perioder, 1);
         return perioder;
     }
