@@ -21,7 +21,6 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setMentorFornavn(nyAvtale.getMentorFornavn());
         avtaleInnhold.setMentorEtternavn(nyAvtale.getMentorEtternavn());
         avtaleInnhold.setMentorOppgaver(nyAvtale.getMentorOppgaver());
-        avtaleInnhold.setMentorAntallTimer(nyAvtale.getMentorAntallTimer());
         avtaleInnhold.setMentorTlf(nyAvtale.getMentorTlf());
         avtaleInnhold.setMentorTimelonn(nyAvtale.getMentorTimelonn());
         avtaleInnhold.setHarFamilietilknytning(nyAvtale.getHarFamilietilknytning());
@@ -41,6 +40,8 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
                 avtaleInnhold.setMentorTimelonn(MentorTimelonnBeregning.beregnMentorTimelonn(nyAvtale.getMentorValgtLonnstype(), nyAvtale.getMentorValgtLonnstypeBelop(), nyAvtale.getStillingprosent()));
             }
             mentorBeregningStrategy.reberegnTotal(avtaleInnhold.getAvtale());
+        } else {
+            avtaleInnhold.setMentorAntallTimer(nyAvtale.getMentorAntallTimer());
         }
         super.endre(nyAvtale);
     }

@@ -197,6 +197,7 @@ public class TestData {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreKontaktInfo(endreAvtale);
         endreMentorInfo(endreAvtale);
+        endreAvtale.setMentorAntallTimerPerMnd(10.0);
         endreAvtale.setMentorValgtLonnstype(MentorValgtLonnstype.ÅRSLØNN);
         endreAvtale.setMentorValgtLonnstypeBelop(600_000);
         endreAvtale.setStillingprosent(BigDecimal.valueOf(100.0));
@@ -771,7 +772,7 @@ public class TestData {
         endreAvtale.setMentorEtternavn("Mentorsen");
         endreAvtale.setMentorOppgaver("Mentoroppgaver");
         endreAvtale.setMentorAntallTimer(10.0);
-        endreAvtale.setMentorAntallTimerPerMnd(10.0);
+        //endreAvtale.setMentorAntallTimerPerMnd(10.0);
         endreAvtale.setMentorTlf("44444444");
         endreAvtale.setMentorTimelonn(100);
         return endreAvtale;
