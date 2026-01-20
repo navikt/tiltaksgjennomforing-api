@@ -36,6 +36,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         BigDecimal obligTjenestepensjon = BeregningStrategy.getBeregnetOtpBelop(toBigDecimal(innhold.getOtpSats()), mentorsMånedslønn, feriepengerBelop);
         BigDecimal arbeidsgiveravgiftBelop = BeregningStrategy.getArbeidsgiverAvgift(mentorsMånedslønn, feriepengerBelop, obligTjenestepensjon, innhold.getArbeidsgiveravgift());
         Integer sumLonnsutgifter = BeregningStrategy.getSumLonnsutgifter(mentorsMånedslønn, feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop);
+        innhold.setManedslonn(mentorsMånedslønn);
         innhold.setFeriepengerBelop(convertBigDecimalToInt(feriepengerBelop));
         innhold.setOtpBelop(convertBigDecimalToInt(obligTjenestepensjon));
         innhold.setArbeidsgiveravgiftBelop(convertBigDecimalToInt(arbeidsgiveravgiftBelop));
