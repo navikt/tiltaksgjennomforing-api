@@ -4,6 +4,7 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.MentorTilskuddsperioderToggle;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
@@ -104,7 +105,12 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         perioder.forEach(p -> p.setEnhet(innhold.getEnhetKostnadssted()));
         perioder.forEach(p -> p.setEnhetsnavn(innhold.getEnhetsnavnKostnadssted()));
 
-        BeregningStrategy.settBehandletIArena(STANDARD_MIGRERINGSDATO, perioder);
+        // Etterregistreringer skal håndteres i vårt system, så for avtaler som ikke har opphav = arena baserer vi oss
+        // på opprettet-tidspunkt for å anslå om vi skal sette "behandlet i arena" på tilskuddsperioder.
+        LocalDate avtaleOpprettet = LocalDate.from(avtale.getOpprettetTidspunkt());
+        if (avtale.getOpphav() == Avtaleopphav.ARENA || avtaleOpprettet.isBefore(STANDARD_MIGRERINGSDATO)) {
+            BeregningStrategy.settBehandletIArena(STANDARD_MIGRERINGSDATO, perioder);
+        }
 
         fikseLøpenumre(perioder, 1);
         return perioder;
