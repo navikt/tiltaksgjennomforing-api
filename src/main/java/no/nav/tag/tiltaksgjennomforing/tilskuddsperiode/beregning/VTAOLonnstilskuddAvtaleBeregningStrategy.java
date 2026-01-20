@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
@@ -19,7 +20,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
 public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
 
-    private final LocalDate STANDARD_MIGRERINGSDATO = LocalDate.of(2025, 7, 1);
+    private final LocalDate STANDARD_MIGRERINGSDATO = ArenaTiltakskode.VTAO.getMigreringsdatoForTilskudd();
 
     @Override
     public boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(Avtale avtale) {
@@ -48,7 +49,7 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
             }
 
             tilskuddsperioder.forEach(periode -> {
-                if (periode.getSluttDato().minusDays(1).isBefore(migreringsdato)) {
+                if (periode.getSluttDato().isBefore(migreringsdato)) {
                     periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
                 }
             });
