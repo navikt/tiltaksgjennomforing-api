@@ -22,7 +22,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.toBigDecimal;
 
 public class MentorBeregningStrategy implements BeregningStrategy {
 
-    private final LocalDate STANDARD_MIGRERINGSDATO = ArenaTiltakskode.MENTOR.getMigreringsdatoForTilskudd();
+    private final LocalDate MIGRERINGSDATO_FOR_TILSKUDD = ArenaTiltakskode.MENTOR.getMigreringsdatoForTilskudd();
 
     @Override
     public void reberegnTotal(Avtale avtale) {
@@ -108,8 +108,8 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         // Etterregistreringer skal håndteres i vårt system, så for avtaler som ikke har opphav = arena baserer vi oss
         // på opprettet-tidspunkt for å anslå om vi skal sette "behandlet i arena" på tilskuddsperioder.
         LocalDate avtaleOpprettet = LocalDate.from(avtale.getOpprettetTidspunkt());
-        if (avtale.getOpphav() == Avtaleopphav.ARENA || avtaleOpprettet.isBefore(STANDARD_MIGRERINGSDATO)) {
-            BeregningStrategy.settBehandletIArena(STANDARD_MIGRERINGSDATO, perioder);
+        if (avtale.getOpphav() == Avtaleopphav.ARENA || avtaleOpprettet.isBefore(MIGRERINGSDATO_FOR_TILSKUDD)) {
+            BeregningStrategy.settBehandletIArena(MIGRERINGSDATO_FOR_TILSKUDD, perioder);
         }
 
         fikseLøpenumre(perioder, 1);
