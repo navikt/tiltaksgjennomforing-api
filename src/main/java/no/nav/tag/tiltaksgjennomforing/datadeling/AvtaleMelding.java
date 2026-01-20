@@ -92,6 +92,7 @@ public class AvtaleMelding {
     String mentorEtternavn;
     String mentorOppgaver;
     Double mentorAntallTimer;
+    Double mentorAntallTimerPerMnd;
     Integer mentorTimelonn;
     String mentorTlf;
 
@@ -200,6 +201,7 @@ public class AvtaleMelding {
         avtaleMelding.setMentorEtternavn(avtaleInnhold.getMentorEtternavn());
         avtaleMelding.setMentorOppgaver(avtaleInnhold.getMentorOppgaver());
         avtaleMelding.setMentorAntallTimer(avtaleInnhold.getMentorAntallTimer());
+        avtaleMelding.setMentorAntallTimerPerMnd(avtaleInnhold.getMentorAntallTimerPerMnd());
         avtaleMelding.setMentorTimelonn(avtaleInnhold.getMentorTimelonn());
         avtaleMelding.setMentorTlf(avtaleInnhold.getMentorTlf());
         avtaleMelding.setArbeidsgiverKontonummer(avtaleInnhold.getArbeidsgiverKontonummer());

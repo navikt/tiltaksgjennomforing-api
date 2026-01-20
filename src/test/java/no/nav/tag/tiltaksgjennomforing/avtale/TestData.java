@@ -771,6 +771,7 @@ public class TestData {
         endreAvtale.setMentorEtternavn("Mentorsen");
         endreAvtale.setMentorOppgaver("Mentoroppgaver");
         endreAvtale.setMentorAntallTimer(10.0);
+        endreAvtale.setMentorAntallTimerPerMnd(10.0);
         endreAvtale.setMentorTlf("44444444");
         endreAvtale.setMentorTimelonn(100);
         return endreAvtale;
@@ -865,6 +866,7 @@ public class TestData {
         EndreAvtale endreAvtale = endringPåAlleMentorFelterUtenBeregning();
         endreAvtale.setMentorTimelonn(100);
         endreAvtale.setMentorAntallTimer(10.0);
+        endreAvtale.setMentorAntallTimerPerMnd(10.0);
         endreAvtale.setManedslonn(null);
         endreAvtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.023));
         endreAvtale.setOtpSats(0.02);

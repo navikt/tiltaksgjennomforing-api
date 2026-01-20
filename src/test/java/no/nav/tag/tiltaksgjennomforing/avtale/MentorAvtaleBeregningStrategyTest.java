@@ -48,7 +48,7 @@ public class MentorAvtaleBeregningStrategyTest {
         endreAvtale.setOtpSats(0.2);
         endreAvtale.setFeriepengesats(BigDecimal.valueOf(0.023));
         endreAvtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.012));
-        endreAvtale.setMentorAntallTimer(8.0);
+        endreAvtale.setMentorAntallTimerPerMnd(8.0);
         endreAvtale.setMentorTimelonn(100);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
 

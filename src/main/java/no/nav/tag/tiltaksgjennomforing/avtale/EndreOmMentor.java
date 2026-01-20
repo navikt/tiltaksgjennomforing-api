@@ -8,6 +8,8 @@ public class EndreOmMentor {
     String mentorEtternavn;
     String mentorTlf;
     String mentorOppgaver;
+    @Deprecated
     Double mentorAntallTimer;
+    Double mentorAntallTimerPerMnd;
     Integer mentorTimelonn;
 }

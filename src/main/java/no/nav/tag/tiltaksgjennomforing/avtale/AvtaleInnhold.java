@@ -89,6 +89,7 @@ public class AvtaleInnhold {
     private String mentorEtternavn;
     private String mentorOppgaver;
     private Double mentorAntallTimer;
+    private Double mentorAntallTimerPerMnd;
     private Integer mentorTimelonn;
     private Integer mentorValgtLonnstypeBelop;
     private MentorValgtLonnstype mentorValgtLonnstype;
@@ -277,6 +278,7 @@ public class AvtaleInnhold {
         setMentorEtternavn(endreOmMentor.getMentorEtternavn());
         setMentorTlf(endreOmMentor.getMentorTlf());
         setMentorAntallTimer(endreOmMentor.getMentorAntallTimer());
+        setMentorAntallTimerPerMnd(endreOmMentor.getMentorAntallTimerPerMnd());
         setMentorTimelonn(endreOmMentor.getMentorTimelonn());
         setMentorOppgaver(endreOmMentor.getMentorOppgaver());
     }

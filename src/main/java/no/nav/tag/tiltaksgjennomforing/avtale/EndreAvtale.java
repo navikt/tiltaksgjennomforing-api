@@ -67,7 +67,9 @@ public class EndreAvtale {
     private String mentorFornavn;
     private String mentorEtternavn;
     private String mentorOppgaver;
+    @Deprecated
     private Double mentorAntallTimer;
+    private Double mentorAntallTimerPerMnd;
     private String mentorTlf;
     private Integer mentorTimelonn;
     private Integer mentorValgtLonnstypeBelop;
@@ -137,6 +139,7 @@ public class EndreAvtale {
                 innhold.getMentorEtternavn(),
                 innhold.getMentorOppgaver(),
                 innhold.getMentorAntallTimer(),
+                innhold.getMentorAntallTimerPerMnd(),
                 innhold.getMentorTlf(),
                 innhold.getMentorTimelonn(),
                 innhold.getMentorValgtLonnstypeBelop(),

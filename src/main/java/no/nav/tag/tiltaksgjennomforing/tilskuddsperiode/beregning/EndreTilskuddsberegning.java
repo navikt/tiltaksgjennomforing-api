@@ -17,4 +17,5 @@ public class EndreTilskuddsberegning {
     //Mentor
     Integer mentorTimelonn;
     Double mentorAntallTimer;
+    Double mentorAntallTimerPerMnd;
 }

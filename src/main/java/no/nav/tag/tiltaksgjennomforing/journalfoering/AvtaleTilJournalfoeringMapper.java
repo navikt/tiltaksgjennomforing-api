@@ -33,6 +33,7 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setMentorEtternavn(avtale.gjeldendeInnhold().mentorEtternavn());
         avtaleTilJournalfoering.setMentorOppgaver(avtale.gjeldendeInnhold().mentorOppgaver());
         avtaleTilJournalfoering.setMentorAntallTimer(avtale.gjeldendeInnhold().mentorAntallTimer());
+        avtaleTilJournalfoering.setMentorAntallTimerPerMnd(avtale.gjeldendeInnhold().mentorAntallTimerPerMnd());
         avtaleTilJournalfoering.setMentorTimelonn(avtale.gjeldendeInnhold().mentorTimelonn());
         avtaleTilJournalfoering.setMentorValgtLonnstype(mentorValgtLonnstypeTekst(avtaleInnhold.mentorValgtLonnstype()));
         avtaleTilJournalfoering.setMentorValgtLonnstypeBelop(avtaleInnhold.mentorValgtLonnstypeBelop());

@@ -82,6 +82,7 @@ public class AvtaleTilJournalfoering {
     private String mentorEtternavn;
     private String mentorOppgaver;
     private Double mentorAntallTimer;
+    private Double mentorAntallTimerPerMnd;
     private Integer mentorTimelonn;
     private Integer mentorValgtLonnstypeBelop;
     private String mentorValgtLonnstype;

@@ -29,6 +29,7 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
 
         if (MentorTilskuddsperioderToggle.isEnabled()) {
+            avtaleInnhold.setMentorAntallTimerPerMnd(nyAvtale.getMentorAntallTimerPerMnd());
             avtaleInnhold.setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
             avtaleInnhold.setFeriepengesats(nyAvtale.getFeriepengesats());
             avtaleInnhold.setOtpSats(nyAvtale.getOtpSats());
@@ -68,17 +69,19 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
         alleFelter.put(AvtaleInnhold.Fields.mentorFornavn, avtaleInnhold.getMentorFornavn());
         alleFelter.put(AvtaleInnhold.Fields.mentorEtternavn, avtaleInnhold.getMentorEtternavn());
         alleFelter.put(AvtaleInnhold.Fields.mentorOppgaver, avtaleInnhold.getMentorOppgaver());
-        alleFelter.put(AvtaleInnhold.Fields.mentorAntallTimer, avtaleInnhold.getMentorAntallTimer());
         alleFelter.put(AvtaleInnhold.Fields.mentorTimelonn, avtaleInnhold.getMentorTimelonn());
         alleFelter.put(Fields.mentorTlf, avtaleInnhold.getMentorTlf());
 
         if (MentorTilskuddsperioderToggle.isEnabled()) {
+            alleFelter.put(AvtaleInnhold.Fields.mentorAntallTimerPerMnd, avtaleInnhold.getMentorAntallTimerPerMnd());
             alleFelter.put(AvtaleInnhold.Fields.arbeidsgiverKontonummer, avtaleInnhold.getArbeidsgiverKontonummer());
             alleFelter.put(AvtaleInnhold.Fields.feriepengesats, avtaleInnhold.getFeriepengesats());
             alleFelter.put(AvtaleInnhold.Fields.otpSats, avtaleInnhold.getOtpSats());
             alleFelter.put(AvtaleInnhold.Fields.arbeidsgiveravgift, avtaleInnhold.getArbeidsgiveravgift());
             alleFelter.put(AvtaleInnhold.Fields.mentorValgtLonnstype, avtaleInnhold.getMentorValgtLonnstype());
             alleFelter.put(AvtaleInnhold.Fields.mentorValgtLonnstypeBelop, avtaleInnhold.getMentorValgtLonnstypeBelop());
+        } else {
+            alleFelter.put(AvtaleInnhold.Fields.mentorAntallTimer, avtaleInnhold.getMentorAntallTimer());
         }
 
         alleFelter.put(AvtaleInnhold.Fields.harFamilietilknytning, avtaleInnhold.getHarFamilietilknytning());
