@@ -147,14 +147,11 @@ public class MentorBeregningStrategy implements BeregningStrategy {
             avtaleInnhold.setStillingprosent(endreTilskuddsberegning.getStillingprosent());
             avtaleInnhold.setMentorValgtLonnstype(endreTilskuddsberegning.getMentorValgtLonnstype());
             avtaleInnhold.setMentorValgtLonnstypeBelop(endreTilskuddsberegning.getMentorValgtLonnstypeBelop());
-
-            if (endreTilskuddsberegning.getMentorValgtLonnstype() != null && endreTilskuddsberegning.getMentorValgtLonnstypeBelop() != null) {
-                avtaleInnhold.setMentorTimelonn(MentorTimelonnBeregning.beregnMentorTimelonn(
-                    endreTilskuddsberegning.getMentorValgtLonnstype(),
-                    endreTilskuddsberegning.getMentorValgtLonnstypeBelop(),
-                    endreTilskuddsberegning.getStillingprosent()
-                ));
-            }
+            avtaleInnhold.setMentorTimelonn(MentorTimelonnBeregning.beregnMentorTimelonn(
+                endreTilskuddsberegning.getMentorValgtLonnstype(),
+                endreTilskuddsberegning.getMentorValgtLonnstypeBelop(),
+                endreTilskuddsberegning.getStillingprosent()
+            ));
         }
 
         reberegnTotal(avtale);
@@ -168,13 +165,9 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
         boolean mentorFeatureToggelEnabled = MentorTilskuddsperioderToggle.isEnabled();
 
-        int månedsLonn;
-
-        if (mentorFeatureToggelEnabled) {
-            månedsLonn = innhold.getSumLonnsutgifter();
-        } else {
-            månedsLonn = beregnMånedligTilskudd(innhold.getMentorAntallTimer(), innhold.getMentorTimelonn());
-        }
+        int månedsLonn = mentorFeatureToggelEnabled
+            ? innhold.getSumLonnsutgifter()
+            : beregnMånedligTilskudd(innhold.getMentorAntallTimer(), innhold.getMentorTimelonn());
 
         return BeregningStrategy.beløpForPeriode(startDato, sluttDato, månedsLonn);
     }
