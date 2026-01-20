@@ -6,7 +6,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.MentorTilskuddsperioderToggle;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
 import java.math.BigDecimal;
@@ -105,11 +104,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         perioder.forEach(p -> p.setEnhet(innhold.getEnhetKostnadssted()));
         perioder.forEach(p -> p.setEnhetsnavn(innhold.getEnhetsnavnKostnadssted()));
 
-        perioder.forEach(periode -> {
-            if (periode.getSluttDato().isBefore(STANDARD_MIGRERINGSDATO)) {
-                periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
-            }
-        });
+        BeregningStrategy.settBehandletIArena(STANDARD_MIGRERINGSDATO, perioder);
 
         fikseLøpenumre(perioder, 1);
         return perioder;

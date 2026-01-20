@@ -187,5 +187,14 @@ public interface BeregningStrategy {
 
     List<TilskuddPeriode> hentTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato);
 
-
+    static void settBehandletIArena(LocalDate migreringsdato, List<TilskuddPeriode> tilskuddPeriode) {
+        // Her har vi en antakelse om at tilskuddsperioder ikke kan gå på tvers av måneder, og at vi derfor
+        // kan vilkårlig velge sluttdatoen som utgangspunktet for beregning av hvorvidt tilskuddsperioden
+        // er behandlet i arena eller ikke.
+        tilskuddPeriode.forEach(periode -> {
+            if (periode.getSluttDato().isBefore(migreringsdato)) {
+                periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
+            }
+        });
+    }
 }
