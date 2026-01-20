@@ -128,6 +128,17 @@ public class TestData {
         return avtale;
     }
 
+    public static Avtale enMentorAvtaleSignertAvAlle() {
+        Avtale avtale = enMentorAvtale();
+        EndreAvtale endreAvtale = endrePåAlleMentorFelter();
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
+        avtale.godkjennForMentor(avtale.getMentorFnr());
+        avtale.godkjennForDeltaker(avtale.getDeltakerFnr());
+        avtale.godkjennForArbeidsgiver(avtale.getFnrOgBedrift().deltakerFnr());
+        avtale.godkjennForVeileder(avtale.getVeilederNavIdent());
+        return avtale;
+    }
+
     public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt() {
         return Avtale.opprett(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), Avtaleopphav.ARBEIDSGIVER);
     }

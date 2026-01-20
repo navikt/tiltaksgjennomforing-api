@@ -25,7 +25,7 @@ import static no.nav.tag.tiltaksgjennomforing.TestDataGenerator.genererAvtaler;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@Profile({ Miljø.TESTDATA })
+@Profile({Miljø.TESTDATA})
 public class LastInnTestData implements ApplicationListener<ApplicationReadyEvent> {
     private final AvtaleRepository avtaleRepository;
 
@@ -41,6 +41,7 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaler.add(TestData.enLonnstilskuddAvtaleGodkjentAvVeilederUtenTilskuddsperioder());
         avtaler.add(TestData.enArbeidstreningAvtale());
         avtaler.add(TestData.enMentorAvtaleSignert());
+        avtaler.add(TestData.enMentorAvtaleSignertAvAlle());
         avtaler.add(TestData.enMentorAvtaleUsignert());
         avtaler.add(TestData.enInkluderingstilskuddAvtale());
         avtaler.add(TestData.enInkluderingstilskuddAvtaleUtfyltOgGodkjentAvArbeidsgiver());
