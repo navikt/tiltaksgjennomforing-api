@@ -344,23 +344,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
 
         EndreAvtaleArena.Handling action = endreAvtaleArena.getHandling();
-        if (EndreAvtaleArena.Handling.OPPDATER == action && endreAvtaleArena.compareTo(this) == 0) {
-            log.atInfo()
-                .addKeyValue("avtaleId", getId().toString())
-                .log("Endringer fra Arena er lik innholdet i avtalen. Beholder avtalen uendret.");
-            registerEvent(new AvtaleEndretAvArena(this));
-            return;
-        }
-
         if (EndreAvtaleArena.Handling.ANNULLER == action) {
             annuller(AnnullertGrunn.ANNULLERT_I_ARENA, Identifikator.ARENA);
             return;
         }
 
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRET_AV_ARENA);
-        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
 
         if (EndreAvtaleArena.Handling.AVSLUTT == action) {
+            getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
+
             LocalDate sluttDato = Stream.of(endreAvtaleArena.getSluttdato(), gjeldendeInnhold.getSluttDato())
                 .filter(dato -> dato.isBefore(LocalDate.now()))
                 .findFirst()
@@ -398,6 +391,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         setAnnullertGrunn(null);
         setFeilregistrert(false);
         nyeTilskuddsperioder();
+        setGodkjentForEtterregistrering(true);
+
+        getGjeldendeInnhold().setAvtaleInngått(null);
+        getGjeldendeInnhold().setIkrafttredelsestidspunkt(null);
+        opphevGodkjenninger();
+
+        this.status = Status.fra(this);
 
         if (isForlengelse) {
             utforEndring(new AvtaleForlengetAvArena(this));
@@ -645,7 +645,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private void inngåAvtale(Instant tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
-        boolean mentorFeatureToggelEnabled = MentorTilskuddsperioderToggle.isEnabled();
         if (!utførtAvRolle.erInternBruker()) {
             throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_INNGAA_AVTALE);
         }
@@ -1197,13 +1196,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
             List<TilskuddPeriode> tilskuddsperioder = this.hentBeregningStrategi().hentTilskuddsperioderForPeriode(this, gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato()); //.genererNyeTilskuddsperioder(this);
 
-            tilskuddsperioder.forEach(periode -> {
-                // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
-                // Eller skal det være startdato? Er jo den samme datoen som migreringsdato. hmm...
-                if (periode.getSluttDato().minusDays(1).isBefore(migreringsDato)) {
-                    periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
-                }
-            });
+            BeregningStrategy.settBehandletIArena(migreringsDato, tilskuddsperioder);
+
             fikseLøpenumre(tilskuddsperioder, 1);
             tilskuddPeriode.addAll(tilskuddsperioder);
             setGjeldendeTilskuddsperiode(TilskuddPeriode.finnGjeldende(this));

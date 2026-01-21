@@ -17,7 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 public enum ArenaTiltakskode {
     ARBEIDSTRENING("ARBTREN", Tiltakstype.ARBEIDSTRENING, null),
-    MENTOR("MENTOR", Tiltakstype.MENTOR, null),
+    MENTOR("MENTOR", Tiltakstype.MENTOR, LocalDate.of(2026, 1, 1)),
     VTAO("VATIAROR", Tiltakstype.VTAO, LocalDate.of(2025, 7, 1)),
     INKLUDERINGSTILSKUDD("INKLUTILS", Tiltakstype.INKLUDERINGSTILSKUDD, null),
     UKJENT("", null, null);

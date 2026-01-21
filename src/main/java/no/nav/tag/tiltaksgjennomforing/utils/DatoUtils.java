@@ -48,4 +48,10 @@ public class DatoUtils {
         return instant.atZone(ZoneId.systemDefault());
     }
 
+    public static boolean harDatoPassert(LocalDate dato) {
+        return Optional.ofNullable(dato)
+            .map(d -> d.isBefore(Now.localDate()))
+            .orElse(false);
+    }
+
 }

@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
@@ -19,7 +18,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.convertBigDecimalToInt;
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.toBigDecimal;
 
@@ -40,13 +38,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements BeregningSt
             LocalDate standardMigreringsdato = LocalDate.of(2023, 2, 1);
             LocalDate migreringsdato = avtale.getArenaRyddeAvtale().getMigreringsdato() != null ? avtale.getArenaRyddeAvtale().getMigreringsdato() : standardMigreringsdato;
 
-            tilskuddsperioder.forEach(periode -> {
-                // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
-                // Eller skal det være startdato? Er jo den samme datoen som migreringsdato. hmm...
-                if (periode.getSluttDato().minusDays(1).isBefore(migreringsdato)) {
-                    periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
-                }
-            });
+            BeregningStrategy.settBehandletIArena(migreringsdato, tilskuddsperioder);
         }
         fikseLøpenumre(tilskuddsperioder, 1);
         return tilskuddsperioder;
