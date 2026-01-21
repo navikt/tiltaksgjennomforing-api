@@ -645,7 +645,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private void inngåAvtale(Instant tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
-        boolean mentorFeatureToggelEnabled = MentorTilskuddsperioderToggle.isEnabled();
         if (!utførtAvRolle.erInternBruker()) {
             throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_INNGAA_AVTALE);
         }
@@ -1197,13 +1196,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
             List<TilskuddPeriode> tilskuddsperioder = this.hentBeregningStrategi().hentTilskuddsperioderForPeriode(this, gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato()); //.genererNyeTilskuddsperioder(this);
 
-            tilskuddsperioder.forEach(periode -> {
-                // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
-                // Eller skal det være startdato? Er jo den samme datoen som migreringsdato. hmm...
-                if (periode.getSluttDato().minusDays(1).isBefore(migreringsDato)) {
-                    periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
-                }
-            });
+            BeregningStrategy.settBehandletIArena(migreringsDato, tilskuddsperioder);
+
             fikseLøpenumre(tilskuddsperioder, 1);
             tilskuddPeriode.addAll(tilskuddsperioder);
             setGjeldendeTilskuddsperiode(TilskuddPeriode.finnGjeldende(this));

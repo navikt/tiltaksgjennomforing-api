@@ -1,10 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
@@ -19,7 +19,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
 public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
 
-    private final LocalDate STANDARD_MIGRERINGSDATO = LocalDate.of(2025, 7, 1);
+    private final LocalDate STANDARD_MIGRERINGSDATO = ArenaTiltakskode.VTAO.getMigreringsdatoForTilskudd();
 
     @Override
     public boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(Avtale avtale) {
@@ -47,11 +47,7 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
                 migreringsdato = STANDARD_MIGRERINGSDATO;
             }
 
-            tilskuddsperioder.forEach(periode -> {
-                if (periode.getSluttDato().minusDays(1).isBefore(migreringsdato)) {
-                    periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
-                }
-            });
+            BeregningStrategy.settBehandletIArena(migreringsdato, tilskuddsperioder);
         }
         fikseLøpenumre(tilskuddsperioder, 1);
         return tilskuddsperioder;
