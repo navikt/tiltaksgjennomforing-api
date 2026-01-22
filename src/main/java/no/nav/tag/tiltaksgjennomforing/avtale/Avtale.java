@@ -1345,6 +1345,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (!nySluttDato.isAfter(gjeldendeInnhold.getSluttDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO);
         }
+        if (MentorTilskuddsperioderToggle.isEnabled() && tiltakstype.isMentor() && tilskuddPeriode.isEmpty()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_MENTOR_AVTALE_UTEN_TILSKUDDSBEREGNING);
+        }
 
         var gammelSluttDato = gjeldendeInnhold.getSluttDato();
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
