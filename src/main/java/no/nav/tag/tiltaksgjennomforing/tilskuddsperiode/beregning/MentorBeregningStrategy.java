@@ -4,7 +4,6 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.MentorTilskuddsperioderToggle;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
@@ -106,7 +105,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         perioder.forEach(p -> p.setEnhetsnavn(innhold.getEnhetsnavnKostnadssted()));
 
         // Etterregistreringer skal håndteres i vårt system, så vi skal kun sette behandlet i arena på avtaler hvor
-        // avtalen har opphav=ARENA eller om det eksisterer en avtaleversjon med innholdstype = ENDRET_I_ARENA
+        // avtalen har opphav=ARENA eller om det eksisterer en avtaleversjon med innholdstype = ENDRET_AV_ARENA
         if (avtale.harArenaOpphavEllerHistoriskEndretAvArena()) {
             BeregningStrategy.settBehandletIArena(MIGRERINGSDATO_FOR_TILSKUDD, perioder);
         }
