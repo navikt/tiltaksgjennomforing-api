@@ -29,13 +29,30 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         if (!nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(avtale)) {
             return;
         }
-        var mentorsMånedslønn = Double.valueOf(innhold.getMentorTimelonn() * innhold.getMentorAntallTimer()).intValue();
+        Double mentorsMånedslønn = innhold.getMentorTimelonn() * innhold.getMentorAntallTimer();
 
-        BigDecimal feriepengerBelop = BeregningStrategy.getFeriepengerBelop(innhold.getFeriepengesats(), mentorsMånedslønn);
-        BigDecimal obligTjenestepensjon = BeregningStrategy.getBeregnetOtpBelop(toBigDecimal(innhold.getOtpSats()), mentorsMånedslønn, feriepengerBelop);
-        BigDecimal arbeidsgiveravgiftBelop = BeregningStrategy.getArbeidsgiverAvgift(mentorsMånedslønn, feriepengerBelop, obligTjenestepensjon, innhold.getArbeidsgiveravgift());
-        Integer sumLonnsutgifter = BeregningStrategy.getSumLonnsutgifter(mentorsMånedslønn, feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop);
-        innhold.setManedslonn(mentorsMånedslønn);
+        BigDecimal feriepengerBelop = BeregningStrategy.getFeriepengerBelop(
+            innhold.getFeriepengesats(),
+            mentorsMånedslønn
+        );
+        BigDecimal obligTjenestepensjon = BeregningStrategy.getBeregnetOtpBelop(
+            toBigDecimal(innhold.getOtpSats()),
+            mentorsMånedslønn,
+            feriepengerBelop
+        );
+        BigDecimal arbeidsgiveravgiftBelop = BeregningStrategy.getArbeidsgiverAvgift(
+            mentorsMånedslønn,
+            feriepengerBelop,
+            obligTjenestepensjon,
+            innhold.getArbeidsgiveravgift()
+        );
+        Integer sumLonnsutgifter = BeregningStrategy.getSumLonnsutgifter(
+            mentorsMånedslønn,
+            feriepengerBelop,
+            obligTjenestepensjon,
+            arbeidsgiveravgiftBelop
+        );
+        innhold.setManedslonn(mentorsMånedslønn.intValue());
         innhold.setFeriepengerBelop(convertBigDecimalToInt(feriepengerBelop));
         innhold.setOtpBelop(convertBigDecimalToInt(obligTjenestepensjon));
         innhold.setArbeidsgiveravgiftBelop(convertBigDecimalToInt(arbeidsgiveravgiftBelop));
