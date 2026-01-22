@@ -110,7 +110,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Override
     Avtale save(Avtale entity);
 
-    @Query(value = "SELECT AVTALE.*, false as erEndretAvArena FROM AVTALE LEFT JOIN AVTALE_INNHOLD " +
+    @Query(value = "SELECT AVTALE.* FROM AVTALE LEFT JOIN AVTALE_INNHOLD " +
             "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
             "WHERE :deltakerFnr = AVTALE.deltaker_fnr and " +
             "AVTALE.status != 'ANNULLERT' and " +
@@ -124,7 +124,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             @Param("startDato") Date startDato
     );
 
-    @Query(value = "SELECT AVTALE.*, false as erEndretAvArena FROM AVTALE LEFT JOIN AVTALE_INNHOLD " +
+    @Query(value = "SELECT AVTALE.* FROM AVTALE LEFT JOIN AVTALE_INNHOLD " +
             "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
             "WHERE :deltakerFnr = AVTALE.deltaker_fnr and " +
             "(:avtaleId is not null and :avtaleId NOT LIKE CAST(AVTALE.id as text)) and " +

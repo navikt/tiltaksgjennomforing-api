@@ -97,7 +97,6 @@ import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.SortNatural;
 import org.hibernate.generator.EventType;
@@ -204,16 +203,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     @JsonIgnore
     @Transient
     private AtomicReference<BeregningStrategy> beregningStrategy = new AtomicReference<>();
-
-    @JsonIgnore
-    @Setter(AccessLevel.NONE)
-    @Formula(value = """
-        (
-            SELECT CASE WHEN COUNT(ai.id) > 0 THEN true ELSE false END
-            FROM avtale_innhold ai WHERE ai.avtale = id AND ai.innhold_type = 'ENDRET_AV_ARENA'
-        )
-    """)
-    private boolean erEndretAvArena;
 
     private LocalDate kreverOppfolgingFom = null;
 
@@ -1722,6 +1711,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (getOpphav() == Avtaleopphav.ARENA) {
             return true;
         }
-        return erEndretAvArena;
+        return Optional.ofNullable(getAvtaleversjoner())
+            .map(x -> x.stream()
+                .anyMatch(innhold ->
+                    innhold.getInnholdType().equals(AvtaleInnholdType.ENDRET_AV_ARENA)))
+            .orElse(false);
     }
 }
