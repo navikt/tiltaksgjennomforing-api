@@ -210,7 +210,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     @Formula(value = """
         (
             SELECT CASE WHEN COUNT(ai.id) > 0 THEN true ELSE false END
-            FROM avtale_innhold ai WHERE ai.avtale = id AND ai.innhold_type = 'ENDRET_I_ARENA'
+            FROM avtale_innhold ai WHERE ai.avtale = id AND ai.innhold_type = 'ENDRET_AV_ARENA'
         )
     """)
     private boolean erEndretAvArena;
