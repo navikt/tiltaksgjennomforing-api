@@ -204,6 +204,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     @Transient
     private AtomicReference<BeregningStrategy> beregningStrategy = new AtomicReference<>();
 
+    @JsonIgnore
+    @Fetch(FetchMode.SELECT)
+    @Setter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<AvtaleInnhold> avtaleversjoner;
+
     private LocalDate kreverOppfolgingFom = null;
 
     private Instant oppfolgingVarselSendt = null;
