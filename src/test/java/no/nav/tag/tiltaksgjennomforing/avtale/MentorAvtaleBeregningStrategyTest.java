@@ -65,7 +65,7 @@ public class MentorAvtaleBeregningStrategyTest {
 
     @Test
     public void endre_endreTilskuddsberegning_for_mentor_med_flere_tilskuddsperioder() {
-        Now.fixedDate(LocalDate.of(2024, 6, 1));
+        Now.fixedDate(LocalDate.of(2026, 1, 1));
         Avtale avtale = TestData.enMentorAvtaleSignert();
         avtale.godkjennForDeltaker(avtale.getDeltakerFnr());
         avtale.godkjennForArbeidsgiver(avtale.getFnrOgBedrift().deltakerFnr());
@@ -87,9 +87,7 @@ public class MentorAvtaleBeregningStrategyTest {
             .stillingprosent(BigDecimal.valueOf(100))
             .build();
 
-        avtale.endreTilskuddsberegning(
-            endreTilskuddsberegning, TestData.enNavIdent()
-        );
+        avtale.endreTilskuddsberegning(endreTilskuddsberegning, TestData.enNavIdent());
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(2);
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();

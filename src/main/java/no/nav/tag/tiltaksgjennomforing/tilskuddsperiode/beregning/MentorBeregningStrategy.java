@@ -62,22 +62,16 @@ public class MentorBeregningStrategy implements BeregningStrategy {
     @Override
     public boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(Avtale avtale) {
         AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
-        boolean mentorFeatureToggelEnabled = MentorTilskuddsperioderToggle.isEnabled();
-
-        if (mentorFeatureToggelEnabled && !Utils.erIkkeTomme(
-            innhold.getStillingprosent(),
-            innhold.getMentorValgtLonnstype(),
-            innhold.getMentorValgtLonnstypeBelop()
-        )) {
-            return false;
-        }
 
         return Utils.erIkkeTomme(
             innhold.getMentorAntallTimer(),
             innhold.getMentorTimelonn(),
             innhold.getFeriepengesats(),
             innhold.getArbeidsgiveravgift(),
-            innhold.getOtpSats()
+            innhold.getOtpSats(),
+            innhold.getStillingprosent(),
+            innhold.getMentorValgtLonnstype(),
+            innhold.getMentorValgtLonnstypeBelop()
         );
     }
 
@@ -146,17 +140,14 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         avtaleInnhold.setFeriepengesats(endreTilskuddsberegning.getFeriepengesats());
         avtaleInnhold.setMentorAntallTimer(endreTilskuddsberegning.getMentorAntallTimer());
         avtaleInnhold.setMentorTimelonn(endreTilskuddsberegning.getMentorTimelonn());
-
-        if (MentorTilskuddsperioderToggle.isEnabled()) {
-            avtaleInnhold.setStillingprosent(endreTilskuddsberegning.getStillingprosent());
-            avtaleInnhold.setMentorValgtLonnstype(endreTilskuddsberegning.getMentorValgtLonnstype());
-            avtaleInnhold.setMentorValgtLonnstypeBelop(endreTilskuddsberegning.getMentorValgtLonnstypeBelop());
-            avtaleInnhold.setMentorTimelonn(MentorTimelonnBeregning.beregnMentorTimelonn(
-                endreTilskuddsberegning.getMentorValgtLonnstype(),
-                endreTilskuddsberegning.getMentorValgtLonnstypeBelop(),
-                endreTilskuddsberegning.getStillingprosent()
-            ));
-        }
+        avtaleInnhold.setStillingprosent(endreTilskuddsberegning.getStillingprosent());
+        avtaleInnhold.setMentorValgtLonnstype(endreTilskuddsberegning.getMentorValgtLonnstype());
+        avtaleInnhold.setMentorValgtLonnstypeBelop(endreTilskuddsberegning.getMentorValgtLonnstypeBelop());
+        avtaleInnhold.setMentorTimelonn(MentorTimelonnBeregning.beregnMentorTimelonn(
+            endreTilskuddsberegning.getMentorValgtLonnstype(),
+            endreTilskuddsberegning.getMentorValgtLonnstypeBelop(),
+            endreTilskuddsberegning.getStillingprosent()
+        ));
 
         reberegnTotal(avtale);
     }
@@ -166,18 +157,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         if (!nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(avtale)) {
             return null;
         }
-        AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
-        boolean mentorFeatureToggelEnabled = MentorTilskuddsperioderToggle.isEnabled();
 
-        int månedsLonn = mentorFeatureToggelEnabled
-            ? innhold.getSumLonnsutgifter()
-            : beregnMånedligTilskudd(innhold.getMentorAntallTimer(), innhold.getMentorTimelonn());
-
-        return BeregningStrategy.beløpForPeriode(startDato, sluttDato, månedsLonn);
-    }
-
-    private Integer beregnMånedligTilskudd(double antalTimerIMåned, double timelonn) {
-        BigDecimal mentorsMånedslønn = BigDecimal.valueOf(antalTimerIMåned).multiply(BigDecimal.valueOf(timelonn));
-        return mentorsMånedslønn.setScale(0, RoundingMode.HALF_UP).intValue();
+        return BeregningStrategy.beløpForPeriode(startDato, sluttDato, avtale.getGjeldendeInnhold().getSumLonnsutgifter());
     }
 }
