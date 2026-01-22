@@ -659,7 +659,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private boolean erAlleTilskuddsperioderBehandletIArena() {
-        if (Avtaleopphav.ARENA != opphav) {
+        if (Avtaleopphav.ARENA != opphav && gjeldendeInnhold.getInnholdType() != AvtaleInnholdType.ENDRET_AV_ARENA) {
             return false;
         }
         if (tilskuddPeriode.isEmpty()) {
