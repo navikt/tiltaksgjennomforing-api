@@ -1,6 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.bekk.bekkopen.banking.KidnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold.Fields;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentorTimelonnBeregning;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentorBeregningStrategy;
 
@@ -29,6 +32,10 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
 
         if (MentorTilskuddsperioderToggle.isEnabled()) {
+            if (nyAvtale.getArbeidsgiverKid() != null && !KidnummerValidator.isValid(nyAvtale.getArbeidsgiverKid())) {
+                throw new FeilkodeException(Feilkode.FEIL_KID_NUMMER);
+            }
+            avtaleInnhold.setArbeidsgiverKid(nyAvtale.getArbeidsgiverKid());
             avtaleInnhold.setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
             avtaleInnhold.setFeriepengesats(nyAvtale.getFeriepengesats());
             avtaleInnhold.setOtpSats(nyAvtale.getOtpSats());
