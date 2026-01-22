@@ -33,7 +33,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Query("""
-        SELECT a, false as erEndretAvArena
+        SELECT a
         FROM Avtale a
         WHERE a.bedriftNr IN :bedriftNrList
           AND a.feilregistrert = false
@@ -46,7 +46,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Query("""
-        SELECT a, false as erEndretAvArena
+        SELECT a
         FROM Avtale a
         WHERE a.bedriftNr IN :bedriftNrList
           AND a.tiltakstype = :tiltakstype
@@ -67,7 +67,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Query("""
-        SELECT a, false as erEndretAvArena
+        SELECT a
         FROM Avtale a
         WHERE a.mentorFnr = :mentorFnr
           AND a.feilregistrert = false
@@ -91,7 +91,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     List<Avtale> findAllByGjeldendeInnhold_AvtaleInngåttNotNull();
 
     @Query(value = """
-        SELECT a, false as erEndretAvArena
+        SELECT a
         FROM Avtale a
         WHERE a.tiltakstype IN ('MIDLERTIDIG_LONNSTILSKUDD', 'VARIG_LONNSTILSKUDD', 'SOMMERJOBB', 'VTAO')
           AND a.status IN ('GJENNOMFØRES', 'KLAR_FOR_OPPSTART')
@@ -209,14 +209,14 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     );
 
     @Query("""
-        SELECT a, false as erEndretAvArena
+        SELECT a
         FROM Avtale a
         WHERE a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.PÅBEGYNT OR a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.MANGLER_GODKJENNING
     """)
     List<Avtale> findAvtalerSomErPabegyntEllerManglerGodkjenning();
 
     @Query("""
-        SELECT a, false as erEndretAvArena
+        SELECT a
         FROM Avtale a
         WHERE (a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.KLAR_FOR_OPPSTART AND a.gjeldendeInnhold.startDato <= current_date)
            OR (a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.GJENNOMFØRES AND a.gjeldendeInnhold.sluttDato < current_date)
@@ -226,7 +226,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Query(
         value = """
-            SELECT a, false as erEndretAvArena
+            SELECT a
             FROM Avtale a
             LEFT OUTER JOIN TilskuddPeriode t ON t.id = a.gjeldendeTilskuddsperiode.id
             WHERE a.feilregistrert = FALSE AND
@@ -266,7 +266,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     );
 
     @Query(value = """
-            SELECT a, false as erEndretAvArena from Avtale a
+            SELECT a from Avtale a
             where a.status in ("GJENNOMFØRES", "KLAR_FOR_OPPSTART")
             and a.oppfolgingVarselSendt is null
             and a.kreverOppfolgingFom < :date""")
@@ -280,7 +280,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     Page<Fnr> findDistinctDeltakerFnr(Pageable pageable);
 
     @Query("""
-        SELECT a, false as erEndretAvArena
+        SELECT a
         FROM Avtale a
         WHERE a.deltakerFnr = :deltakerFnr
           AND a.status IN ('GJENNOMFØRES', 'AVSLUTTET', 'PÅBEGYNT', 'MANGLER_GODKJENNING', 'KLAR_FOR_OPPSTART')
