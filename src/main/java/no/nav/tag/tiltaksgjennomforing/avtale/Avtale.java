@@ -204,6 +204,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     @Transient
     private AtomicReference<BeregningStrategy> beregningStrategy = new AtomicReference<>();
 
+    @JsonIgnore
+    // Fungerte ikke..?
+    // @Formula("(SELECT CASE WHEN COUNT(ai.id) > 0 THEN true ELSE false END FROM avtale_innhold ai WHERE ai.avtale = id AND ai.innhold_type = 'ENDRET_I_ARENA')")
+    @Fetch(FetchMode.SELECT)
+    @Setter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<AvtaleInnhold> avtaleversjoner;
+
     private LocalDate kreverOppfolgingFom = null;
 
     private Instant oppfolgingVarselSendt = null;
@@ -1703,5 +1711,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     public boolean erOpprettetEllerEndretAvArena() {
         return getGjeldendeInnhold().getInnholdType() == AvtaleInnholdType.ENDRET_AV_ARENA
             || getOpphav() == Avtaleopphav.ARENA;
+    }
+
+    public boolean harArenaOpphavEllerHistoriskEndretAvArena() {
+        if (getOpphav() == Avtaleopphav.ARENA) {
+            return true;
+        }
+        return Optional.ofNullable(getAvtaleversjoner())
+            .map(x -> x.stream()
+                .anyMatch(innhold ->
+                    innhold.getInnholdType().equals(AvtaleInnholdType.ENDRET_AV_ARENA)))
+            .orElse(false);
     }
 }
