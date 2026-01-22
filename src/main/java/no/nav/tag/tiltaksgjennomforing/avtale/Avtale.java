@@ -1718,7 +1718,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             return true;
         }
         return Optional.ofNullable(getAvtaleversjoner())
-            .map(x -> x.stream()
+            .map(versjoner -> versjoner.stream()
                 .anyMatch(innhold ->
                     innhold.getInnholdType().equals(AvtaleInnholdType.ENDRET_AV_ARENA)))
             .orElse(false);
