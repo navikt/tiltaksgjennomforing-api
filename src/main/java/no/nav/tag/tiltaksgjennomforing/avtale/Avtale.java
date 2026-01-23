@@ -207,7 +207,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     @JsonIgnore
     @Fetch(FetchMode.SELECT)
     @Setter(AccessLevel.NONE)
-    @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "avtale", fetch = FetchType.LAZY)
     private List<AvtaleInnhold> avtaleversjoner;
 
     private LocalDate kreverOppfolgingFom = null;
