@@ -4,8 +4,8 @@ import no.bekk.bekkopen.banking.KidnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold.Fields;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentorTimelonnBeregning;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentorBeregningStrategy;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentorTimelonnBeregning;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +35,7 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
             if (nyAvtale.getArbeidsgiverKid() != null && !KidnummerValidator.isValid(nyAvtale.getArbeidsgiverKid())) {
                 throw new FeilkodeException(Feilkode.FEIL_KID_NUMMER);
             }
+            avtaleInnhold.setStillingprosent(nyAvtale.getStillingprosent());
             avtaleInnhold.setArbeidsgiverKid(nyAvtale.getArbeidsgiverKid());
             avtaleInnhold.setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
             avtaleInnhold.setFeriepengesats(nyAvtale.getFeriepengesats());
@@ -44,7 +45,11 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
             avtaleInnhold.setMentorValgtLonnstypeBelop(nyAvtale.getMentorValgtLonnstypeBelop());
 
             if (nyAvtale.getMentorValgtLonnstype() != null && nyAvtale.getMentorValgtLonnstypeBelop() != null) {
-                avtaleInnhold.setMentorTimelonn(MentorTimelonnBeregning.beregnMentorTimelonn(nyAvtale.getMentorValgtLonnstype(), nyAvtale.getMentorValgtLonnstypeBelop(), nyAvtale.getStillingprosent()));
+                avtaleInnhold.setMentorTimelonn(MentorTimelonnBeregning.beregnMentorTimelonn(
+                    nyAvtale.getMentorValgtLonnstype(),
+                    nyAvtale.getMentorValgtLonnstypeBelop(),
+                    nyAvtale.getStillingprosent()
+                ));
             }
             mentorBeregningStrategy.reberegnTotal(avtaleInnhold.getAvtale());
         }
@@ -85,7 +90,10 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
             alleFelter.put(AvtaleInnhold.Fields.otpSats, avtaleInnhold.getOtpSats());
             alleFelter.put(AvtaleInnhold.Fields.arbeidsgiveravgift, avtaleInnhold.getArbeidsgiveravgift());
             alleFelter.put(AvtaleInnhold.Fields.mentorValgtLonnstype, avtaleInnhold.getMentorValgtLonnstype());
-            alleFelter.put(AvtaleInnhold.Fields.mentorValgtLonnstypeBelop, avtaleInnhold.getMentorValgtLonnstypeBelop());
+            alleFelter.put(
+                AvtaleInnhold.Fields.mentorValgtLonnstypeBelop,
+                avtaleInnhold.getMentorValgtLonnstypeBelop()
+            );
         }
 
         alleFelter.put(AvtaleInnhold.Fields.harFamilietilknytning, avtaleInnhold.getHarFamilietilknytning());
