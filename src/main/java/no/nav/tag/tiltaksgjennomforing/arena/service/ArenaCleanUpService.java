@@ -57,6 +57,11 @@ public class ArenaCleanUpService {
                 avtale.getTiltakstype(),
                 avtale.getStatus()
             );
+
+            if (dryRun) {
+                continue;
+            }
+
             avtale.annuller(AnnullertGrunn.FINNES_IKKE_I_ARENA, Identifikator.ARENA);
         }
 
@@ -79,6 +84,7 @@ public class ArenaCleanUpService {
             if (avtale.getTiltakstype() != Tiltakstype.MENTOR) {
                 continue;
             }
+
             log.info(
                 "{}Fikser opp innhold i avtale med id {}, tiltakstype: {} og status: {} ",
                 dryRun ? "[DRY-RUN]: " : "",
@@ -86,6 +92,10 @@ public class ArenaCleanUpService {
                 avtale.getTiltakstype(),
                 avtale.getStatus()
             );
+
+            if (dryRun) {
+                continue;
+            }
 
             avtale.getGjeldendeInnhold().setMentorTimelonn(null);
             avtale.getGjeldendeInnhold().setMentorAntallTimer(null);
