@@ -205,6 +205,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     @Transient
     private AtomicReference<BeregningStrategy> beregningStrategy = new AtomicReference<>();
 
+    @JsonIgnore
+    @Fetch(FetchMode.SELECT)
+    @Setter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "avtale", fetch = FetchType.LAZY)
+    private List<AvtaleInnhold> avtaleversjoner;
+
     private LocalDate kreverOppfolgingFom = null;
 
     private Instant oppfolgingVarselSendt = null;
@@ -1721,5 +1727,17 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     public boolean erOpprettetEllerEndretAvArena() {
         return getGjeldendeInnhold().getInnholdType() == AvtaleInnholdType.ENDRET_AV_ARENA
             || getOpphav() == Avtaleopphav.ARENA;
+    }
+
+    public boolean harArenaOpphavEllerHistoriskEndretAvArena() {
+        if (getOpphav() == Avtaleopphav.ARENA) {
+            return true;
+        }
+        var avtaleversjoner = getAvtaleversjoner();
+        if (avtaleversjoner == null) {
+            return false;
+        }
+        return avtaleversjoner.stream()
+            .anyMatch(innhold -> innhold.getInnholdType() == AvtaleInnholdType.ENDRET_AV_ARENA);
     }
 }

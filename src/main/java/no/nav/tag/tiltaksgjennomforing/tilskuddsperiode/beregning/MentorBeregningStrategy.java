@@ -21,7 +21,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.toBigDecimal;
 
 public class MentorBeregningStrategy implements BeregningStrategy {
 
-    private final LocalDate STANDARD_MIGRERINGSDATO = ArenaTiltakskode.MENTOR.getMigreringsdatoForTilskudd();
+    private final LocalDate MIGRERINGSDATO_FOR_TILSKUDD = ArenaTiltakskode.MENTOR.getMigreringsdatoForTilskudd();
 
     @Override
     public void reberegnTotal(Avtale avtale) {
@@ -125,7 +125,11 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         perioder.forEach(p -> p.setEnhet(innhold.getEnhetKostnadssted()));
         perioder.forEach(p -> p.setEnhetsnavn(innhold.getEnhetsnavnKostnadssted()));
 
-        BeregningStrategy.settBehandletIArena(STANDARD_MIGRERINGSDATO, perioder);
+        // Etterregistreringer skal håndteres i vårt system, så vi skal kun sette behandlet i arena på avtaler hvor
+        // avtalen har opphav=ARENA eller om det eksisterer en avtaleversjon med innholdstype = ENDRET_AV_ARENA
+        if (avtale.harArenaOpphavEllerHistoriskEndretAvArena()) {
+            BeregningStrategy.settBehandletIArena(MIGRERINGSDATO_FOR_TILSKUDD, perioder);
+        }
 
         fikseLøpenumre(perioder, 1);
         return perioder;
