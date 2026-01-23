@@ -105,6 +105,7 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
@@ -1380,7 +1381,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     public void endreTilskuddsberegning(EndreTilskuddsberegning endreTilskuddsberegning, NavIdent utførtAv) {
         sjekkAtIkkeAvtaleErAnnullert();
-
         krevEnAvTiltakstyper(
             Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
             Tiltakstype.VARIG_LONNSTILSKUDD,
@@ -1390,23 +1390,39 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_IKKE_GODKJENT_AVTALE);
         }
-        if (Utils.erNoenTomme(
-            endreTilskuddsberegning.getArbeidsgiveravgift(),
-            endreTilskuddsberegning.getFeriepengesats(),
-            endreTilskuddsberegning.getManedslonn(),
-            endreTilskuddsberegning.getOtpSats()
-        )) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
-        }
-        if (Tiltakstype.VARIG_LONNSTILSKUDD.equals(tiltakstype) && Utils.erTom(endreTilskuddsberegning.getLonnstilskuddProsent())) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
-        }
+
+        validerTilskuddsberegningInput(endreTilskuddsberegning);
 
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_TILSKUDDSBEREGNING);
         this.hentBeregningStrategi().endreBeregning(this, endreTilskuddsberegning);
         endreBeløpOgProsentITilskuddsperioder();
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
         utforEndring(new TilskuddsberegningEndret(this, utførtAv));
+    }
+
+    private void validerTilskuddsberegningInput(EndreTilskuddsberegning endreTilskuddsberegning) {
+        List<Object> valideringer = new ArrayList<>();
+
+        valideringer.add(endreTilskuddsberegning.getArbeidsgiveravgift());
+        valideringer.add(endreTilskuddsberegning.getFeriepengesats());
+        valideringer.add(endreTilskuddsberegning.getOtpSats());
+
+        if (Tiltakstype.VARIG_LONNSTILSKUDD.equals(tiltakstype)) {
+            valideringer.add(endreTilskuddsberegning.getLonnstilskuddProsent());
+        }
+
+        if (Tiltakstype.MENTOR.equals(tiltakstype)) {
+            valideringer.add(endreTilskuddsberegning.getMentorAntallTimer());
+            valideringer.add(endreTilskuddsberegning.getMentorValgtLonnstype());
+            valideringer.add(endreTilskuddsberegning.getMentorValgtLonnstypeBelop());
+            valideringer.add(endreTilskuddsberegning.getStillingprosent());
+        } else {
+            valideringer.add(endreTilskuddsberegning.getManedslonn());
+        }
+
+        if (Utils.erNoenTomme(valideringer.toArray())) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
+        }
     }
 
     // Metode for å rydde opp i beregnede felter som ikke har blitt satt etter at lønnstilskuddsprosent manuelt i databasen har blitt satt inn
