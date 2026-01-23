@@ -91,7 +91,10 @@ public class ArenaAgreementProcessingService {
             switch (result) {
                 case ArenaMigrationProcessResult.Completed completed -> {
                     if (agreementAggregate.getTiltakdeltakerId() != null) {
-                        transferAktivitetsplankort(completed.avtale(), agreementAggregate.getTiltakdeltakerId());
+                        transferAktivitetsplankort(
+                            completed.avtale().getId(),
+                            agreementAggregate.getTiltakdeltakerId()
+                        );
                     }
                     Avtale nyAvtale = avtaleRepository.save(completed.avtale());
                     log.info(
@@ -111,7 +114,17 @@ public class ArenaAgreementProcessingService {
                         null
                     );
                 }
-                case ArenaMigrationProcessResult.Ignored ignored ->
+                case ArenaMigrationProcessResult.Ignored ignored -> {
+                    if (
+                        agreementAggregate.getTiltakdeltakerId() != null &&
+                        agreementAggregate.getEksternIdAsUuid().isPresent()
+                    ) {
+                        transferAktivitetsplankort(
+                            agreementAggregate.getEksternIdAsUuid().get(),
+                            agreementAggregate.getTiltakdeltakerId()
+                        );
+                    }
+
                     saveMigrationStatus(
                         migrationId,
                         tiltaksgjennomforingId,
@@ -123,6 +136,7 @@ public class ArenaAgreementProcessingService {
                         agreementAggregate.getTiltakskode(),
                         null
                     );
+                }
                 case ArenaMigrationProcessResult.Failed failed ->
                     saveMigrationStatus(
                         migrationId,
@@ -389,9 +403,9 @@ public class ArenaAgreementProcessingService {
             .map(Norg2OppfølgingResponse::getNavn);
     }
 
-    private void transferAktivitetsplankort(Avtale avtale, Integer deltakerId) {
+    private void transferAktivitetsplankort(UUID avtaleid, Integer deltakerId) {
         UUID aktivitetsplanId = aktivitetArenaAclClient.getAktivitetsId(deltakerId);
-        hendelseAktivitetsplanClient.putAktivitetsplanId(avtale.getId(), aktivitetsplanId);
+        hendelseAktivitetsplanClient.putAktivitetsplanId(avtaleid, aktivitetsplanId);
     }
 
     private Optional<String> validate(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
