@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,7 +41,7 @@ public class ArenaCleanUpService {
         Map<Status, List<Avtale>> avtalerMedStatus = avtaleList.stream()
             .collect(Collectors.groupingBy(Avtale::getStatus));
 
-        List<Avtale> gjennomfores = Optional.ofNullable(avtalerMedStatus.get(Status.GJENNOMFØRES)).orElse(List.of());
+        List<Avtale> gjennomfores = avtalerMedStatus.getOrDefault(Status.GJENNOMFØRES, List.of());
 
         log.info(
             "{}Rydder opp {} avtaler som ikke ble migrert fra Arena",
@@ -50,7 +49,7 @@ public class ArenaCleanUpService {
             gjennomfores.size()
         );
 
-        for (Avtale avtale : avtalerMedStatus.get(Status.GJENNOMFØRES)) {
+        for (Avtale avtale : gjennomfores) {
             log.info(
                 "{}Annullerer avtale med id {}, tiltakstype: {} og status: {} ",
                 dryRun ? "[DRY-RUN]: " : "",
@@ -62,8 +61,8 @@ public class ArenaCleanUpService {
         }
 
         List<Avtale> pabegyntEllerManglerGodkjenning = Stream.concat(
-            Optional.ofNullable(avtalerMedStatus.get(Status.PÅBEGYNT)).orElse(List.of()).stream(),
-            Optional.ofNullable(avtalerMedStatus.get(Status.MANGLER_GODKJENNING)).orElse(List.of()).stream()
+            avtalerMedStatus.getOrDefault(Status.PÅBEGYNT, List.of()).stream(),
+            avtalerMedStatus.getOrDefault(Status.MANGLER_GODKJENNING, List.of()).stream()
         ).toList();
 
         log.info(
@@ -91,13 +90,6 @@ public class ArenaCleanUpService {
 
         if (!dryRun) {
             avtaleRepository.saveAll(avtaleList);
-        }
-    }
-
-    private void fiksInnholdIAvtale(Avtale avtale) {
-        if (avtale.getTiltakstype().isMentor()) {
-            avtale.getGjeldendeInnhold().setMentorTimelonn(null);
-            avtale.getGjeldendeInnhold().setMentorAntallTimer(null);
         }
     }
 
