@@ -60,6 +60,10 @@ public class ArenaCleanUpService {
             avtale.annuller(AnnullertGrunn.FINNES_IKKE_I_ARENA, Identifikator.ARENA);
         }
 
+        if (!dryRun) {
+            avtaleRepository.saveAll(gjennomfores);
+        }
+
         List<Avtale> pabegyntEllerManglerGodkjenning = Stream.concat(
             avtalerMedStatus.getOrDefault(Status.PÅBEGYNT, List.of()).stream(),
             avtalerMedStatus.getOrDefault(Status.MANGLER_GODKJENNING, List.of()).stream()
@@ -89,7 +93,7 @@ public class ArenaCleanUpService {
         }
 
         if (!dryRun) {
-            avtaleRepository.saveAll(avtaleList);
+            avtaleRepository.saveAll(pabegyntEllerManglerGodkjenning);
         }
     }
 
