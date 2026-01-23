@@ -1717,10 +1717,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (getOpphav() == Avtaleopphav.ARENA) {
             return true;
         }
-        return Optional.ofNullable(getAvtaleversjoner())
-            .map(versjoner -> versjoner.stream()
-                .anyMatch(innhold ->
-                    innhold.getInnholdType() == AvtaleInnholdType.ENDRET_AV_ARENA))
-            .orElse(false);
+        var avtaleversjoner = getAvtaleversjoner();
+        if (avtaleversjoner == null) {
+            return false;
+        }
+        return avtaleversjoner.stream()
+            .anyMatch(innhold -> innhold.getInnholdType() == AvtaleInnholdType.ENDRET_AV_ARENA);
     }
 }
