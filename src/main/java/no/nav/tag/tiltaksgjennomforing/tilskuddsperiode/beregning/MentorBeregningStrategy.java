@@ -139,7 +139,6 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         avtaleInnhold.setOtpSats(endreTilskuddsberegning.getOtpSats());
         avtaleInnhold.setFeriepengesats(endreTilskuddsberegning.getFeriepengesats());
         avtaleInnhold.setMentorAntallTimer(endreTilskuddsberegning.getMentorAntallTimer());
-        avtaleInnhold.setMentorTimelonn(endreTilskuddsberegning.getMentorTimelonn());
         avtaleInnhold.setStillingprosent(endreTilskuddsberegning.getStillingprosent());
         avtaleInnhold.setMentorValgtLonnstype(endreTilskuddsberegning.getMentorValgtLonnstype());
         avtaleInnhold.setMentorValgtLonnstypeBelop(endreTilskuddsberegning.getMentorValgtLonnstypeBelop());
