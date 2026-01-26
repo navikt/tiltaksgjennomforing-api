@@ -394,6 +394,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         Optional.ofNullable(endreAvtaleArena.getAntallDagerPerUke())
             .ifPresent(getGjeldendeInnhold()::setAntallDagerPerUke);
 
+        if (getTiltakstype().isMentor()) {
+            getGjeldendeInnhold().setMentorTimelonn(null);
+            getGjeldendeInnhold().setMentorAntallTimer(null);
+        }
+
         setAnnullertTidspunkt(null);
         setAnnullertGrunn(null);
         setFeilregistrert(false);
