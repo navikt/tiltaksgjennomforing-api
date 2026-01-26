@@ -24,10 +24,14 @@ public class Fnr extends Identifikator {
     }
 
     public static Fnr generer(int aar, int maned, int dag) {
+        return  generer(LocalDate.of(aar, maned, dag));
+    }
+
+    public static Fnr generer(LocalDate dato) {
         if (!FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS) {
             throw new NotImplementedException("Generering av syntetiske fødselsnumre er ikke tillatt i produksjon.");
         }
-        Date date = Date.from(LocalDate.of(aar, maned, dag).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date date = Date.from(dato.atStartOfDay(ZoneId.systemDefault()).toInstant());
         Fodselsnummer fnr = FodselsnummerCalculator.getFodselsnummerForDate(date);
         return new Fnr(fnr.getValue());
     }
