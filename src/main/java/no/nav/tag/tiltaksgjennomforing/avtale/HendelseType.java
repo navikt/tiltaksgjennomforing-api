@@ -21,7 +21,7 @@ public enum HendelseType {
     DELT_MED_ARBEIDSGIVER("Avtale delt med arbeidsgiver"),
     DELT_MED_MENTOR("Avtale delt med mentor"),
     ENDRET("Avtale endret"),
-    ENDRET_AV_ARENA("Avtale synkronisert med fagsystem (Arena)"),
+    ENDRET_AV_ARENA("Avtale synkronisert med fagsystem"),
     AVBRUTT("Avtale avbrutt av veileder"),
     ANNULLERT("Avtale annullert"),
     LÅST_OPP("Avtale låst opp av veileder"),
