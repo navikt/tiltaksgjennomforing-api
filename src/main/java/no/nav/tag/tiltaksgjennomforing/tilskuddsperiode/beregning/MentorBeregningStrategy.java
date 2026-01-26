@@ -68,10 +68,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
             innhold.getMentorTimelonn(),
             innhold.getFeriepengesats(),
             innhold.getArbeidsgiveravgift(),
-            innhold.getOtpSats(),
-            innhold.getStillingprosent(),
-            innhold.getMentorValgtLonnstype(),
-            innhold.getMentorValgtLonnstypeBelop()
+            innhold.getOtpSats()
         );
     }
 
