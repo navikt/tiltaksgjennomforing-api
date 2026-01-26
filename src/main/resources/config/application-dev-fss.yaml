@@ -182,3 +182,9 @@ tiltaksgjennomforing:
     enabled: true
   entraproxy:
     uri: https://entraproxy.intern.dev.nav.no
+
+caches:
+  caffeine:
+    - name: entraproxy_cache
+      expiryInMinutes: 5
+      maximumSize: 1000
