@@ -91,7 +91,10 @@ public class ArenaAgreementProcessingService {
             switch (result) {
                 case ArenaMigrationProcessResult.Completed completed -> {
                     if (agreementAggregate.getTiltakdeltakerId() != null) {
-                        transferAktivitetsplankort(completed.avtale(), agreementAggregate.getTiltakdeltakerId());
+                        transferAktivitetsplankort(
+                            completed.avtale().getId(),
+                            agreementAggregate.getTiltakdeltakerId()
+                        );
                     }
                     Avtale nyAvtale = avtaleRepository.save(completed.avtale());
                     log.info(
@@ -111,7 +114,17 @@ public class ArenaAgreementProcessingService {
                         null
                     );
                 }
-                case ArenaMigrationProcessResult.Ignored ignored ->
+                case ArenaMigrationProcessResult.Ignored ignored -> {
+                    if (
+                        agreementAggregate.getTiltakdeltakerId() != null &&
+                        agreementAggregate.getEksternIdAsUuid().isPresent()
+                    ) {
+                        transferAktivitetsplankort(
+                            agreementAggregate.getEksternIdAsUuid().get(),
+                            agreementAggregate.getTiltakdeltakerId()
+                        );
+                    }
+
                     saveMigrationStatus(
                         migrationId,
                         tiltaksgjennomforingId,
@@ -123,6 +136,7 @@ public class ArenaAgreementProcessingService {
                         agreementAggregate.getTiltakskode(),
                         null
                     );
+                }
                 case ArenaMigrationProcessResult.Failed failed ->
                     saveMigrationStatus(
                         migrationId,
@@ -133,7 +147,7 @@ public class ArenaAgreementProcessingService {
                         eksternId,
                         null,
                         agreementAggregate.getTiltakskode(),
-                        failed.error()
+                        failed.error().toString()
                     );
             }
         } catch(Exception e) {
@@ -153,15 +167,15 @@ public class ArenaAgreementProcessingService {
     }
 
     private void saveMigrationStatus(
-            UUID id,
-            Integer tiltakgjennomforingId,
-            Integer tiltakdeltakerId,
-            ArenaAgreementMigrationStatus status,
-            ArenaMigrationAction action,
-            UUID eksternId,
-            UUID agreementId,
-            ArenaTiltakskode tiltakskode,
-            String error
+        UUID id,
+        Integer tiltakgjennomforingId,
+        Integer tiltakdeltakerId,
+        ArenaAgreementMigrationStatus status,
+        ArenaMigrationAction action,
+        UUID eksternId,
+        UUID agreementId,
+        ArenaTiltakskode tiltakskode,
+        String error
     ) {
         arenaAgreementMigrationRepository.save(
             ArenaAgreementMigration.builder()
@@ -200,7 +214,7 @@ public class ArenaAgreementProcessingService {
                 return new ArenaMigrationProcessResult.Ignored();
             }
             case OPPRETT -> {
-                Optional<String> validationAction = validate(avtale, agreementAggregate);
+                Optional<ArenaMigrationProcessResult.Error> validationAction = validate(avtale, agreementAggregate);
                 if (validationAction.isPresent()) {
                     return new ArenaMigrationProcessResult.Failed(validationAction.get());
                 }
@@ -217,7 +231,7 @@ public class ArenaAgreementProcessingService {
                 return createAvtale(agreementAggregate);
             }
             case GJENOPPRETT, OPPDATER, AVSLUTT, ANNULLER -> {
-                Optional<String> validationAction = validate(avtale, agreementAggregate);
+                Optional<ArenaMigrationProcessResult.Error> validationAction = validate(avtale, agreementAggregate);
                 if (validationAction.isPresent()) {
                     return new ArenaMigrationProcessResult.Failed(validationAction.get());
                 }
@@ -284,13 +298,13 @@ public class ArenaAgreementProcessingService {
         Optional<Fnr> fnrOpt = agreementAggregate.getFnr();
         if (fnrOpt.isEmpty()) {
             log.info("Avtale mangler fnr og kan derfor ikke opprettes.");
-            return new ArenaMigrationProcessResult.Failed("MANGLER_FNR");
+            return new ArenaMigrationProcessResult.Failed(ArenaMigrationProcessResult.Error.MANGLER_FNR);
         }
 
         Optional<BedriftNr> bedriftNrOpt = agreementAggregate.getVirksomhetsnummer();
         if (bedriftNrOpt.isEmpty()) {
             log.info("Avtale mangler virksomhetsnummer og kan derfor ikke opprettes.");
-            return new ArenaMigrationProcessResult.Failed("MANGLER_VIRKSOMHETSNUMMER");
+            return new ArenaMigrationProcessResult.Failed(ArenaMigrationProcessResult.Error.MANGLER_VIRKSOMHETSNUMMER);
         }
 
         Fnr deltakerFnr = fnrOpt.get();
@@ -389,18 +403,18 @@ public class ArenaAgreementProcessingService {
             .map(Norg2OppfølgingResponse::getNavn);
     }
 
-    private void transferAktivitetsplankort(Avtale avtale, Integer deltakerId) {
+    private void transferAktivitetsplankort(UUID avtaleid, Integer deltakerId) {
         UUID aktivitetsplanId = aktivitetArenaAclClient.getAktivitetsId(deltakerId);
-        hendelseAktivitetsplanClient.putAktivitetsplanId(avtale.getId(), aktivitetsplanId);
+        hendelseAktivitetsplanClient.putAktivitetsplanId(avtaleid, aktivitetsplanId);
     }
 
-    private Optional<String> validate(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
+    private Optional<ArenaMigrationProcessResult.Error> validate(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
         if (
             agreementAggregate.getFnr()
                 .map(fnr -> !avtale.getDeltakerFnr().equals(fnr))
                 .orElse(false)
         ) {
-            return Optional.of("FNR_STEMMER_IKKE");
+            return Optional.of(ArenaMigrationProcessResult.Error.FNR_STEMMER_IKKE);
         }
 
         if (
@@ -408,7 +422,7 @@ public class ArenaAgreementProcessingService {
                 .map(bedriftNr -> !avtale.getBedriftNr().equals(bedriftNr))
                 .orElse(false)
         ) {
-            return Optional.of("VIRKSOMHETSNUMMER_STEMMER_IKKE");
+            return Optional.of(ArenaMigrationProcessResult.Error.VIRKSOMHETSNUMMER_STEMMER_IKKE);
         }
 
         if (featureToggleService.isEnabled(FeatureToggle.KODE_6_SPERRE)) {
@@ -417,7 +431,7 @@ public class ArenaAgreementProcessingService {
                 .orElse(false);
 
             if (isKode6) {
-                return Optional.of("KODE_6");
+                return Optional.of(ArenaMigrationProcessResult.Error.KODE_6);
             }
         }
 
