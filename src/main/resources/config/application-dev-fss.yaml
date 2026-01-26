@@ -179,7 +179,7 @@ tiltaksgjennomforing:
     hendelse-aktivitetsplan:
       url: https://tiltak-hendelse-aktivitetsplan.intern.dev.nav.no
   mentor-tilskuddsperioder:
-    enabled: false
+    enabled: true
   entraproxy:
     uri: https://entraproxy.intern.dev.nav.no
 
