@@ -96,8 +96,9 @@ public class ArenaAgreementAggregate {
         return getFnr().map(fnr -> findSluttdato().map(fnr::erOver72ÅrFraSluttDato).orElse(true)).orElse(true);
     }
 
-    public boolean isSluttdatoIDagEllerFremtiden() {
-        return findSluttdato().map(sluttdato -> sluttdato.isAfter(LocalDate.now().minusDays(1))).orElse(true);
+    public boolean isSluttdatoIAar() {
+        int nowYear = LocalDate.now().getYear();
+        return findSluttdato().map(sluttdato -> sluttdato.getYear() == nowYear).orElse(false);
     }
 
     public boolean isDublett() {

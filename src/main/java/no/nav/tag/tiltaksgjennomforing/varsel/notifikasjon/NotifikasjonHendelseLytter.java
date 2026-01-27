@@ -7,7 +7,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvSystem;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvArena;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
@@ -202,13 +201,6 @@ public class NotifikasjonHendelseLytter {
         if (smsMinSideArbeidsgiverToggleErPå()) return;
         opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.AVTALE_FORLENGET,
                 NotifikasjonTekst.TILTAK_AVTALE_FORLENGET);
-    }
-
-    @EventListener
-    public void forlengetAvtaleAvArena(AvtaleForlengetAvArena event) {
-        if (smsMinSideArbeidsgiverToggleErPå()) return;
-        opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.AVTALE_FORLENGET_AV_ARENA,
-            NotifikasjonTekst.TILTAK_AVTALE_FORLENGET);
     }
 
     @EventListener

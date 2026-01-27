@@ -34,7 +34,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleFordelt;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
@@ -383,11 +382,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             return;
         }
 
-        boolean isForlengelse = EndreAvtaleArena.Handling.GJENOPPRETT == action ||
-            Optional.ofNullable(endreAvtaleArena.getStartdato())
-                .map(arenaStartdato -> arenaStartdato.isAfter(gjeldendeInnhold.getSluttDato()))
-                .orElse(false);
-
         Optional.ofNullable(endreAvtaleArena.getStartdato()).ifPresent(getGjeldendeInnhold()::setStartDato);
         Optional.ofNullable(endreAvtaleArena.getSluttdato()).ifPresent(getGjeldendeInnhold()::setSluttDato);
         Optional.ofNullable(endreAvtaleArena.getStillingprosent()).ifPresent(getGjeldendeInnhold()::setStillingprosent);
@@ -410,12 +404,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         opphevGodkjenninger();
 
         this.status = Status.fra(this);
-
-        if (isForlengelse) {
-            utforEndring(new AvtaleForlengetAvArena(this));
-        } else {
-            utforEndring(new AvtaleEndretAvArena(this));
-        }
+        utforEndring(new AvtaleEndretAvArena(this));
     }
 
     public void delMedAvtalepart(Avtalerolle avtalerolle) {

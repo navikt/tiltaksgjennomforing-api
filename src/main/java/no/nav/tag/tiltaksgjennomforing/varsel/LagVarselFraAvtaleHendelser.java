@@ -12,7 +12,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleFordelt;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleGjenopprettet;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
@@ -236,12 +235,6 @@ public class LagVarselFraAvtaleHendelser {
     @EventListener
     public void forlengAvtaleAvVeileder(AvtaleForlengetAvVeileder event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAv.veileder(event.getUtførtAv()), HendelseType.AVTALE_FORLENGET);
-        varselRepository.saveAll(factory.alleParter());
-    }
-
-    @EventListener
-    public void forlengAvtaleAvArena(AvtaleForlengetAvArena event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAv.system(Identifikator.ARENA), HendelseType.AVTALE_FORLENGET_AV_ARENA);
         varselRepository.saveAll(factory.alleParter());
     }
 

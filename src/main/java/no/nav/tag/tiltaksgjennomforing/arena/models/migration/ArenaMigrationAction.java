@@ -20,8 +20,11 @@ public enum ArenaMigrationAction {
             return IGNORER;
         }
 
+        boolean isSluttdatoIAar = agreementAggregate.isSluttdatoIAar();
+
         return switch (deltakerstatuskode) {
             case GJENN, TILBUD -> OPPRETT;
+            case FULLF, GJENN_AVB -> isSluttdatoIAar ? OPPRETT : IGNORER;
             case null, default -> IGNORER;
         };
     }
@@ -34,41 +37,27 @@ public enum ArenaMigrationAction {
         Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
         Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
         boolean isFeilregistrert = avtale.isFeilregistrert();
-        boolean isSluttdatoIDagEllerFremtiden = agreementAggregate.isSluttdatoIDagEllerFremtiden();
+        boolean isSluttdatoIAar = agreementAggregate.isSluttdatoIAar();
 
         if (agreementAggregate.isDublett()) {
             return IGNORER;
         }
 
-        return switch (avtalestatus) {
-            case ANNULLERT -> switch (deltakerstatuskode) {
-                case GJENN, TILBUD -> (isFeilregistrert ? OPPRETT : GJENOPPRETT);
-                case null, default -> IGNORER;
+        return switch (deltakerstatuskode) {
+            case GJENN, TILBUD -> switch (avtalestatus) {
+                case ANNULLERT -> (isFeilregistrert ? OPPRETT : OPPDATER);
+                case null ->  throw new IllegalStateException(formatExceptionMsg(avtalestatus, tiltakstatuskode, deltakerstatuskode));
+                default -> OPPDATER;
             };
-            case AVSLUTTET -> switch (deltakerstatuskode) {
-                case GJENN, TILBUD -> GJENOPPRETT;
-                case null, default -> IGNORER;
+            case FULLF, GJENN_AVB -> switch (avtalestatus) {
+                case ANNULLERT -> isSluttdatoIAar ? (isFeilregistrert ? OPPRETT : OPPDATER) : IGNORER;
+                case AVSLUTTET -> isSluttdatoIAar ? OPPDATER : IGNORER;
+                case null ->  throw new IllegalStateException(formatExceptionMsg(avtalestatus, tiltakstatuskode, deltakerstatuskode));
+                default -> isSluttdatoIAar ? OPPDATER : AVSLUTT;
             };
-            case KLAR_FOR_OPPSTART -> switch (deltakerstatuskode) {
-                case GJENN, TILBUD -> OPPDATER;
-                case null, default -> ANNULLER;
-            };
-            case GJENNOMFØRES -> switch (tiltakstatuskode) {
-                case AVBRUTT -> switch (deltakerstatuskode) {
-                    case GJENN_AVB -> AVSLUTT;
-                    case null, default -> ANNULLER;
-                };
-                case AVLYST -> ANNULLER;
-                case AVSLUTT, GJENNOMFOR -> switch(deltakerstatuskode) {
-                    case FULLF -> AVSLUTT;
-                    case GJENN, TILBUD -> isSluttdatoIDagEllerFremtiden ? OPPDATER : AVSLUTT;
-                    case null, default -> ANNULLER;
-                };
-                case null, default -> throw new IllegalStateException(formatExceptionMsg(avtalestatus, tiltakstatuskode, deltakerstatuskode));
-            };
-            case null, default -> throw new IllegalStateException(formatExceptionMsg(avtalestatus, tiltakstatuskode, deltakerstatuskode));
+            case null -> throw new IllegalStateException(formatExceptionMsg(avtalestatus, tiltakstatuskode, deltakerstatuskode));
+            default -> ANNULLER;
         };
-
     }
 
     private static String formatExceptionMsg(Status status, Tiltakstatuskode tiltakstatuskode, Deltakerstatuskode deltakerstatuskode) {
