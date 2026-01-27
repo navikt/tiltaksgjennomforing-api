@@ -7,7 +7,7 @@ public class AnnullertGrunn {
     public static final String SYK = "Syk";
     public static final String IKKE_MØTT = "Ikke møtt";
     public static final String UTLØPT = "Utløpt";
-    public static final String ANNULLERT_I_ARENA = "Avtalen er annullert i Arena";
+    public static final String ANNULLERT_I_ARENA = "Avtalen er ikke aktiv i Arena";
     public static final String FINNES_IKKE_I_ARENA = "Avtalen finnes ikke i Arena";
 
     public static boolean skalFeilregistreres(String annullertGrunn) {
