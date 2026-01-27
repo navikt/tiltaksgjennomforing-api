@@ -140,7 +140,7 @@ tiltaksgjennomforing:
     adressesperreServiceCode: 5516
     adressesperreServiceEdition: 7
   mentor-tilskuddsperioder:
-    enabled: false
+    enabled: true
 
 
   ereg:
