@@ -20,11 +20,11 @@ public enum ArenaMigrationAction {
             return IGNORER;
         }
 
-        boolean isSluttdatoIAar = agreementAggregate.isSluttdatoIAar();
+        boolean isSluttdatoIAarEllerFremtiden = agreementAggregate.isSluttdatoIAarEllerFremtiden();
 
         return switch (deltakerstatuskode) {
             case GJENN, TILBUD -> OPPRETT;
-            case FULLF, GJENN_AVB -> isSluttdatoIAar ? OPPRETT : IGNORER;
+            case FULLF, GJENN_AVB -> isSluttdatoIAarEllerFremtiden ? OPPRETT : IGNORER;
             case null, default -> IGNORER;
         };
     }
@@ -37,7 +37,7 @@ public enum ArenaMigrationAction {
         Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
         Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
         boolean isFeilregistrert = avtale.isFeilregistrert();
-        boolean isSluttdatoIAar = agreementAggregate.isSluttdatoIAar();
+        boolean isSluttdatoIAarEllerFremtiden = agreementAggregate.isSluttdatoIAarEllerFremtiden();
 
         if (agreementAggregate.isDublett()) {
             return IGNORER;
@@ -50,10 +50,10 @@ public enum ArenaMigrationAction {
                 default -> OPPDATER;
             };
             case FULLF, GJENN_AVB -> switch (avtalestatus) {
-                case ANNULLERT -> isSluttdatoIAar ? (isFeilregistrert ? OPPRETT : OPPDATER) : IGNORER;
-                case AVSLUTTET -> isSluttdatoIAar ? OPPDATER : IGNORER;
+                case ANNULLERT -> isSluttdatoIAarEllerFremtiden ? (isFeilregistrert ? OPPRETT : OPPDATER) : IGNORER;
+                case AVSLUTTET -> isSluttdatoIAarEllerFremtiden ? OPPDATER : IGNORER;
                 case null ->  throw new IllegalStateException(formatExceptionMsg(avtalestatus, tiltakstatuskode, deltakerstatuskode));
-                default -> isSluttdatoIAar ? OPPDATER : AVSLUTT;
+                default -> isSluttdatoIAarEllerFremtiden ? OPPDATER : AVSLUTT;
             };
             case null -> throw new IllegalStateException(formatExceptionMsg(avtalestatus, tiltakstatuskode, deltakerstatuskode));
             default -> ANNULLER;

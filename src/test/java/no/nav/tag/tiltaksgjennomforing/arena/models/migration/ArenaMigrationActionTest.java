@@ -157,7 +157,7 @@ class ArenaMigrationActionTest {
         class MedSluttdatoIAar {
             @BeforeEach
             void setUp() {
-                when(agreementAggregate.isSluttdatoIAar()).thenReturn(true);
+                when(agreementAggregate.isSluttdatoIAarEllerFremtiden()).thenReturn(true);
             }
 
             @Test
@@ -238,7 +238,7 @@ class ArenaMigrationActionTest {
         class UtenSluttdatoIAar {
             @BeforeEach
             void setUp() {
-                when(agreementAggregate.isSluttdatoIAar()).thenReturn(false);
+                when(agreementAggregate.isSluttdatoIAarEllerFremtiden()).thenReturn(false);
             }
 
             @Test
