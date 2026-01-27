@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.arena.models.migration;
 
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Deltakerstatuskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Tiltakstatuskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -20,11 +21,13 @@ public enum ArenaMigrationAction {
             return IGNORER;
         }
 
-        boolean isSluttdatoIAarEllerFremtiden = agreementAggregate.isSluttdatoIAarEllerFremtiden();
+        boolean isSluttdatoEtterMigreringAvTilskudd = agreementAggregate.isSluttdatoPaaEllerEtter(
+            ArenaTiltakskode.GJELDENDE_MIGRERING.getMigreringsdatoForTilskudd()
+        );
 
         return switch (deltakerstatuskode) {
             case GJENN, TILBUD -> OPPRETT;
-            case FULLF, GJENN_AVB -> isSluttdatoIAarEllerFremtiden ? OPPRETT : IGNORER;
+            case FULLF, GJENN_AVB -> isSluttdatoEtterMigreringAvTilskudd ? OPPRETT : IGNORER;
             case null, default -> IGNORER;
         };
     }
@@ -37,7 +40,9 @@ public enum ArenaMigrationAction {
         Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
         Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
         boolean isFeilregistrert = avtale.isFeilregistrert();
-        boolean isSluttdatoIAarEllerFremtiden = agreementAggregate.isSluttdatoIAarEllerFremtiden();
+        boolean isSluttdatoEtterMigreringAvTilskudd = agreementAggregate.isSluttdatoPaaEllerEtter(
+            ArenaTiltakskode.GJELDENDE_MIGRERING.getMigreringsdatoForTilskudd()
+        );
 
         if (agreementAggregate.isDublett()) {
             return IGNORER;
@@ -50,10 +55,10 @@ public enum ArenaMigrationAction {
                 default -> OPPDATER;
             };
             case FULLF, GJENN_AVB -> switch (avtalestatus) {
-                case ANNULLERT -> isSluttdatoIAarEllerFremtiden ? (isFeilregistrert ? OPPRETT : OPPDATER) : IGNORER;
-                case AVSLUTTET -> isSluttdatoIAarEllerFremtiden ? OPPDATER : IGNORER;
+                case ANNULLERT -> isSluttdatoEtterMigreringAvTilskudd ? (isFeilregistrert ? OPPRETT : OPPDATER) : IGNORER;
+                case AVSLUTTET -> isSluttdatoEtterMigreringAvTilskudd ? OPPDATER : IGNORER;
                 case null ->  throw new IllegalStateException(formatExceptionMsg(avtalestatus, tiltakstatuskode, deltakerstatuskode));
-                default -> isSluttdatoIAarEllerFremtiden ? OPPDATER : AVSLUTT;
+                default -> isSluttdatoEtterMigreringAvTilskudd ? OPPDATER : AVSLUTT;
             };
             case null -> throw new IllegalStateException(formatExceptionMsg(avtalestatus, tiltakstatuskode, deltakerstatuskode));
             default -> ANNULLER;

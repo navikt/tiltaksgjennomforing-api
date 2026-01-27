@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.arena.models.migration;
 
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Deltakerstatuskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Tiltakstatuskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -154,10 +155,13 @@ class ArenaMigrationActionTest {
         }
 
         @Nested
-        class MedSluttdatoIAar {
+        class MedSluttdatoEtterMigreringAvTilskudd {
             @BeforeEach
             void setUp() {
-                when(agreementAggregate.isSluttdatoIAarEllerFremtiden()).thenReturn(true);
+                when(
+                    agreementAggregate.isSluttdatoPaaEllerEtter(
+                        ArenaTiltakskode.GJELDENDE_MIGRERING.getMigreringsdatoForTilskudd()
+                    )).thenReturn(true);
             }
 
             @Test
@@ -235,10 +239,13 @@ class ArenaMigrationActionTest {
         }
 
         @Nested
-        class UtenSluttdatoIAar {
+        class UtenSluttdatoEtterMigreringAvTilskudd {
             @BeforeEach
             void setUp() {
-                when(agreementAggregate.isSluttdatoIAarEllerFremtiden()).thenReturn(false);
+                when(
+                    agreementAggregate.isSluttdatoPaaEllerEtter(
+                        ArenaTiltakskode.GJELDENDE_MIGRERING.getMigreringsdatoForTilskudd())
+                ).thenReturn(false);
             }
 
             @Test
