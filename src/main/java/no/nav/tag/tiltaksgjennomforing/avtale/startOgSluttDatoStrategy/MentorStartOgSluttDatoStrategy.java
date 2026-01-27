@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.time.LocalDate;
 
@@ -37,7 +38,7 @@ public class MentorStartOgSluttDatoStrategy implements StartOgSluttDatoStrategy 
             return;
         }
 
-        if(erOpprettetEllerEndretAvArena && sluttDato.isBefore(LocalDate.now())){
+        if(erOpprettetEllerEndretAvArena && sluttDato.isBefore(Now.localDate())){
             return;
         }
 
