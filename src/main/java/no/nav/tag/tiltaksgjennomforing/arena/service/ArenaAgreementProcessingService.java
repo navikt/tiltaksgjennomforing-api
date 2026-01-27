@@ -341,9 +341,14 @@ public class ArenaAgreementProcessingService {
         AvtaleInnhold avtaleinnhold = avtale.getGjeldendeInnhold();
         Optional.ofNullable(agreementAggregate.getRegDato())
             .ifPresent(regdato -> avtale.setOpprettetTidspunkt(DatoUtils.localDateTimeTilInstant(regdato)));
-        agreementAggregate.getAntallDagerPrUke().ifPresent(avtaleinnhold::setAntallDagerPerUke);
-        agreementAggregate.getProsentDeltid().ifPresent(avtaleinnhold::setStillingprosent);
+
+        if (!agreementAggregate.getTiltakskode().getTiltakstype().isMentor()) {
+            agreementAggregate.getAntallDagerPrUke().ifPresent(avtaleinnhold::setAntallDagerPerUke);
+            agreementAggregate.getProsentDeltid().ifPresent(avtaleinnhold::setStillingprosent);
+        }
+
         agreementAggregate.findStartdato().ifPresent(avtaleinnhold::setStartDato);
+
         if (!agreementAggregate.isSluttdatoBeforeStartdato() && !agreementAggregate.isDeltakerForGammelPaaSluttDato()) {
             agreementAggregate.findSluttdato().ifPresent(avtaleinnhold::setSluttDato);
         } else {
