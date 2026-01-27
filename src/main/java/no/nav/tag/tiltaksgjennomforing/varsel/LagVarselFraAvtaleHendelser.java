@@ -110,7 +110,7 @@ public class LagVarselFraAvtaleHendelser {
     @EventListener
     public void avtaleEndret(AvtaleEndretAvArena event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAv.system(Identifikator.ARENA), HendelseType.ENDRET_AV_ARENA);
-        varselRepository.saveAll(List.of(factory.veileder(), factory.arbeidsgiver()));
+        varselRepository.saveAll(factory.alleParter());
     }
 
     @EventListener
