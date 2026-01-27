@@ -112,7 +112,16 @@ public class MentorStartOgSluttDatoStrategyTest {
         boolean erAvtaleInngått = false;
         boolean erGodkjentForEtterregistrering = false;
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        MentorStartOgSluttDatoStrategy mentorStartOgSluttDatoStrategy = new MentorStartOgSluttDatoStrategy(avtale.getKvalifiseringsgruppe());
+        MentorStartOgSluttDatoStrategy mentorStartOgSluttDatoStrategy = new MentorStartOgSluttDatoStrategy(avtale.getKvalifiseringsgruppe(), avtale.erOpprettetEllerEndretAvArena());
         assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> mentorStartOgSluttDatoStrategy.sjekkStartOgSluttDato(startDato, sluttDato ,erGodkjentForEtterregistrering, erAvtaleInngått, deltakerFnr));
+    }
+
+    @Test
+    public void Avtaler_med_sluttdato_tilbake_i_tiden_skal_ikke_sjekke_varighet() {
+        Avtale avtale = TestData.enMentorArenaAvtaleMedAltUtfyltMedSluttDatoTilbakeITid();
+        EndreAvtale endreAvtale = EndreAvtale.fraAvtale(avtale);
+        endreAvtale.setHarFamilietilknytning(true);
+        endreAvtale.setFamilietilknytningForklaring("Onkel");
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
     }
 }

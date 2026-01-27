@@ -1375,7 +1375,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
-        StartOgSluttDatoStrategyFactory.create(getTiltakstype(), getKvalifiseringsgruppe())
+        StartOgSluttDatoStrategyFactory.create(getTiltakstype(), getKvalifiseringsgruppe(), erOpprettetEllerEndretAvArena())
             .sjekkStartOgSluttDato(
                 startDato,
                 sluttDato,
