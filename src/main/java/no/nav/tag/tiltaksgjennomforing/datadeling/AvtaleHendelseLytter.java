@@ -15,7 +15,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
@@ -86,11 +85,6 @@ public class AvtaleHendelseLytter {
     @EventListener
     public void avtaleForlenget(AvtaleForlengetAvVeileder event) {
         lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORLENGET, AvtaleHendelseUtførtAv.veileder(event.getUtførtAv()));
-    }
-
-    @EventListener
-    public void avtaleForlengetAvArena(AvtaleForlengetAvArena event) {
-        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORLENGET_AV_ARENA, AvtaleHendelseUtførtAv.system(Identifikator.ARENA));
     }
 
     @EventListener

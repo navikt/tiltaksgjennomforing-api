@@ -9,7 +9,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.InkluderingstilskuddEndret;
@@ -36,11 +35,6 @@ public class DvhAvtalehendelseLytter {
     @EventListener
     public void avtaleForlengetAvVeileder(AvtaleForlengetAvVeileder event) {
         lagHendelse(event.getAvtale(), DvhHendelseType.FORLENGET, event.getUtførtAv());
-    }
-
-    @EventListener
-    public void avtaleForlengetAvArena(AvtaleForlengetAvArena event) {
-        lagHendelse(event.getAvtale(), DvhHendelseType.FORLENGET,  Identifikator.ARENA);
     }
 
     @EventListener
