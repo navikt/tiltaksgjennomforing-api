@@ -5,18 +5,27 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.time.LocalDate;
 
 public class MentorStartOgSluttDatoStrategy implements StartOgSluttDatoStrategy {
     private final Kvalifiseringsgruppe kvalifiseringsgruppe;
+    private final Boolean erOpprettetEllerEndretAvArena;
 
-    public MentorStartOgSluttDatoStrategy(Kvalifiseringsgruppe kvalifiseringsgruppe) {
+    public MentorStartOgSluttDatoStrategy(Kvalifiseringsgruppe kvalifiseringsgruppe, Boolean erOpprettetEllerEndretAvArena) {
         this.kvalifiseringsgruppe = kvalifiseringsgruppe;
+        this.erOpprettetEllerEndretAvArena = erOpprettetEllerEndretAvArena;
     }
 
     @Override
-    public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato, boolean erGodkjentForEtterregistrering, boolean erAvtaleInngått, Fnr deltakerFnr ) {
+    public void sjekkStartOgSluttDato(
+        LocalDate startDato,
+        LocalDate sluttDato,
+        boolean erGodkjentForEtterregistrering,
+        boolean erAvtaleInngått,
+        Fnr deltakerFnr
+    ) {
         StartOgSluttDatoStrategy.super.sjekkStartOgSluttDato(startDato, sluttDato, erGodkjentForEtterregistrering, erAvtaleInngått, deltakerFnr);
 
         if (sluttDato == null) {
@@ -29,6 +38,10 @@ public class MentorStartOgSluttDatoStrategy implements StartOgSluttDatoStrategy 
             return;
         }
 
+        if(erOpprettetEllerEndretAvArena && sluttDato.isBefore(Now.localDate())){
+            return;
+        }
+
         boolean erSpesieltTilpasset = kvalifiseringsgruppe == Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS;
         boolean erVarigTilpasset = kvalifiseringsgruppe == Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS;
 
@@ -38,5 +51,6 @@ public class MentorStartOgSluttDatoStrategy implements StartOgSluttDatoStrategy 
         if (!erSpesieltTilpasset && !erVarigTilpasset && startDato.plusMonths(6).minusDays(1).isBefore(sluttDato)) {
             throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MENTOR_6_MND);
         }
+
     }
 }
