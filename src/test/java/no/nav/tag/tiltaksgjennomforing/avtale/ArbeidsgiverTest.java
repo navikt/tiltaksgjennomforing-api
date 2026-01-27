@@ -406,6 +406,24 @@ public class ArbeidsgiverTest {
 
         assertThat(avtalerMinimal).hasSize(1);
         assertThat(avtalerMinimal.getFirst().id()).isEqualTo(altFyltUtUtenomFamilieTilknytning.getId());
+
+        // Når arbeidsgiver huker av for familietilknytning så skal arbeidsgiver fortsatt kunne se avtalen
+        altFyltUtUtenomFamilieTilknytning.getGjeldendeInnhold().setHarFamilietilknytning(true);
+        altFyltUtUtenomFamilieTilknytning.getGjeldendeInnhold().setFamilietilknytningForklaring(null);
+
+        assertEquals(
+            new AvtaleDTO(altFyltUtUtenomFamilieTilknytning),
+            arbeidsgiver.hentAvtale(avtaleRepository, altFyltUtUtenomFamilieTilknytning.getId())
+        );
+
+        // Når alt er fylt inn skal arbeidsgiver fortsatt kunne se avtalen
+        altFyltUtUtenomFamilieTilknytning.getGjeldendeInnhold().setHarFamilietilknytning(true);
+        altFyltUtUtenomFamilieTilknytning.getGjeldendeInnhold().setFamilietilknytningForklaring("Noe forklaring");
+
+        assertEquals(
+            new AvtaleDTO(altFyltUtUtenomFamilieTilknytning),
+            arbeidsgiver.hentAvtale(avtaleRepository, altFyltUtUtenomFamilieTilknytning.getId())
+        );
     }
 
 }
