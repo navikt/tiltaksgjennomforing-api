@@ -390,13 +390,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
         Optional.ofNullable(endreAvtaleArena.getStartdato()).ifPresent(getGjeldendeInnhold()::setStartDato);
         Optional.ofNullable(endreAvtaleArena.getSluttdato()).ifPresent(getGjeldendeInnhold()::setSluttDato);
-        Optional.ofNullable(endreAvtaleArena.getStillingprosent()).ifPresent(getGjeldendeInnhold()::setStillingprosent);
-        Optional.ofNullable(endreAvtaleArena.getAntallDagerPerUke())
-            .ifPresent(getGjeldendeInnhold()::setAntallDagerPerUke);
 
         if (getTiltakstype().isMentor()) {
             getGjeldendeInnhold().setMentorTimelonn(null);
             getGjeldendeInnhold().setMentorAntallTimer(null);
+        } else {
+            Optional.ofNullable(endreAvtaleArena.getStillingprosent()).ifPresent(getGjeldendeInnhold()::setStillingprosent);
+            Optional.ofNullable(endreAvtaleArena.getAntallDagerPerUke()).ifPresent(getGjeldendeInnhold()::setAntallDagerPerUke);
         }
 
         setAnnullertTidspunkt(null);
