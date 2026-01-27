@@ -783,7 +783,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         utforEndring(new GodkjentAvDeltaker(this, utfortAv));
     }
 
-    void godkjennForMentor(Identifikator utfortAv) {
+    public void godkjennForMentor(Identifikator utfortAv) {
         if (erGodkjentTaushetserklæringAvMentor()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_MENTOR_HAR_ALLEREDE_GODKJENT);
         }

@@ -64,6 +64,9 @@ public class DevController {
             // Deltaker er også arbeidsgiver i testmiljø!
             avtale.godkjennForArbeidsgiver(avtale.getDeltakerFnr());
         }
+        if (avtale.getTiltakstype() == Tiltakstype.MENTOR && avtale.godkjentAvMentor() == null) {
+            avtale.godkjennForMentor(avtale.getMentorFnr());
+        }
         if (!avtale.erGodkjentAvVeileder()) {
             avtale.godkjennForVeileder(avtale.getVeilederNavIdent());
         }
