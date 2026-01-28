@@ -9,7 +9,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import java.util.List;
 
 public enum ArenaMigrationAction {
-    GJENOPPRETT,
     OPPRETT,
     OPPDATER,
     IGNORER,
