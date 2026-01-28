@@ -6,6 +6,8 @@ import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Tiltakstatuskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 
+import java.util.List;
+
 public enum ArenaMigrationAction {
     GJENOPPRETT,
     OPPRETT,
@@ -60,7 +62,12 @@ public enum ArenaMigrationAction {
                 case null ->  throw new IllegalStateException(formatExceptionMsg(avtalestatus, tiltakstatuskode, deltakerstatuskode));
                 default -> isSluttdatoEtterMigreringAvTilskudd ? OPPDATER : AVSLUTT;
             };
-            case null -> throw new IllegalStateException(formatExceptionMsg(avtalestatus, tiltakstatuskode, deltakerstatuskode));
+            case null -> switch (tiltakstatuskode) {
+                case AVBRUTT, AVSLUTT -> List.of(Status.AVSLUTTET, Status.ANNULLERT).contains(avtalestatus) ? IGNORER : AVSLUTT;
+                case AVLYST -> List.of(Status.AVSLUTTET, Status.ANNULLERT).contains(avtalestatus) ? IGNORER : ANNULLER;
+                case null ->  throw new IllegalStateException(formatExceptionMsg(avtalestatus, tiltakstatuskode, deltakerstatuskode));
+                default -> ANNULLER;
+            };
             default -> switch (avtalestatus) {
                 case ANNULLERT, AVSLUTTET -> IGNORER;
                 case null -> throw new IllegalStateException(formatExceptionMsg(avtalestatus, tiltakstatuskode, deltakerstatuskode));

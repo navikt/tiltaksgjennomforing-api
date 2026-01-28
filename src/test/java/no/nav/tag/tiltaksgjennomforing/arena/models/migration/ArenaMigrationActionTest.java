@@ -313,25 +313,6 @@ class ArenaMigrationActionTest {
     }
 
     @Nested
-    class WhenDeltakerstatuskodeNull {
-        @BeforeEach
-        void setUp() {
-            when(agreementAggregate.isDublett()).thenReturn(false);
-        }
-
-        @Test
-        void skal_kaste_exception_naar_deltakerstatuskode_er_null() {
-            when(agreementAggregate.getDeltakerstatuskode()).thenReturn(null);
-            when(agreementAggregate.getTiltakstatuskode()).thenReturn(Tiltakstatuskode.GJENNOMFOR);
-            when(avtale.getStatus()).thenReturn(Status.GJENNOMFØRES);
-
-            assertThatThrownBy(() -> ArenaMigrationAction.map(avtale, agreementAggregate))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("Fikk ugyldig kombinasjon av tiltakstatuskode");
-        }
-    }
-
-    @Nested
     class WhenDeltakerstatuskodeDefault {
         @BeforeEach
         void setUp() {
