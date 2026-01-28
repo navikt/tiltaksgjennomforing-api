@@ -61,7 +61,11 @@ public enum ArenaMigrationAction {
                 default -> isSluttdatoEtterMigreringAvTilskudd ? OPPDATER : AVSLUTT;
             };
             case null -> throw new IllegalStateException(formatExceptionMsg(avtalestatus, tiltakstatuskode, deltakerstatuskode));
-            default -> ANNULLER;
+            default -> switch (avtalestatus) {
+                case ANNULLERT, AVSLUTTET -> IGNORER;
+                case null -> throw new IllegalStateException(formatExceptionMsg(avtalestatus, tiltakstatuskode, deltakerstatuskode));
+                default -> ANNULLER;
+            };
         };
     }
 

@@ -447,5 +447,36 @@ class ArenaMigrationActionTest {
 
             assertThat(result).isEqualTo(ArenaMigrationAction.ANNULLER);
         }
+
+        @Test
+        void skal_returnere_IGNORER_naar_avtalestatus_er_ANNULLERT() {
+            when(agreementAggregate.getDeltakerstatuskode()).thenReturn(Deltakerstatuskode.AKTUELL);
+            when(avtale.getStatus()).thenReturn(Status.ANNULLERT);
+
+            ArenaMigrationAction result = ArenaMigrationAction.map(avtale, agreementAggregate);
+
+            assertThat(result).isEqualTo(ArenaMigrationAction.IGNORER);
+        }
+
+        @Test
+        void skal_returnere_IGNORER_naar_avtalestatus_er_AVSLUTTET() {
+            when(agreementAggregate.getDeltakerstatuskode()).thenReturn(Deltakerstatuskode.AKTUELL);
+            when(avtale.getStatus()).thenReturn(Status.AVSLUTTET);
+
+            ArenaMigrationAction result = ArenaMigrationAction.map(avtale, agreementAggregate);
+
+            assertThat(result).isEqualTo(ArenaMigrationAction.IGNORER);
+        }
+
+        @Test
+        void skal_kaste_exception_naar_avtalestatus_er_null() {
+            when(agreementAggregate.getDeltakerstatuskode()).thenReturn(Deltakerstatuskode.AKTUELL);
+            when(agreementAggregate.getTiltakstatuskode()).thenReturn(Tiltakstatuskode.GJENNOMFOR);
+            when(avtale.getStatus()).thenReturn(null);
+
+            assertThatThrownBy(() -> ArenaMigrationAction.map(avtale, agreementAggregate))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Fikk ugyldig kombinasjon av tiltakstatuskode");
+        }
     }
 }
