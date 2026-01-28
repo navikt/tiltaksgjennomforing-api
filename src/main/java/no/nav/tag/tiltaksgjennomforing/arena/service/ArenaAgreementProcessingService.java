@@ -231,7 +231,10 @@ public class ArenaAgreementProcessingService {
                 return createAvtale(agreementAggregate);
             }
             case GJENOPPRETT, OPPDATER, AVSLUTT, ANNULLER -> {
-                Optional<ArenaMigrationProcessResult.Error> validationAction = validate(avtale, agreementAggregate);
+                Optional<ArenaMigrationProcessResult.Error> validationAction = action != ArenaMigrationAction.AVSLUTT
+                    ? validate(avtale, agreementAggregate)
+                    : Optional.empty();
+
                 if (validationAction.isPresent()) {
                     return new ArenaMigrationProcessResult.Failed(validationAction.get());
                 }
