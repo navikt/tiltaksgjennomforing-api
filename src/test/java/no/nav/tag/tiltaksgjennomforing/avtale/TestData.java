@@ -587,6 +587,19 @@ public class TestData {
         return avtale;
     }
 
+    public static Avtale enMentorArenaAvtaleMedAltUtfyltMedSluttDatoTilbakeITid() {
+        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        Avtale avtale = Avtale.opprett(lagOpprettMentorAvtale(Tiltakstype.MENTOR), Avtaleopphav.ARENA, veilderNavIdent);
+        avtale.setDeltakerFnr(new Fnr("17120276662"));
+        avtale.getGjeldendeInnhold().setDeltakerFornavn("ARENA2");
+        avtale.getGjeldendeInnhold().setDeltakerEtternavn("Opphav2");
+        // Kan ikke endre startdato på arena-avtale, så endringen i endreAvtale feiler uten denne
+        avtale.setGodkjentForEtterregistrering(true);
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusMonths(1).minusDays(5));
+        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusMonths(1));
+        return avtale;
+    }
+
     public static Avtale enVtaoAvtaleGodkjentAvVeileder(){
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         setOppfølgingPåAvtale(avtale);
