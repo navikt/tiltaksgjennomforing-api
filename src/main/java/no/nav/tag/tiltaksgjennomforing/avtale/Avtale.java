@@ -101,10 +101,11 @@ import org.hibernate.annotations.SortNatural;
 import org.hibernate.generator.EventType;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
@@ -1396,24 +1397,33 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private void validerTilskuddsberegningInput(EndreTilskuddsberegning endreTilskuddsberegning) {
-        List<Object> valideringer = new ArrayList<>();
-
-        valideringer.add(endreTilskuddsberegning.getArbeidsgiveravgift());
-        valideringer.add(endreTilskuddsberegning.getFeriepengesats());
-        valideringer.add(endreTilskuddsberegning.getOtpSats());
-
-        if (Tiltakstype.VARIG_LONNSTILSKUDD.equals(tiltakstype)) {
-            valideringer.add(endreTilskuddsberegning.getLonnstilskuddProsent());
-        }
-
-        if (Tiltakstype.MENTOR.equals(tiltakstype)) {
-            valideringer.add(endreTilskuddsberegning.getMentorAntallTimer());
-            valideringer.add(endreTilskuddsberegning.getMentorValgtLonnstype());
-            valideringer.add(endreTilskuddsberegning.getMentorValgtLonnstypeBelop());
-            valideringer.add(endreTilskuddsberegning.getStillingprosent());
-        } else {
-            valideringer.add(endreTilskuddsberegning.getManedslonn());
-        }
+        List<Object> valideringer = switch (tiltakstype) {
+            case VARIG_LONNSTILSKUDD -> Arrays.asList(
+                endreTilskuddsberegning.getArbeidsgiveravgift(),
+                endreTilskuddsberegning.getFeriepengesats(),
+                endreTilskuddsberegning.getOtpSats(),
+                endreTilskuddsberegning.getLonnstilskuddProsent(),
+                endreTilskuddsberegning.getManedslonn()
+            );
+            case MENTOR -> Arrays.asList(
+                endreTilskuddsberegning.getArbeidsgiveravgift(),
+                endreTilskuddsberegning.getFeriepengesats(),
+                endreTilskuddsberegning.getOtpSats(),
+                endreTilskuddsberegning.getMentorAntallTimer(),
+                endreTilskuddsberegning.getMentorValgtLonnstype(),
+                endreTilskuddsberegning.getMentorValgtLonnstypeBelop(),
+                // Timelønn har ikke stillingsprosent, settes derfor default til 0 (slik at den ikke valideres)
+                Optional.ofNullable(endreTilskuddsberegning.getMentorValgtLonnstype())
+                    .map(lonnstype -> lonnstype.erTimelonn() ? BigDecimal.ZERO : endreTilskuddsberegning.getStillingprosent())
+                    .orElse(null)
+            );
+            default -> Arrays.asList(
+                endreTilskuddsberegning.getArbeidsgiveravgift(),
+                endreTilskuddsberegning.getFeriepengesats(),
+                endreTilskuddsberegning.getOtpSats(),
+                endreTilskuddsberegning.getManedslonn()
+            );
+        };
 
         if (Utils.erNoenTomme(valideringer.toArray())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
