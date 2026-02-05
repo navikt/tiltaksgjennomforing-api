@@ -230,11 +230,8 @@ public class ArenaAgreementProcessingService {
                 );
                 return createAvtale(agreementAggregate);
             }
-            case GJENOPPRETT, OPPDATER, AVSLUTT, ANNULLER -> {
-                Optional<ArenaMigrationProcessResult.Error> validationAction = action != ArenaMigrationAction.AVSLUTT
-                    ? validate(avtale, agreementAggregate)
-                    : Optional.empty();
-
+            case OPPDATER, AVSLUTT, ANNULLER -> {
+                Optional<ArenaMigrationProcessResult.Error> validationAction = validate(avtale, agreementAggregate);
                 if (validationAction.isPresent()) {
                     return new ArenaMigrationProcessResult.Failed(validationAction.get());
                 }
@@ -267,7 +264,6 @@ public class ArenaAgreementProcessingService {
                     switch (action) {
                         case AVSLUTT -> "Avtalen avsluttes/forkortes";
                         case ANNULLER -> "Annullerer avtalen";
-                        case GJENOPPRETT -> "Gjenoppretter avtalen";
                         default -> "Oppdaterer avtalen";
                     }
                 );
