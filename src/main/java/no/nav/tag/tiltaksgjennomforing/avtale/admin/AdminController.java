@@ -401,6 +401,10 @@ public class AdminController {
     public ResponseEntity<UUID> opprettAvtaleFraEksisterende(@PathVariable UUID id) {
         Avtale avtale = avtaleRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
 
+        if (avtale.isFeilregistrert()) {
+            throw new IllegalStateException("Kan ikke opprette ny avtale fra en feilregistrert avtale.");
+        }
+
         Avtale nyAvtale = Avtale.opprett(
             new OpprettAvtale(
                 avtale.getDeltakerFnr(),
