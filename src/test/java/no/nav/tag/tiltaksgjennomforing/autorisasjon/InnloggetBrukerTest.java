@@ -10,7 +10,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Mentor;
-import no.nav.tag.tiltaksgjennomforing.avtale.MentorTilskuddsperioderToggle;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
@@ -27,8 +26,6 @@ import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.Instant;
@@ -279,11 +276,8 @@ public class InnloggetBrukerTest {
         assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isFalse();
     }
 
-    @ParameterizedTest
-    @ValueSource(booleans = {true, false})
-    public void harTilgang__mentor_uten_tilskuddsperioder_skal_ikke_ha_tilgang_til_avsluttet_avtale_eldre_enn_12_uker(boolean mentorTilskuddsperioderEnabled) {
-        MentorTilskuddsperioderToggle.setValue(mentorTilskuddsperioderEnabled);
-
+    @Test
+    public void harTilgang__mentor__skal_ikke_ha_tilgang_til_avsluttet_avtale_eldre_enn_12_uker() {
         Avtale avtale = TestData.enMentorAvtaleSignert();
         avtale.godkjennForDeltaker(TestData.enIdentifikator());
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
