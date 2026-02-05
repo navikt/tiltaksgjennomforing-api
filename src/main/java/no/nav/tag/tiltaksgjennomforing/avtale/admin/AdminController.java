@@ -427,7 +427,7 @@ public class AdminController {
         EndreAvtale endreAvtale = EndreAvtale.fraAvtale(avtale);
         endreAvtale.setSluttDato(null);
         endreAvtale.setStartDato(null);
-        nyAvtale.endreAvtale(EndreAvtale.fraAvtale(avtale), AvtaleHendelseUtførtAv.Rolle.SYSTEM, Identifikator.SYSTEM);
+        nyAvtale.endreAvtale(endreAvtale, AvtaleHendelseUtførtAv.Rolle.SYSTEM, Identifikator.SYSTEM);
         nyAvtale.getGjeldendeInnhold().setSluttDato(avtale.getGjeldendeInnhold().getSluttDato());
         nyAvtale.getGjeldendeInnhold().setStartDato(avtale.getGjeldendeInnhold().getStartDato());
 
