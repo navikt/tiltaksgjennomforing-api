@@ -9,7 +9,10 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
+import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonStatus;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
@@ -17,6 +20,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.service.gjeldendetilskuddsperiode.GjeldendeTilskuddsperiodeJobbService;
+import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
@@ -390,6 +394,25 @@ public class AdminController {
         avtale.opphevGodkjenningerSomVeileder();
         avtaleRepository.save(avtale);
         log.info("Opphevde godkjenninger for avtale {}", id);
+    }
+
+    @Transactional
+    @PostMapping("/avtale/{id}/kopier-avtale")
+    public ResponseEntity<UUID> kopierAvtale(@PathVariable UUID id) {
+        Avtale avtale = avtaleRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
+
+        Avtale nyAvtale = Avtale.opprett(new OpprettAvtale(
+            avtale.getDeltakerFnr(),
+            avtale.getBedriftNr(),
+            avtale.getTiltakstype()
+        ), avtale.getOpphav(), avtale.getVeilederNavIdent());
+
+        EndreAvtale endreAvtale = EndreAvtale.fraAvtale(avtale);
+        nyAvtale.endreAvtale(endreAvtale, AvtaleHendelseUtførtAv.Rolle.SYSTEM, Identifikator.SYSTEM);
+
+        avtaleRepository.save(nyAvtale);
+
+        return ResponseEntity.ok(nyAvtale.getId());
     }
 
 
