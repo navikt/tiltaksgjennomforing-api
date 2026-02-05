@@ -420,11 +420,16 @@ public class AdminController {
         nyAvtale.setFormidlingsgruppe(avtale.getFormidlingsgruppe());
         nyAvtale.setEnhetsnavnOppfolging(avtale.getEnhetsnavnOppfolging());
         nyAvtale.setOpprettetTidspunkt(avtale.getOpprettetTidspunkt());
-
-        // Avtalen må åpnes for etterregistrering midlertidig for å kunne kopiere inn alle nødvendige data fra den gamle avtalen
-        nyAvtale.setGodkjentForEtterregistrering(true);
-        nyAvtale.endreAvtale(EndreAvtale.fraAvtale(avtale), AvtaleHendelseUtførtAv.Rolle.SYSTEM, Identifikator.SYSTEM);
         nyAvtale.setGodkjentForEtterregistrering(avtale.isGodkjentForEtterregistrering());
+
+        // Omgå vaildering av start og sluttdato
+        EndreAvtale endreAvtale = EndreAvtale.fraAvtale(avtale);
+        endreAvtale.setSluttDato(null);
+        endreAvtale.setStartDato(null);
+        nyAvtale.endreAvtale(EndreAvtale.fraAvtale(avtale), AvtaleHendelseUtførtAv.Rolle.SYSTEM, Identifikator.SYSTEM);
+        nyAvtale.getGjeldendeInnhold().setSluttDato(avtale.getGjeldendeInnhold().getSluttDato());
+        nyAvtale.getGjeldendeInnhold().setStartDato(avtale.getGjeldendeInnhold().getStartDato());
+
 
         avtaleRepository.save(nyAvtale);
         return ResponseEntity.ok(nyAvtale.getId());
