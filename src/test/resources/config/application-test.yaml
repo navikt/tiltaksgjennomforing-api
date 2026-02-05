@@ -97,8 +97,6 @@ tiltaksgjennomforing:
     uri: http://localhost:8090/api/graphql
     lenke: http://localhost:3000/tiltaksgjennomforing/avtale/
     enabled: false
-  mentor-tilskuddsperioder:
-    enabled: true
   entraproxy:
     uri: http://localhost:8090/entraproxy
 
