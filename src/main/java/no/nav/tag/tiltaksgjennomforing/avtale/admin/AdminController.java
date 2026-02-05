@@ -420,9 +420,11 @@ public class AdminController {
         nyAvtale.setFormidlingsgruppe(avtale.getFormidlingsgruppe());
         nyAvtale.setEnhetsnavnOppfolging(avtale.getEnhetsnavnOppfolging());
         nyAvtale.setOpprettetTidspunkt(avtale.getOpprettetTidspunkt());
-        nyAvtale.setGodkjentForEtterregistrering(avtale.isGodkjentForEtterregistrering());
 
+        // Avtalen må åpnes for etterregistrering midlertidig for å kunne kopiere inn alle nødvendige data fra den gamle avtalen
+        nyAvtale.setGodkjentForEtterregistrering(true);
         nyAvtale.endreAvtale(EndreAvtale.fraAvtale(avtale), AvtaleHendelseUtførtAv.Rolle.SYSTEM, Identifikator.SYSTEM);
+        nyAvtale.setGodkjentForEtterregistrering(avtale.isGodkjentForEtterregistrering());
 
         avtaleRepository.save(nyAvtale);
         return ResponseEntity.ok(nyAvtale.getId());
