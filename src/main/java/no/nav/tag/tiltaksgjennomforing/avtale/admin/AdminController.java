@@ -401,17 +401,18 @@ public class AdminController {
     public ResponseEntity<UUID> kopierAvtale(@PathVariable UUID id) {
         Avtale avtale = avtaleRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
 
-        Avtale nyAvtale = Avtale.opprett(new OpprettAvtale(
-            avtale.getDeltakerFnr(),
-            avtale.getBedriftNr(),
-            avtale.getTiltakstype()
-        ), avtale.getOpphav(), avtale.getVeilederNavIdent());
+        Avtale nyAvtale = Avtale.opprett(
+            new OpprettAvtale(
+                avtale.getDeltakerFnr(),
+                avtale.getBedriftNr(),
+                avtale.getTiltakstype()
+            ), avtale.getOpphav(), avtale.getVeilederNavIdent()
+        );
 
-        EndreAvtale endreAvtale = EndreAvtale.fraAvtale(avtale);
-        nyAvtale.endreAvtale(endreAvtale, AvtaleHendelseUtførtAv.Rolle.SYSTEM, Identifikator.SYSTEM);
+        nyAvtale.setGodkjentForEtterregistrering(avtale.isGodkjentForEtterregistrering());
+        nyAvtale.endreAvtale(EndreAvtale.fraAvtale(avtale), AvtaleHendelseUtførtAv.Rolle.SYSTEM, Identifikator.SYSTEM);
 
         avtaleRepository.save(nyAvtale);
-
         return ResponseEntity.ok(nyAvtale.getId());
     }
 
