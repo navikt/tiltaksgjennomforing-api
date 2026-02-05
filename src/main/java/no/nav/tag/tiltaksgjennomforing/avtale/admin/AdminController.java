@@ -397,8 +397,8 @@ public class AdminController {
     }
 
     @Transactional
-    @PostMapping("/avtale/{id}/kopier-avtale")
-    public ResponseEntity<UUID> kopierAvtale(@PathVariable UUID id) {
+    @PostMapping("/avtale/{id}/opprett-fra-eksisterende")
+    public ResponseEntity<UUID> opprettAvtaleFraEksisterende(@PathVariable UUID id) {
         Avtale avtale = avtaleRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
 
         Avtale nyAvtale = Avtale.opprett(
