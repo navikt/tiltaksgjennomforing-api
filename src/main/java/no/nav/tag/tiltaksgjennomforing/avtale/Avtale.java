@@ -109,7 +109,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -185,7 +184,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     @OneToOne(cascade = CascadeType.ALL)
     @Nullable
-    @JsonIgnore
     private TilskuddPeriode gjeldendeTilskuddsperiode;
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
@@ -989,13 +987,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         return tilskuddPeriode.toArray(new TilskuddPeriode[0])[index];
     }
 
-
-    @Nullable
-    @JsonProperty
-    public TilskuddPeriode getGjeldendeTilskuddsperiode() {
-        return getGjeldendeTilskuddsperiode(true);
-    }
-
     public void setGjeldendeTilskuddsperiode(TilskuddPeriode tilskuddPeriode) {
         log.atInfo()
             .addKeyValue("avtaleId", this.getId().toString())
@@ -1006,39 +997,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
                 tilskuddPeriode != null ? tilskuddPeriode.getStatus() : null
             );
         this.gjeldendeTilskuddsperiode = tilskuddPeriode;
-    }
-
-    /**
-     * Vi ønsker å migrere til at "gjeldende tilskuddsperiode" lagres i databasen for å legge til rette for bedre
-     * filtreringsmuligheter for besluttere. I en overgangsfase bør all logikk basere seg på gammel implementasjon som
-     * "kalkulerer" gjeldende periode, men vi bør også logge eventuelle avvik for å sikre at systemet fungerer likt som
-     * før etter endringen.
-     * <p>
-     * TODO: Fjern gammel logikk, og denne disclaimeren
-     */
-    public TilskuddPeriode getGjeldendeTilskuddsperiode(boolean kalkulerNyTilskuddsperiode) {
-        var gjeldendeFraDb = this.gjeldendeTilskuddsperiode;
-        if (!kalkulerNyTilskuddsperiode) {
-            return gjeldendeFraDb;
-        }
-        var gjeldendePeriode = TilskuddPeriode.finnGjeldende(this);
-        var erLike = Objects.equals(gjeldendePeriode, gjeldendeFraDb);
-        if (!erLike) {
-            log.atWarn()
-                .addKeyValue("avtaleId", this.getId().toString())
-                .log(
-                    "Gjeldende tilskuddsperiode ikke oppdatert på avtale {} med status {}? Fant {} {} {}, men kalkulerte {} {} {}",
-                    id,
-                    status,
-                    Optional.ofNullable(gjeldendeFraDb).map(TilskuddPeriode::getId).orElse(null),
-                    Optional.ofNullable(gjeldendeFraDb).map(TilskuddPeriode::getLøpenummer).orElse(null),
-                    Optional.ofNullable(gjeldendeFraDb).map(TilskuddPeriode::getStatus).orElse(null),
-                    Optional.ofNullable(gjeldendePeriode).map(TilskuddPeriode::getId).orElse(null),
-                    Optional.ofNullable(gjeldendePeriode).map(TilskuddPeriode::getLøpenummer).orElse(null),
-                    Optional.ofNullable(gjeldendePeriode).map(TilskuddPeriode::getStatus).orElse(null)
-                );
-        }
-        return gjeldendePeriode;
     }
 
     public TreeSet<TilskuddPeriode> finnTilskuddsperioderIkkeLukketForEndring() {
