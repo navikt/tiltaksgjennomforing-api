@@ -6,6 +6,7 @@ import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgangsattributter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.AnnullertGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
@@ -401,7 +402,7 @@ public class AdminController {
     public ResponseEntity<UUID> opprettAvtaleFraEksisterende(@PathVariable UUID id) {
         Avtale avtale = avtaleRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
 
-        if (avtale.isFeilregistrert()) {
+        if (avtale.isFeilregistrert() && !AnnullertGrunn.UTLØPT.equals(avtale.getAnnullertGrunn())) {
             throw new IllegalStateException("Kan ikke opprette ny avtale fra en feilregistrert avtale.");
         }
 
