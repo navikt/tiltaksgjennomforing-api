@@ -54,6 +54,6 @@ public enum Tiltakstype {
             this == Tiltakstype.VARIG_LONNSTILSKUDD ||
             this == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD ||
             this == Tiltakstype.VTAO ||
-            (this == Tiltakstype.MENTOR && MentorTilskuddsperioderToggle.isEnabled());
+            this == Tiltakstype.MENTOR;
     }
 }

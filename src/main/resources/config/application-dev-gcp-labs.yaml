@@ -89,8 +89,6 @@ tiltaksgjennomforing:
       client-secret: secret
     aktivitet-acl:
       url: http://tiltaksgjennomforing-wiremock/aktivitet-arena-acl
-  mentor-tilskuddsperioder:
-    enabled: false
   entraproxy:
     uri: http://tiltaksgjennomforing-wiremock/entraproxy
 
