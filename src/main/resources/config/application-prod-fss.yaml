@@ -139,8 +139,6 @@ tiltaksgjennomforing:
     vtaoServiceEdition: 6
     adressesperreServiceCode: 5516
     adressesperreServiceEdition: 7
-  mentor-tilskuddsperioder:
-    enabled: true
 
 
   ereg:
