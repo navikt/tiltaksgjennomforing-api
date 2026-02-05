@@ -409,7 +409,15 @@ public class AdminController {
             ), avtale.getOpphav(), avtale.getVeilederNavIdent()
         );
 
+        nyAvtale.setEnhetGeografisk(avtale.getEnhetGeografisk());
+        nyAvtale.setEnhetsnavnGeografisk(avtale.getEnhetsnavnGeografisk());
+        nyAvtale.setEnhetOppfolging(avtale.getEnhetOppfolging());
+        nyAvtale.setKvalifiseringsgruppe(avtale.getKvalifiseringsgruppe());
+        nyAvtale.setFormidlingsgruppe(avtale.getFormidlingsgruppe());
+        nyAvtale.setEnhetsnavnOppfolging(avtale.getEnhetsnavnOppfolging());
+        nyAvtale.setOpprettetTidspunkt(avtale.getOpprettetTidspunkt());
         nyAvtale.setGodkjentForEtterregistrering(avtale.isGodkjentForEtterregistrering());
+
         nyAvtale.endreAvtale(EndreAvtale.fraAvtale(avtale), AvtaleHendelseUtførtAv.Rolle.SYSTEM, Identifikator.SYSTEM);
 
         avtaleRepository.save(nyAvtale);
