@@ -41,7 +41,7 @@ public class GjeldendeTilskuddsperiodeService {
         log.info("Behandler {} avtaler...", avtaler.size());
         avtaler.forEach(avtale -> {
             var nyGjeldende = TilskuddPeriode.finnGjeldende(avtale);
-            var gjeldendeTilskuddsperiode = avtale.getGjeldendeTilskuddsperiode(false);
+            var gjeldendeTilskuddsperiode = avtale.getGjeldendeTilskuddsperiode();
 
             var erLikGjeldende = Objects.equals(nyGjeldende, gjeldendeTilskuddsperiode);
             if (erLikGjeldende) {
