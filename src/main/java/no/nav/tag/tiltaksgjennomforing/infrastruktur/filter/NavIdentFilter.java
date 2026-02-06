@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.infrastruktur;
+package no.nav.tag.tiltaksgjennomforing.infrastruktur.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
