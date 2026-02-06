@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.infrastruktur;
+package no.nav.tag.tiltaksgjennomforing.infrastruktur.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,9 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -75,7 +73,7 @@ public class OwaspRequestFilter extends OncePerRequestFilter {
             validateHeaders(request);
 
             // Wrap request for å kunne lese body flere ganger
-            ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(request);
+            CachedBodyHttpServletRequest wrappedRequest = new CachedBodyHttpServletRequest(request);
             String contentType = request.getContentType();
             if (contentType != null && (
                     contentType.contains(MediaType.APPLICATION_JSON_VALUE) ||
@@ -86,7 +84,6 @@ public class OwaspRequestFilter extends OncePerRequestFilter {
             }
 
             chain.doFilter(wrappedRequest, response);
-
         } catch (FeilkodeException e) {
             log.warn("Validering feilet for {} {}", request.getMethod(), request.getRequestURI());
             throw e;
@@ -116,16 +113,8 @@ public class OwaspRequestFilter extends OncePerRequestFilter {
         });
     }
 
-    private void validateRequestBody(ContentCachingRequestWrapper request) throws IOException {
-        // Les input stream først for å fylle cache
-        byte[] buffer = new byte[1024];
-        int bytesRead;
-        while ((bytesRead = request.getInputStream().read(buffer)) != -1) {
-            // Les alt innhold - bytesRead inneholder antall bytes lest
-            log.trace("Leste {} bytes fra request body", bytesRead);
-        }
-
-        byte[] content = request.getContentAsByteArray();
+    private void validateRequestBody(CachedBodyHttpServletRequest request) {
+        byte[] content = request.getCachedBody();
 
         if (content.length > MAX_REQUEST_BODY_SIZE) {
             log.warn("Request body er for stor: {} bytes", content.length);
