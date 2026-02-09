@@ -11,6 +11,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleStatusEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.InkluderingstilskuddEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.KontaktinformasjonEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.MålEndret;
@@ -95,6 +96,11 @@ public class DvhAvtalehendelseLytter {
     @EventListener
     public void omMentorEndret(OmMentorEndret event) {
         lagHendelse(event.getAvtale(), DvhHendelseType.ENDRET, event.getUtførtAv());
+    }
+
+    @EventListener
+    public void avtaleStatusEndret(AvtaleStatusEndret event) {
+        lagHendelse(event.getAvtale(), DvhHendelseType.STATUSENDRING, Identifikator.SYSTEM);
     }
 
     private void lagHendelse(Avtale avtale, DvhHendelseType endret, Identifikator utførtAv) {

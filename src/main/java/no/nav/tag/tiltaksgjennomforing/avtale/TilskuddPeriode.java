@@ -92,13 +92,15 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
 
     private boolean aktiv = true;
 
-    public static TilskuddPeriode finnGjeldende(Avtale avtale) {
+    public static UtledGjeldendeTilskuddsperiode utledGjeldendeTilskuddsperiode(Avtale avtale) {
         TreeSet<TilskuddPeriode> aktiveTilskuddsperioder = avtale.getTilskuddPeriode().stream()
             .filter(TilskuddPeriode::isAktiv)
             .collect(Collectors.toCollection(TreeSet::new));
 
         if (aktiveTilskuddsperioder.isEmpty()) {
-            return null;
+            return UtledGjeldendeTilskuddsperiode.empty(
+                UtledGjeldendeTilskuddsperiode.Forklaring.INGEN_AKTIVE_TILSKUDDSPERIODER
+            );
         }
 
         Optional<TilskuddPeriode> førsteAvslått = aktiveTilskuddsperioder.stream()
@@ -106,17 +108,38 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
             .findFirst();
 
         if (førsteAvslått.isPresent()) {
-            return førsteAvslått.get();
+            return new UtledGjeldendeTilskuddsperiode(
+                førsteAvslått.get(),
+                UtledGjeldendeTilskuddsperiode.Forklaring.FORSTE_AVSLATTE_TILSKUDDSPERIODE
+            );
         }
 
-        Optional<TilskuddPeriode> førsteSomKanBehandles = aktiveTilskuddsperioder.stream()
+        Optional<TilskuddPeriode> forsteSomKanBehandles = aktiveTilskuddsperioder.stream()
             .filter(TilskuddPeriode::kanBehandles)
             .findFirst();
 
-        return førsteSomKanBehandles.orElseGet(() -> aktiveTilskuddsperioder.descendingSet().stream()
-            .filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.GODKJENT)
-            .findFirst()
-            .orElseGet(aktiveTilskuddsperioder::first));
+        if (forsteSomKanBehandles.isPresent()) {
+            return new UtledGjeldendeTilskuddsperiode(
+                forsteSomKanBehandles.get(),
+                UtledGjeldendeTilskuddsperiode.Forklaring.FORSTE_TILSKUDDSPERIODE_SOM_KAN_BEHANDLES
+            );
+        }
+
+        Optional<TilskuddPeriode> sisteGodkjente = aktiveTilskuddsperioder.descendingSet().stream()
+            .filter(tp -> tp.getStatus() == TilskuddPeriodeStatus.GODKJENT)
+            .findFirst();
+
+        if (sisteGodkjente.isPresent()) {
+            return new UtledGjeldendeTilskuddsperiode(
+                sisteGodkjente.get(),
+                UtledGjeldendeTilskuddsperiode.Forklaring.SISTE_GODKJENTE_TILSKUDDSPERIODE
+            );
+        }
+
+        return new UtledGjeldendeTilskuddsperiode(
+            aktiveTilskuddsperioder.getFirst(),
+            UtledGjeldendeTilskuddsperiode.Forklaring.FORSTE_AKTIVE_TILSKUDDSPERIODE
+        );
     }
 
     public TilskuddPeriode(Integer beløp, @NonNull LocalDate start, @NonNull LocalDate slutt) {
@@ -223,7 +246,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
 
     @Override
     public int compareTo(@NotNull TilskuddPeriode o) {
-        return new CompareToBuilder()
+        CompareToBuilder builder = new CompareToBuilder()
             .append(this.getLøpenummer(), o.getLøpenummer())
             .append(this.getStartDato(), o.getStartDato())
             .append(this.getSluttDato(), o.getSluttDato())
@@ -236,18 +259,23 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
             .append(this.getEnhet(), o.getEnhet())
             .append(this.getEnhetsnavn(), o.getEnhetsnavn())
             .append(this.getLonnstilskuddProsent(), o.getLonnstilskuddProsent())
-            .append(this.getAvslåttTidspunkt(), o.getAvslåttTidspunkt())
-            .append(this.getAvslagsforklaring(), o.getAvslagsforklaring())
-            .append(this.getAvslagsårsaker().toString(), o.getAvslagsårsaker().toString())
             .append(
                 Optional.ofNullable(this.getGodkjentAvNavIdent()).map(NavIdent::asString).orElse(null),
                 Optional.ofNullable(o.getGodkjentAvNavIdent()).map(NavIdent::asString).orElse(null)
-            )
-            .append(
-                Optional.ofNullable(this.getAvslåttAvNavIdent()).map(NavIdent::asString).orElse(null),
-                Optional.ofNullable(o.getAvslåttAvNavIdent()).map(NavIdent::asString).orElse(null)
-            )
-            .toComparison();
+            );
+
+        if (TilskuddPeriodeStatus.AVSLÅTT.equals(this.getStatus()) && TilskuddPeriodeStatus.AVSLÅTT.equals(o.getStatus())) {
+            builder
+                .append(this.getAvslåttTidspunkt(), o.getAvslåttTidspunkt())
+                .append(this.getAvslagsforklaring(), o.getAvslagsforklaring())
+                .append(this.getAvslagsårsaker().toString(), o.getAvslagsårsaker().toString())
+                .append(
+                    Optional.ofNullable(this.getAvslåttAvNavIdent()).map(NavIdent::asString).orElse(null),
+                    Optional.ofNullable(o.getAvslåttAvNavIdent()).map(NavIdent::asString).orElse(null)
+                );
+        }
+
+        return builder.toComparison();
     }
 
     public boolean erUtbetalt() {

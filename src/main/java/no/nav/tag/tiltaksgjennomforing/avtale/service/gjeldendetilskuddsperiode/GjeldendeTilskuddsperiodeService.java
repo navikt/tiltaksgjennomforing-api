@@ -35,24 +35,38 @@ public class GjeldendeTilskuddsperiodeService {
         List<Avtale> avtaler = slice.getContent();
 
         if (avtaler.isEmpty()) {
-            log.info("Ingen avtaler å behandle");
+            log.debug("Ingen avtaler å behandle");
             return new SettGjeldendeTilskuddsperiodeRespons(slice, antallOppdatert.get(), antallIkkeOppdatert.get());
         }
-        log.info("Behandler {} avtaler...", avtaler.size());
+        log.debug("Behandler {} avtaler...", avtaler.size());
         avtaler.forEach(avtale -> {
-            var nyGjeldende = TilskuddPeriode.finnGjeldende(avtale);
+            var utledetGjeldendePeriode = TilskuddPeriode.utledGjeldendeTilskuddsperiode(avtale);
+            var nyGjeldende = utledetGjeldendePeriode.tilskuddPeriode();
             var gjeldendeTilskuddsperiode = avtale.getGjeldendeTilskuddsperiode();
 
             var erLikGjeldende = Objects.equals(nyGjeldende, gjeldendeTilskuddsperiode);
             if (erLikGjeldende) {
-                log.info(
+                log.debug(
                     "Avtale med id: {} har allerede riktig gjeldende tilskuddsperiode: {}",
                     avtale.getId(),
                     Optional.ofNullable(nyGjeldende).map(TilskuddPeriode::getId).orElse(null)
                 );
                 antallIkkeOppdatert.getAndIncrement();
             } else {
-                log.info("Oppdaterer gjeldende tilskuddsperiode for avtale med id: {}", avtale.getId());
+                log.info(
+                    "Oppdaterer gjeldende tilskuddsperiode på avtale {} med status {} " +
+                    "fra tilskuddsperiode [{},{},{}] til tilskuddsperiode [{},{},{}]. " +
+                    "Med forklaring: {}",
+                    avtale.getId(),
+                    avtale.getStatus(),
+                    Optional.ofNullable(gjeldendeTilskuddsperiode).map(TilskuddPeriode::getId).orElse(null),
+                    Optional.ofNullable(gjeldendeTilskuddsperiode).map(TilskuddPeriode::getLøpenummer).orElse(null),
+                    Optional.ofNullable(gjeldendeTilskuddsperiode).map(TilskuddPeriode::getStatus).orElse(null),
+                    Optional.ofNullable(nyGjeldende).map(TilskuddPeriode::getId).orElse(null),
+                    Optional.ofNullable(nyGjeldende).map(TilskuddPeriode::getLøpenummer).orElse(null),
+                    Optional.ofNullable(nyGjeldende).map(TilskuddPeriode::getStatus).orElse(null),
+                    utledetGjeldendePeriode.forklaring()
+                );
                 avtale.setGjeldendeTilskuddsperiode(nyGjeldende);
                 avtaleRepository.save(avtale);
                 antallOppdatert.getAndIncrement();
