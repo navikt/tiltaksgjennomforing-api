@@ -37,7 +37,7 @@ public class OwaspRequestFilter extends OncePerRequestFilter {
 
         // XSS patterns - sjekk for farlige HTML tags og JavaScript
         // Limit script tag content to prevent ReDoS - max 10000 chars
-        Pattern.compile("<script[^>]*>.{0,10000}?</script>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL),
+        Pattern.compile("<script[^>]{0,500}?>.{0,10000}?</script>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL),
         Pattern.compile("<iframe[\\s>]", Pattern.CASE_INSENSITIVE),
         Pattern.compile("javascript\\s*:", Pattern.CASE_INSENSITIVE),
         Pattern.compile("on(load|error|click|mouse|focus|blur|change|submit)\\s*=", Pattern.CASE_INSENSITIVE),
