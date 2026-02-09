@@ -102,10 +102,11 @@ public class MentorBeregningStrategy implements BeregningStrategy {
             .collect(Collectors.toList());
 
         AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
-        perioder.forEach(p -> p.setAvtale(avtale));
-        perioder.forEach(p -> p.setEnhet(innhold.getEnhetKostnadssted()));
-        perioder.forEach(p -> p.setEnhetsnavn(innhold.getEnhetsnavnKostnadssted()));
-
+        perioder.forEach(p -> {
+            p.setAvtale(avtale);
+            p.setEnhet(innhold.getEnhetKostnadssted());
+            p.setEnhetsnavn(innhold.getEnhetsnavnKostnadssted());
+        });
         return perioder;
     }
 
