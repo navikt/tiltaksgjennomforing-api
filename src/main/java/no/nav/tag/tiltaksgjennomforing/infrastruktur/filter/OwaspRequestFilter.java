@@ -29,17 +29,20 @@ public class OwaspRequestFilter extends OncePerRequestFilter {
     // Regex patterns for farlige mønstre
     private static final List<Pattern> DANGEROUS_PATTERNS = Arrays.asList(
         // SQL Injection patterns - sjekk for vanlige SQL injection mønstre
-        Pattern.compile("(\\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE)\\b.*\\b(FROM|INTO|WHERE|TABLE)\\b)", Pattern.CASE_INSENSITIVE),
+        // Limit the wildcard to prevent ReDoS - max 200 chars between keywords
+        Pattern.compile("(\\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE)\\b.{0,200}?\\b(FROM|INTO|WHERE|TABLE)\\b)", Pattern.CASE_INSENSITIVE),
         Pattern.compile("('\\s*OR\\s+'?\\d+'?\\s*=\\s*'?\\d+'?)", Pattern.CASE_INSENSITIVE),
         Pattern.compile("('\\s*AND\\s+'?\\d+'?\\s*=\\s*'?\\d+'?)", Pattern.CASE_INSENSITIVE),
         Pattern.compile("(--|;--)"),
 
         // XSS patterns - sjekk for farlige HTML tags og JavaScript
-        Pattern.compile("<script[^>]*>.*?</script>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL),
+        // Limit script tag content to prevent ReDoS - max 10000 chars
+        Pattern.compile("<script[^>]*>.{0,10000}?</script>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL),
         Pattern.compile("<iframe[\\s>]", Pattern.CASE_INSENSITIVE),
         Pattern.compile("javascript\\s*:", Pattern.CASE_INSENSITIVE),
         Pattern.compile("on(load|error|click|mouse|focus|blur|change|submit)\\s*=", Pattern.CASE_INSENSITIVE),
-        Pattern.compile("<img[^>]+src\\s*=", Pattern.CASE_INSENSITIVE),
+        // Limit img tag attributes to prevent ReDoS - max 500 chars
+        Pattern.compile("<img[^>]{0,500}?src\\s*=", Pattern.CASE_INSENSITIVE),
 
         // Path traversal - sjekk for directory traversal forsøk
         Pattern.compile("\\.\\./"),
