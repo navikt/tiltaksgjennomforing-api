@@ -89,9 +89,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
     }
 
     private List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Integer tilskuddsbeløpPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Avtale avtale) {
-        List<TilskuddPeriode> perioder = BeregningStrategy.lagPeriode(datoFraOgMed, datoTilOgMed)
-            .stream()
-            .map(datoPar -> {
+        List<TilskuddPeriode> perioder = BeregningStrategy.lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
                 Integer beløp = BeregningStrategy.beløpForPeriode(
                     datoPar.getStart(),
                     datoPar.getSlutt(),
