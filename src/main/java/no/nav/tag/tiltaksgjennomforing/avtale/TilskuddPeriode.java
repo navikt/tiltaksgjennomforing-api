@@ -247,6 +247,10 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     @Override
     public int compareTo(@NotNull TilskuddPeriode o) {
         CompareToBuilder builder = new CompareToBuilder()
+            .append(
+                Optional.ofNullable(this.getAvtale()).map(Avtale::getId).orElse(null),
+                Optional.ofNullable(o.getAvtale()).map(Avtale::getId).orElse(null)
+            )
             .append(this.getLøpenummer(), o.getLøpenummer())
             .append(this.getStartDato(), o.getStartDato())
             .append(this.getSluttDato(), o.getSluttDato())
@@ -254,25 +258,18 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
             .append(this.getStatus(), o.getStatus())
             .append(this.getRefusjonStatus(), o.getRefusjonStatus())
             .append(this.getBeløp(), o.getBeløp())
-            .append(this.getAvtale(), o.getAvtale())
             .append(this.getGodkjentTidspunkt(), o.getGodkjentTidspunkt())
             .append(this.getEnhet(), o.getEnhet())
             .append(this.getEnhetsnavn(), o.getEnhetsnavn())
             .append(this.getLonnstilskuddProsent(), o.getLonnstilskuddProsent())
-            .append(
-                Optional.ofNullable(this.getGodkjentAvNavIdent()).map(NavIdent::asString).orElse(null),
-                Optional.ofNullable(o.getGodkjentAvNavIdent()).map(NavIdent::asString).orElse(null)
-            );
+            .append(this.getGodkjentAvNavIdent(), o.getGodkjentAvNavIdent());
 
         if (TilskuddPeriodeStatus.AVSLÅTT.equals(this.getStatus()) && TilskuddPeriodeStatus.AVSLÅTT.equals(o.getStatus())) {
             builder
                 .append(this.getAvslåttTidspunkt(), o.getAvslåttTidspunkt())
                 .append(this.getAvslagsforklaring(), o.getAvslagsforklaring())
-                .append(this.getAvslagsårsaker().toString(), o.getAvslagsårsaker().toString())
-                .append(
-                    Optional.ofNullable(this.getAvslåttAvNavIdent()).map(NavIdent::asString).orElse(null),
-                    Optional.ofNullable(o.getAvslåttAvNavIdent()).map(NavIdent::asString).orElse(null)
-                );
+                .append(this.getAvslagsårsaker(), o.getAvslagsårsaker())
+                .append(this.getAvslåttAvNavIdent(), o.getAvslåttAvNavIdent());
         }
 
         return builder.toComparison();
