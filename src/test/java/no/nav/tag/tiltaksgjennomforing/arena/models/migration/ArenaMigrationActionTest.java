@@ -34,7 +34,7 @@ class ArenaMigrationActionTest {
     }
 
     @Nested
-    class dublett {
+    class Dublett {
         @Test
         void skal_returnere_IGNORER_naar_agreementAggregate_er_dublett() {
             when(agreementAggregate.isDublett()).thenReturn(true);
@@ -47,7 +47,7 @@ class ArenaMigrationActionTest {
     }
 
     @Nested
-    class deltakerstatuskodeGjennOrTilbud {
+    class DeltakerstatuskodeGjennEllerTilbud {
         @BeforeEach
         void setUp() {
             when(agreementAggregate.isDublett()).thenReturn(false);
@@ -148,7 +148,7 @@ class ArenaMigrationActionTest {
     }
 
     @Nested
-    class deltakerstatuskodeFullfOrGjennAvb {
+    class DeltakerstatuskodeFullfEllerGjennAvb {
         @BeforeEach
         void setUp() {
             when(agreementAggregate.isDublett()).thenReturn(false);
@@ -313,7 +313,7 @@ class ArenaMigrationActionTest {
     }
 
     @Nested
-    class deltakerstatuskodeDefault {
+    class DeltakerstatuskodeDefault {
         @BeforeEach
         void setUp() {
             when(agreementAggregate.isDublett()).thenReturn(false);
@@ -462,7 +462,7 @@ class ArenaMigrationActionTest {
     }
 
     @Nested
-    class deltakerstatuskodeNull {
+    class DeltakerstatuskodeNull {
         @BeforeEach
         void setUp() {
             when(agreementAggregate.isDublett()).thenReturn(false);
