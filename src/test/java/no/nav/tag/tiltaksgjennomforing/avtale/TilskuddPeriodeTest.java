@@ -164,4 +164,179 @@ class TilskuddPeriodeTest {
 
         Now.resetClock();
     }
+
+    @Test
+    void compareTo__skal_sammenligne_godkjentAvNavIdent() {
+        TilskuddPeriode periode1 = TestData.enTilskuddPeriode();
+        TilskuddPeriode periode2 = TestData.enTilskuddPeriode();
+        periode2.setAvtale(periode1.getAvtale());
+
+        // Setter alle andre felter likt
+        LocalDate startDato = LocalDate.of(2025, 1, 1);
+        LocalDate sluttDato = LocalDate.of(2025, 1, 31);
+        periode1.setStartDato(startDato);
+        periode2.setStartDato(startDato);
+        periode1.setSluttDato(sluttDato);
+        periode2.setSluttDato(sluttDato);
+        periode1.setBeløp(10000);
+        periode2.setBeløp(10000);
+        periode1.setLøpenummer(1);
+        periode2.setLøpenummer(1);
+        periode1.setStatus(TilskuddPeriodeStatus.GODKJENT);
+        periode2.setStatus(TilskuddPeriodeStatus.GODKJENT);
+
+        // Forskjellige NavIdenter
+        NavIdent navIdent1 = new NavIdent("A123456");
+        NavIdent navIdent2 = new NavIdent("B123456");
+        periode1.setGodkjentAvNavIdent(navIdent1);
+        periode2.setGodkjentAvNavIdent(navIdent2);
+
+        // NavIdent "A123456" skal komme før "B123456" alfabetisk
+        assertThat(periode1.compareTo(periode2)).isLessThan(0);
+        assertThat(periode2.compareTo(periode1)).isGreaterThan(0);
+    }
+
+    @Test
+    void compareTo__skal_sammenligne_godkjentAvNavIdent_med_null() {
+        TilskuddPeriode periode1 = TestData.enTilskuddPeriode();
+        TilskuddPeriode periode2 = TestData.enTilskuddPeriode();
+        periode2.setAvtale(periode1.getAvtale());
+
+        // Setter alle andre felter likt
+        LocalDate startDato = LocalDate.of(2025, 1, 1);
+        LocalDate sluttDato = LocalDate.of(2025, 1, 31);
+        periode1.setStartDato(startDato);
+        periode2.setStartDato(startDato);
+        periode1.setSluttDato(sluttDato);
+        periode2.setSluttDato(sluttDato);
+        periode1.setBeløp(10000);
+        periode2.setBeløp(10000);
+        periode1.setLøpenummer(1);
+        periode2.setLøpenummer(1);
+        periode1.setStatus(TilskuddPeriodeStatus.UBEHANDLET);
+        periode2.setStatus(TilskuddPeriodeStatus.UBEHANDLET);
+
+        periode1.setGodkjentAvNavIdent(null);
+        periode2.setGodkjentAvNavIdent(new NavIdent("A123456"));
+
+        // null skal komme før ikke-null
+        assertThat(periode1.compareTo(periode2)).isLessThan(0);
+        assertThat(periode2.compareTo(periode1)).isGreaterThan(0);
+    }
+
+    @Test
+    void compareTo__skal_sammenligne_avslagsaarsaker_når_avslått() {
+        TilskuddPeriode periode1 = TestData.enTilskuddPeriode();
+        TilskuddPeriode periode2 = TestData.enTilskuddPeriode();
+        periode2.setAvtale(periode1.getAvtale());
+
+        // Setter alle andre felter likt
+        LocalDate startDato = LocalDate.of(2025, 1, 1);
+        LocalDate sluttDato = LocalDate.of(2025, 1, 31);
+        NavIdent navIdent = TestData.enNavIdent();
+
+        periode1.setStartDato(startDato);
+        periode2.setStartDato(startDato);
+        periode1.setSluttDato(sluttDato);
+        periode2.setSluttDato(sluttDato);
+        periode1.setBeløp(10000);
+        periode2.setBeløp(10000);
+        periode1.setLøpenummer(1);
+        periode2.setLøpenummer(1);
+
+        // Avslår begge periodene med forskjellige årsaker
+        periode1.avslå(navIdent, EnumSet.of(Avslagsårsak.FEIL_I_FAKTA), "Forklaring 1");
+        periode2.avslå(navIdent, EnumSet.of(Avslagsårsak.ANNET), "Forklaring 1");
+
+        // Sammenligner basert på avslagsårsaker
+        int result = periode1.compareTo(periode2);
+        // Resultatet avhenger av hvordan EnumSet sammenlignes
+        assertThat(result).isNotZero();
+    }
+
+    @Test
+    void compareTo__skal_sammenligne_avslagsaarsaker_med_forskjellig_antall() {
+        TilskuddPeriode periode1 = TestData.enTilskuddPeriode();
+        TilskuddPeriode periode2 = TestData.enTilskuddPeriode();
+        periode2.setAvtale(periode1.getAvtale());
+
+        // Setter alle andre felter likt
+        LocalDate startDato = LocalDate.of(2025, 1, 1);
+        LocalDate sluttDato = LocalDate.of(2025, 1, 31);
+        NavIdent navIdent = TestData.enNavIdent();
+
+        periode1.setStartDato(startDato);
+        periode2.setStartDato(startDato);
+        periode1.setSluttDato(sluttDato);
+        periode2.setSluttDato(sluttDato);
+        periode1.setBeløp(10000);
+        periode2.setBeløp(10000);
+        periode1.setLøpenummer(1);
+        periode2.setLøpenummer(1);
+
+        // Avslår med forskjellig antall årsaker
+        periode1.avslå(navIdent, EnumSet.of(Avslagsårsak.FEIL_I_FAKTA), "Forklaring");
+        periode2.avslå(navIdent, EnumSet.of(Avslagsårsak.FEIL_I_FAKTA, Avslagsårsak.ANNET), "Forklaring");
+
+        // Sammenligner basert på avslagsårsaker
+        int result = periode1.compareTo(periode2);
+        assertThat(result).isNotZero();
+    }
+
+    @Test
+    void compareTo__skal_ikke_sammenligne_avslagsaarsaker_når_ikke_begge_avslått() {
+        TilskuddPeriode periode1 = TestData.enTilskuddPeriode();
+        TilskuddPeriode periode2 = TestData.enTilskuddPeriode();
+        periode2.setAvtale(periode1.getAvtale());
+
+        // Setter alle andre felter likt
+        LocalDate startDato = LocalDate.of(2025, 1, 1);
+        LocalDate sluttDato = LocalDate.of(2025, 1, 31);
+        NavIdent navIdent = TestData.enNavIdent();
+
+        periode1.setStartDato(startDato);
+        periode2.setStartDato(startDato);
+        periode1.setSluttDato(sluttDato);
+        periode2.setSluttDato(sluttDato);
+        periode1.setBeløp(10000);
+        periode2.setBeløp(10000);
+        periode1.setLøpenummer(1);
+        periode2.setLøpenummer(1);
+
+        // Periode1 godkjent, periode2 avslått
+        periode1.godkjenn(navIdent, TestData.ENHET_GEOGRAFISK.getVerdi());
+        periode2.avslå(navIdent, EnumSet.of(Avslagsårsak.FEIL_I_FAKTA), "Forklaring");
+
+        // Skal sammenligne basert på status, ikke avslagsårsaker
+        int result = periode1.compareTo(periode2);
+        assertThat(result).isNotZero();
+    }
+
+    @Test
+    void compareTo__skal_være_lik_når_alle_felter_er_like() {
+        TilskuddPeriode periode1 = TestData.enTilskuddPeriode();
+        TilskuddPeriode periode2 = TestData.enTilskuddPeriode();
+        periode2.setAvtale(periode1.getAvtale());
+
+        // Setter alle felter likt
+        LocalDate startDato = LocalDate.of(2025, 1, 1);
+        LocalDate sluttDato = LocalDate.of(2025, 1, 31);
+        NavIdent navIdent = TestData.enNavIdent();
+
+        periode1.setStartDato(startDato);
+        periode2.setStartDato(startDato);
+        periode1.setSluttDato(sluttDato);
+        periode2.setSluttDato(sluttDato);
+        periode1.setBeløp(10000);
+        periode2.setBeløp(10000);
+        periode1.setLøpenummer(1);
+        periode2.setLøpenummer(1);
+
+        periode1.godkjenn(navIdent, TestData.ENHET_GEOGRAFISK.getVerdi());
+        periode2.godkjenn(navIdent, TestData.ENHET_GEOGRAFISK.getVerdi());
+        periode2.setGodkjentTidspunkt(periode1.getGodkjentTidspunkt());
+
+        // Skal være like
+        assertThat(periode1.compareTo(periode2)).isZero();
+    }
 }

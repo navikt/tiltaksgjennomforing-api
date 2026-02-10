@@ -4,7 +4,6 @@ import no.nav.fnrgen.FnrGen;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ public class TestDataGenerator {
                         currAvtale.getGjeldendeInnhold().setBedriftNavn(NavnGenerator.genererBedriftsnavn());
                         currAvtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
                         currAvtale.setDeltakerFnr(new Fnr(FnrGen.singleFnr()));
-                        currAvtale.endreStatus(Status.fra(currAvtale));
+                        currAvtale.oppdaterStatus();
                         avtaler.add(currAvtale);
                     });
         });
