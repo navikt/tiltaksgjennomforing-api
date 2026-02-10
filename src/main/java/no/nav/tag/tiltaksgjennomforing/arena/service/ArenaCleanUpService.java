@@ -99,7 +99,7 @@ public class ArenaCleanUpService {
 
             avtale.getGjeldendeInnhold().setMentorTimelonn(null);
             avtale.getGjeldendeInnhold().setMentorAntallTimer(null);
-            avtale.endreStatus(Status.fra(avtale));
+            avtale.oppdaterStatus();
         }
 
         if (!dryRun) {
