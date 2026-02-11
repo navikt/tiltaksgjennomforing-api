@@ -1,0 +1,9 @@
+FROM europe-north1-docker.pkg.dev/cgr-nav/pull-through/nav.no/jdk:openjdk-21
+
+COPY /target/tiltaksgjennomforing-api-1.0.0-SNAPSHOT.jar app.jar
+COPY /target/test-classes /test-classes
+
+EXPOSE 8080
+
+# Run the Docker Compose application variant
+ENTRYPOINT ["java", "-Dloader.path=/test-classes", "-Dloader.main=no.nav.tag.tiltaksgjennomforing.E2eTiltaksgjennomforingApplication", "-cp", "app.jar", "org.springframework.boot.loader.launch.PropertiesLauncher"]

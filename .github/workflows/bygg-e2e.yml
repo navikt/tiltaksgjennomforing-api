@@ -1,0 +1,45 @@
+name: Bygg E2e image
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  build-and-push:
+    name: Bygg E2e
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Sjekk ut kode
+        uses: actions/checkout@v4
+
+      - name: Oppsett Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: maven
+
+      - name: Bygg og test med Maven
+        run: mvn package -B -Dsurefire.useFile=false
+
+      - name: Push e2e image
+        uses: nais/docker-build-push@v0
+        id: docker-build-push
+        with:
+          image_suffix: e2e
+          dockerfile: DockerfileE2e
+          team: arbeidsgiver
+
+      - name: Push wiremock image
+        uses: nais/docker-build-push@v0
+        id: docker-build-push
+        with:
+          image_suffix: wiremock
+          dockerfile: DockerfileWiremock
+          team: arbeidsgiver
