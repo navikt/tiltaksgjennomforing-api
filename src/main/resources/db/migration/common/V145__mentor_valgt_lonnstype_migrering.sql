@@ -1,5 +1,9 @@
-UPDATE avtale_innhold SET mentor_valgt_lonnstype = 'ÅRSLØNN' WHERE mentor_valgt_lonnstype = 0;
-UPDATE avtale_innhold SET mentor_valgt_lonnstype = 'MÅNEDSLØNN' WHERE mentor_valgt_lonnstype = 1;
-UPDATE avtale_innhold SET mentor_valgt_lonnstype = 'UKELØNN' WHERE mentor_valgt_lonnstype = 2;
-UPDATE avtale_innhold SET mentor_valgt_lonnstype = 'DAGSLØNN' WHERE mentor_valgt_lonnstype = 3;
-UPDATE avtale_innhold SET mentor_valgt_lonnstype = 'TIMELØNN' WHERE mentor_valgt_lonnstype = 4;
+UPDATE avtale_innhold
+SET mentor_valgt_lonnstype = CASE mentor_valgt_lonnstype
+    WHEN '0' THEN 'ÅRSLØNN'
+    WHEN '1' THEN 'MÅNEDSLØNN'
+    WHEN '2' THEN 'UKELØNN'
+    WHEN '3' THEN 'DAGSLØNN'
+    WHEN '4' THEN 'TIMELØNN'
+END
+WHERE mentor_valgt_lonnstype IN ('0', '1', '2', '3', '4');
