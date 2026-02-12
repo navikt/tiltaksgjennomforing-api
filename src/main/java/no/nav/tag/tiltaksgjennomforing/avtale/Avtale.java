@@ -1041,6 +1041,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         hentBeregningStrategi().forleng(this, gammelSluttDato, nySluttDato);
     }
 
+    public void forlengTilskuddsperioderAdmin(LocalDate gammelSluttDato, LocalDate nySluttDato) {
+        forlengTilskuddsperioder(gammelSluttDato, nySluttDato);
+    }
+
     private void annullerTilskuddsperioder() {
         for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
             TilskuddPeriodeStatus status = tilskuddsperiode.getStatus();
