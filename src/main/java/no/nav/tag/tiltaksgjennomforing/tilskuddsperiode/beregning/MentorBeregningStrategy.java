@@ -78,24 +78,34 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         return Utils.erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnsutgifter());
     }
 
+    /** Brukes primært ved forlenging - og skiller seg derfor fra beregnTilskuddsperioderForAvtale() ved at vi her trenger å oppgi en annen stardato.  **/
     @Override
     public List<TilskuddPeriode> hentTilskuddsperioderForPeriode(
         Avtale avtale,
         LocalDate startDato,
         LocalDate sluttDato
     ) {
-        return List.of(); // TODO: Fiks denne!!!!! FØR MIGRERING!!
+        return beregnTilskuddsperioderForAvtale(avtale.getGjeldendeInnhold().getSumLonnsutgifter(), startDato, sluttDato, avtale);
     }
 
-    private List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Integer tilskuddsbeløpPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
-            return BeregningStrategy.lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
+    private List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Integer tilskuddsbeløpPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Avtale avtale) {
+        List<TilskuddPeriode> perioder = BeregningStrategy.lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
                 Integer beløp = BeregningStrategy.beløpForPeriode(
                     datoPar.getStart(),
                     datoPar.getSlutt(),
                     tilskuddsbeløpPerMåned
                 );
                 return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), 100);
-            }).collect(Collectors.toList());
+            })
+            .collect(Collectors.toList());
+
+        AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
+        perioder.forEach(p -> {
+            p.setAvtale(avtale);
+            p.setEnhet(innhold.getEnhetKostnadssted());
+            p.setEnhetsnavn(innhold.getEnhetsnavnKostnadssted());
+        });
+        return perioder;
     }
 
 
@@ -116,12 +126,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         LocalDate start = innhold.getStartDato();
         LocalDate slutt = innhold.getSluttDato();
 
-        List<TilskuddPeriode> perioder = beregnTilskuddsperioderForAvtale(innhold.getSumLonnsutgifter(), start, slutt);
-
-        perioder.forEach(p -> p.setAvtale(avtale));
-        perioder.forEach(p -> p.setEnhet(innhold.getEnhetKostnadssted()));
-        perioder.forEach(p -> p.setEnhetsnavn(innhold.getEnhetsnavnKostnadssted()));
-
+        List<TilskuddPeriode> perioder = beregnTilskuddsperioderForAvtale(innhold.getSumLonnsutgifter(), start, slutt, avtale);
         // Etterregistreringer skal håndteres i vårt system, så vi skal kun sette behandlet i arena på avtaler hvor
         // avtalen har opphav=ARENA eller om det eksisterer en avtaleversjon med innholdstype = ENDRET_AV_ARENA
         if (avtale.harArenaOpphavEllerHistoriskEndretAvArena()) {
