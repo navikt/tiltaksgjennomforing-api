@@ -25,6 +25,9 @@ jobs:
           distribution: temurin
           cache: maven
 
+      - name: Fjern test scope fra pom.xml
+        run: sed -i 's/<scope>test<\/scope>//g' pom.xml
+
       - name: Bygg og test med Maven
         run: mvn package -B -Dsurefire.useFile=false
 
@@ -33,52 +36,14 @@ jobs:
         id: docker-build-push
         with:
           byosbom: target/classes/META-INF/sbom/application.cdx.json
+          image_suffix: labs
+          dockerfile: DockerfileLabs
           team: arbeidsgiver
-
-  build-push-wiremock-image:
-    runs-on: ubuntu-latest
-    name: 'Bygg og push Wiremock-image'
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - name: Sjekk ut kode
-        uses: actions/checkout@v4
-
-      - name: Push Docker Image to GAR
-        uses: nais/docker-build-push@v0
-        id: docker-build-push
-        with:
-          image_suffix: wiremock
-          team: arbeidsgiver
-          dockerfile: DockerfileWiremock
-    outputs:
-      image: ${{ steps.docker-build-push.outputs.image }}
-
-  deploy-wiremock:
-    needs: build-push-wiremock-image
-    name: 'Deploy Wiremock to dev-gcp'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - name: Sjekk ut kode
-        uses: actions/checkout@v4
-
-      - name: Deploy til gcp
-        uses: nais/deploy/actions/deploy@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CLUSTER: dev-gcp
-          TEAM: arbeidsgiver
-          RESOURCE: "nais/wiremock.yaml"
-          VAR: image=${{ needs.build-push-wiremock-image.outputs.image }}
 
   deploy-gcp-labs:
     name: Deploy applikasjon til gcp (gamle labs)
     runs-on: ubuntu-latest
-    needs: [ build, deploy-wiremock ]
+    needs: [ build ]
     permissions:
       contents: read
       id-token: write
