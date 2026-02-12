@@ -34,7 +34,7 @@ class ArenaMigrationActionTest {
     }
 
     @Nested
-    class WhenDublett {
+    class Dublett {
         @Test
         void skal_returnere_IGNORER_naar_agreementAggregate_er_dublett() {
             when(agreementAggregate.isDublett()).thenReturn(true);
@@ -47,7 +47,7 @@ class ArenaMigrationActionTest {
     }
 
     @Nested
-    class WhenDeltakerstatuskodeGjennOrTilbud {
+    class DeltakerstatuskodeGjennEllerTilbud {
         @BeforeEach
         void setUp() {
             when(agreementAggregate.isDublett()).thenReturn(false);
@@ -148,7 +148,7 @@ class ArenaMigrationActionTest {
     }
 
     @Nested
-    class WhenDeltakerstatuskodeFullfOrGjennAvb {
+    class DeltakerstatuskodeFullfEllerGjennAvb {
         @BeforeEach
         void setUp() {
             when(agreementAggregate.isDublett()).thenReturn(false);
@@ -313,7 +313,7 @@ class ArenaMigrationActionTest {
     }
 
     @Nested
-    class WhenDeltakerstatuskodeDefault {
+    class DeltakerstatuskodeDefault {
         @BeforeEach
         void setUp() {
             when(agreementAggregate.isDublett()).thenReturn(false);
@@ -454,6 +454,85 @@ class ArenaMigrationActionTest {
             when(agreementAggregate.getDeltakerstatuskode()).thenReturn(Deltakerstatuskode.AKTUELL);
             when(agreementAggregate.getTiltakstatuskode()).thenReturn(Tiltakstatuskode.GJENNOMFOR);
             when(avtale.getStatus()).thenReturn(null);
+
+            assertThatThrownBy(() -> ArenaMigrationAction.map(avtale, agreementAggregate))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Fikk ugyldig kombinasjon av tiltakstatuskode");
+        }
+    }
+
+    @Nested
+    class DeltakerstatuskodeNull {
+        @BeforeEach
+        void setUp() {
+            when(agreementAggregate.isDublett()).thenReturn(false);
+            when(agreementAggregate.getDeltakerstatuskode()).thenReturn(null);
+        }
+
+        @Test
+        void skal_returnere_AVSLUTT_naar_tiltakstatuskode_er_AVBRUTT_og_avtalestatus_er_GJENNOMFOERES() {
+            when(agreementAggregate.getTiltakstatuskode()).thenReturn(Tiltakstatuskode.AVBRUTT);
+            when(avtale.getStatus()).thenReturn(Status.GJENNOMFØRES);
+
+            ArenaMigrationAction result = ArenaMigrationAction.map(avtale, agreementAggregate);
+
+            assertThat(result).isEqualTo(ArenaMigrationAction.AVSLUTT);
+        }
+
+        @Test
+        void skal_returnere_IGNORER_naar_tiltakstatuskode_er_AVBRUTT_og_avtalestatus_er_AVSLUTTET() {
+            when(agreementAggregate.getTiltakstatuskode()).thenReturn(Tiltakstatuskode.AVBRUTT);
+            when(avtale.getStatus()).thenReturn(Status.AVSLUTTET);
+
+            ArenaMigrationAction result = ArenaMigrationAction.map(avtale, agreementAggregate);
+
+            assertThat(result).isEqualTo(ArenaMigrationAction.IGNORER);
+        }
+
+        @Test
+        void skal_returnere_IGNORER_naar_tiltakstatuskode_er_AVSLUTT_og_avtalestatus_er_ANNULLERT() {
+            when(agreementAggregate.getTiltakstatuskode()).thenReturn(Tiltakstatuskode.AVSLUTT);
+            when(avtale.getStatus()).thenReturn(Status.ANNULLERT);
+
+            ArenaMigrationAction result = ArenaMigrationAction.map(avtale, agreementAggregate);
+
+            assertThat(result).isEqualTo(ArenaMigrationAction.IGNORER);
+        }
+
+        @Test
+        void skal_returnere_ANNULLER_naar_tiltakstatuskode_er_AVLYST_og_avtalestatus_er_GJENNOMFOERES() {
+            when(agreementAggregate.getTiltakstatuskode()).thenReturn(Tiltakstatuskode.AVLYST);
+            when(avtale.getStatus()).thenReturn(Status.GJENNOMFØRES);
+
+            ArenaMigrationAction result = ArenaMigrationAction.map(avtale, agreementAggregate);
+
+            assertThat(result).isEqualTo(ArenaMigrationAction.ANNULLER);
+        }
+
+        @Test
+        void skal_returnere_IGNORER_naar_tiltakstatuskode_er_AVLYST_og_avtalestatus_er_AVSLUTTET() {
+            when(agreementAggregate.getTiltakstatuskode()).thenReturn(Tiltakstatuskode.AVLYST);
+            when(avtale.getStatus()).thenReturn(Status.AVSLUTTET);
+
+            ArenaMigrationAction result = ArenaMigrationAction.map(avtale, agreementAggregate);
+
+            assertThat(result).isEqualTo(ArenaMigrationAction.IGNORER);
+        }
+
+        @Test
+        void skal_returnere_ANNULLER_naar_tiltakstatuskode_er_GJENNOMFOR() {
+            when(agreementAggregate.getTiltakstatuskode()).thenReturn(Tiltakstatuskode.GJENNOMFOR);
+            when(avtale.getStatus()).thenReturn(Status.GJENNOMFØRES);
+
+            ArenaMigrationAction result = ArenaMigrationAction.map(avtale, agreementAggregate);
+
+            assertThat(result).isEqualTo(ArenaMigrationAction.ANNULLER);
+        }
+
+        @Test
+        void skal_kaste_exception_naar_tiltakstatuskode_er_null() {
+            when(agreementAggregate.getTiltakstatuskode()).thenReturn(null);
+            when(avtale.getStatus()).thenReturn(Status.GJENNOMFØRES);
 
             assertThatThrownBy(() -> ArenaMigrationAction.map(avtale, agreementAggregate))
                 .isInstanceOf(IllegalStateException.class)

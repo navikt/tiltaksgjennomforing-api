@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.AfterEach;
@@ -12,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,6 +32,7 @@ public class MentorAvtaleBeregningStrategyTest {
     @AfterEach
     public void tearDown() {
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
+        Now.resetClock();
     }
 
     @Test
@@ -60,7 +63,6 @@ public class MentorAvtaleBeregningStrategyTest {
         assertThat(avtale.beregnTilskuddsbeløpForPeriode(fra, til)).isEqualTo(forventetBeløpForPeriode);
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(1);
         assertThat(avtale.getGjeldendeInnhold().getSumLonnsutgifter()).isEqualTo(forventetBeløpForPeriode);
-        Now.resetClock();
     }
 
     @Test
@@ -99,5 +101,35 @@ public class MentorAvtaleBeregningStrategyTest {
         assertThat(avtale.getGjeldendeInnhold()
             .getArbeidsgiveravgift()).isEqualTo(endreTilskuddsberegning.getArbeidsgiveravgift());
         assertThat(avtale.getTilskuddPeriode().stream().mapToInt(TilskuddPeriode::getBeløp).sum()).isEqualTo(48000);
+    }
+
+    @Test
+    public void forleng_mentor_avtale_med_godkjent_tilskuddsperiode_skal_generere_nye_perioder() {
+        // Opprett mentor-avtale med alle godkjenninger
+        Avtale avtale = TestData.enMentorAvtaleSignertAvAlle();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
+        Now.fixedDate(avtale.getGjeldendeInnhold().getSluttDato().plusDays(1));
+
+        // Verifiser at vi har tilskuddsperioder før forlenging
+        int antallPerioderFørForlenging = avtale.getTilskuddPeriode().size();
+        assertThat(antallPerioderFørForlenging).isGreaterThan(0);
+
+        // Godkjenn en tilskuddsperiode for å inngå avtalen før forlenging
+        Beslutter beslutter = TestData.enBeslutter(avtale);
+        beslutter.godkjennTilskuddsperiode(avtale, TestData.ENHET_OPPFØLGING.getVerdi());
+
+        // Forleng avtalen med 2 måneder
+        LocalDate nySluttDato = avtale.getGjeldendeInnhold().getSluttDato().plusMonths(2);
+        avtale.forlengAvtale(nySluttDato, TestData.enNavIdent());
+
+        // Verifiser at nye tilskuddsperioder ble generert
+        Set<TilskuddPeriode> tilskuddPerioderEtterForlenging = avtale.getTilskuddPeriode();
+        assertThat(tilskuddPerioderEtterForlenging.size()).isGreaterThan(antallPerioderFørForlenging);
+
+        // Verifiser at nye perioder dekker den forlengede perioden
+        TilskuddPeriode sistePeriode = tilskuddPerioderEtterForlenging.stream()
+            .max(java.util.Comparator.comparing(TilskuddPeriode::getSluttDato))
+            .orElseThrow();
+        assertThat(sistePeriode.getSluttDato()).isEqualTo(nySluttDato);
     }
 }
