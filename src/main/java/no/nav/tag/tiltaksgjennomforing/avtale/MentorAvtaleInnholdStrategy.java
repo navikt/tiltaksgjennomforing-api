@@ -9,6 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentorTimelonn
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
     private MentorBeregningStrategy mentorBeregningStrategy;
@@ -90,19 +91,16 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
             alleFelter.put(AvtaleInnhold.Fields.otpSats, avtaleInnhold.getOtpSats());
             alleFelter.put(AvtaleInnhold.Fields.arbeidsgiveravgift, avtaleInnhold.getArbeidsgiveravgift());
             alleFelter.put(AvtaleInnhold.Fields.mentorValgtLonnstype, avtaleInnhold.getMentorValgtLonnstype());
-            alleFelter.put(
-                AvtaleInnhold.Fields.mentorValgtLonnstypeBelop,
-                avtaleInnhold.getMentorValgtLonnstypeBelop()
-            );
+            alleFelter.put(AvtaleInnhold.Fields.mentorValgtLonnstypeBelop, avtaleInnhold.getMentorValgtLonnstypeBelop());
+            Optional.ofNullable(avtaleInnhold.getMentorValgtLonnstype())
+                .filter(belop -> !avtaleInnhold.getMentorValgtLonnstype().erTimelonn())
+                .ifPresent(belop -> alleFelter.put(AvtaleInnhold.Fields.stillingprosent, avtaleInnhold.getStillingprosent()));
         }
 
         alleFelter.put(AvtaleInnhold.Fields.harFamilietilknytning, avtaleInnhold.getHarFamilietilknytning());
-        if (avtaleInnhold.getHarFamilietilknytning() != null && avtaleInnhold.getHarFamilietilknytning()) {
-            alleFelter.put(
-                AvtaleInnhold.Fields.familietilknytningForklaring,
-                avtaleInnhold.getFamilietilknytningForklaring()
-            );
-        }
+        Optional.ofNullable(avtaleInnhold.getHarFamilietilknytning())
+            .filter(familie -> avtaleInnhold.getHarFamilietilknytning())
+            .ifPresent(familie -> alleFelter.put(AvtaleInnhold.Fields.familietilknytningForklaring, avtaleInnhold.getFamilietilknytningForklaring()));
 
         return alleFelter;
     }
