@@ -6,4 +6,4 @@ COPY /target/test-classes /test-classes
 EXPOSE 8080
 
 # Run the Docker Compose application variant
-ENTRYPOINT ["java", "-Dloader.path=/test-classes", "-Dloader.main=no.nav.tag.tiltaksgjennomforing.E2eTiltaksgjennomforingApplication", "-cp", "app.jar", "org.springframework.boot.loader.launch.PropertiesLauncher"]
+ENTRYPOINT ["java", "-Dloader.path=/test-classes", "-Dloader.main=no.nav.tag.tiltaksgjennomforing.LokalTiltaksgjennomforingApplication", "-cp", "app.jar", "org.springframework.boot.loader.launch.PropertiesLauncher"]

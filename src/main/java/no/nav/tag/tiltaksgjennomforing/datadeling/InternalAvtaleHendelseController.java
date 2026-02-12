@@ -33,7 +33,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-@Profile(value = {Miljø.DEV_FSS, Miljø.DEV_GCP_LABS})
+@Profile(Miljø.DEV_FSS)
 @RestController
 @RequestMapping("/avtale-hendelse")
 @RequiredArgsConstructor
