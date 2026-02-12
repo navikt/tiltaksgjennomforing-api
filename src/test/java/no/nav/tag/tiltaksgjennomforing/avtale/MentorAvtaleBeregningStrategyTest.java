@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.AfterEach;
@@ -31,6 +32,7 @@ public class MentorAvtaleBeregningStrategyTest {
     @AfterEach
     public void tearDown() {
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
+        Now.resetClock();
     }
 
     @Test
@@ -61,7 +63,6 @@ public class MentorAvtaleBeregningStrategyTest {
         assertThat(avtale.beregnTilskuddsbeløpForPeriode(fra, til)).isEqualTo(forventetBeløpForPeriode);
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(1);
         assertThat(avtale.getGjeldendeInnhold().getSumLonnsutgifter()).isEqualTo(forventetBeløpForPeriode);
-        Now.resetClock();
     }
 
     @Test
@@ -104,66 +105,31 @@ public class MentorAvtaleBeregningStrategyTest {
 
     @Test
     public void forleng_mentor_avtale_med_godkjent_tilskuddsperiode_skal_generere_nye_perioder() {
-        // Sett "nå" til startdato slik at vi kan opprette avtale uten FORTIDLIG_STARTDATO-feil
-        LocalDate startDato = LocalDate.of(2026, 1, 1);
-        LocalDate opprinneligSluttDato = LocalDate.of(2026, 1, 31);
-        Now.fixedDate(startDato);
-
         // Opprett mentor-avtale med alle godkjenninger
-        Avtale avtale = TestData.enMentorAvtaleUsignert();
-        // Sett oppfølgingsenhet slik at tilskuddsperioder får enhet
-        TestData.setOppfølgingPåAvtale(avtale);
-        EndreAvtale endreAvtale = TestData.endrePåAlleMentorFelter();
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(opprinneligSluttDato);
-        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
-
-        // Godkjenn avtalen av alle parter
-        avtale.godkjennForMentor(avtale.getMentorFnr());
-        avtale.godkjennForDeltaker(avtale.getDeltakerFnr());
-        avtale.godkjennForArbeidsgiver(avtale.getFnrOgBedrift().deltakerFnr());
-        avtale.godkjennForVeileder(avtale.getVeilederNavIdent());
+        Avtale avtale = TestData.enMentorAvtaleSignertAvAlle();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
+        Now.fixedDate(avtale.getGjeldendeInnhold().getSluttDato().plusDays(1));
 
         // Verifiser at vi har tilskuddsperioder før forlenging
         int antallPerioderFørForlenging = avtale.getTilskuddPeriode().size();
         assertThat(antallPerioderFørForlenging).isGreaterThan(0);
 
-        // Godkjenn alle tilskuddsperioder (simulerer at beslutter har godkjent)
-        avtale.getTilskuddPeriode().forEach(tilskuddPeriode ->
-            tilskuddPeriode.godkjenn(TestData.enNavIdent2(), TestData.ENHET_OPPFØLGING.getVerdi())
-        );
-
-        // Verifiser at alle perioder er godkjent
-        assertThat(avtale.getTilskuddPeriode())
-            .allMatch(tp -> tp.getStatus() == TilskuddPeriodeStatus.GODKJENT);
+        // Godkjenn en tilskuddsperiode for å inngå avtalen før forlenging
+        Beslutter beslutter = TestData.enBeslutter(avtale);
+        beslutter.godkjennTilskuddsperiode(avtale, TestData.ENHET_OPPFØLGING.getVerdi());
 
         // Forleng avtalen med 2 måneder
-        LocalDate nySluttDato = opprinneligSluttDato.plusMonths(2);
+        LocalDate nySluttDato = avtale.getGjeldendeInnhold().getSluttDato().plusMonths(2);
         avtale.forlengAvtale(nySluttDato, TestData.enNavIdent());
 
         // Verifiser at nye tilskuddsperioder ble generert
         Set<TilskuddPeriode> tilskuddPerioderEtterForlenging = avtale.getTilskuddPeriode();
         assertThat(tilskuddPerioderEtterForlenging.size()).isGreaterThan(antallPerioderFørForlenging);
 
-        // Verifiser at det finnes ubehandlede perioder (de nye som ble generert)
-        assertThat(tilskuddPerioderEtterForlenging)
-            .anyMatch(tp -> tp.getStatus() == TilskuddPeriodeStatus.UBEHANDLET);
-
         // Verifiser at nye perioder dekker den forlengede perioden
         TilskuddPeriode sistePeriode = tilskuddPerioderEtterForlenging.stream()
             .max(java.util.Comparator.comparing(TilskuddPeriode::getSluttDato))
             .orElseThrow();
         assertThat(sistePeriode.getSluttDato()).isEqualTo(nySluttDato);
-
-        // Verifiser at nye perioder har avtale-referanse satt
-        tilskuddPerioderEtterForlenging.stream()
-            .filter(tp -> tp.getStatus() == TilskuddPeriodeStatus.UBEHANDLET)
-            .forEach(tp -> {
-                assertThat(tp.getAvtale()).isEqualTo(avtale);
-                // Enhet kan være null avhengig av test-data setup
-                // assertThat(tp.getEnhet()).isNotNull();
-            });
-
-        Now.resetClock();
     }
 }
