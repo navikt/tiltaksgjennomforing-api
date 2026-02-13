@@ -11,7 +11,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvDeltaker;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonFristForlenget;
@@ -56,47 +55,15 @@ public class LagSmsFraAvtaleHendelse {
     }
     @EventListener
     public void avtaleInngått(AvtaleInngått event) {
-        var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.AVTALE_INNGÅTT);
-        var smsTilArbeidsgiver = smsTilArbeidsgiver(event.getAvtale(), HendelseType.AVTALE_INNGÅTT);
-
         if(event.getAvtale().getTiltakstype() == Tiltakstype.MENTOR) {
             var smsTilMentor = smsTilMentor(event.getAvtale(), HendelseType.AVTALE_INNGÅTT);
             lagreOgSendKafkaMelding(smsTilMentor);
         }
-
-        if (!smsMinSideToggleErPå()) {
-            lagreOgSendKafkaMelding(smsTilDeltaker);
-        }
-        if (!smsMinSideArbeidsgiverToggleErPå()) {
-            lagreOgSendKafkaMelding(smsTilArbeidsgiver);
-        }
-
     }
     @EventListener
     public void godkjenningerOpphevetAvArbeidsgiver(GodkjenningerOpphevetAvArbeidsgiver event) {
-        if (event.getGamleVerdier().isGodkjentAvDeltaker()) {
-            var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER);
-            if (!smsMinSideToggleErPå()) {
-                lagreOgSendKafkaMelding(smsTilDeltaker);
-            }
-        }
         var smsTilVeileder = smsTilVeileder(event.getAvtale(), HendelseType.OPPRETTET_AV_ARBEIDSGIVER);
         lagreOgSendKafkaMelding(smsTilVeileder);
-    }
-    @EventListener
-    public void godkjenningerOpphevetAvVeileder(GodkjenningerOpphevetAvVeileder event) {
-        if (event.getGamleVerdier().isGodkjentAvDeltaker()) {
-            var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
-            if (!smsMinSideToggleErPå()) {
-                lagreOgSendKafkaMelding(smsTilDeltaker);
-            }
-        }
-        if (event.getGamleVerdier().isGodkjentAvArbeidsgiver()) {
-            var smsTilArbeidsgiver = smsTilArbeidsgiver(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
-            if (!smsMinSideArbeidsgiverToggleErPå()) {
-                lagreOgSendKafkaMelding(smsTilArbeidsgiver);
-            }
-        }
     }
     @EventListener
     public void refusjonKlar(RefusjonKlar event) {
@@ -146,26 +113,6 @@ public class LagSmsFraAvtaleHendelse {
         }
     }
 
-    private boolean smsMinSideToggleErPå() {
-        Boolean smsMinSidetogglePå = featureToggleService.isEnabled(FeatureToggle.SMS_MIN_SIDE_DELTAKER);
-        if (smsMinSidetogglePå) {
-            log.info("Toggle sms-min-side-deltaker er på: sender ikke sms til deltaker");
-            return true;
-        } else {
-            log.info("Toggle sms-min-side-deltaker er av: sender sms til deltaker som vanlig");
-            return false;
-        }
-    }
-    private boolean smsMinSideArbeidsgiverToggleErPå() {
-        Boolean smsMinSideArbeidsgiverTogglePå = featureToggleService.isEnabled(FeatureToggle.ARBEIDSGIVERNOTIFIKASJON_MED_SAK_OG_SMS);
-        if (smsMinSideArbeidsgiverTogglePå) {
-            log.info("Toggle arbeidsgivernotifikasjon-med-sak-og-sms er på: sender ikke sms til arbeidsgiver");
-            return true;
-        } else {
-            log.info("Toggle arbeidsgivernotifikasjon-med-sak-og-sms er av: sender sms til arbeidsgiver som vanlig");
-            return false;
-        }
-    }
     private boolean skalSendeSmsTilTlfNr(String tlfNr) {
         UnleashContext unleashContext = UnleashContext.builder().addProperty("tlfNr", tlfNr).build();
         Boolean smsTogglePå = featureToggleService.isEnabled(FeatureToggle.SMS_TIL_MOBILNUMMER, unleashContext);
