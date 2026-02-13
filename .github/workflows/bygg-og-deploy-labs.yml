@@ -35,6 +35,7 @@ jobs:
         uses: nais/docker-build-push@v0
         id: docker-build-push
         with:
+          tag: latest
           byosbom: target/classes/META-INF/sbom/application.cdx.json
           image_suffix: labs
           dockerfile: DockerfileLabs
