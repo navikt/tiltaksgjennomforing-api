@@ -9,8 +9,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
-import no.nav.tag.tiltaksgjennomforing.avtale.Mentor;
-import no.nav.tag.tiltaksgjennomforing.avtale.MentorTilskuddsperioderToggle;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
@@ -90,28 +88,6 @@ class LagSmsFraAvtaleHendelseTest {
 
         assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
         assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
-    }
-
-    @Test
-    void avtaleInngåttMentorUtenTilskuddsperioder() throws JsonProcessingException {
-        MentorTilskuddsperioderToggle.setValue(false);
-
-        Avtale avtale = TestData.enMentorAvtaleUsignert();
-        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        Mentor mentor = TestData.enMentor(avtale);
-        mentor.godkjennAvtale(avtale);
-        arbeidsgiver.godkjennAvtale(avtale);
-        Veileder veileder = TestData.enVeileder(avtale);
-
-        GodkjentPaVegneGrunn godkjentPaVegneGrunn = new GodkjentPaVegneGrunn();
-        godkjentPaVegneGrunn.setIkkeBankId(true);
-        veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
-
-        avtale = avtaleRepository.saveAndFlush(avtale);
-
-        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
-        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
-        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getMentorTlf(), SELVBETJENINGSONE_VARSELTEKST);
     }
 
     @Test
