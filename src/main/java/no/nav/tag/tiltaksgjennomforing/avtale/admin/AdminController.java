@@ -438,11 +438,11 @@ public class AdminController {
     }
 
     /** En feil gjorde at vi ikke genererte tilskuddsperioder når man forlenget mentor-avtaler.  **/
-    @PostMapping("/fiks-manglende-tilskuddsperioder")
+    @PostMapping("/fiks-manglende-tilskuddsperioder/{dryRun}")
     @Transactional
-    public void fiksTilskuddsperioder() {
+    public void fiksTilskuddsperioder(@PathVariable boolean dryRun) {
         List<Avtale> avtaler = avtaleRepository.finnAvtalerMedManglendeSluttdekning();
-        log.info("Fant {} avtaler med manglende sluttdekning på tilskuddsperioder", avtaler.size());
+        log.info("Fant {} avtaler med manglende sluttdekning på tilskuddsperioder (DRY-RUN: {})", avtaler.size(), dryRun);
 
         avtaler.forEach(avtale -> {
             TilskuddPeriode sisteTilskuddsperiode = avtale.getTilskuddPeriode().stream()
@@ -453,9 +453,11 @@ public class AdminController {
             // Vi vil da genere tilksuddsperioder fra denne og til sluttdatoen på avtalen.
             LocalDate gammelSluttDato = sisteTilskuddsperiode.getSluttDato();
             LocalDate nySluttDato = avtale.getGjeldendeInnhold().getSluttDato();
-            log.info("Forlenger tilskuddsperioder for avtale {} fra {} til {}", avtale.getId(), gammelSluttDato, nySluttDato);
+            log.info("Forlenger tilskuddsperioder for avtale {} fra {} til {} (DRY-RUN: {})", avtale.getId(), gammelSluttDato, nySluttDato, dryRun);
             avtale.forlengTilskuddsperioderAdmin(gammelSluttDato, nySluttDato);
+            if (!dryRun) {
             avtaleRepository.save(avtale);
+            }
         });
     }
 
