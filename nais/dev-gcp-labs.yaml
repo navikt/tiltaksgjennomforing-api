@@ -9,6 +9,8 @@ spec:
   env:
     - name: MILJO
       value: dev-gcp-labs
+    - name: FAKE_LOGIN_URL
+      value: http://tiltak-fakelogin
   image: {{image}}
   port: 8080
   replicas:

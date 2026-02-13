@@ -3,10 +3,8 @@ package no.nav.tag.tiltaksgjennomforing;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.configuration.ArenaKafkaProperties;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaKafkaMessage;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.NotifikasjonService;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -21,9 +19,6 @@ import java.util.Map;
 @Slf4j
 @Configuration
 public class LokalConfiguration {
-
-  @Bean
-  NotifikasjonService notifikasjon() { return Mockito.mock(NotifikasjonService.class);}
 
   @Bean
   @Profile(Miljø.LOCAL)

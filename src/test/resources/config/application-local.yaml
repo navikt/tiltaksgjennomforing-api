@@ -55,10 +55,10 @@ spring:
 no.nav.security.jwt:
   issuer:
     aad:
-      discoveryurl: https://tiltak-fakelogin.ekstern.dev.nav.no/metadata?issuer=aad
+      discoveryurl: ${FAKE_LOGIN_URL:https://tiltak-fakelogin.ekstern.dev.nav.no}/metadata?issuer=aad
       accepted_audience: fake-aad
     tokenx:
-      discoveryurl: https://tiltak-fakelogin.ekstern.dev.nav.no/metadata?issuer=tokenx
+      discoveryurl: ${FAKE_LOGIN_URL:https://tiltak-fakelogin.ekstern.dev.nav.no}/metadata?issuer=tokenx
       accepted_audience: fake-tokenx
   client: null
 
