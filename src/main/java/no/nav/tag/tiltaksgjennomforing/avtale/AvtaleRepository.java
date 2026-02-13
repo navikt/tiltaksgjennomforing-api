@@ -91,16 +91,6 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     List<Avtale> findAllByGjeldendeInnhold_AvtaleInngåttNotNull();
 
     @Query(value = """
-        SELECT a FROM Avtale a
-        WHERE a.status != 'ANNULLERT'
-          AND a.gjeldendeInnhold.sluttDato IS NOT NULL
-          AND a.gjeldendeInnhold.sluttDato > (
-              SELECT MAX(tp.sluttDato) FROM TilskuddPeriode tp WHERE tp.avtale = a
-          )
-    """)
-    List<Avtale> finnAvtalerMedManglendeSluttdekning();
-
-    @Query(value = """
         SELECT a
         FROM Avtale a
         WHERE a.tiltakstype IN ('MIDLERTIDIG_LONNSTILSKUDD', 'VARIG_LONNSTILSKUDD', 'SOMMERJOBB', 'VTAO', 'MENTOR')
