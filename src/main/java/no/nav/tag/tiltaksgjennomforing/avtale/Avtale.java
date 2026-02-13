@@ -1041,12 +1041,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         hentBeregningStrategi().forleng(this, gammelSluttDato, nySluttDato);
     }
 
-    // TODO: MIDLERTIDIG METODE - skal kun brukes i en egangsjobb for å fikse tilskuddsperioder på mentor
-    public void forlengTilskuddsperioderAdmin(LocalDate gammelSluttDato, LocalDate nySluttDato) {
-        forlengTilskuddsperioder(gammelSluttDato, nySluttDato);
-        utforEndring(null); // For å oppdatere gjeldende tilskuddsperiode og sist endret
-    }
-
     private void annullerTilskuddsperioder() {
         for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
             TilskuddPeriodeStatus status = tilskuddsperiode.getStatus();

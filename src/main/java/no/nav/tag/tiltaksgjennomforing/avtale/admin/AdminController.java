@@ -42,7 +42,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -435,30 +434,6 @@ public class AdminController {
 
         avtaleRepository.save(nyAvtale);
         return ResponseEntity.ok(nyAvtale.getId());
-    }
-
-    /** En feil gjorde at vi ikke genererte tilskuddsperioder når man forlenget mentor-avtaler.  **/
-    @PostMapping("/fiks-manglende-tilskuddsperioder/{dryRun}")
-    @Transactional
-    public void fiksTilskuddsperioder(@PathVariable boolean dryRun) {
-        List<Avtale> avtaler = avtaleRepository.finnAvtalerMedManglendeSluttdekning();
-        log.info("Fant {} avtaler med manglende sluttdekning på tilskuddsperioder (DRY-RUN: {})", avtaler.size(), dryRun);
-
-        avtaler.forEach(avtale -> {
-            TilskuddPeriode sisteTilskuddsperiode = avtale.getTilskuddPeriode().stream()
-                .max(Comparator.comparing(TilskuddPeriode::getSluttDato)).orElseThrow();
-
-            // Gammel sluttdato her blir datoen vi skal generere tilskuddsperioder fra.
-            // Altså sluttdatoen på siste tilskuddsperiode. Som dessverre er mindre enn sluttdato på avtalen.
-            // Vi vil da genere tilksuddsperioder fra denne og til sluttdatoen på avtalen.
-            LocalDate gammelSluttDato = sisteTilskuddsperiode.getSluttDato();
-            LocalDate nySluttDato = avtale.getGjeldendeInnhold().getSluttDato();
-            log.info("Forlenger tilskuddsperioder for avtale {} fra {} til {} (DRY-RUN: {})", avtale.getId(), gammelSluttDato, nySluttDato, dryRun);
-            avtale.forlengTilskuddsperioderAdmin(gammelSluttDato, nySluttDato);
-            if (!dryRun) {
-            avtaleRepository.save(avtale);
-            }
-        });
     }
 
 
