@@ -130,8 +130,6 @@ tiltaksgjennomforing:
       url: http://localhost:8090/aktivitet-arena-acl
     hendelse-aktivitetsplan:
       url: http://localhost:8090
-  mentor-tilskuddsperioder:
-    enabled: true
   entraproxy:
     uri: http://localhost:8090/entraproxy
 
