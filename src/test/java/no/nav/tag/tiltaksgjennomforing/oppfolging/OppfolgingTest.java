@@ -7,7 +7,9 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OppfolgingTest {
     @AfterEach
@@ -28,8 +30,8 @@ class OppfolgingTest {
         var oppfolging = new Oppfolging(null, startDato, sluttDato)
             .neste();
 
-        assertEquals(oppfolging.getVarselstidspunkt(), LocalDate.of(2024, 6, 1));
-        assertEquals(oppfolging.getOppfolgingsfrist(), LocalDate.of(2024, 7, 31));
+        assertEquals(LocalDate.of(2024, 6, 1), oppfolging.getVarselstidspunkt());
+        assertEquals(LocalDate.of(2024, 7, 31), oppfolging.getOppfolgingsfrist());
     }
 
     @Test
@@ -45,8 +47,8 @@ class OppfolgingTest {
         var oppfolging = new Oppfolging(null, startDato, sluttDato).neste();
         var foersteVarselstidspunkt = oppfolging.getVarselstidspunkt();
 
-        assertEquals(foersteVarselstidspunkt, LocalDate.of(2025, 6, 1));
-        assertEquals(oppfolging.getOppfolgingsfrist(), LocalDate.of(2025, 7, 31));
+        assertEquals(LocalDate.of(2025, 6, 1), foersteVarselstidspunkt);
+        assertEquals(LocalDate.of(2025, 7, 31), oppfolging.getOppfolgingsfrist());
     }
 
     @Test
@@ -61,8 +63,8 @@ class OppfolgingTest {
         var oppfolging = new Oppfolging(null, startDato, sluttDato).neste();
         var foersteVarselstidspunkt = oppfolging.getVarselstidspunkt();
 
-        assertEquals(foersteVarselstidspunkt, LocalDate.of(2024, 6, 1));
-        assertEquals(oppfolging.getOppfolgingsfrist(), LocalDate.of(2024, 7, 31));
+        assertEquals(LocalDate.of(2024, 6, 1), foersteVarselstidspunkt);
+        assertEquals(LocalDate.of(2024, 7, 31), oppfolging.getOppfolgingsfrist());
         Now.resetClock();
     }
 
@@ -76,23 +78,23 @@ class OppfolgingTest {
 
         var oppfolging = new Oppfolging(null, startDato, sluttDato).neste();
         var fristISluttenAvJuli = oppfolging.getOppfolgingsfrist();
-        assertEquals(fristISluttenAvJuli, LocalDate.of(2024, 7, 31));
+        assertEquals(LocalDate.of(2024, 7, 31), fristISluttenAvJuli);
 
         Now.fixedDate(LocalDate.of(2024, 9, 1));
         var oppfolgingOverFrist = oppfolging.neste();
         assertEquals(
-            oppfolgingOverFrist.getVarselstidspunkt(),
-            LocalDate.of(2025, 2, 1)
+            LocalDate.of(2025, 2, 1),
+            oppfolgingOverFrist.getVarselstidspunkt()
         );
         assertEquals(
-            oppfolgingOverFrist.getOppfolgingsfrist(),
-            LocalDate.of(2025, 3, 31)
+            LocalDate.of(2025, 3, 31),
+            oppfolgingOverFrist.getOppfolgingsfrist()
         );
     }
 
     @Test
     void oppfolgingStarterAldriPaaKortAvtale() {
-        // Dersom en avtale varer kortere enn 6mnd så vil oppfølging aldri forekomme.
+        // Dersom en avtale varer kortere enn 6mnd så vil neste varselstidspunkt være ugyldig.
         Now.fixedDate(LocalDate.of(2024, 1, 1));
 
         var startDato = LocalDate.of(2024, 1, 1);
@@ -100,13 +102,14 @@ class OppfolgingTest {
 
         var avtaleStarterIJanuar = new Oppfolging(null, startDato, sluttDato).neste();
 
-        assertNull(avtaleStarterIJanuar.getVarselstidspunkt());
+        assertEquals(LocalDate.of(2024, 6, 1), avtaleStarterIJanuar.getVarselstidspunkt());
+        assertFalse(avtaleStarterIJanuar.gyldigDatoForOppfolging());
     }
 
     @Test
     void oppfolgingStopperPaaAvtale() {
         // Dersom vi følger opp en avtale før frist, og neste frist vil være etter avtalens slutt,
-        // skal vi ikke få en ny oppfølgingsdato.
+        // skal vi ikke få en ny gyldig oppfølgingsdato.
         Now.fixedDate(LocalDate.of(2024, 1, 1));
 
         var startDato = LocalDate.of(2024, 1, 1);
@@ -115,12 +118,13 @@ class OppfolgingTest {
 
         var avtaleSlutterIJuni = new Oppfolging(forrigeVarsel, startDato, sluttDato).neste();
 
-        assertNull(avtaleSlutterIJuni.getVarselstidspunkt());
+        assertEquals(LocalDate.of(2025, 7, 1), avtaleSlutterIJuni.getVarselstidspunkt());
+        assertFalse(avtaleSlutterIJuni.gyldigDatoForOppfolging());
     }
 
     @Test
     void sisteMuligeFrist() {
-        // Vi vil ikke ha oppfølging på samme dag som en avtale avsluttes, men gjerne én dag etter.
+        // Vi vil ikke ha oppfølging på samme dag som en avtale avsluttes, men gjerne én dag før.
         // I praksis kan en avtale dermed ha en siste tilskuddsperiode på én dags varighet, som vil kreve oppfølging.
         Now.fixedDate(LocalDate.of(2024, 1, 1));
 
@@ -131,8 +135,10 @@ class OppfolgingTest {
         var ingenOppfolging = new Oppfolging(null, startdato, sluttdatoForTidlig).neste();
         var oppfolging = new Oppfolging(null, startdato, sluttdatoGyldig).neste();
 
-        assertNull(ingenOppfolging.getVarselstidspunkt());
-        assertEquals(oppfolging.getVarselstidspunkt(), LocalDate.of(2024, 6, 1));
+        assertEquals(LocalDate.of(2024, 6, 1), ingenOppfolging.getVarselstidspunkt());
+        assertFalse(ingenOppfolging.gyldigDatoForOppfolging());
+        assertEquals(LocalDate.of(2024, 7, 31), oppfolging.getOppfolgingsfrist());
+        assertTrue(oppfolging.gyldigDatoForOppfolging());
     }
 
     @Test
@@ -155,7 +161,19 @@ class OppfolgingTest {
         var oppfolgingPgaStartdatoMangler = new Oppfolging(null, null, sluttdato).neste();
         assertNull(oppfolgingPgaStartdatoMangler.getVarselstidspunkt());
         assertNull(oppfolgingPgaStartdatoMangler.getOppfolgingsfrist());
+    }
 
+    @Test
+    void varselstidspunktErUavhengigAvSluttdato() {
+        // Dersom en avtale har en sluttdato som er før første varselstidspunkt, så skal varselstidspunktet fortsatt være det samme.
+        Now.fixedDate(LocalDate.of(2024, 1, 1));
 
+        var startdato = LocalDate.of(2024, 1, 1);
+        var sluttdato = LocalDate.of(2024, 6, 15);
+
+        var oppfolging = new Oppfolging(null, startdato, sluttdato).neste();
+
+        assertEquals(LocalDate.of(2024, 6, 1), oppfolging.getVarselstidspunkt());
+        assertEquals(LocalDate.of(2024, 7, 31), oppfolging.getOppfolgingsfrist());
     }
 }
