@@ -4,12 +4,10 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
-import no.nav.tag.tiltaksgjennomforing.avtale.MentorTilskuddsperioderToggle;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -111,10 +109,6 @@ public class MentorBeregningStrategy implements BeregningStrategy {
 
     @Override
     public List<TilskuddPeriode> genererNyeTilskuddsperioder(Avtale avtale) {
-        if (!MentorTilskuddsperioderToggle.isEnabled()) {
-            return Collections.emptyList();
-        }
-
         if (avtale.erAvtaleInngått()) {
             return Collections.emptyList();
         }
