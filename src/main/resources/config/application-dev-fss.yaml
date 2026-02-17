@@ -142,6 +142,8 @@ tiltaksgjennomforing:
     vtaoServiceEdition: 6
     adressesperreServiceCode: 5516
     adressesperreServiceEdition: 7
+    ltsFirearigServiceCode: 5516
+    ltsFirearigServiceEdition: 8
   ereg:
     uri: https://ereg-services.dev.intern.nav.no/api/v2/organisasjon
   oppgave:

@@ -13,6 +13,7 @@ public class AvtaleInnholdStrategyFactory {
             case INKLUDERINGSTILSKUDD -> new InkluderingstilskuddStrategy(avtaleInnhold);
             case SOMMERJOBB -> new SommerjobbAvtaleInnholdStrategy(avtaleInnhold);
             case VTAO -> new VtaoStrategy(avtaleInnhold);
+            case FIREARIG_LONNSTILSKUDD -> new FirearigLonnstilskuddAvtaleInnholdStrategy(avtaleInnhold);
         };
     }
 }

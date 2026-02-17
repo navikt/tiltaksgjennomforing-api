@@ -7,7 +7,8 @@ public enum Tiltakstype {
     MENTOR("Mentor", "ab0416", "MENTOR"),
     INKLUDERINGSTILSKUDD("Inkluderingstilskudd", "ab0417", "INKLUTILS"),
     SOMMERJOBB("Sommerjobb", "ab0450", null),
-    VTAO("Varig tilrettelagt arbeid i ordinær virksomhet", "ab0418", "VATIAROR");
+    VTAO("Varig tilrettelagt arbeid i ordinær virksomhet", "ab0418", "VATIAROR"),
+    FIREARIG_LONNSTILSKUDD("Fireårig lønnstilskudd for unge", "ab0451", null);
 
     final String beskrivelse;
     final String behandlingstema;
@@ -48,6 +49,8 @@ public enum Tiltakstype {
     public boolean isVTAO() { return this == Tiltakstype.VTAO; }
 
     public boolean isMentor() { return this == Tiltakstype.MENTOR; }
+
+    public boolean isFirearigLonnstilskudd() { return this == Tiltakstype.FIREARIG_LONNSTILSKUDD; }
 
     public boolean skalBesluttes() {
         return this == Tiltakstype.SOMMERJOBB ||

@@ -14,6 +14,7 @@ public class StartOgSluttDatoStrategyFactory {
             case INKLUDERINGSTILSKUDD -> new InkluderingstilskuddStartOgSluttDatoStrategy();
             case SOMMERJOBB -> new SommerjobbStartOgSluttDatoStrategy();
             case VTAO -> new VtaoStartOgSluttDatoStrategy();
+            case FIREARIG_LONNSTILSKUDD -> new FirearigLonnstilskuddStartOgSluttDatoStrategy();
         };
     }
 }

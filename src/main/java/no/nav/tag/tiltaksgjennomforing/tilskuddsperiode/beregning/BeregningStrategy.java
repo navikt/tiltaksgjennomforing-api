@@ -39,6 +39,7 @@ public interface BeregningStrategy {
             case VARIG_LONNSTILSKUDD -> new VarigLonnstilskuddAvtaleBeregningStrategy();
             case SOMMERJOBB -> new SommerjobbLonnstilskuddAvtaleBeregningStrategy();
             case VTAO -> new VTAOLonnstilskuddAvtaleBeregningStrategy();
+            case FIREARIG_LONNSTILSKUDD -> new FirearigLonnstilskuddBeregningStrategy();
         };
     }
 

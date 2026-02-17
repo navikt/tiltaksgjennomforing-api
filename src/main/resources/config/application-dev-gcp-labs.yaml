@@ -55,6 +55,8 @@ tiltaksgjennomforing:
     vtaoServiceEdition: 6
     adressesperreServiceCode: 5516
     adressesperreServiceEdition: 7
+    ltsFirearigServiceCode: 5516
+    ltsFirearigServiceEdition: 8
     altinnApiKey: foo
     apiGwApiKey: foo
   ereg:
