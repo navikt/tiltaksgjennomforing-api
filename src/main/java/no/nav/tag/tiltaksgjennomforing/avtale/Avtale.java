@@ -34,13 +34,13 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleFordelt;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleStatusEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleUtloperVarsel;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.DeltakersGodkjenningOpphevetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.DeltakersGodkjenningOpphevetAvVeileder;
@@ -102,13 +102,14 @@ import org.hibernate.annotations.SortNatural;
 import org.hibernate.generator.EventType;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -184,7 +185,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     @OneToOne(cascade = CascadeType.ALL)
     @Nullable
-    @JsonIgnore
     private TilskuddPeriode gjeldendeTilskuddsperiode;
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
@@ -203,6 +203,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     @JsonIgnore
     @Transient
     private AtomicReference<BeregningStrategy> beregningStrategy = new AtomicReference<>();
+
+    @JsonIgnore
+    @Fetch(FetchMode.SELECT)
+    @Setter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "avtale", fetch = FetchType.LAZY)
+    private List<AvtaleInnhold> avtaleversjoner;
 
     private LocalDate kreverOppfolgingFom = null;
 
@@ -287,6 +293,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         Avtalerolle utfortAvRolle,
         Identifikator identifikator
     ) {
+        endreAvtale(nyAvtale, AvtaleHendelseUtførtAv.Rolle.fra(utfortAvRolle), identifikator);
+    }
+
+    public void endreAvtale(
+        EndreAvtale nyAvtale,
+        AvtaleHendelseUtførtAv.Rolle utfortAvRolle,
+        Identifikator identifikator
+    ) {
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAvtalenKanEndres();
         sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
@@ -294,10 +308,17 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         nyeTilskuddsperioder();
 
         settFoersteOppfolgingstidspunkt();
-        utforEndring(new AvtaleEndret(this, AvtaleHendelseUtførtAv.Rolle.fra(utfortAvRolle), identifikator));
+        utforEndring(new AvtaleEndret(this, utfortAvRolle, identifikator));
     }
 
-    public void endreStatus(Status nyStatus) {
+    public void oppdaterStatus() {
+        Status nyStatus = Status.fra(this);
+        if (this.status != nyStatus) {
+            utforEndring(new AvtaleStatusEndret(this));
+        }
+    }
+
+    public void setStatus(Status nyStatus) {
         if (nyStatus.erAvsluttetEllerAnnullert() && getKreverOppfolgingFom() != null) {
             setOppfolgingVarselSendt(null);
             setKreverOppfolgingFom(null);
@@ -344,23 +365,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
 
         EndreAvtaleArena.Handling action = endreAvtaleArena.getHandling();
-        if (EndreAvtaleArena.Handling.OPPDATER == action && endreAvtaleArena.compareTo(this) == 0) {
-            log.atInfo()
-                .addKeyValue("avtaleId", getId().toString())
-                .log("Endringer fra Arena er lik innholdet i avtalen. Beholder avtalen uendret.");
-            registerEvent(new AvtaleEndretAvArena(this));
-            return;
-        }
-
         if (EndreAvtaleArena.Handling.ANNULLER == action) {
             annuller(AnnullertGrunn.ANNULLERT_I_ARENA, Identifikator.ARENA);
             return;
         }
 
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRET_AV_ARENA);
-        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
 
         if (EndreAvtaleArena.Handling.AVSLUTT == action) {
+            getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
+
             LocalDate sluttDato = Stream.of(endreAvtaleArena.getSluttdato(), gjeldendeInnhold.getSluttDato())
                 .filter(dato -> dato.isBefore(LocalDate.now()))
                 .findFirst()
@@ -383,27 +397,29 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             return;
         }
 
-        boolean isForlengelse = EndreAvtaleArena.Handling.GJENOPPRETT == action ||
-            Optional.ofNullable(endreAvtaleArena.getStartdato())
-                .map(arenaStartdato -> arenaStartdato.isAfter(gjeldendeInnhold.getSluttDato()))
-                .orElse(false);
-
         Optional.ofNullable(endreAvtaleArena.getStartdato()).ifPresent(getGjeldendeInnhold()::setStartDato);
         Optional.ofNullable(endreAvtaleArena.getSluttdato()).ifPresent(getGjeldendeInnhold()::setSluttDato);
-        Optional.ofNullable(endreAvtaleArena.getStillingprosent()).ifPresent(getGjeldendeInnhold()::setStillingprosent);
-        Optional.ofNullable(endreAvtaleArena.getAntallDagerPerUke())
-            .ifPresent(getGjeldendeInnhold()::setAntallDagerPerUke);
+
+        if (getTiltakstype().isMentor()) {
+            getGjeldendeInnhold().setMentorTimelonn(null);
+            getGjeldendeInnhold().setMentorAntallTimer(null);
+        } else {
+            Optional.ofNullable(endreAvtaleArena.getStillingprosent()).ifPresent(getGjeldendeInnhold()::setStillingprosent);
+            Optional.ofNullable(endreAvtaleArena.getAntallDagerPerUke()).ifPresent(getGjeldendeInnhold()::setAntallDagerPerUke);
+        }
 
         setAnnullertTidspunkt(null);
         setAnnullertGrunn(null);
         setFeilregistrert(false);
         nyeTilskuddsperioder();
+        setGodkjentForEtterregistrering(true);
 
-        if (isForlengelse) {
-            utforEndring(new AvtaleForlengetAvArena(this));
-        } else {
-            utforEndring(new AvtaleEndretAvArena(this));
-        }
+        getGjeldendeInnhold().setAvtaleInngått(null);
+        getGjeldendeInnhold().setIkrafttredelsestidspunkt(null);
+        opphevGodkjenninger();
+
+        this.status = Status.fra(this);
+        utforEndring(new AvtaleEndretAvArena(this));
     }
 
     public void delMedAvtalepart(Avtalerolle avtalerolle) {
@@ -589,13 +605,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold.setGodkjentAvNavIdent(null);
     }
 
-    private void utførEndring() {
+    private void utforEndring() {
         utforEndring(null);
     }
 
     private <T> void utforEndring(T event) {
-        endreStatus(Status.fra(this));
-        this.gjeldendeTilskuddsperiode = TilskuddPeriode.finnGjeldende(this);
+        setStatus(Status.fra(this));
+        this.gjeldendeTilskuddsperiode = TilskuddPeriode.utledGjeldendeTilskuddsperiode(this).tilskuddPeriode();
         this.sistEndret = Now.instant();
 
         if (event != null) {
@@ -645,7 +661,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private void inngåAvtale(Instant tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
-        boolean mentorFeatureToggelEnabled = MentorTilskuddsperioderToggle.isEnabled();
         if (!utførtAvRolle.erInternBruker()) {
             throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_INNGAA_AVTALE);
         }
@@ -660,7 +675,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private boolean erAlleTilskuddsperioderBehandletIArena() {
-        if (Avtaleopphav.ARENA != opphav) {
+        if (!erOpprettetEllerEndretAvArena()) {
             return false;
         }
         if (tilskuddPeriode.isEmpty()) {
@@ -711,6 +726,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (Avtaleopphav.ARENA != opphav) {
             throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_OPPHAV);
         }
+        if (Tiltakstype.MENTOR == tiltakstype) {
+            throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_TILTAKSTYPE);
+        }
         if (erGodkjentAvArbeidsgiver()) {
             throw new FeilkodeException(Feilkode.ARBEIDSGIVER_HAR_GODKJENT);
         }
@@ -742,6 +760,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         sjekkGjeldendeStartogSluttDato();
         if (Avtaleopphav.ARENA != opphav) {
             throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_OPPHAV);
+        }
+        if (Tiltakstype.MENTOR == tiltakstype) {
+            throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_TILTAKSTYPE);
         }
         if (erGodkjentAvDeltaker()) {
             throw new DeltakerHarGodkjentException();
@@ -982,13 +1003,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         return tilskuddPeriode.toArray(new TilskuddPeriode[0])[index];
     }
 
-
-    @Nullable
-    @JsonProperty
-    public TilskuddPeriode getGjeldendeTilskuddsperiode() {
-        return getGjeldendeTilskuddsperiode(true);
-    }
-
     public void setGjeldendeTilskuddsperiode(TilskuddPeriode tilskuddPeriode) {
         log.atInfo()
             .addKeyValue("avtaleId", this.getId().toString())
@@ -999,39 +1013,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
                 tilskuddPeriode != null ? tilskuddPeriode.getStatus() : null
             );
         this.gjeldendeTilskuddsperiode = tilskuddPeriode;
-    }
-
-    /**
-     * Vi ønsker å migrere til at "gjeldende tilskuddsperiode" lagres i databasen for å legge til rette for bedre
-     * filtreringsmuligheter for besluttere. I en overgangsfase bør all logikk basere seg på gammel implementasjon som
-     * "kalkulerer" gjeldende periode, men vi bør også logge eventuelle avvik for å sikre at systemet fungerer likt som
-     * før etter endringen.
-     * <p>
-     * TODO: Fjern gammel logikk, og denne disclaimeren
-     */
-    public TilskuddPeriode getGjeldendeTilskuddsperiode(boolean kalkulerNyTilskuddsperiode) {
-        var gjeldendeFraDb = this.gjeldendeTilskuddsperiode;
-        if (!kalkulerNyTilskuddsperiode) {
-            return gjeldendeFraDb;
-        }
-        var gjeldendePeriode = TilskuddPeriode.finnGjeldende(this);
-        var erLike = Objects.equals(gjeldendePeriode, gjeldendeFraDb);
-        if (!erLike) {
-            log.atWarn()
-                .addKeyValue("avtaleId", this.getId().toString())
-                .log(
-                    "Gjeldende tilskuddsperiode ikke oppdatert på avtale {} med status {}? Fant {} {} {}, men kalkulerte {} {} {}",
-                    id,
-                    status,
-                    Optional.ofNullable(gjeldendeFraDb).map(TilskuddPeriode::getId).orElse(null),
-                    Optional.ofNullable(gjeldendeFraDb).map(TilskuddPeriode::getLøpenummer).orElse(null),
-                    Optional.ofNullable(gjeldendeFraDb).map(TilskuddPeriode::getStatus).orElse(null),
-                    Optional.ofNullable(gjeldendePeriode).map(TilskuddPeriode::getId).orElse(null),
-                    Optional.ofNullable(gjeldendePeriode).map(TilskuddPeriode::getLøpenummer).orElse(null),
-                    Optional.ofNullable(gjeldendePeriode).map(TilskuddPeriode::getStatus).orElse(null)
-                );
-        }
-        return gjeldendePeriode;
     }
 
     public TreeSet<TilskuddPeriode> finnTilskuddsperioderIkkeLukketForEndring() {
@@ -1053,7 +1034,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold.setEnhetKostnadssted(nyttKostnadssted.getEnhet());
         gjeldendeInnhold.setEnhetsnavnKostnadssted(nyttKostnadssted.getEnhetsnavn());
         nyeTilskuddsperioder();
-        utførEndring();
+        utforEndring();
     }
 
     void forlengTilskuddsperioder(LocalDate gammelSluttDato, LocalDate nySluttDato) {
@@ -1111,7 +1092,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             .filter(t -> t.getStatus() == TilskuddPeriodeStatus.AVSLÅTT)
             .map(TilskuddPeriode::deaktiverOgLagNyUbehandlet).toList();
         tilskuddPeriode.addAll(rettede);
-        utførEndring();
+        utforEndring();
     }
 
     private void sjekkAtIkkeAvtaleErAnnullert() {
@@ -1191,16 +1172,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
             List<TilskuddPeriode> tilskuddsperioder = this.hentBeregningStrategi().hentTilskuddsperioderForPeriode(this, gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato()); //.genererNyeTilskuddsperioder(this);
 
-            tilskuddsperioder.forEach(periode -> {
-                // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
-                // Eller skal det være startdato? Er jo den samme datoen som migreringsdato. hmm...
-                if (periode.getSluttDato().minusDays(1).isBefore(migreringsDato)) {
-                    periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
-                }
-            });
+            BeregningStrategy.settBehandletIArena(migreringsDato, tilskuddsperioder);
+
             fikseLøpenumre(tilskuddsperioder, 1);
             tilskuddPeriode.addAll(tilskuddsperioder);
-            setGjeldendeTilskuddsperiode(TilskuddPeriode.finnGjeldende(this));
+            setGjeldendeTilskuddsperiode(TilskuddPeriode.utledGjeldendeTilskuddsperiode(this).tilskuddPeriode());
             settFoersteOppfolgingstidspunkt();
             return true;
         } else {
@@ -1239,7 +1215,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             resendingsnummer
         ));
         tilskuddPeriode.add(nyTilskuddsperiode);
-        setGjeldendeTilskuddsperiode(TilskuddPeriode.finnGjeldende(this));
+        setGjeldendeTilskuddsperiode(TilskuddPeriode.utledGjeldendeTilskuddsperiode(this).tilskuddPeriode());
     }
 
     private Integer finnResendingsNummer(TilskuddPeriode gjeldendePeriode) {
@@ -1268,6 +1244,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         TilskuddPeriode nyUbehandletPeriode = annullertTilskuddPeriode.deaktiverOgLagNyUbehandlet();
         annullertTilskuddPeriode.setAktiv(true);
         tilskuddPeriode.add(nyUbehandletPeriode);
+        utforEndring();
     }
 
     public void lagNyBehandletIArenaTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
@@ -1284,6 +1261,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         nyUbehandletPeriode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
         annullertTilskuddPeriode.setAktiv(true);
         tilskuddPeriode.add(nyUbehandletPeriode);
+        utforEndring();
     }
 
     public void forkortAvtale(LocalDate nySluttDato, ForkortetGrunn forkortetGrunn, NavIdent utførtAv) {
@@ -1345,6 +1323,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (!nySluttDato.isAfter(gjeldendeInnhold.getSluttDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO);
         }
+        if (tiltakstype.isMentor() && tilskuddPeriode.isEmpty()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_MENTOR_AVTALE_UTEN_TILSKUDDSBEREGNING);
+        }
 
         var gammelSluttDato = gjeldendeInnhold.getSluttDato();
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
@@ -1360,7 +1341,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
-        StartOgSluttDatoStrategyFactory.create(getTiltakstype(), getKvalifiseringsgruppe())
+        StartOgSluttDatoStrategyFactory.create(getTiltakstype(), getKvalifiseringsgruppe(), erOpprettetEllerEndretAvArena())
             .sjekkStartOgSluttDato(
                 startDato,
                 sluttDato,
@@ -1372,7 +1353,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     public void endreTilskuddsberegning(EndreTilskuddsberegning endreTilskuddsberegning, NavIdent utførtAv) {
         sjekkAtIkkeAvtaleErAnnullert();
-
         krevEnAvTiltakstyper(
             Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
             Tiltakstype.VARIG_LONNSTILSKUDD,
@@ -1382,23 +1362,48 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_IKKE_GODKJENT_AVTALE);
         }
-        if (Utils.erNoenTomme(
-            endreTilskuddsberegning.getArbeidsgiveravgift(),
-            endreTilskuddsberegning.getFeriepengesats(),
-            endreTilskuddsberegning.getManedslonn(),
-            endreTilskuddsberegning.getOtpSats()
-        )) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
-        }
-        if (Tiltakstype.VARIG_LONNSTILSKUDD.equals(tiltakstype) && Utils.erTom(endreTilskuddsberegning.getLonnstilskuddProsent())) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
-        }
+
+        validerTilskuddsberegningInput(endreTilskuddsberegning);
 
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_TILSKUDDSBEREGNING);
         this.hentBeregningStrategi().endreBeregning(this, endreTilskuddsberegning);
         endreBeløpOgProsentITilskuddsperioder();
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
         utforEndring(new TilskuddsberegningEndret(this, utførtAv));
+    }
+
+    private void validerTilskuddsberegningInput(EndreTilskuddsberegning endreTilskuddsberegning) {
+        List<Object> valideringer = switch (tiltakstype) {
+            case VARIG_LONNSTILSKUDD -> Arrays.asList(
+                endreTilskuddsberegning.getArbeidsgiveravgift(),
+                endreTilskuddsberegning.getFeriepengesats(),
+                endreTilskuddsberegning.getOtpSats(),
+                endreTilskuddsberegning.getLonnstilskuddProsent(),
+                endreTilskuddsberegning.getManedslonn()
+            );
+            case MENTOR -> Arrays.asList(
+                endreTilskuddsberegning.getArbeidsgiveravgift(),
+                endreTilskuddsberegning.getFeriepengesats(),
+                endreTilskuddsberegning.getOtpSats(),
+                endreTilskuddsberegning.getMentorAntallTimer(),
+                endreTilskuddsberegning.getMentorValgtLonnstype(),
+                endreTilskuddsberegning.getMentorValgtLonnstypeBelop(),
+                // Timelønn har ikke stillingsprosent, settes derfor default til 0 (slik at den ikke valideres)
+                Optional.ofNullable(endreTilskuddsberegning.getMentorValgtLonnstype())
+                    .map(lonnstype -> lonnstype.erTimelonn() ? BigDecimal.ZERO : endreTilskuddsberegning.getStillingprosent())
+                    .orElse(null)
+            );
+            default -> Arrays.asList(
+                endreTilskuddsberegning.getArbeidsgiveravgift(),
+                endreTilskuddsberegning.getFeriepengesats(),
+                endreTilskuddsberegning.getOtpSats(),
+                endreTilskuddsberegning.getManedslonn()
+            );
+        };
+
+        if (Utils.erNoenTomme(valideringer.toArray())) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
+        }
     }
 
     // Metode for å rydde opp i beregnede felter som ikke har blitt satt etter at lønnstilskuddsprosent manuelt i databasen har blitt satt inn
@@ -1702,5 +1707,17 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     public boolean erOpprettetEllerEndretAvArena() {
         return getGjeldendeInnhold().getInnholdType() == AvtaleInnholdType.ENDRET_AV_ARENA
             || getOpphav() == Avtaleopphav.ARENA;
+    }
+
+    public boolean harArenaOpphavEllerHistoriskEndretAvArena() {
+        if (getOpphav() == Avtaleopphav.ARENA) {
+            return true;
+        }
+        var avtaleversjoner = getAvtaleversjoner();
+        if (avtaleversjoner == null) {
+            return false;
+        }
+        return avtaleversjoner.stream()
+            .anyMatch(innhold -> innhold.getInnholdType() == AvtaleInnholdType.ENDRET_AV_ARENA);
     }
 }

@@ -1,22 +1,25 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
-import no.nav.tag.tiltaksgjennomforing.avtale.MentorTilskuddsperioderToggle;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
+
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.convertBigDecimalToInt;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.toBigDecimal;
 
 public class MentorBeregningStrategy implements BeregningStrategy {
+
+    private final LocalDate MIGRERINGSDATO_FOR_TILSKUDD = ArenaTiltakskode.MENTOR.getMigreringsdatoForTilskudd();
 
     @Override
     public void reberegnTotal(Avtale avtale) {
@@ -24,12 +27,30 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         if (!nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(avtale)) {
             return;
         }
-        var mentorsMånedslønn = Double.valueOf(innhold.getMentorTimelonn() * innhold.getMentorAntallTimer()).intValue();
+        Double mentorsMånedslønn = innhold.getMentorTimelonn() * innhold.getMentorAntallTimer();
 
-        BigDecimal feriepengerBelop = BeregningStrategy.getFeriepengerBelop(innhold.getFeriepengesats(), mentorsMånedslønn);
-        BigDecimal obligTjenestepensjon = BeregningStrategy.getBeregnetOtpBelop(toBigDecimal(innhold.getOtpSats()), mentorsMånedslønn, feriepengerBelop);
-        BigDecimal arbeidsgiveravgiftBelop = BeregningStrategy.getArbeidsgiverAvgift(mentorsMånedslønn, feriepengerBelop, obligTjenestepensjon, innhold.getArbeidsgiveravgift());
-        Integer sumLonnsutgifter = BeregningStrategy.getSumLonnsutgifter(mentorsMånedslønn, feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop);
+        BigDecimal feriepengerBelop = BeregningStrategy.getFeriepengerBelop(
+            innhold.getFeriepengesats(),
+            mentorsMånedslønn
+        );
+        BigDecimal obligTjenestepensjon = BeregningStrategy.getBeregnetOtpBelop(
+            toBigDecimal(innhold.getOtpSats()),
+            mentorsMånedslønn,
+            feriepengerBelop
+        );
+        BigDecimal arbeidsgiveravgiftBelop = BeregningStrategy.getArbeidsgiverAvgift(
+            mentorsMånedslønn,
+            feriepengerBelop,
+            obligTjenestepensjon,
+            innhold.getArbeidsgiveravgift()
+        );
+        Integer sumLonnsutgifter = BeregningStrategy.getSumLonnsutgifter(
+            mentorsMånedslønn,
+            feriepengerBelop,
+            obligTjenestepensjon,
+            arbeidsgiveravgiftBelop
+        );
+        innhold.setManedslonn(mentorsMånedslønn.intValue());
         innhold.setFeriepengerBelop(convertBigDecimalToInt(feriepengerBelop));
         innhold.setOtpBelop(convertBigDecimalToInt(obligTjenestepensjon));
         innhold.setArbeidsgiveravgiftBelop(convertBigDecimalToInt(arbeidsgiveravgiftBelop));
@@ -39,6 +60,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
     @Override
     public boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(Avtale avtale) {
         AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
+
         return Utils.erIkkeTomme(
             innhold.getMentorAntallTimer(),
             innhold.getMentorTimelonn(),
@@ -54,33 +76,39 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         return Utils.erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnsutgifter());
     }
 
+    /** Brukes primært ved forlenging - og skiller seg derfor fra beregnTilskuddsperioderForAvtale() ved at vi her trenger å oppgi en annen stardato.  **/
     @Override
     public List<TilskuddPeriode> hentTilskuddsperioderForPeriode(
         Avtale avtale,
         LocalDate startDato,
         LocalDate sluttDato
     ) {
-        return List.of(); // TODO: Fiks denne!!!!! FØR MIGRERING!!
+        return beregnTilskuddsperioderForAvtale(avtale.getGjeldendeInnhold().getSumLonnsutgifter(), startDato, sluttDato, avtale);
     }
 
-    private List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Integer tilskuddsbeløpPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
-            return BeregningStrategy.lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
+    private List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Integer tilskuddsbeløpPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Avtale avtale) {
+        List<TilskuddPeriode> perioder = BeregningStrategy.lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
                 Integer beløp = BeregningStrategy.beløpForPeriode(
                     datoPar.getStart(),
                     datoPar.getSlutt(),
                     tilskuddsbeløpPerMåned
                 );
                 return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), 100);
-            }).collect(Collectors.toList());
+            })
+            .collect(Collectors.toList());
+
+        AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
+        perioder.forEach(p -> {
+            p.setAvtale(avtale);
+            p.setEnhet(innhold.getEnhetKostnadssted());
+            p.setEnhetsnavn(innhold.getEnhetsnavnKostnadssted());
+        });
+        return perioder;
     }
 
 
-        @Override
+    @Override
     public List<TilskuddPeriode> genererNyeTilskuddsperioder(Avtale avtale) {
-        if (!MentorTilskuddsperioderToggle.isEnabled()) {
-            return Collections.emptyList();
-        }
-
         if (avtale.erAvtaleInngått()) {
             return Collections.emptyList();
         }
@@ -92,11 +120,13 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         LocalDate start = innhold.getStartDato();
         LocalDate slutt = innhold.getSluttDato();
 
-        List<TilskuddPeriode> perioder = beregnTilskuddsperioderForAvtale(innhold.getSumLonnsutgifter(), start, slutt);
+        List<TilskuddPeriode> perioder = beregnTilskuddsperioderForAvtale(innhold.getSumLonnsutgifter(), start, slutt, avtale);
+        // Etterregistreringer skal håndteres i vårt system, så vi skal kun sette behandlet i arena på avtaler hvor
+        // avtalen har opphav=ARENA eller om det eksisterer en avtaleversjon med innholdstype = ENDRET_AV_ARENA
+        if (avtale.harArenaOpphavEllerHistoriskEndretAvArena()) {
+            BeregningStrategy.settBehandletIArena(MIGRERINGSDATO_FOR_TILSKUDD, perioder);
+        }
 
-        perioder.forEach(p -> p.setAvtale(avtale));
-        perioder.forEach(p -> p.setEnhet(innhold.getEnhetKostnadssted()));
-        perioder.forEach(p -> p.setEnhetsnavn(innhold.getEnhetsnavnKostnadssted()));
         fikseLøpenumre(perioder, 1);
         return perioder;
     }
@@ -109,7 +139,15 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         avtaleInnhold.setOtpSats(endreTilskuddsberegning.getOtpSats());
         avtaleInnhold.setFeriepengesats(endreTilskuddsberegning.getFeriepengesats());
         avtaleInnhold.setMentorAntallTimer(endreTilskuddsberegning.getMentorAntallTimer());
-        avtaleInnhold.setMentorTimelonn(endreTilskuddsberegning.getMentorTimelonn());
+        avtaleInnhold.setStillingprosent(endreTilskuddsberegning.getStillingprosent());
+        avtaleInnhold.setMentorValgtLonnstype(endreTilskuddsberegning.getMentorValgtLonnstype());
+        avtaleInnhold.setMentorValgtLonnstypeBelop(endreTilskuddsberegning.getMentorValgtLonnstypeBelop());
+        avtaleInnhold.setMentorTimelonn(MentorTimelonnBeregning.beregnMentorTimelonn(
+            endreTilskuddsberegning.getMentorValgtLonnstype(),
+            endreTilskuddsberegning.getMentorValgtLonnstypeBelop(),
+            endreTilskuddsberegning.getStillingprosent()
+        ));
+
         reberegnTotal(avtale);
     }
 
@@ -118,14 +156,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         if (!nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(avtale)) {
             return null;
         }
-        AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
 
-        int månedsLonn = beregnMånedligTilskudd(innhold.getMentorAntallTimer(), innhold.getMentorTimelonn());
-        return BeregningStrategy.beløpForPeriode(startDato, sluttDato, månedsLonn);
-    }
-
-    private Integer beregnMånedligTilskudd(double antalTimerIMåned, double timelonn) {
-        BigDecimal mentorsMånedslønn = BigDecimal.valueOf(antalTimerIMåned).multiply(BigDecimal.valueOf(timelonn));
-        return mentorsMånedslønn.setScale(0, RoundingMode.HALF_UP).intValue();
+        return BeregningStrategy.beløpForPeriode(startDato, sluttDato, avtale.getGjeldendeInnhold().getSumLonnsutgifter());
     }
 }

@@ -45,8 +45,6 @@ tiltaksgjennomforing:
     strengt-fortrolig-adresse: 1a1d2745-952f-4a0f-839f-9530145b1d4a
   kafka:
     enabled: true
-  mentor-tilskuddsperioder:
-    enabled: false
 
   altinn-tilgangsstyring:
     uri: http://localhost:8090/altinn-tilgangsstyring
@@ -66,12 +64,6 @@ tiltaksgjennomforing:
     vtaoServiceEdition: 6
   ereg:
     uri: http://localhost:8090/ereg
-  sts:
-    username: foo
-    password: bar
-    rest-uri: http://localhost:8090/sts/sts/token
-  axsys:
-    uri: http://localhost:8090/axsys
   consumer:
     system:
       id: testsystem
@@ -88,6 +80,8 @@ tiltaksgjennomforing:
       url: http://localhost:8090/norg2/api/v1/enhet/
   dokgen:
     uri: http://localhost:9000/template/tiltak-avtale/create-pdf
+  entraproxy:
+    uri: http://localhost:8090/entraproxy
 
 no.nav.security.jwt:
   issuer:

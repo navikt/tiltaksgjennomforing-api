@@ -6,7 +6,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -25,7 +24,7 @@ import static no.nav.tag.tiltaksgjennomforing.TestDataGenerator.genererAvtaler;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@Profile({ Miljø.TESTDATA })
+@Profile({Miljø.TESTDATA})
 public class LastInnTestData implements ApplicationListener<ApplicationReadyEvent> {
     private final AvtaleRepository avtaleRepository;
 
@@ -41,6 +40,7 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaler.add(TestData.enLonnstilskuddAvtaleGodkjentAvVeilederUtenTilskuddsperioder());
         avtaler.add(TestData.enArbeidstreningAvtale());
         avtaler.add(TestData.enMentorAvtaleSignert());
+        avtaler.add(TestData.enMentorAvtaleSignertAvAlle());
         avtaler.add(TestData.enMentorAvtaleUsignert());
         avtaler.add(TestData.enInkluderingstilskuddAvtale());
         avtaler.add(TestData.enInkluderingstilskuddAvtaleUtfyltOgGodkjentAvArbeidsgiver());
@@ -117,7 +117,7 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaler.addAll(ghostingAvtalerEldreEnn12Uker);
         avtaler.addAll(genererAvtaler(10));
         avtaler.forEach(avtale -> {
-            avtale.endreStatus(Status.fra(avtale));
+            avtale.oppdaterStatus();
             avtaleRepository.save(avtale);
         });
     }

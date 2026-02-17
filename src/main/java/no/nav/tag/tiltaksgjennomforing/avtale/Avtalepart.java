@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -35,6 +36,18 @@ public abstract class Avtalepart<T extends Identifikator> {
     public boolean avtalenEksisterer(Avtale avtale) {
         return !avtale.isFeilregistrert();
     }
+
+    protected boolean mentorAvtaleErKlarForVisningForEksterne(Avtale avtale) {
+        var altErFyltUtEllerKunFamilietilknytningMangler = avtale.felterSomIkkeErFyltUt().stream()
+            .allMatch(x -> x.equals(AvtaleInnhold.Fields.harFamilietilknytning)
+                || x.equals(AvtaleInnhold.Fields.familietilknytningForklaring));
+        if (!altErFyltUtEllerKunFamilietilknytningMangler) {
+            log.info("Mentor-avtale skjult for avtalepart={} avtale-id={}", rolle(), avtale.getId());
+        }
+        return altErFyltUtEllerKunFamilietilknytningMangler;
+    }
+
+    public abstract AvtaleDTO maskerFelterForAvtalepart(AvtaleDTO avtaleDTO);
 
     abstract Tilgang harTilgangTilAvtale(Avtale avtale);
 
@@ -78,16 +91,16 @@ public abstract class Avtalepart<T extends Identifikator> {
         return new PageImpl<>(avtalerMedTilgang, avtaler.getPageable(), avtaler.getTotalElements());
     }
 
-    public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
+    public AvtaleDTO hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         sjekkTilgang(avtale);
-        return avtale;
+        return maskerFelterForAvtalepart(new AvtaleDTO(avtale));
     }
 
-    public Avtale hentAvtaleFraAvtaleNr(AvtaleRepository avtaleRepository, int avtaleNr) {
+    public AvtaleDTO hentAvtaleFraAvtaleNr(AvtaleRepository avtaleRepository, int avtaleNr) {
         Avtale avtale = avtaleRepository.findByAvtaleNr(avtaleNr).orElseThrow(RessursFinnesIkkeException::new);
         sjekkTilgang(avtale);
-        return avtale;
+        return maskerFelterForAvtalepart(new AvtaleDTO(avtale));
     }
 
     public List<AvtaleInnhold> hentAvtaleVersjoner(AvtaleRepository avtaleRepository, AvtaleInnholdRepository avtaleInnholdRepository, UUID avtaleId) {
@@ -165,8 +178,8 @@ public abstract class Avtalepart<T extends Identifikator> {
             throw new KanIkkeOppheveException();
         }
         boolean AlleParterHarIkkeGodkjentAvtale = !avtale.erGodkjentAvVeileder() &&
-                !avtale.erGodkjentAvArbeidsgiver() &&
-                !avtale.erGodkjentAvDeltaker();
+            !avtale.erGodkjentAvArbeidsgiver() &&
+            !avtale.erGodkjentAvDeltaker();
 
         if (AlleParterHarIkkeGodkjentAvtale) {
             throw new KanIkkeOppheveException();
@@ -213,5 +226,10 @@ public abstract class Avtalepart<T extends Identifikator> {
                     )
             );
         }
+    }
+
+    protected boolean erMentorAvtaleMedOpphavArena(Avtale avtale) {
+        return avtale.getTiltakstype() == Tiltakstype.MENTOR
+            && avtale.getOpphav() == Avtaleopphav.ARENA;
     }
 }

@@ -80,6 +80,7 @@ public class AvtaleTilJournalfoering {
     // mentor
     private String mentorFornavn;
     private String mentorEtternavn;
+    private String mentorTlf;
     private String mentorOppgaver;
     private Double mentorAntallTimer;
     private Integer mentorTimelonn;

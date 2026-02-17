@@ -82,12 +82,6 @@ tiltaksgjennomforing:
     apiGwApiKey: foo
   ereg:
     uri: http://localhost:8090/ereg
-  sts:
-    username: foo
-    password: bar
-    rest-uri: http://localhost:8090/sts/sts/token
-  axsys:
-    uri: http://localhost:8090/axsys
   persondata:
     uri: http://localhost:8090/persondata
   oppgave:
@@ -103,7 +97,7 @@ tiltaksgjennomforing:
     uri: http://localhost:8090/api/graphql
     lenke: http://localhost:3000/tiltaksgjennomforing/avtale/
     enabled: false
-  mentor-tilskuddsperioder:
-    enabled: true
+  entraproxy:
+    uri: http://localhost:8090/entraproxy
 
 ELECTOR_PATH: null

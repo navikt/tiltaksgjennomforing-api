@@ -85,7 +85,19 @@ public interface BeregningStrategy {
         }
         return null;
     }
+    static BigDecimal getFeriepengerBelop(BigDecimal feriepengersats, Double manedslonn) {
+        if (erIkkeTomme(feriepengersats, manedslonn)) {
+            return (feriepengersats.multiply(BigDecimal.valueOf(manedslonn)));
+        }
+        return null;
+    }
     static BigDecimal getBeregnetOtpBelop(BigDecimal optSats, Integer manedslonn, BigDecimal feriepenger) {
+        if (erIkkeTomme(optSats, manedslonn, feriepenger)) {
+            return (optSats.multiply(BigDecimal.valueOf(manedslonn).add(feriepenger)));
+        }
+        return null;
+    }
+    static BigDecimal getBeregnetOtpBelop(BigDecimal optSats, Double manedslonn, BigDecimal feriepenger) {
         if (erIkkeTomme(optSats, manedslonn, feriepenger)) {
             return (optSats.multiply(BigDecimal.valueOf(manedslonn).add(feriepenger)));
         }
@@ -93,6 +105,17 @@ public interface BeregningStrategy {
     }
     static BigDecimal getArbeidsgiverAvgift(
         Integer manedslonn,
+        BigDecimal feriepengerBelop,
+        BigDecimal obligTjenestepensjon,
+        BigDecimal arbeidsgiveravgift
+    ) {
+        if (erIkkeTomme(manedslonn, feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgift)) {
+            return arbeidsgiveravgift.multiply(BigDecimal.valueOf(manedslonn).add(feriepengerBelop).add(obligTjenestepensjon));
+        }
+        return null;
+    }
+    static BigDecimal getArbeidsgiverAvgift(
+        Double manedslonn,
         BigDecimal feriepengerBelop,
         BigDecimal obligTjenestepensjon,
         BigDecimal arbeidsgiveravgift
@@ -110,6 +133,17 @@ public interface BeregningStrategy {
     ) {
         if (erIkkeTomme(feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop)) {
             return manedslonn + convertBigDecimalToInt(feriepengerBelop.add(obligTjenestepensjon).add(arbeidsgiveravgiftBelop));
+        }
+        return null;
+    }
+    static Integer getSumLonnsutgifter(
+        Double manedslonn,
+        BigDecimal feriepengerBelop,
+        BigDecimal obligTjenestepensjon,
+        BigDecimal arbeidsgiveravgiftBelop
+    ) {
+        if (erIkkeTomme(feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop)) {
+            return manedslonn.intValue() + convertBigDecimalToInt(feriepengerBelop.add(obligTjenestepensjon).add(arbeidsgiveravgiftBelop));
         }
         return null;
     }
@@ -187,5 +221,14 @@ public interface BeregningStrategy {
 
     List<TilskuddPeriode> hentTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato);
 
-
+    static void settBehandletIArena(LocalDate migreringsdato, List<TilskuddPeriode> tilskuddPeriode) {
+        // Her har vi en antakelse om at tilskuddsperioder ikke kan gå på tvers av måneder, og at vi derfor
+        // kan vilkårlig velge sluttdatoen som utgangspunktet for beregning av hvorvidt tilskuddsperioden
+        // er behandlet i arena eller ikke.
+        tilskuddPeriode.forEach(periode -> {
+            if (periode.getSluttDato().isBefore(migreringsdato)) {
+                periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
+            }
+        });
+    }
 }

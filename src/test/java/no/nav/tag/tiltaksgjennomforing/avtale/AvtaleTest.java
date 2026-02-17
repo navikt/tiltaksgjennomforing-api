@@ -588,7 +588,8 @@ public class AvtaleTest {
 
     @Test
     public void nyAvtaleSkalFeileHvisDeltakerErForUng() {
-        assertFeilkode(Feilkode.SOMMERJOBB_IKKE_GAMMEL_NOK, () -> Avtale.opprett(new OpprettAvtale(Fnr.generer(2010, 1, 24), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), Avtaleopphav.VEILEDER, null));
+        LocalDate femtenAar = LocalDate.now().minusYears(15);
+        assertFeilkode(Feilkode.SOMMERJOBB_IKKE_GAMMEL_NOK, () -> Avtale.opprett(new OpprettAvtale(Fnr.generer(femtenAar), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), Avtaleopphav.VEILEDER, null));
     }
 
     @Test
@@ -912,7 +913,7 @@ public class AvtaleTest {
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().plusDays(5));
         avtale.getGjeldendeInnhold().setSluttDato(avtale.getGjeldendeInnhold().getStartDato().plusMonths(3));
         avtale.getGjeldendeInnhold().setBedriftNavn("testbedriftsnavn");
-        avtale.endreStatus(Status.fra(avtale));
+        avtale.oppdaterStatus();
         assertThat(avtale.getStatus()).isEqualTo(Status.PÅBEGYNT);
     }
 
@@ -925,7 +926,7 @@ public class AvtaleTest {
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
         avtale.getGjeldendeInnhold().setAvtaleInngått(Now.instant());
-        avtale.endreStatus(Status.fra(avtale));
+        avtale.oppdaterStatus();
         assertThat(avtale.getStatus()).isEqualTo(Status.AVSLUTTET);
     }
 
@@ -938,7 +939,7 @@ public class AvtaleTest {
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
         avtale.getGjeldendeInnhold().setAvtaleInngått(Now.instant());
-        avtale.endreStatus(Status.fra(avtale));
+        avtale.oppdaterStatus();
         assertThat(avtale.getStatus()).isEqualTo(Status.GJENNOMFØRES);
     }
 
@@ -951,7 +952,7 @@ public class AvtaleTest {
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
         avtale.getGjeldendeInnhold().setAvtaleInngått(Now.instant());
-        avtale.endreStatus(Status.fra(avtale));
+        avtale.oppdaterStatus();
         assertThat(avtale.getStatus()).isEqualTo(Status.GJENNOMFØRES);
     }
 
@@ -964,14 +965,14 @@ public class AvtaleTest {
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
         avtale.getGjeldendeInnhold().setAvtaleInngått(Now.instant());
-        avtale.endreStatus(Status.fra(avtale));
+        avtale.oppdaterStatus();
         assertThat(avtale.getStatus()).isEqualTo(Status.KLAR_FOR_OPPSTART);
     }
 
     @Test
     public void status__klar_for_godkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.endreStatus(Status.fra(avtale));
+        avtale.oppdaterStatus();
         assertThat(avtale.getStatus()).isEqualTo(Status.MANGLER_GODKJENNING);
     }
 
@@ -984,7 +985,7 @@ public class AvtaleTest {
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
         avtale.getGjeldendeInnhold().setAvtaleInngått(Now.instant());
-        avtale.endreStatus(Status.fra(avtale));
+        avtale.oppdaterStatus();
         assertThat(avtale.getStatus()).isEqualTo(Status.KLAR_FOR_OPPSTART);
     }
 
@@ -1000,7 +1001,7 @@ public class AvtaleTest {
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
         avtale.getGjeldendeInnhold().setAvtaleInngått(Now.instant());
         avtale.getGjeldendeInnhold().setDeltakerTlf(null);
-        avtale.endreStatus(Status.fra(avtale));
+        avtale.oppdaterStatus();
         assertThat(avtale.getStatus()).isEqualTo(Status.GJENNOMFØRES);
     }
 
@@ -1125,7 +1126,7 @@ public class AvtaleTest {
     @Test
     public void avtaleklarForOppstart() {
         Avtale avtale = TestData.enAvtaleKlarForOppstart();
-        avtale.endreStatus(Status.fra(avtale));
+        avtale.oppdaterStatus();
         assertThat(avtale.getStatus()).isEqualTo(Status.KLAR_FOR_OPPSTART);
     }
 

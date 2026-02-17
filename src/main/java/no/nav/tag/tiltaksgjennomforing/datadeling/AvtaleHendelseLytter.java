@@ -15,13 +15,13 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleStatusEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.DeltakersGodkjenningOpphevetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.DeltakersGodkjenningOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvArbeidsgiver;
@@ -86,11 +86,6 @@ public class AvtaleHendelseLytter {
     @EventListener
     public void avtaleForlenget(AvtaleForlengetAvVeileder event) {
         lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORLENGET, AvtaleHendelseUtførtAv.veileder(event.getUtførtAv()));
-    }
-
-    @EventListener
-    public void avtaleForlengetAvArena(AvtaleForlengetAvArena event) {
-        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORLENGET_AV_ARENA, AvtaleHendelseUtførtAv.system(Identifikator.ARENA));
     }
 
     @EventListener
@@ -201,6 +196,11 @@ public class AvtaleHendelseLytter {
     @EventListener
     public void arbeidsgiversGodkjenningOpphevetAvVeileder(ArbeidsgiversGodkjenningOpphevetAvVeileder event) {
         lagHendelse(event.getAvtale(), HendelseType.ARBEIDSGIVERS_GODKJENNING_OPPHEVET_AV_VEILEDER, AvtaleHendelseUtførtAv.veileder(event.getAvtale().getVeilederNavIdent()));
+    }
+
+    @EventListener
+    public void avtaleStatusEndret(AvtaleStatusEndret event) {
+        lagHendelse(event.getAvtale(), HendelseType.STATUSENDRING, AvtaleHendelseUtførtAv.system(Identifikator.SYSTEM));
     }
 
     private void lagHendelse(Avtale avtale, HendelseType hendelseType, AvtaleHendelseUtførtAv utførtAv) {

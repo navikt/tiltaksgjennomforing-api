@@ -93,8 +93,8 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Query(value = """
         SELECT a
         FROM Avtale a
-        WHERE a.tiltakstype IN ('MIDLERTIDIG_LONNSTILSKUDD', 'VARIG_LONNSTILSKUDD', 'SOMMERJOBB', 'VTAO')
-          AND a.status IN ('GJENNOMFØRES', 'KLAR_FOR_OPPSTART')
+        WHERE a.tiltakstype IN ('MIDLERTIDIG_LONNSTILSKUDD', 'VARIG_LONNSTILSKUDD', 'SOMMERJOBB', 'VTAO', 'MENTOR')
+          AND a.status IN ('GJENNOMFØRES', 'KLAR_FOR_OPPSTART', 'AVSLUTTET')
           AND (a.gjeldendeTilskuddsperiode IS NULL OR EXISTS (
               SELECT tp
               FROM TilskuddPeriode tp

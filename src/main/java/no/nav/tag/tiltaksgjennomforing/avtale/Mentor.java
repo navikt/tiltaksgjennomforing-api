@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetMentor;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RolleHarIkkeTilgangException;
@@ -49,21 +50,40 @@ public class Mentor extends Avtalepart<Fnr> {
     }
 
     @Override
-    public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
-        Avtale avtale = super.hentAvtale(avtaleRepository, avtaleId);
-        if (!avtale.erGodkjentTaushetserklæringAvMentor())
+    public AvtaleDTO hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
+        AvtaleDTO avtale = super.hentAvtale(avtaleRepository, avtaleId);
+        if (!avtale.erGodkjentTaushetserklæringAvMentor()) {
             throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_AVTALE);
-        skjulSensitivData(avtale);
+        }
         return avtale;
     }
 
     @Override
-    Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable) {
-        Page<Avtale> avtaler = avtaleRepository.findAllByMentorFnr(
+    Page<Avtale> hentAlleAvtalerMedMuligTilgang(
+        AvtaleRepository avtaleRepository,
+        AvtaleQueryParameter queryParametre,
+        Pageable pageable
+    ) {
+        return avtaleRepository.findAllByMentorFnr(
             getIdentifikator(),
             pageable
         );
-        return avtaler;
+    }
+
+    @Override
+    public boolean avtalenEksisterer(Avtale avtale) {
+        if (erMentorAvtaleMedOpphavArena(avtale) && !mentorAvtaleErKlarForVisningForEksterne(avtale)) {
+            return false;
+        }
+        return super.avtalenEksisterer(avtale);
+    }
+
+    @Override
+    public AvtaleDTO maskerFelterForAvtalepart(AvtaleDTO avtaleDTO) {
+        return avtaleDTO.toBuilder()
+            .annullertGrunn(null)
+            .deltakerFnr(null)
+            .build();
     }
 
     @Override
@@ -94,10 +114,5 @@ public class Mentor extends Avtalepart<Fnr> {
     @Override
     public InnloggetBruker innloggetBruker() {
         return new InnloggetMentor(getIdentifikator());
-    }
-
-    private void skjulSensitivData(Avtale avtale) {
-        avtale.setAnnullertGrunn(null);
-        avtale.setDeltakerFnr(null);
     }
 }

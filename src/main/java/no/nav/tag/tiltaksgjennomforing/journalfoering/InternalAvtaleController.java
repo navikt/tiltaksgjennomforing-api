@@ -8,6 +8,8 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnholdRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleInnholdDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +42,11 @@ public class InternalAvtaleController {
             List<AvtaleInnhold> avtaleVersjoner = avtaleInnholdRepository.finnAvtaleVersjonerTilJournalfoering();
             List<AvtaleTilJournalfoering> avtalerTilJournalfoering = avtaleVersjoner.stream().map(avtaleInnhold -> {
                 SortedSet<TilskuddPeriode> tilskuddPeriode = avtaleInnhold.getAvtale().getTilskuddPeriode();
-                AvtaleTilJournalfoering avtaleTilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtaleInnhold, null);
+                AvtaleTilJournalfoering avtaleTilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(
+                    new AvtaleInnholdDTO(avtaleInnhold),
+                    new AvtaleDTO(avtaleInnhold.getAvtale()),
+                    null
+                );
                 avtaleTilJournalfoering.setTilskuddsPerioder(tilskuddPeriode.stream().toList());
                 return avtaleTilJournalfoering;
             }).collect(Collectors.toList());
@@ -56,7 +62,9 @@ public class InternalAvtaleController {
     public ResponseEntity<?> journalfoerAvtaler(@RequestBody Map<UUID, String> avtaleVersjonerTilJournalfoert) {
         innloggingService.validerSystembruker();
         Iterable<AvtaleInnhold> avtaleVersjoner = avtaleInnholdRepository.findAllById(avtaleVersjonerTilJournalfoert.keySet());
-        avtaleVersjoner.forEach(avtaleVersjon -> avtaleVersjon.setJournalpostId(avtaleVersjonerTilJournalfoert.get(avtaleVersjon.getId())));
+        avtaleVersjoner.forEach(avtaleVersjon -> avtaleVersjon.setJournalpostId(avtaleVersjonerTilJournalfoert.get(
+            avtaleVersjon.getId()
+        )));
         avtaleInnholdRepository.saveAll(avtaleVersjoner);
         return ResponseEntity.ok().build();
     }

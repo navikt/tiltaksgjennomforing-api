@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.datavarehus.DvhMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.metrikker.MetrikkRegistrering;
@@ -32,7 +33,7 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
     @Autowired
     private AvtaleRepository avtaleRepository;
 
-    @Autowired
+    @MockBean
     private TilskuddPeriodeRepository tilskuddPeriodeRepository;
 
     @Autowired
@@ -71,10 +72,11 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
     // ARBEIDSGIVER //
 
     @Test
+    @Transactional
     public void skal_returnere_avtale_som_er_i_db() {
         Avtale avtale = avtaleRepository.save(TestData.enArbeidstreningAvtale());
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        List<Avtale> arbeidsgiverList = arbeidsgiver.hentAvtalerForMinSideArbeidsgiver(
+        List<AvtaleDTO> arbeidsgiverList = arbeidsgiver.hentAvtalerForMinSideArbeidsgiver(
             avtaleRepository,
             avtale.getBedriftNr()
         );
@@ -101,7 +103,7 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
             queryParameter,
             pageable
         );
-        List<Avtale> avtalerFiltrertBasertPaaRiktigTilgang = arbeidsgiver.hentAvtalerForMinSideArbeidsgiver(
+        List<AvtaleDTO> avtalerFiltrertBasertPaaRiktigTilgang = arbeidsgiver.hentAvtalerForMinSideArbeidsgiver(
             avtaleRepository,
             avtaleLagret.getBedriftNr()
         );
@@ -192,6 +194,7 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
 
 
     @Test
+    @Transactional
     public void mentor_hentAlleAvtalerMedMuligTilgang_skal_returnere_en_avtale_som_er_IKKE_eldre_enn_12_uker_fra_db() {
         Avtale avtale = TestData.enMentorAvtaleSignert();
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusMonths(3));

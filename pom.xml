@@ -141,7 +141,7 @@
         <dependency>
             <groupId>io.getunleash</groupId>
             <artifactId>unleash-client-java</artifactId>
-            <version>10.2.2</version>
+            <version>12.0.1</version>
         </dependency>
 
         <dependency>
@@ -171,7 +171,7 @@
         <dependency>
             <groupId>no.nav.team-tiltak</groupId>
             <artifactId>tiltak-persondata</artifactId>
-            <version>2025.05.14_08.17-6e4f5055b2a5</version>
+            <version>2026.02.05_09.21-4a5e6165dedd</version>
         </dependency>
 
         <!-- Shedlock -->

@@ -24,10 +24,14 @@ public class Fnr extends Identifikator {
     }
 
     public static Fnr generer(int aar, int maned, int dag) {
+        return  generer(LocalDate.of(aar, maned, dag));
+    }
+
+    public static Fnr generer(LocalDate dato) {
         if (!FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS) {
             throw new NotImplementedException("Generering av syntetiske fødselsnumre er ikke tillatt i produksjon.");
         }
-        Date date = Date.from(LocalDate.of(aar, maned, dag).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date date = Date.from(dato.atStartOfDay(ZoneId.systemDefault()).toInstant());
         Fodselsnummer fnr = FodselsnummerCalculator.getFodselsnummerForDate(date);
         return new Fnr(fnr.getValue());
     }
@@ -35,7 +39,7 @@ public class Fnr extends Identifikator {
     public static boolean erGyldigFnr(String verdi) {
         if (FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS) {
             return switch (verdi) {
-                case "12345678910", "00000000000", "11111111111", "99999999999", "23090170723" -> true;
+                case "12345678910", "00000000000", "11111111111", "99999999999", "23090170723", "23090170712" -> true;
                 case null, default -> FodselsnummerValidator.isValid(verdi);
             };
         }

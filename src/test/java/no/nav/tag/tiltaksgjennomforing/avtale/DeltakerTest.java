@@ -2,16 +2,21 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
@@ -40,15 +45,21 @@ public class DeltakerTest {
         Deltaker deltaker = TestData.enDeltaker(avtale);
         when(avtaleRepository.findById(any())).thenReturn(Optional.of(avtale));
 
-        Avtale avtaler = deltaker.hentAvtale(avtaleRepository, avtale.getId());
-        assertThat(avtaler.getMentorFnr()).isNull();
-        assertThat(avtaler.getGjeldendeInnhold().getMentorTimelonn()).isNull();
+        AvtaleDTO avtaleDTO = deltaker.hentAvtale(avtaleRepository, avtale.getId());
+        assertThat(avtaleDTO.mentorFnr()).isNull();
+        assertThat(avtaleDTO.gjeldendeInnhold().mentorTimelonn()).isNull();
     }
 
     @Test
     public void deltaker_alder_ikke_eldre_enn_72() {
         Now.fixedDate(LocalDate.of(2021, 1, 20));
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(new Fnr("30015521534"), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(
+            new OpprettAvtale(
+                new Fnr("30015521534"),
+                TestData.etBedriftNr(),
+                Tiltakstype.VARIG_LONNSTILSKUDD
+            ), Avtaleopphav.VEILEDER, TestData.enNavIdent()
+        );
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
         endreAvtale.setSluttDato(LocalDate.of(2028, 1, 30));
@@ -84,6 +95,33 @@ public class DeltakerTest {
         assertFeilkode(Feilkode.DELTAKER_67_AAR, () -> avtale.godkjennForVeileder(TestData.enNavIdent()));
 
         Now.resetClock();
+    }
+
+    @Test
+    public void deltaker_skal_ikke_se_avtaler_opprettet_av_arena_som_ikke_er_inngatt() {
+        Avtale avtale = Avtale.opprett(
+            new OpprettAvtale(
+                new Fnr("00000000000"),
+                TestData.etBedriftNr(),
+                Tiltakstype.MENTOR
+            ), Avtaleopphav.ARENA, TestData.enNavIdent()
+        );
+
+        Deltaker deltaker = TestData.enDeltaker(avtale);
+        when(avtaleRepository.findById(any())).thenReturn(Optional.of(avtale));
+
+        assertThatThrownBy(() -> deltaker.hentAvtale(avtaleRepository, avtale.getId()))
+            .isInstanceOf(RessursFinnesIkkeException.class);
+
+        when(avtaleRepository.findAllByDeltakerFnrAndFeilregistrertIsFalse(any(), any())).thenReturn(
+            new PageImpl<>(List.of(avtale))
+        );
+
+        assertThat(deltaker.hentAvtalerMedLesetilgang(
+            avtaleRepository,
+            new AvtaleQueryParameter(),
+            Pageable.ofSize(10)
+        ).getContent().size()).isEqualTo(0);
     }
 
 }

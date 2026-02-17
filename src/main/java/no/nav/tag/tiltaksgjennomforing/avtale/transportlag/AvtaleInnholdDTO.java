@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.transportlag;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.experimental.FieldNameConstants;
+import lombok.Builder;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnholdType;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneAvArbeidsgiverGrunn;
@@ -17,10 +17,12 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 // Lombok
-@FieldNameConstants
+@Builder(toBuilder = true)
 public record AvtaleInnholdDTO(
+    UUID id,
     Integer versjon,
 
     String deltakerFornavn,
@@ -108,6 +110,7 @@ public record AvtaleInnholdDTO(
 
     public AvtaleInnholdDTO(AvtaleInnhold dbEntitet) {
         this(
+            dbEntitet.getId(),
             dbEntitet.getVersjon(),
             dbEntitet.getDeltakerFornavn(),
             dbEntitet.getDeltakerEtternavn(),

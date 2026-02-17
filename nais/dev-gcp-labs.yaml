@@ -55,5 +55,3 @@ spec:
         - application: tiltaksgjennomforing-wiremock
         - application: tiltak-refusjon-api-labs
         - application: tiltak-dokgen
-  envFrom:
-    - configmap: loginservice-idporten

@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 import lombok.Builder;
 import lombok.Value;
+import no.nav.tag.tiltaksgjennomforing.avtale.MentorValgtLonnstype;
 
 import java.math.BigDecimal;
 
@@ -17,4 +18,7 @@ public class EndreTilskuddsberegning {
     //Mentor
     Integer mentorTimelonn;
     Double mentorAntallTimer;
+    Integer mentorValgtLonnstypeBelop;
+    MentorValgtLonnstype mentorValgtLonnstype;
+    BigDecimal stillingprosent;
 }

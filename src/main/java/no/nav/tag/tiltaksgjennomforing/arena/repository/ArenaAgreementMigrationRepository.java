@@ -68,7 +68,7 @@ public interface ArenaAgreementMigrationRepository extends JpaRepository<ArenaAg
         SELECT a
         FROM Avtale a
         WHERE a.tiltakstype = :tiltakstype
-          AND a.status = 'GJENNOMFØRES'
+          AND a.status IN ('GJENNOMFØRES', 'PÅBEGYNT', 'MANGLER_GODKJENNING')
           AND a.id NOT IN (SELECT aam.avtaleId FROM ArenaAgreementMigration aam WHERE aam.avtaleId IS NOT NULL)
     """)
     List<Avtale> findAgreementsForCleanUp(Tiltakstype tiltakstype);
