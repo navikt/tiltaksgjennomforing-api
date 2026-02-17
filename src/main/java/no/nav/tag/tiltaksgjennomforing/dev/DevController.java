@@ -98,7 +98,7 @@ public class DevController {
     @PutMapping("/avtale/{avtaleNr}/ny-oppfolging-dato")
     void nyOppfolgingDato(@PathVariable("avtaleNr") Integer avtaleNr) {
         Avtale avtale = avtaleRepository.findByAvtaleNr(avtaleNr).orElseThrow();
-        if (avtale.getTiltakstype().equals(Tiltakstype.VTAO)) {
+        if (avtale.getTiltakstype().kreverOppfolging()) {
             avtale.setKreverOppfolgingFom(Now.localDate().minusDays(1));
             avtale.setOppfolgingVarselSendt(null);
             avtaleRepository.save(avtale);

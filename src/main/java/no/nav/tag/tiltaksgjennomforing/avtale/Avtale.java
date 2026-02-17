@@ -173,7 +173,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
      * som også utfører nødvendige opprydninger.
      */
     @Enumerated(EnumType.STRING)
-    @Setter(AccessLevel.NONE)
     private Status status = Status.PÅBEGYNT;
 
     private boolean godkjentForEtterregistrering;
@@ -316,14 +315,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (this.status != nyStatus) {
             utforEndring(new AvtaleStatusEndret(this));
         }
-    }
-
-    public void setStatus(Status nyStatus) {
-        if (nyStatus.erAvsluttetEllerAnnullert() && getKreverOppfolgingFom() != null) {
-            setOppfolgingVarselSendt(null);
-            setKreverOppfolgingFom(null);
-        }
-        this.status = nyStatus;
     }
 
     /**
@@ -1298,10 +1289,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         AvtaleInnhold nyAvtaleInnholdVersjon = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORKORTE);
         gjeldendeInnhold = nyAvtaleInnholdVersjon;
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
-        LocalDate kreverOppfolgingFrist = getKreverOppfolgingFrist();
-        if (kreverOppfolgingFrist != null && kreverOppfolgingFrist.isAfter(nySluttDato)) {
-            setKreverOppfolgingFom(null);
-        }
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         forkortTilskuddsperioder(nySluttDato);
         utforEndring(new AvtaleForkortetAvVeileder(
@@ -1330,6 +1317,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         var gammelSluttDato = gjeldendeInnhold.getSluttDato();
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
+
+        if (getTiltakstype().kreverOppfolging() && getKreverOppfolgingFom() != null && getKreverOppfolgingFom().isBefore(Now.localDate())) {
+            var oppfolging = Oppfolging.fra(this).neste();
+            setKreverOppfolgingFom(oppfolging.getVarselstidspunkt());
+        }
 
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         forlengTilskuddsperioder(gammelSluttDato, nySluttDato);

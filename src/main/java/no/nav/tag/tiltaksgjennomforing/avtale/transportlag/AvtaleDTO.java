@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneAvArbeidsgiverGrunn;
@@ -53,8 +52,11 @@ public record AvtaleDTO(
     Formidlingsgruppe formidlingsgruppe,
     SortedSet<TilskuddPeriodeDTO> tilskuddPeriode,
     boolean feilregistrert,
+    @Deprecated
     LocalDate kreverOppfolgingFom,
+    @Deprecated
     Instant oppfolgingVarselSendt,
+    FortsettTiltakDTO fortsettTiltak,
     Set<String> felterSomIkkeErFyltUt,
     boolean erOpprettetEllerEndretAvArena,
     TilskuddPeriodeDTO gjeldendeTilskuddsperiode,
@@ -95,6 +97,7 @@ public record AvtaleDTO(
             avtale.isFeilregistrert(),
             avtale.getKreverOppfolgingFom(),
             avtale.getOppfolgingVarselSendt(),
+            FortsettTiltakDTO.fraAvtale(avtale),
             avtale.felterSomIkkeErFyltUt(),
             avtale.erOpprettetEllerEndretAvArena(),
             avtale.getGjeldendeTilskuddsperiode() == null ? null : new TilskuddPeriodeDTO(avtale.getGjeldendeTilskuddsperiode()),

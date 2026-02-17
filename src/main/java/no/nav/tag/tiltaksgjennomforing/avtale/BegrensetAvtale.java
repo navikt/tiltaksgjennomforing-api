@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.FortsettTiltakDTO;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 
 import java.time.Instant;
@@ -17,7 +18,10 @@ public record BegrensetAvtale(
     LocalDate sluttDato,
     Status status,
     Tiltakstype tiltakstype,
+    FortsettTiltakDTO fortsettTiltak,
+    @Deprecated
     Instant oppfolgingVarselSendt,
+    @Deprecated
     LocalDate kreverOppfolgingFom,
     boolean erGodkjentTaushetserklæringAvMentor,
     TilskuddPeriodeStatus gjeldendeTilskuddsperiodeStatus,
@@ -39,6 +43,7 @@ public record BegrensetAvtale(
             avtale.getGjeldendeInnhold().getSluttDato(),
             avtale.getStatus(),
             avtale.getTiltakstype(),
+            FortsettTiltakDTO.fraAvtale(avtale),
             avtale.getOppfolgingVarselSendt(),
             avtale.getKreverOppfolgingFom(),
             avtale.erGodkjentTaushetserklæringAvMentor(),
