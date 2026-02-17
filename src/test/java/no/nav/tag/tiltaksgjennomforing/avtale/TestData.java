@@ -859,14 +859,6 @@ public class TestData {
         return endreAvtale;
     }
 
-    public static EndreAvtale endrePåAlleMentorFelter(){
-        if (MentorTilskuddsperioderToggle.isEnabled()) {
-            return endringPåMentorBeregningTilskuddsFelter();
-        } else {
-            return endringPåAlleMentorFelterUtenBeregning();
-        }
-    }
-
     public static EndreAvtale endringPåAlleMentorFelterUtenBeregning() {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreKontaktInfo(endreAvtale);
@@ -885,7 +877,7 @@ public class TestData {
         return endreAvtale;
     }
 
-    public static EndreAvtale endringPåMentorBeregningTilskuddsFelter() {
+    public static EndreAvtale endrePåAlleMentorFelter() {
         EndreAvtale endreAvtale = endringPåAlleMentorFelterUtenBeregning();
         endreAvtale.setMentorTimelonn(100);
         endreAvtale.setMentorAntallTimer(10.0);
