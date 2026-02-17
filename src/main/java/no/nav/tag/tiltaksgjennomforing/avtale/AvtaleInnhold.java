@@ -91,6 +91,7 @@ public class AvtaleInnhold {
     private Double mentorAntallTimer;
     private Integer mentorTimelonn;
     private Integer mentorValgtLonnstypeBelop;
+    @Enumerated(EnumType.STRING)
     private MentorValgtLonnstype mentorValgtLonnstype;
     private String mentorTlf;
 

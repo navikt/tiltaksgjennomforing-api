@@ -32,28 +32,27 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setFamilietilknytningForklaring(nyAvtale.getFamilietilknytningForklaring());
         avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
 
-        if (MentorTilskuddsperioderToggle.isEnabled()) {
-            if (nyAvtale.getArbeidsgiverKid() != null && !KidnummerValidator.isValid(nyAvtale.getArbeidsgiverKid())) {
-                throw new FeilkodeException(Feilkode.FEIL_KID_NUMMER);
-            }
-            avtaleInnhold.setStillingprosent(nyAvtale.getStillingprosent());
-            avtaleInnhold.setArbeidsgiverKid(nyAvtale.getArbeidsgiverKid());
-            avtaleInnhold.setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
-            avtaleInnhold.setFeriepengesats(nyAvtale.getFeriepengesats());
-            avtaleInnhold.setOtpSats(nyAvtale.getOtpSats());
-            avtaleInnhold.setArbeidsgiveravgift(nyAvtale.getArbeidsgiveravgift());
-            avtaleInnhold.setMentorValgtLonnstype(nyAvtale.getMentorValgtLonnstype());
-            avtaleInnhold.setMentorValgtLonnstypeBelop(nyAvtale.getMentorValgtLonnstypeBelop());
-
-            if (nyAvtale.getMentorValgtLonnstype() != null && nyAvtale.getMentorValgtLonnstypeBelop() != null) {
-                avtaleInnhold.setMentorTimelonn(MentorTimelonnBeregning.beregnMentorTimelonn(
-                    nyAvtale.getMentorValgtLonnstype(),
-                    nyAvtale.getMentorValgtLonnstypeBelop(),
-                    nyAvtale.getStillingprosent()
-                ));
-            }
-            mentorBeregningStrategy.reberegnTotal(avtaleInnhold.getAvtale());
+        if (nyAvtale.getArbeidsgiverKid() != null && !KidnummerValidator.isValid(nyAvtale.getArbeidsgiverKid())) {
+            throw new FeilkodeException(Feilkode.FEIL_KID_NUMMER);
         }
+        avtaleInnhold.setStillingprosent(nyAvtale.getStillingprosent());
+        avtaleInnhold.setArbeidsgiverKid(nyAvtale.getArbeidsgiverKid());
+        avtaleInnhold.setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
+        avtaleInnhold.setFeriepengesats(nyAvtale.getFeriepengesats());
+        avtaleInnhold.setOtpSats(nyAvtale.getOtpSats());
+        avtaleInnhold.setArbeidsgiveravgift(nyAvtale.getArbeidsgiveravgift());
+        avtaleInnhold.setMentorValgtLonnstype(nyAvtale.getMentorValgtLonnstype());
+        avtaleInnhold.setMentorValgtLonnstypeBelop(nyAvtale.getMentorValgtLonnstypeBelop());
+
+        if (nyAvtale.getMentorValgtLonnstype() != null && nyAvtale.getMentorValgtLonnstypeBelop() != null) {
+            avtaleInnhold.setMentorTimelonn(MentorTimelonnBeregning.beregnMentorTimelonn(
+                nyAvtale.getMentorValgtLonnstype(),
+                nyAvtale.getMentorValgtLonnstypeBelop(),
+                nyAvtale.getStillingprosent()
+            ));
+        }
+        mentorBeregningStrategy.reberegnTotal(avtaleInnhold.getAvtale());
+
         super.endre(nyAvtale);
     }
 
@@ -85,17 +84,15 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
         alleFelter.put(AvtaleInnhold.Fields.mentorTimelonn, avtaleInnhold.getMentorTimelonn());
         alleFelter.put(Fields.mentorTlf, avtaleInnhold.getMentorTlf());
 
-        if (MentorTilskuddsperioderToggle.isEnabled()) {
-            alleFelter.put(AvtaleInnhold.Fields.arbeidsgiverKontonummer, avtaleInnhold.getArbeidsgiverKontonummer());
-            alleFelter.put(AvtaleInnhold.Fields.feriepengesats, avtaleInnhold.getFeriepengesats());
-            alleFelter.put(AvtaleInnhold.Fields.otpSats, avtaleInnhold.getOtpSats());
-            alleFelter.put(AvtaleInnhold.Fields.arbeidsgiveravgift, avtaleInnhold.getArbeidsgiveravgift());
-            alleFelter.put(AvtaleInnhold.Fields.mentorValgtLonnstype, avtaleInnhold.getMentorValgtLonnstype());
-            alleFelter.put(AvtaleInnhold.Fields.mentorValgtLonnstypeBelop, avtaleInnhold.getMentorValgtLonnstypeBelop());
-            Optional.ofNullable(avtaleInnhold.getMentorValgtLonnstype())
-                .filter(belop -> !avtaleInnhold.getMentorValgtLonnstype().erTimelonn())
-                .ifPresent(belop -> alleFelter.put(AvtaleInnhold.Fields.stillingprosent, avtaleInnhold.getStillingprosent()));
-        }
+        alleFelter.put(AvtaleInnhold.Fields.arbeidsgiverKontonummer, avtaleInnhold.getArbeidsgiverKontonummer());
+        alleFelter.put(AvtaleInnhold.Fields.feriepengesats, avtaleInnhold.getFeriepengesats());
+        alleFelter.put(AvtaleInnhold.Fields.otpSats, avtaleInnhold.getOtpSats());
+        alleFelter.put(AvtaleInnhold.Fields.arbeidsgiveravgift, avtaleInnhold.getArbeidsgiveravgift());
+        alleFelter.put(AvtaleInnhold.Fields.mentorValgtLonnstype, avtaleInnhold.getMentorValgtLonnstype());
+        alleFelter.put(AvtaleInnhold.Fields.mentorValgtLonnstypeBelop,avtaleInnhold.getMentorValgtLonnstypeBelop());
+        Optional.ofNullable(avtaleInnhold.getMentorValgtLonnstype())
+            .filter(belop -> !avtaleInnhold.getMentorValgtLonnstype().erTimelonn())
+            .ifPresent(belop -> alleFelter.put(AvtaleInnhold.Fields.stillingprosent, avtaleInnhold.getStillingprosent()));
 
         alleFelter.put(AvtaleInnhold.Fields.harFamilietilknytning, avtaleInnhold.getHarFamilietilknytning());
         Optional.ofNullable(avtaleInnhold.getHarFamilietilknytning())
