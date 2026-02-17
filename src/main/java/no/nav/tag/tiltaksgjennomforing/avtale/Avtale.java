@@ -331,7 +331,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
      * tidspunkt ved endringer i avtalen.
      */
     private void settFoersteOppfolgingstidspunkt() {
-        if (Tiltakstype.VTAO.equals(this.getTiltakstype()) && this.gjeldendeInnhold.getStartDato() != null) {
+        if (this.getTiltakstype().kreverOppfolging() && this.gjeldendeInnhold.getStartDato() != null) {
             Oppfolging oppfolging = Oppfolging.fra(this)
                 .nullstill()
                 .neste();
