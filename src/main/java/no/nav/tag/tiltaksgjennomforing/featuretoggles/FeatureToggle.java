@@ -1,8 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
 public enum FeatureToggle {
-    SMS_MIN_SIDE_DELTAKER("sms-min-side-deltaker"),
-    ARBEIDSGIVERNOTIFIKASJON_MED_SAK_OG_SMS("arbeidsgivernotifikasjon-med-sak-og-sms"),
     SMS_TIL_MOBILNUMMER("sms-til-mobilnummer"),
     ARENA_AVTALE_JOBB("arenaAvtaleJobb"),
     ARENA_PROSESSERINGS_JOBB("arenaProsesseringsJobb"),

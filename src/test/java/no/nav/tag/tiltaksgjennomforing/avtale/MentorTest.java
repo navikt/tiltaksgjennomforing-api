@@ -38,7 +38,6 @@ import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.getForPart;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.jsonHarVerdi;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -84,7 +83,7 @@ public class MentorTest {
         avtale.endreAvtaleArena(EndreAvtaleArena.builder().build());
 
         // TODO: Disse burde ikke være nødvendig når vi har løst oppgaven med å "gjenåpne" avtaler under migrering
-        avtale.endreStatus(Status.PÅBEGYNT);
+        avtale.setStatus(Status.PÅBEGYNT);
         avtale.opphevGodkjenningerSomVeileder();
 
         // NÅR

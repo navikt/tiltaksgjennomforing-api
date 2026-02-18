@@ -9,8 +9,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
-import no.nav.tag.tiltaksgjennomforing.avtale.Mentor;
-import no.nav.tag.tiltaksgjennomforing.avtale.MentorTilskuddsperioderToggle;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
@@ -75,64 +73,6 @@ class LagSmsFraAvtaleHendelseTest {
         deltaker.godkjennAvtale(avtale);
         avtale = avtaleRepository.save(avtale);
         assertSmsOpprettetOgSendt(HendelseType.GODKJENT_AV_DELTAKER, avtale.getId(), avtale.getGjeldendeInnhold().getVeilederTlf(), FAGSYSTEMSONE_VARSELTEKST);
-    }
-
-    @Test
-    void avtaleInngått() throws JsonProcessingException {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.godkjennAvtale(avtale);
-        Veileder veileder = TestData.enVeileder(avtale);
-        GodkjentPaVegneGrunn godkjentPaVegneGrunn = new GodkjentPaVegneGrunn();
-        godkjentPaVegneGrunn.setIkkeBankId(true);
-        veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
-        avtaleRepository.save(avtale);
-
-        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
-        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
-    }
-
-    @Test
-    void avtaleInngåttMentorUtenTilskuddsperioder() throws JsonProcessingException {
-        MentorTilskuddsperioderToggle.setValue(false);
-
-        Avtale avtale = TestData.enMentorAvtaleUsignert();
-        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        Mentor mentor = TestData.enMentor(avtale);
-        mentor.godkjennAvtale(avtale);
-        arbeidsgiver.godkjennAvtale(avtale);
-        Veileder veileder = TestData.enVeileder(avtale);
-
-        GodkjentPaVegneGrunn godkjentPaVegneGrunn = new GodkjentPaVegneGrunn();
-        godkjentPaVegneGrunn.setIkkeBankId(true);
-        veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
-
-        avtale = avtaleRepository.saveAndFlush(avtale);
-
-        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
-        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
-        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getMentorTlf(), SELVBETJENINGSONE_VARSELTEKST);
-    }
-
-    @Test
-    void godkjenningerOpphevet() throws JsonProcessingException {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        Veileder veileder = TestData.enVeileder(avtale);
-        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        Deltaker deltaker = TestData.enDeltaker(avtale);
-        deltaker.godkjennAvtale(avtale);
-        //Arbeidsgiver opphever deltaker
-        arbeidsgiver.opphevGodkjenninger(avtale);
-        avtale = avtaleRepository.save(avtale);
-        assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
-
-        deltaker.godkjennAvtale(avtale);
-        arbeidsgiver.godkjennAvtale(avtale);
-        //Veileder opphever arbeidsgiver og deltaker
-        veileder.opphevGodkjenninger(avtale);
-        avtale = avtaleRepository.save(avtale);
-        assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
-        assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
     }
 
     @Test

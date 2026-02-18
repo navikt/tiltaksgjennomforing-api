@@ -6,7 +6,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -118,7 +117,7 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaler.addAll(ghostingAvtalerEldreEnn12Uker);
         avtaler.addAll(genererAvtaler(10));
         avtaler.forEach(avtale -> {
-            avtale.endreStatus(Status.fra(avtale));
+            avtale.oppdaterStatus();
             avtaleRepository.save(avtale);
         });
     }
