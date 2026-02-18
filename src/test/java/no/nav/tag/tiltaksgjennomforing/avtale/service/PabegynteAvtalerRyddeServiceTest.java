@@ -203,35 +203,6 @@ class PabegynteAvtalerRyddeServiceTest {
     }
 
     @Test
-    void venter_med_rydding_av_vtao_avtaler_fra_arena_til_1_september() {
-        Now.fixedDate(LocalDate.of(2025, 8, 10).plusDays(1)); // pluss 1 dag = over midnatt
-
-        var vtaoMigreringDato = LocalDateTime.of(2025, 5, 13, 12, 0);
-        Avtale vtaoAvtaleFraArena = mockAvtale(vtaoMigreringDato, Tiltakstype.VTAO, Avtaleopphav.ARENA);
-        Avtale vtaoAvtaleSomIkkeErFraArena = mockAvtale(vtaoMigreringDato, Tiltakstype.VTAO, Avtaleopphav.VEILEDER);
-
-        List<Avtale> avtaler = List.of(vtaoAvtaleFraArena, vtaoAvtaleSomIkkeErFraArena);
-        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(avtaler);
-
-        PabegynteAvtalerRyddeService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeService(
-            avtaleRepositoryMock,
-            featureToggleServiceMock
-        );
-        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
-
-        verify(vtaoAvtaleFraArena, times(0)).utlop(AvtaleUtlopHandling.UTLOP);
-        verify(vtaoAvtaleSomIkkeErFraArena, times(1)).utlop(AvtaleUtlopHandling.UTLOP);
-        verify(avtaleRepositoryMock, times(1)).save(any());
-
-        Now.fixedDate(LocalDate.of(2025, 9, 1).plusDays(1)); // pluss 1 dag = over midnatt
-        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
-
-        verify(vtaoAvtaleFraArena, times(1)).utlop(AvtaleUtlopHandling.UTLOP);
-        verify(vtaoAvtaleSomIkkeErFraArena, times(2)).utlop(AvtaleUtlopHandling.UTLOP);
-        verify(avtaleRepositoryMock, times(3)).save(any());
-    }
-
-    @Test
     void rydder_vtao_avtaler_fra_arena_som_vanlig_etter_tolv_uker_fra_sist_endret_etter_1_september() {
         var sisteEndret10September2025 = LocalDateTime.of(2025, 9, 10, 12, 0).minusWeeks(12);
 
