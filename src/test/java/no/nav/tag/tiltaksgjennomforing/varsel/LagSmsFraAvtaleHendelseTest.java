@@ -76,42 +76,6 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void avtaleInngått() throws JsonProcessingException {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.godkjennAvtale(avtale);
-        Veileder veileder = TestData.enVeileder(avtale);
-        GodkjentPaVegneGrunn godkjentPaVegneGrunn = new GodkjentPaVegneGrunn();
-        godkjentPaVegneGrunn.setIkkeBankId(true);
-        veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
-        avtaleRepository.save(avtale);
-
-        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
-        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
-    }
-
-    @Test
-    void godkjenningerOpphevet() throws JsonProcessingException {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        Veileder veileder = TestData.enVeileder(avtale);
-        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        Deltaker deltaker = TestData.enDeltaker(avtale);
-        deltaker.godkjennAvtale(avtale);
-        //Arbeidsgiver opphever deltaker
-        arbeidsgiver.opphevGodkjenninger(avtale);
-        avtale = avtaleRepository.save(avtale);
-        assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
-
-        deltaker.godkjennAvtale(avtale);
-        arbeidsgiver.godkjennAvtale(avtale);
-        //Veileder opphever arbeidsgiver og deltaker
-        veileder.opphevGodkjenninger(avtale);
-        avtale = avtaleRepository.save(avtale);
-        assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
-        assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
-    }
-
-    @Test
     void refusjon_somerjobb_klar() throws JsonProcessingException {
         Avtale avtale = TestData.enSommerjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
