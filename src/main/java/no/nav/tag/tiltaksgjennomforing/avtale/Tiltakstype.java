@@ -8,7 +8,7 @@ public enum Tiltakstype {
     INKLUDERINGSTILSKUDD("Inkluderingstilskudd", "ab0417", "INKLUTILS"),
     SOMMERJOBB("Sommerjobb", "ab0450", null),
     VTAO("Varig tilrettelagt arbeid i ordinær virksomhet", "ab0418", "VATIAROR"),
-    FIREARIG_LONNSTILSKUDD("Fireårig lønnstilskudd for unge", "ab0451", null);
+    FIREARIG_LONNSTILSKUDD("Fireårig lønnstilskudd for unge", null, null);
 
     final String beskrivelse;
     final String behandlingstema;
