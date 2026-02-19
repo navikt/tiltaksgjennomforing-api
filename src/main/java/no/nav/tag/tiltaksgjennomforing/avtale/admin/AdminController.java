@@ -10,8 +10,10 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AnnullertGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonStatus;
@@ -27,6 +29,8 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.varsel.Varsel;
+import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,7 +45,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +73,7 @@ public class AdminController {
     private final AdminService adminService;
     private final GjeldendeTilskuddsperiodeJobbService gjeldendeTilskuddsperiodeJobbService;
     private final Norg2Client norg2Client;
+    private final VarselRepository varselRepository;
 
     @PostMapping("reberegn")
     public void reberegnLønnstilskudd(@RequestBody List<UUID> avtaleIder) {
@@ -439,5 +446,54 @@ public class AdminController {
         return ResponseEntity.ok(nyAvtale.getId());
     }
 
+    /**
+     * En feil har ført til at mange VTAO-avtaler mangler kreverOppfolgingFom, som igjen fører til at veileder ikke
+     * får ny oppfølgingsperiode. Dette endepunktet fikser opp i feilen ved å sette kreverOppfolgingFom til tidligst
+     * 3mnd fra nåværende dato, men ellers 6 mnd fra forrige utførte oppfølging.
+     *
+     * @param dryRun - hvis true, vil ikke endringene bli lagret i databasen. Er default
+     */
+    @Transactional
+    @PostMapping("/avtaler/reboot-oppfolging-for-vtao")
+    public List<AvtaleVTAOKreverOppfolgingRebootResponse> rebootOppfolgingForVTAO(
+        @RequestParam(defaultValue = "true") boolean dryRun
+    ) {
+        List<Avtale> avtaler = avtaleRepository.findAllByTiltakstype(Tiltakstype.VTAO);
+        List<Avtale> avtalerUtenOppfolgingFom = avtaler.stream()
+            .filter(avtale -> avtale.getKreverOppfolgingFom() == null)
+            .toList();
 
+        var resultat = new ArrayList<AvtaleVTAOKreverOppfolgingRebootResponse>();
+
+        avtalerUtenOppfolgingFom.forEach(avtale -> {
+            List<Varsel> varsler = varselRepository.findAllByAvtaleIdAndMottaker(avtale.getId(), Avtalerolle.VEILEDER);
+            Optional<Instant> sistKjenteOppfolging = varsler.stream()
+                .filter(varsel -> varsel.getHendelseType().equals(HendelseType.OPPFØLGING_AV_TILTAK_UTFØRT))
+                .map(Varsel::getTidspunkt)
+                .max(Instant::compareTo);
+
+            var forrigeOppfolgingPluss6mnd =
+                sistKjenteOppfolging.map(LocalDate::from).map(x -> x.plusMonths(6));
+            // Minste dato av foreslått vs 3 mnd fra dagens dato
+            var foreslaattOppfolgingstidspunkt = forrigeOppfolgingPluss6mnd
+                .filter(d -> d.isAfter(LocalDate.now().plusMonths(3)))
+                .or(() -> Optional.of(LocalDate.now().plusMonths(3)));
+
+            if (!dryRun) {
+                avtale.setKreverOppfolgingFom(foreslaattOppfolgingstidspunkt.get());
+            }
+            resultat.add(new AvtaleVTAOKreverOppfolgingRebootResponse(
+                avtale.getId(),
+                avtale.getAvtaleNr(),
+                avtale.getStatus(),
+                sistKjenteOppfolging.orElse(null),
+                foreslaattOppfolgingstidspunkt.orElse(null)
+            ));
+        });
+
+        if (!dryRun) {
+            avtaleRepository.saveAll(avtaler);
+        }
+        return resultat;
+    }
 }
