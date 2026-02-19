@@ -326,15 +326,18 @@ public class AdminController {
         );
     }
 
-    @GetMapping("/sjekk-diskresjon-bolk")
-    public Map<Fnr, Diskresjonskode> sjekkDiskresjon(@RequestBody Set<String> fnrs) {
-        Set<Fnr> gyldigeFnrs = fnrs.stream()
-            .filter(Fnr::erGyldigFnr)
-            .map(Fnr::new)
-            .collect(Collectors.toSet());
+    @GetMapping("/avtale/{avtaleId}/sjekk-diskresjon")
+    public boolean sjekkAvtaleDiskresjon(@PathVariable UUID avtaleId) {
+        return avtaleRepository.findById(avtaleId)
+            .map(avtale -> persondataService.hentDiskresjonskode(avtale.getDeltakerFnr()).erKode6Eller7())
+            .orElseThrow(RessursFinnesIkkeException::new);
+    }
 
-        Map<Fnr, Diskresjonskode> diskresjonskodeMap = persondataService.hentDiskresjonskoder(gyldigeFnrs);
-        return diskresjonskodeMap;
+    @GetMapping("/veksle-avtalenr-til-avtaleid/{avtaleNr}")
+    public UUID veksleAvtaleNrTilAvtaleId(@PathVariable int avtaleNr) {
+        return avtaleRepository.findByAvtaleNr(avtaleNr)
+            .map(Avtale::getId)
+            .orElseThrow(RessursFinnesIkkeException::new);
     }
 
     @PostMapping("/oppdaterte-avtalekrav")
