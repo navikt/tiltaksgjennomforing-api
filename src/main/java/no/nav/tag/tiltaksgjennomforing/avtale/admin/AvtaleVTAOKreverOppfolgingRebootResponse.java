@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale.admin;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 public record AvtaleVTAOKreverOppfolgingRebootResponse(
@@ -10,6 +11,6 @@ public record AvtaleVTAOKreverOppfolgingRebootResponse(
     Integer avtaleNr,
     Status status,
     Instant sistKjenteOppfolging,
-    java.time.LocalDate nyOppfolging
+    LocalDate nyOppfolging
 ) {
 }
