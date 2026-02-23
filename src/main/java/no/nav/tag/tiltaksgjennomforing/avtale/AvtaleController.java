@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import io.getunleash.UnleashContext;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -457,7 +458,7 @@ public class AvtaleController {
     @AuditLogging(value = "Opprett avtale om arbeidsmarkedstiltak", type = EventType.CREATE, utfallSomLogges = Utfall.FEIL)
     public ResponseEntity<?> opprettAvtaleSomVeileder(@RequestBody OpprettAvtale opprettAvtale) {
         sjekkSkrivebeskyttelse(opprettAvtale.getTiltakstype());
-
+        featureToggleService.isEnabled(FeatureToggle.FIREARIGLONNSTILSKUDD);
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
@@ -1008,4 +1009,15 @@ public class AvtaleController {
             throw new FeilkodeException(Feilkode.IKKE_ADMIN_TILGANG);
         }
     }
+
+    private void enhetKanOppretteFireårigLønnstilskudd(Tiltakstype tiltakstype, String enhetsNr) {
+        if(tiltakstype == Tiltakstype.FIREARIG_LONNSTILSKUDD) {
+            UnleashContext unleashContext = UnleashContext.builder().addProperty("enhetsNr", enhetsNr).build();
+            Boolean medIForsøk = featureToggleService.isEnabled(FeatureToggle.FIREARIGLONNSTILSKUDD, unleashContext);
+            if(!medIForsøk){
+                throw new FeilkodeException(Feilkode.ENHET_KAN_IKKE_OPPRETTE_FIREÅRIG_LØNNSTILSKUDD);
+            }
+        }
+    }
 }
+
