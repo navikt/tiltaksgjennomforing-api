@@ -468,13 +468,13 @@ public class AdminController {
         avtalerUtenOppfolgingFom.forEach(avtale -> {
             List<Varsel> varsler = varselRepository.findAllByAvtaleIdAndMottaker(avtale.getId(), Avtalerolle.VEILEDER);
             Optional<Instant> sistKjenteOppfolging = varsler.stream()
-                .filter(varsel -> varsel.getHendelseType().equals(HendelseType.OPPFØLGING_AV_TILTAK_UTFØRT))
+                .filter(varsel -> varsel.getHendelseType().equals(HendelseType.OPPFØLGING_AV_TILTAK_KREVES))
                 .map(Varsel::getTidspunkt)
                 .max(Instant::compareTo);
 
             var forrigeOppfolgingPluss6mnd =
                 sistKjenteOppfolging.map(LocalDate::from).map(x -> x.plusMonths(6));
-            // Minste dato av foreslått vs 3 mnd fra dagens dato
+            // Foreslått tidspunkt for oppfølging er tidligst om 3 måneder
             var foreslaattOppfolgingstidspunkt = forrigeOppfolgingPluss6mnd
                 .filter(d -> d.isAfter(LocalDate.now().plusMonths(3)))
                 .or(() -> Optional.of(LocalDate.now().plusMonths(3)));
