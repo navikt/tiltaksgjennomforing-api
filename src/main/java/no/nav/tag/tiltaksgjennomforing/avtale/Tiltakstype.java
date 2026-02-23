@@ -50,14 +50,12 @@ public enum Tiltakstype {
 
     public boolean isMentor() { return this == Tiltakstype.MENTOR; }
 
-    public boolean isFirearigLonnstilskudd() { return this == Tiltakstype.FIREARIG_LONNSTILSKUDD; }
-
     public boolean skalBesluttes() {
         switch (this) {
             case ARBEIDSTRENING, INKLUDERINGSTILSKUDD -> {
                 return false;
             }
-            case MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, VTAO, SOMMERJOBB, MENTOR -> {
+            case MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, VTAO, SOMMERJOBB, MENTOR, FIREARIG_LONNSTILSKUDD -> {
                 return true;
             }
             case null -> throw new IllegalStateException("Tiltakstype kan ikke være null");
@@ -67,7 +65,7 @@ public enum Tiltakstype {
     public boolean kreverOppfolging() {
         switch (this) {
             case MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, MENTOR, ARBEIDSTRENING, INKLUDERINGSTILSKUDD,
-                 SOMMERJOBB -> {
+                 SOMMERJOBB, FIREARIG_LONNSTILSKUDD -> {
                 return false;
             }
             case VTAO -> {
