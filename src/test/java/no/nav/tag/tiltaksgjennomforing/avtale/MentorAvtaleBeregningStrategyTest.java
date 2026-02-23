@@ -4,6 +4,7 @@ import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentorBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 @ActiveProfiles(Miljø.TEST)
 public class MentorAvtaleBeregningStrategyTest {
+    private final MentorBeregningStrategy mentorBeregningStrategy = new MentorBeregningStrategy();
 
     @BeforeEach
     public void setup() {
@@ -131,5 +133,118 @@ public class MentorAvtaleBeregningStrategyTest {
             .max(java.util.Comparator.comparing(TilskuddPeriode::getSluttDato))
             .orElseThrow();
         assertThat(sistePeriode.getSluttDato()).isEqualTo(nySluttDato);
+    }
+
+    @Test
+    public void reberegnTotal_nullstiller_beregningsfelter_når_otpSats_mangler() {
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
+        EndreAvtale endreAvtale = TestData.endrePåAlleMentorFelter();
+        endreAvtale.setOtpSats(null);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
+
+        assertThat(avtale.getGjeldendeInnhold().getManedslonn()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getFeriepengerBelop()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getOtpBelop()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getArbeidsgiveravgiftBelop()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getSumLonnsutgifter()).isNull();
+    }
+
+    @Test
+    public void reberegnTotal_nullstiller_beregningsfelter_når_feriepengesats_mangler() {
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
+        EndreAvtale endreAvtale = TestData.endrePåAlleMentorFelter();
+        endreAvtale.setFeriepengesats(null);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
+
+        assertThat(avtale.getGjeldendeInnhold().getManedslonn()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getFeriepengerBelop()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getOtpBelop()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getArbeidsgiveravgiftBelop()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getSumLonnsutgifter()).isNull();
+    }
+
+    @Test
+    public void reberegnTotal_nullstiller_beregningsfelter_når_arbeidsgiveravgift_mangler() {
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
+        EndreAvtale endreAvtale = TestData.endrePåAlleMentorFelter();
+        endreAvtale.setArbeidsgiveravgift(null);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
+
+        assertThat(avtale.getGjeldendeInnhold().getManedslonn()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getFeriepengerBelop()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getOtpBelop()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getArbeidsgiveravgiftBelop()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getSumLonnsutgifter()).isNull();
+    }
+
+    @Test
+    public void reberegnTotal_nullstiller_beregningsfelter_når_mentorAntallTimer_mangler() {
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
+        EndreAvtale endreAvtale = TestData.endrePåAlleMentorFelter();
+        endreAvtale.setMentorAntallTimer(null);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
+
+        assertThat(avtale.getGjeldendeInnhold().getManedslonn()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getFeriepengerBelop()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getOtpBelop()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getArbeidsgiveravgiftBelop()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getSumLonnsutgifter()).isNull();
+    }
+
+    @Test
+    public void reberegnTotal_beregner_korrekt_når_alle_nødvendige_felter_er_utfylt() {
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
+        EndreAvtale endreAvtale = TestData.endrePåAlleMentorFelter();
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
+
+        assertThat(avtale.getGjeldendeInnhold().getManedslonn()).isNotNull().isPositive();
+        assertThat(avtale.getGjeldendeInnhold().getFeriepengerBelop()).isNotNull().isPositive();
+        assertThat(avtale.getGjeldendeInnhold().getOtpBelop()).isNotNull().isPositive();
+        assertThat(avtale.getGjeldendeInnhold().getArbeidsgiveravgiftBelop()).isNotNull().isPositive();
+        assertThat(avtale.getGjeldendeInnhold().getSumLonnsutgifter()).isNotNull().isPositive();
+    }
+
+    @Test
+    public void nødvendigeFelterErUtfyltForBeregning_returnerer_false_når_ett_felt_mangler() {
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
+        EndreAvtale endreAvtale = TestData.endrePåAlleMentorFelter();
+        endreAvtale.setOtpSats(null);
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
+
+        assertThat(mentorBeregningStrategy.nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(avtale)).isFalse();
+    }
+
+    @Test
+    public void nødvendigeFelterErUtfyltForBeregning_returnerer_true_når_alle_felt_er_satt() {
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
+        EndreAvtale endreAvtale = TestData.endrePåAlleMentorFelter();
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
+
+        assertThat(mentorBeregningStrategy.nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(avtale)).isTrue();
+    }
+
+    @Test
+    public void endreBeregning_oppdaterer_alle_beregningsfelter_og_reberegner() {
+        Avtale avtale = TestData.enMentorAvtaleSignert();
+        int sumFør = avtale.getGjeldendeInnhold().getSumLonnsutgifter();
+
+        EndreTilskuddsberegning endring = EndreTilskuddsberegning.builder()
+            .mentorAntallTimer(20.0)
+            .otpSats(0.05)
+            .arbeidsgiveravgift(BigDecimal.valueOf(0.141))
+            .feriepengesats(BigDecimal.valueOf(0.12))
+            .mentorValgtLonnstype(MentorValgtLonnstype.ÅRSLØNN)
+            .mentorValgtLonnstypeBelop(600_000)
+            .stillingprosent(BigDecimal.valueOf(100))
+            .build();
+
+        mentorBeregningStrategy.endreBeregning(avtale, endring);
+
+        assertThat(avtale.getGjeldendeInnhold().getOtpSats()).isEqualTo(endring.getOtpSats());
+        assertThat(avtale.getGjeldendeInnhold().getFeriepengesats()).isEqualTo(endring.getFeriepengesats());
+        assertThat(avtale.getGjeldendeInnhold().getArbeidsgiveravgift()).isEqualTo(endring.getArbeidsgiveravgift());
+        assertThat(avtale.getGjeldendeInnhold().getMentorAntallTimer()).isEqualTo(endring.getMentorAntallTimer());
+        assertThat(avtale.getGjeldendeInnhold().getSumLonnsutgifter()).isNotEqualTo(sumFør);
+        assertThat(avtale.getGjeldendeInnhold().getSumLonnsutgifter()).isNotNull().isPositive();
     }
 }

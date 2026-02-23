@@ -25,6 +25,11 @@ public class MentorBeregningStrategy implements BeregningStrategy {
     public void reberegnTotal(Avtale avtale) {
         AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
         if (!nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(avtale)) {
+            innhold.setManedslonn(null);
+            innhold.setFeriepengerBelop(convertBigDecimalToInt(null));
+            innhold.setOtpBelop(convertBigDecimalToInt(null));
+            innhold.setArbeidsgiveravgiftBelop(convertBigDecimalToInt(null));
+            innhold.setSumLonnsutgifter(null);
             return;
         }
         Double mentorsMånedslønn = innhold.getMentorTimelonn() * innhold.getMentorAntallTimer();
