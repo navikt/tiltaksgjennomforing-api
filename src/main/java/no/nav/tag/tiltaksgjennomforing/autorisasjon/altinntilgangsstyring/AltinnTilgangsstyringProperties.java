@@ -31,4 +31,6 @@ public class AltinnTilgangsstyringProperties {
     private Integer vtaoServiceEdition;
     private Integer adressesperreServiceCode;
     private Integer adressesperreServiceEdition;
+    private Integer ltsFirearigServiceCode;
+    private Integer ltsFirearigServiceEdition;
 }

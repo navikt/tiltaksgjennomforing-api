@@ -7,7 +7,8 @@ public enum Tiltakstype {
     MENTOR("Mentor", "ab0416", "MENTOR"),
     INKLUDERINGSTILSKUDD("Inkluderingstilskudd", "ab0417", "INKLUTILS"),
     SOMMERJOBB("Sommerjobb", "ab0450", null),
-    VTAO("Varig tilrettelagt arbeid i ordinær virksomhet", "ab0418", "VATIAROR");
+    VTAO("Varig tilrettelagt arbeid i ordinær virksomhet", "ab0418", "VATIAROR"),
+    FIREARIG_LONNSTILSKUDD("Fireårig lønnstilskudd for unge", null, null);
 
     final String beskrivelse;
     final String behandlingstema;
@@ -54,7 +55,7 @@ public enum Tiltakstype {
             case ARBEIDSTRENING, INKLUDERINGSTILSKUDD -> {
                 return false;
             }
-            case MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, VTAO, SOMMERJOBB, MENTOR -> {
+            case MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, VTAO, SOMMERJOBB, MENTOR, FIREARIG_LONNSTILSKUDD -> {
                 return true;
             }
             case null -> throw new IllegalStateException("Tiltakstype kan ikke være null");
@@ -64,7 +65,7 @@ public enum Tiltakstype {
     public boolean kreverOppfolging() {
         switch (this) {
             case MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, MENTOR, ARBEIDSTRENING, INKLUDERINGSTILSKUDD,
-                 SOMMERJOBB -> {
+                 SOMMERJOBB, FIREARIG_LONNSTILSKUDD -> {
                 return false;
             }
             case VTAO -> {
