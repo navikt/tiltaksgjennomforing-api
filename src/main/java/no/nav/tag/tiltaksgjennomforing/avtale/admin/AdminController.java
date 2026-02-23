@@ -29,6 +29,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 import no.nav.tag.tiltaksgjennomforing.varsel.Varsel;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
@@ -473,7 +474,7 @@ public class AdminController {
                 .max(Instant::compareTo);
 
             var forrigeOppfolgingPluss6mnd =
-                sistKjenteOppfolging.map(LocalDate::from).map(x -> x.plusMonths(6));
+                sistKjenteOppfolging.map(DatoUtils::instantTilLocalDate).map(x -> x.plusMonths(6));
             // Foreslått tidspunkt for oppfølging er tidligst om 3 måneder
             var foreslaattOppfolgingstidspunkt = forrigeOppfolgingPluss6mnd
                 .filter(d -> d.isAfter(LocalDate.now().plusMonths(3)))
