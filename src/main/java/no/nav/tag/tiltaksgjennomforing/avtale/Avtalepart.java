@@ -128,6 +128,12 @@ public abstract class Avtalepart<T extends Identifikator> {
             throw new RessursFinnesIkkeException();
         }
         if (harTilgangTilAvtale(avtale) instanceof Tilgang.Avvis avvis) {
+            log.info(
+                "Avtale {} avvist for avtalepart {} på grunn av tilgangskode {}",
+                avtale.getId(),
+                rolle(),
+                avvis.tilgangskode()
+            );
             switch (avvis.tilgangskode()) {
                 case STRENGT_FORTROLIG_ADRESSE -> throw new IkkeTilgangTilDeltakerException(
                     avtale.getDeltakerFnr(),

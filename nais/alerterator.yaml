@@ -4,7 +4,7 @@ metadata:
   name: tiltaksgjennomforing-api
   namespace: arbeidsgiver
   labels:
-    team: team-tiltak
+    team: arbeidsgiver
 spec:
   groups:
     - name: tiltaksgjennomforing-api-alert
@@ -16,17 +16,7 @@ spec:
             summary: Appen er nede
             action: "`kubectl describe pod {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` for events, og `kubectl logs {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` for logger"
           labels:
-            namespace: team-tiltak
-            severity: critical
-
-        - alert: last ned pdf feiler
-          expr: sum(increase(tiltaksgjennomforing_pdf_feil_total[15m])) > 0
-          for: 1s
-          annotations:
-            summary: tiltaksgjennomforing-api feiler med pdf-generering
-            action: "`kubectl describe pod {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` for events, og `kubectl logs {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` for logger"
-          labels:
-            namespace: team-tiltak
+            namespace: arbeidsgiver
             severity: critical
 
         - alert: TILTAKSGJENNOMFORING-API ERROR!
@@ -35,7 +25,7 @@ spec:
           annotations:
             summary: |-
               tiltaksgjennomforing-api har logget en feil :this-is-fine-fire: Sjekk loggene om noe bør gjøres!
-            action: "Sjekk logs.adeo.no for logger: https://logs.adeo.no/app/r/s/HT3Nd"
+            action: "Sjekk logs.az.nav.no for logger: https://logs.az.nav.no/app/data-explorer/discover/#/view/f21a8b00-0cd1-11f1-b30c-21dfcb1fad46"
           labels:
-            namespace: team-tiltak
+            namespace: arbeidsgiver
             severity: critical

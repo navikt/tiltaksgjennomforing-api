@@ -53,10 +53,27 @@ public enum Tiltakstype {
     public boolean isFirearigLonnstilskudd() { return this == Tiltakstype.FIREARIG_LONNSTILSKUDD; }
 
     public boolean skalBesluttes() {
-        return this == Tiltakstype.SOMMERJOBB ||
-            this == Tiltakstype.VARIG_LONNSTILSKUDD ||
-            this == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD ||
-            this == Tiltakstype.VTAO ||
-            this == Tiltakstype.MENTOR;
+        switch (this) {
+            case ARBEIDSTRENING, INKLUDERINGSTILSKUDD -> {
+                return false;
+            }
+            case MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, VTAO, SOMMERJOBB, MENTOR -> {
+                return true;
+            }
+            case null -> throw new IllegalStateException("Tiltakstype kan ikke være null");
+        }
+    }
+
+    public boolean kreverOppfolging() {
+        switch (this) {
+            case MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, MENTOR, ARBEIDSTRENING, INKLUDERINGSTILSKUDD,
+                 SOMMERJOBB -> {
+                return false;
+            }
+            case VTAO -> {
+                return true;
+            }
+            case null -> throw new IllegalStateException("Tiltakstype kan ikke være null");
+        }
     }
 }
