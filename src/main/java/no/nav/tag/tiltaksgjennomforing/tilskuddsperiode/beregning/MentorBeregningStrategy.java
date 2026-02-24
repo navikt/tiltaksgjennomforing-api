@@ -26,9 +26,9 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
         if (!nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(avtale)) {
             innhold.setManedslonn(null);
-            innhold.setFeriepengerBelop(convertBigDecimalToInt(null));
-            innhold.setOtpBelop(convertBigDecimalToInt(null));
-            innhold.setArbeidsgiveravgiftBelop(convertBigDecimalToInt(null));
+            innhold.setFeriepengerBelop(null);
+            innhold.setOtpBelop(null);
+            innhold.setArbeidsgiveravgiftBelop(null);
             innhold.setSumLonnsutgifter(null);
             return;
         }
