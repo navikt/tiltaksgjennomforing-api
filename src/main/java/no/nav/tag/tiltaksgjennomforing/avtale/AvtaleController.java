@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import io.getunleash.UnleashContext;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -399,7 +398,9 @@ public class AvtaleController {
     @Transactional
     public ResponseEntity<?> opprettAvtaleSomArbeidsgiver(@RequestBody OpprettAvtale opprettAvtale) {
         sjekkSkrivebeskyttelse(opprettAvtale.getTiltakstype());
-
+        if (opprettAvtale.getTiltakstype().isFirearigLonnstilskudd()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_OPPRETTE_FIREÅRIG_LØNNSTILSKUDD);
+        }
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
@@ -458,7 +459,10 @@ public class AvtaleController {
     @AuditLogging(value = "Opprett avtale om arbeidsmarkedstiltak", type = EventType.CREATE, utfallSomLogges = Utfall.FEIL)
     public ResponseEntity<?> opprettAvtaleSomVeileder(@RequestBody OpprettAvtale opprettAvtale) {
         sjekkSkrivebeskyttelse(opprettAvtale.getTiltakstype());
-        featureToggleService.isEnabled(FeatureToggle.FIREARIGLONNSTILSKUDD);
+
+        if (opprettAvtale.getTiltakstype().isFirearigLonnstilskudd() && !featureToggleService.isEnabled(FeatureToggle.FIREARIG_LONNSTILSKUDD)) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_OPPRETTE_FIREÅRIG_LØNNSTILSKUDD);
+        }
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
@@ -1007,16 +1011,6 @@ public class AvtaleController {
         boolean isSkrivebeskyttet = featureToggleService.isEnabled(FeatureToggle.MIGRERING_SKRIVEBESKYTTET);
         if (tiltakstype == Tiltakstype.MENTOR && isSkrivebeskyttet) {
             throw new FeilkodeException(Feilkode.IKKE_ADMIN_TILGANG);
-        }
-    }
-
-    private void enhetKanOppretteFireårigLønnstilskudd(Tiltakstype tiltakstype, String enhetsNr) {
-        if(tiltakstype == Tiltakstype.FIREARIG_LONNSTILSKUDD) {
-            UnleashContext unleashContext = UnleashContext.builder().addProperty("enhetsNr", enhetsNr).build();
-            boolean medIForsøk = featureToggleService.isEnabled(FeatureToggle.FIREARIGLONNSTILSKUDD, unleashContext);
-            if(!medIForsøk){
-                throw new FeilkodeException(Feilkode.ENHET_KAN_IKKE_OPPRETTE_FIREÅRIG_LØNNSTILSKUDD);
-            }
         }
     }
 }
