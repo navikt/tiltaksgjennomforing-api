@@ -398,7 +398,9 @@ public class AvtaleController {
     @Transactional
     public ResponseEntity<?> opprettAvtaleSomArbeidsgiver(@RequestBody OpprettAvtale opprettAvtale) {
         sjekkSkrivebeskyttelse(opprettAvtale.getTiltakstype());
-
+        if (opprettAvtale.getTiltakstype().isFirearigLonnstilskudd()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_OPPRETTE_FIREÅRIG_LØNNSTILSKUDD);
+        }
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
@@ -458,6 +460,9 @@ public class AvtaleController {
     public ResponseEntity<?> opprettAvtaleSomVeileder(@RequestBody OpprettAvtale opprettAvtale) {
         sjekkSkrivebeskyttelse(opprettAvtale.getTiltakstype());
 
+        if (opprettAvtale.getTiltakstype().isFirearigLonnstilskudd() && !featureToggleService.isEnabled(FeatureToggle.FIREARIG_LONNSTILSKUDD)) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_OPPRETTE_FIREÅRIG_LØNNSTILSKUDD);
+        }
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
@@ -1009,3 +1014,4 @@ public class AvtaleController {
         }
     }
 }
+

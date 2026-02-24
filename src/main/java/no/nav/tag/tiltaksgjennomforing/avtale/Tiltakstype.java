@@ -46,9 +46,18 @@ public enum Tiltakstype {
         return this == Tiltakstype.SOMMERJOBB;
     }
 
-    public boolean isVTAO() { return this == Tiltakstype.VTAO; }
+    public boolean isVTAO() {
+        return this == Tiltakstype.VTAO;
+    }
 
-    public boolean isMentor() { return this == Tiltakstype.MENTOR; }
+    public boolean isMentor() {
+        return this == Tiltakstype.MENTOR;
+    }
+
+    public boolean isFirearigLonnstilskudd() {
+        return this == Tiltakstype.FIREARIG_LONNSTILSKUDD;
+    }
+
 
     public boolean skalBesluttes() {
         switch (this) {

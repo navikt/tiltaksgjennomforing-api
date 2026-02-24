@@ -10,7 +10,8 @@ public enum FeatureToggle {
     ARENA_KAFKA("arenaKafka"),
     PABEGYNT_AVTALE_RYDDE_JOBB("pabegyntAvtaleRyddeJobb"),
     KODE_6_SPERRE("kode6Sperre"),
-    MIGRERING_SKRIVEBESKYTTET("migreringSkrivebeskyttet");
+    MIGRERING_SKRIVEBESKYTTET("migreringSkrivebeskyttet"),
+    FIREARIG_LONNSTILSKUDD("firearigLonnstilskudd");
 
     private String toggleNavn;
 
