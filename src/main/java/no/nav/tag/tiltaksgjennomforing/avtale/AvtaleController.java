@@ -1013,7 +1013,7 @@ public class AvtaleController {
     private void enhetKanOppretteFireårigLønnstilskudd(Tiltakstype tiltakstype, String enhetsNr) {
         if(tiltakstype == Tiltakstype.FIREARIG_LONNSTILSKUDD) {
             UnleashContext unleashContext = UnleashContext.builder().addProperty("enhetsNr", enhetsNr).build();
-            Boolean medIForsøk = featureToggleService.isEnabled(FeatureToggle.FIREARIGLONNSTILSKUDD, unleashContext);
+            boolean medIForsøk = featureToggleService.isEnabled(FeatureToggle.FIREARIGLONNSTILSKUDD, unleashContext);
             if(!medIForsøk){
                 throw new FeilkodeException(Feilkode.ENHET_KAN_IKKE_OPPRETTE_FIREÅRIG_LØNNSTILSKUDD);
             }
