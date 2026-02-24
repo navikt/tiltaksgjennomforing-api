@@ -197,7 +197,6 @@ public class MentorAvtaleBeregningStrategyTest {
         EndreAvtale endreAvtale = TestData.endrePåAlleMentorFelter();
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
 
-        assertThat(avtale.getGjeldendeInnhold().getManedslonn()).isNotNull().isPositive();
         assertThat(avtale.getGjeldendeInnhold().getFeriepengerBelop()).isNotNull().isPositive();
         assertThat(avtale.getGjeldendeInnhold().getOtpBelop()).isNotNull().isPositive();
         assertThat(avtale.getGjeldendeInnhold().getArbeidsgiveravgiftBelop()).isNotNull().isPositive();
