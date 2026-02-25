@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 public class FirearigLonnstilskuddStartOgSluttDatoStrategy implements StartOgSluttDatoStrategy {
 
@@ -20,7 +21,7 @@ public class FirearigLonnstilskuddStartOgSluttDatoStrategy implements StartOgSlu
         if (sluttDato == null){
             return;
         }
-        if (startDato.plusYears(4).minusDays(1).isBefore(sluttDato)) {
+        if (Period.between(startDato, sluttDato).getYears() >= 4) {
             throw new FeilkodeException(Feilkode.FIREARIG_LONNSTILSKUDD_FOR_LANG_VARIGHET);
         }
     }
