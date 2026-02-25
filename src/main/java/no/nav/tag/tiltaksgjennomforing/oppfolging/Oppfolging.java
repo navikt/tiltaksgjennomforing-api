@@ -18,7 +18,10 @@ public class Oppfolging {
     private final LocalDate avtaleStart;
     private final LocalDate varselstidspunkt;
     private final LocalDate oppfolgingsfrist;
-    private final LocalDate sisteMuligeVarselstidspunkt;
+    /**
+     * Siste varselstidspunkt kan ikke inntreffe på denne dagen
+     */
+    private final LocalDate sisteGyldigeVarselstidspunktEksklusiv;
 
     Oppfolging(LocalDate varselstidspunkt, LocalDate avtaleStart, LocalDate avtaleSlutt) {
         this.varselstidspunkt = varselstidspunkt;
@@ -27,12 +30,12 @@ public class Oppfolging {
 
         if (avtaleStart == null || avtaleSlutt == null) {
             oppfolgingsfrist = null;
-            sisteMuligeVarselstidspunkt = null;
+            sisteGyldigeVarselstidspunktEksklusiv = null;
         } else {
             oppfolgingsfrist = varselstidspunkt == null ? null : YearMonth.from(varselstidspunkt)
                 .plusMonths(OPPFOLGINGSVINDU_1_MND)
                 .atEndOfMonth();
-            sisteMuligeVarselstidspunkt = YearMonth.from(avtaleSlutt).minusMonths(1).atDay(1);
+            sisteGyldigeVarselstidspunktEksklusiv = YearMonth.from(avtaleSlutt).minusMonths(1).atDay(1);
         }
     }
 
@@ -50,13 +53,9 @@ public class Oppfolging {
 
     /**
      * Finn varselstidspunktet for denne oppfølgingen. Vil returnere null dersom det ikke fins
-     * en oppfølging enda (kall .neste()), eller dersom neste oppfølging ville forekommet etter
-     * avtalen er avsluttet.
+     * en oppfølging enda (kall .neste()).
      */
     public LocalDate getVarselstidspunkt() {
-        if (varselstidspunkt == null || varselstidspunkt.isAfter(sisteMuligeVarselstidspunkt.minusDays(1))) {
-            return null;
-        }
         return varselstidspunkt;
     }
 
@@ -94,5 +93,19 @@ public class Oppfolging {
 
         LocalDate varselTidspunkt = nyFrist.minusMonths(OPPFOLGINGSVINDU_1_MND);
         return new Oppfolging(varselTidspunkt.withDayOfMonth(1), avtaleStart, avtaleSlutt);
+    }
+
+    /**
+     * Sjekker om oppfølgingstidspunktet er gyldig, altså at det fins et tidspunkt og at det ikke vil inntreffe etter
+     * avtalens sluttdato.
+     */
+    public boolean gyldigDatoForOppfolging() {
+        return varselstidspunkt != null
+            && sisteGyldigeVarselstidspunktEksklusiv != null
+            && varselstidspunkt.isBefore(sisteGyldigeVarselstidspunktEksklusiv);
+    }
+
+    public static boolean kanOppretteOppfolgingsvarsel(Avtale avtale) {
+        return Oppfolging.fra(avtale).gyldigDatoForOppfolging();
     }
 }

@@ -168,12 +168,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     @Enumerated(EnumType.STRING)
     private Avtaleopphav opphav;
 
-    /**
-     * NB: Ønsker ikke å endre status direkte, kall heller .endreAvtale(),
-     * som også utfører nødvendige opprydninger.
-     */
     @Enumerated(EnumType.STRING)
-    @Setter(AccessLevel.NONE)
     private Status status = Status.PÅBEGYNT;
 
     private boolean godkjentForEtterregistrering;
@@ -318,20 +313,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
     }
 
-    public void setStatus(Status nyStatus) {
-        if (nyStatus.erAvsluttetEllerAnnullert() && getKreverOppfolgingFom() != null) {
-            setOppfolgingVarselSendt(null);
-            setKreverOppfolgingFom(null);
-        }
-        this.status = nyStatus;
-    }
-
     /**
      * Dersom tiltaket avtalen gjelder for krever oppfølging må vi sørge for at første oppfølging starter på riktig
      * tidspunkt ved endringer i avtalen.
      */
     private void settFoersteOppfolgingstidspunkt() {
-        if (Tiltakstype.VTAO.equals(this.getTiltakstype()) && this.gjeldendeInnhold.getStartDato() != null) {
+        if (this.getTiltakstype().kreverOppfolging() && this.gjeldendeInnhold.getStartDato() != null) {
             Oppfolging oppfolging = Oppfolging.fra(this)
                 .nullstill()
                 .neste();
@@ -1298,10 +1285,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         AvtaleInnhold nyAvtaleInnholdVersjon = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORKORTE);
         gjeldendeInnhold = nyAvtaleInnholdVersjon;
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
-        LocalDate kreverOppfolgingFrist = getKreverOppfolgingFrist();
-        if (kreverOppfolgingFrist != null && kreverOppfolgingFrist.isAfter(nySluttDato)) {
-            setKreverOppfolgingFom(null);
-        }
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         forkortTilskuddsperioder(nySluttDato);
         utforEndring(new AvtaleForkortetAvVeileder(
@@ -1330,6 +1313,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         var gammelSluttDato = gjeldendeInnhold.getSluttDato();
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
+
+        if (getTiltakstype().kreverOppfolging() && getKreverOppfolgingFom() != null && getKreverOppfolgingFom().isBefore(Now.localDate())) {
+            var oppfolging = Oppfolging.fra(this).neste();
+            setKreverOppfolgingFom(oppfolging.getVarselstidspunkt());
+        }
 
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         forlengTilskuddsperioder(gammelSluttDato, nySluttDato);

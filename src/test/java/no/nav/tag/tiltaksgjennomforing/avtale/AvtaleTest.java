@@ -857,7 +857,7 @@ public class AvtaleTest {
                     case MENTOR -> TestData.endrePåAlleMentorFelter();
                     case INKLUDERINGSTILSKUDD -> TestData.endringPåAlleInkluderingstilskuddFelter();
                     case VTAO -> TestData.endringPåAlleVTAOFelter();
-                    case MIDLERTIDIG_LONNSTILSKUDD, SOMMERJOBB, VARIG_LONNSTILSKUDD ->
+                    case MIDLERTIDIG_LONNSTILSKUDD, SOMMERJOBB, VARIG_LONNSTILSKUDD, FIREARIG_LONNSTILSKUDD ->
                             TestData.endringPåAlleLønnstilskuddFelter();
                 };
         Object field = ReflectionTestUtils.getField(endreAvtale, felt);

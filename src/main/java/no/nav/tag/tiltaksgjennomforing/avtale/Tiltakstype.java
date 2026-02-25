@@ -7,7 +7,8 @@ public enum Tiltakstype {
     MENTOR("Mentor", "ab0416", "MENTOR"),
     INKLUDERINGSTILSKUDD("Inkluderingstilskudd", "ab0417", "INKLUTILS"),
     SOMMERJOBB("Sommerjobb", "ab0450", null),
-    VTAO("Varig tilrettelagt arbeid i ordinær virksomhet", "ab0418", "VATIAROR");
+    VTAO("Varig tilrettelagt arbeid i ordinær virksomhet", "ab0418", "VATIAROR"),
+    FIREARIG_LONNSTILSKUDD("Fireårig lønnstilskudd for unge", null, null);
 
     final String beskrivelse;
     final String behandlingstema;
@@ -45,15 +46,41 @@ public enum Tiltakstype {
         return this == Tiltakstype.SOMMERJOBB;
     }
 
-    public boolean isVTAO() { return this == Tiltakstype.VTAO; }
+    public boolean isVTAO() {
+        return this == Tiltakstype.VTAO;
+    }
 
-    public boolean isMentor() { return this == Tiltakstype.MENTOR; }
+    public boolean isMentor() {
+        return this == Tiltakstype.MENTOR;
+    }
+
+    public boolean isFirearigLonnstilskudd() {
+        return this == Tiltakstype.FIREARIG_LONNSTILSKUDD;
+    }
+
 
     public boolean skalBesluttes() {
-        return this == Tiltakstype.SOMMERJOBB ||
-            this == Tiltakstype.VARIG_LONNSTILSKUDD ||
-            this == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD ||
-            this == Tiltakstype.VTAO ||
-            this == Tiltakstype.MENTOR;
+        switch (this) {
+            case ARBEIDSTRENING, INKLUDERINGSTILSKUDD -> {
+                return false;
+            }
+            case MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, VTAO, SOMMERJOBB, MENTOR, FIREARIG_LONNSTILSKUDD -> {
+                return true;
+            }
+            case null -> throw new IllegalStateException("Tiltakstype kan ikke være null");
+        }
+    }
+
+    public boolean kreverOppfolging() {
+        switch (this) {
+            case MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, MENTOR, ARBEIDSTRENING, INKLUDERINGSTILSKUDD,
+                 SOMMERJOBB, FIREARIG_LONNSTILSKUDD -> {
+                return false;
+            }
+            case VTAO -> {
+                return true;
+            }
+            case null -> throw new IllegalStateException("Tiltakstype kan ikke være null");
+        }
     }
 }

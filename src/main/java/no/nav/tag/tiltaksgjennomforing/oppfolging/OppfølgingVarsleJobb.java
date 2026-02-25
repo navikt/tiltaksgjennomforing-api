@@ -32,10 +32,23 @@ public class OppfølgingVarsleJobb {
     @SchedulerLock(name = "OppfølgingVarsleJobb_varsleVeilederOmOppfølging", lockAtLeastFor = "PT20S", lockAtMostFor = "PT30S")
     public void varsleVeilederOmOppfølging() {
         LocalDate dagenDato = Now.localDate();
-        List<Avtale> avtaler = avtaleRepository.finnAvtalerSomSnartSkalFølgesOpp(dagenDato);
-        if (!avtaler.isEmpty()) log.info("Fant {} avtaler som krever oppfølging. Oppretter varsel til veileder på disse.", avtaler.size());
+        List<Avtale> avtalerSomKanskjeSkalHaVarsel = avtaleRepository.finnAvtalerSomSnartSkalFølgesOpp(dagenDato);
+        List<Avtale> avtaler = avtalerSomKanskjeSkalHaVarsel.stream()
+            .filter(Oppfolging::kanOppretteOppfolgingsvarsel)
+            .toList();
+        if (!avtaler.isEmpty()) {
+            log.info("Fant {} avtaler som krever oppfølging. Oppretter varsel til veileder på disse.", avtaler.size());
+        }
         avtaler.forEach(avtale -> {
-            Varsel varsel = Varsel.nyttVarsel(avtale.getVeilederNavIdent(), true, avtale, Avtalerolle.VEILEDER, AvtaleHendelseUtførtAv.system(Identifikator.SYSTEM), HendelseType.OPPFØLGING_AV_TILTAK_KREVES, null);
+            Varsel varsel = Varsel.nyttVarsel(
+                avtale.getVeilederNavIdent(),
+                true,
+                avtale,
+                Avtalerolle.VEILEDER,
+                AvtaleHendelseUtførtAv.system(Identifikator.SYSTEM),
+                HendelseType.OPPFØLGING_AV_TILTAK_KREVES,
+                null
+            );
             varselRepository.save(varsel);
             avtale.setOppfolgingVarselSendt(Now.instant());
         });
