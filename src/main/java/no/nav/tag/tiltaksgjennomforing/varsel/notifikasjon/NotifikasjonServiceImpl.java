@@ -48,12 +48,13 @@ public class NotifikasjonServiceImpl implements NotifikasjonService {
         this.handler = handler;
     }
 
-    private HttpEntity<String> createRequestEntity(ArbeidsgiverMutationRequest arbeidsgiverMutationRequest) {
+    private HttpEntity<ArbeidsgiverMutationRequest> createRequestEntity(ArbeidsgiverMutationRequest arbeidsgiverMutationRequest) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        return new HttpEntity(arbeidsgiverMutationRequest, headers);
+        return new HttpEntity<>(arbeidsgiverMutationRequest, headers);
     }
 
+    @Override
     public String opprettNotifikasjon(ArbeidsgiverMutationRequest arbeidsgiverMutationRequest) {
         try {
             return azureRestTemplate.postForObject(
@@ -66,6 +67,7 @@ public class NotifikasjonServiceImpl implements NotifikasjonService {
         }
     }
 
+    @Override
     public String getAvtaleLenke(Avtale avtale) {
         return notifikasjonerProperties.getLenke().concat(avtale.getId().toString())
                 .concat("/?bedrift=").concat(avtale.getBedriftNr().asString());
@@ -87,6 +89,7 @@ public class NotifikasjonServiceImpl implements NotifikasjonService {
         return opprettNotifikasjon(request);
     }
 
+    @Override
     public void opprettNyBeskjed(
             ArbeidsgiverNotifikasjon notifikasjon,
             NotifikasjonMerkelapp merkelapp,
@@ -108,6 +111,7 @@ public class NotifikasjonServiceImpl implements NotifikasjonService {
         }
     }
 
+    @Override
     public void opprettOppgave(
             ArbeidsgiverNotifikasjon notifikasjon,
             NotifikasjonMerkelapp merkelapp,
@@ -129,6 +133,7 @@ public class NotifikasjonServiceImpl implements NotifikasjonService {
         }
     }
 
+    @Override
     public void oppgaveUtfoert(
             Avtale avtale,
             HendelseType hendelseTypeSomSkalMerkesUtfoert,
@@ -169,6 +174,7 @@ public class NotifikasjonServiceImpl implements NotifikasjonService {
         }
     }
 
+    @Override
     public void softDeleteNotifikasjoner(Avtale avtale) {
         final List<ArbeidsgiverNotifikasjon> notifikasjonlist =
                 handler.finnNotifikasjonerTilSletting(avtale.getId());
