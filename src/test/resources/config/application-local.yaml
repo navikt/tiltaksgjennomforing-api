@@ -55,10 +55,10 @@ spring:
 no.nav.security.jwt:
   issuer:
     aad:
-      discoveryurl: ${FAKE_LOGIN_URL:https://tiltak-fakelogin.ekstern.dev.nav.no}/metadata?issuer=aad
+      discoveryurl: ${FAKE_LOGIN_URI:https://tiltak-fakelogin.ekstern.dev.nav.no}/metadata?issuer=aad
       accepted_audience: fake-aad
     tokenx:
-      discoveryurl: ${FAKE_LOGIN_URL:https://tiltak-fakelogin.ekstern.dev.nav.no}/metadata?issuer=tokenx
+      discoveryurl: ${FAKE_LOGIN_URI:https://tiltak-fakelogin.ekstern.dev.nav.no}/metadata?issuer=tokenx
       accepted_audience: fake-tokenx
   client: null
 
@@ -73,11 +73,11 @@ tiltaksgjennomforing:
     strengt-fortrolig-adresse: 1a1d2745-952f-4a0f-839f-9530145b1d4a
   kafka:
     enabled: false
-    fake-url: http://localhost:8081/fake-kafka
+    fake-url: ${TILTAK_REFUSJON_URI:http://localhost:8081}/fake-kafka
   altinn-tilgangsstyring:
     uri: http://localhost:8090/altinn-tilgangsstyring
     proxyUri: http://heh:9090/
-    beOmRettighetBaseUrl: https://min-side-arbeidsgiver.dev.nav.no/min-side-arbeidsgiver/?fragment=be-om-tilgang
+    beOmRettighetBaseUrl: ${MIN_SIDE_ARBEIDSGIVER_URI:https://min-side-arbeidsgiver.dev.nav.no}/min-side-arbeidsgiver/?fragment=be-om-tilgang
     ltsMidlertidigServiceCode: 5516
     ltsMidlertidigServiceEdition: 1
     ltsVarigServiceCode: 5516
@@ -113,10 +113,10 @@ tiltaksgjennomforing:
     enhet:
       url: http://localhost:8090/norg2/api/v1/enhet/
   dokgen:
-    uri: http://localhost:5913/template/tiltak-avtale/create-pdf
+    uri: ${TILTAK_DOKGEN_URI:http://localhost:5913}/template/tiltak-avtale/create-pdf
   notifikasjoner:
-    uri: http://localhost:8090/api/graphql
-    lenke: http://localhost:3000/tiltaksgjennomforing/avtale/
+    uri: ${NOTIFIKASJONER_URI:http://localhost:8090}/api/graphql
+    lenke: ${NOTIFIKASJONER_LENKE:http://localhost:3000}/tiltaksgjennomforing/avtale/
     enabled: false
   arena:
     kafka:
