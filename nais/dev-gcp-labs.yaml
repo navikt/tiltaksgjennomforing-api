@@ -9,6 +9,18 @@ spec:
   env:
     - name: MILJO
       value: dev-gcp-labs
+    - name: FAKE_LOGIN_URI
+      value: http://tiltak-fakelogin
+    - name: TILTAK_REFUSJON_URI
+      value: http://tiltak-refusjon-api-labs
+    - name: MIN_SIDE_ARBEIDSGIVER_URI
+      value: https://arbeidsgiver-q.nav.no
+    - name: TILTAK_DOKGEN_URI
+      value: http://tiltak-dokgen
+    - name: NOTIFIKASJONER_URI
+      value: https://notifikasjon-fake-produsent-api.labs.nais.io
+    - name: NOTIFIKASJONER_LENKE
+      value: https://arbeidsgiver.labs.nais.io
   image: {{image}}
   port: 8080
   replicas:
@@ -52,6 +64,5 @@ spec:
     outbound:
       rules:
         - application: tiltak-fakelogin
-        - application: tiltaksgjennomforing-wiremock
         - application: tiltak-refusjon-api-labs
         - application: tiltak-dokgen
