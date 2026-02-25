@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Component
-@Profile({ Miljø.LOCAL, Miljø.DEV_GCP_LABS })
+@Profile({ Miljø.LOCAL })
 public class TilskuddsperiodeFakeKafkaProducer {
     private final RestTemplate restTemplate;
     private final String url;

@@ -12,8 +12,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@Profile({ Miljø.LOCAL, Miljø.TEST, Miljø.DOCKER_COMPOSE, Miljø.DEV_GCP_LABS })
-public class PoaoTilgangServiceLabs implements PoaoTilgangService {
+@Profile({ Miljø.LOCAL, Miljø.TEST, Miljø.DOCKER_COMPOSE })
+public class PoaoTilgangServiceFake implements PoaoTilgangService {
 
     @Override
     public Map<Fnr, Boolean> harSkrivetilganger(UUID beslutterAzureUUID, Set<Fnr> fnrSet) {
