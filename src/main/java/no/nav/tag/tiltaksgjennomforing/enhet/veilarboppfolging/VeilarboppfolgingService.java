@@ -95,6 +95,11 @@ public class VeilarboppfolgingService {
             throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_VTAO_FEIL);
         }
 
+        if (tiltakstype.isFirearigLonnstilskudd() &&
+            !oppfølgingStatus.getKvalifiseringsgruppe().isKvalifisererTilFirearigLonnstilskuddForUnge()) {
+            throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_FIREARIG_LONNTILSKUDD_FOR_UNGE_FEIL);
+        }
+
         return oppfølgingStatus;
     }
 
