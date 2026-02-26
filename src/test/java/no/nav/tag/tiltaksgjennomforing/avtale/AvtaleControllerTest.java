@@ -355,6 +355,8 @@ public class AvtaleControllerTest {
                                 "0906"
                         )
                 );
+        when(featureToggleServiceMock.isKanOppretteTiltak(any(), any())).thenCallRealMethod();
+        when(featureToggleServiceMock.isKanOppretteAvtale(any())).thenCallRealMethod();
 
         ResponseEntity svar = avtaleController.opprettAvtaleSomVeileder(opprettAvtale);
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -457,6 +459,8 @@ public class AvtaleControllerTest {
     public void opprettAvtaleSomVeileder__skal_feile_hvis_veileder_ikke_har_tilgang_til_bruker_med_togglet_adressesperresjekk() {
         PersondataService persondataServiceIMetode = mock(PersondataService.class);
         when(featureToggleServiceMock.isEnabled(FeatureToggle.KODE_6_SPERRE)).thenReturn(true);
+        when(featureToggleServiceMock.isKanOppretteTiltak(any(), any())).thenCallRealMethod();
+        when(featureToggleServiceMock.isKanOppretteAvtale(any())).thenCallRealMethod();
         Veileder enNavAnsatt = new Veileder(
                 new NavIdent("T000000"),
                 null,
@@ -489,6 +493,8 @@ public class AvtaleControllerTest {
     public void opprettAvtaleSomVeileder__skal_fungere_hvis_veileder_har_tilgang_til_bruker_uten_togglet_adressesperresjekk() {
         PersondataService persondataServiceIMetode = mock(PersondataService.class);
         when(featureToggleServiceMock.isEnabled(FeatureToggle.KODE_6_SPERRE)).thenReturn(false);
+        when(featureToggleServiceMock.isKanOppretteTiltak(any(), any())).thenCallRealMethod();
+        when(featureToggleServiceMock.isKanOppretteAvtale(any())).thenCallRealMethod();
         Veileder enNavAnsatt = new Veileder(
                 new NavIdent("T000000"),
                 null,
@@ -518,6 +524,8 @@ public class AvtaleControllerTest {
     public void opprettAvtaleSomVeileder__skal_feile_hvis_kode6_med_togglet_adressesperresjekk() {
         PersondataService persondataServiceIMetode = mock(PersondataService.class);
         when(featureToggleServiceMock.isEnabled(FeatureToggle.KODE_6_SPERRE)).thenReturn(true);
+        when(featureToggleServiceMock.isKanOppretteTiltak(any(), any())).thenCallRealMethod();
+        when(featureToggleServiceMock.isKanOppretteAvtale(any())).thenCallRealMethod();
         Veileder enNavAnsatt = new Veileder(
                 new NavIdent("T000000"),
                 null,
@@ -545,6 +553,9 @@ public class AvtaleControllerTest {
 
     @Test
     public void opprettAvtaleSomArbeidsgiver__skal_feile_hvis_ag_ikke_har_tilgang_til_bedrift() {
+        when(featureToggleServiceMock.isKanOppretteTiltak(any(), any())).thenCallRealMethod();
+        when(featureToggleServiceMock.isKanOppretteAvtale(any())).thenCallRealMethod();
+
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 TestData.etFodselsnummer(),
                 Set.of(),
