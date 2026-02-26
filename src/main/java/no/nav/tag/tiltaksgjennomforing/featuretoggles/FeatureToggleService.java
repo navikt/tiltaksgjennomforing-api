@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,8 +65,10 @@ public class FeatureToggleService {
 
     public boolean isKanOppretteAvtale(Avtale avtale) {
         if (avtale.getTiltakstype().isFirearigLonnstilskudd()) {
-            UnleashContext context = UnleashContext.builder().addProperty("enhet", avtale.getEnhetOppfolging()).build();
-            return isEnabled(FeatureToggle.FIREARIG_LONNSTILSKUDD, context);
+            return Optional.ofNullable(avtale.getEnhetOppfolging())
+                .map(enhet -> UnleashContext.builder().addProperty("enhet", enhet).build())
+                .map(context -> isEnabled(FeatureToggle.FIREARIG_LONNSTILSKUDD, context))
+                .orElse(false);
         }
         return true;
     }
