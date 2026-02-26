@@ -27,6 +27,9 @@ public class FirearigLonnstilskuddStartOgSluttDatoStrategy implements StartOgSlu
         if (startDato == null) {
             return;
         }
+        if (startDato.isBefore(LocalDate.of(2026, 8, 1)) ) {
+            throw new FeilkodeException(Feilkode.FIREARIG_LONNSTILSKUDD_FOR_TIDLIG_OPPSTART);
+        }
         if (deltakerFnr != null && deltakerFnr.erOver30årFraOppstartDato(startDato)) {
             throw new FeilkodeException(Feilkode.FIREARIG_LONNSTILSKUDD_FOR_GAMMEL_FRA_OPPSTARTDATO);
         }
