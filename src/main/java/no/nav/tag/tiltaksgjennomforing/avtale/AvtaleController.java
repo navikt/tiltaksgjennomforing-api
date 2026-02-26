@@ -16,7 +16,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogging;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.EventType;
@@ -398,10 +397,12 @@ public class AvtaleController {
     @Transactional
     public ResponseEntity<?> opprettAvtaleSomArbeidsgiver(@RequestBody OpprettAvtale opprettAvtale) {
         sjekkSkrivebeskyttelse(opprettAvtale.getTiltakstype());
-        if (opprettAvtale.getTiltakstype().isFirearigLonnstilskudd()) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_OPPRETTE_FIREÅRIG_LØNNSTILSKUDD);
-        }
+
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
+        if (!featureToggleService.isKanOppretteTiltak(arbeidsgiver.rolle(), opprettAvtale.getTiltakstype())) {
+            throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_OPPRETTE_TILTAK);
+        }
+
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
@@ -460,11 +461,16 @@ public class AvtaleController {
     public ResponseEntity<?> opprettAvtaleSomVeileder(@RequestBody OpprettAvtale opprettAvtale) {
         sjekkSkrivebeskyttelse(opprettAvtale.getTiltakstype());
 
-        if (opprettAvtale.getTiltakstype().isFirearigLonnstilskudd() && !featureToggleService.isEnabled(FeatureToggle.FIREARIG_LONNSTILSKUDD)) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_OPPRETTE_FIREÅRIG_LØNNSTILSKUDD);
-        }
         Veileder veileder = innloggingService.hentVeileder();
+        if (!featureToggleService.isKanOppretteTiltak(veileder.rolle(), opprettAvtale.getTiltakstype())) {
+            throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_OPPRETTE_TILTAK);
+        }
+
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
+        if (!featureToggleService.isKanOppretteAvtale(avtale)) {
+            throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_OPPRETTE_AVTALE);
+        }
+
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
@@ -1008,10 +1014,8 @@ public class AvtaleController {
     }
 
     private void sjekkSkrivebeskyttelse(Tiltakstype tiltakstype) {
-        boolean isSkrivebeskyttet = featureToggleService.isEnabled(FeatureToggle.MIGRERING_SKRIVEBESKYTTET);
-        if (tiltakstype == Tiltakstype.MENTOR && isSkrivebeskyttet) {
+        if (featureToggleService.isTiltakSkrivebeskyttet(tiltakstype)) {
             throw new FeilkodeException(Feilkode.IKKE_ADMIN_TILGANG);
         }
     }
 }
-

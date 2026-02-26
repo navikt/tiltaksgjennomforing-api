@@ -4,11 +4,15 @@ import io.getunleash.Unleash;
 import io.getunleash.UnleashContext;
 import io.getunleash.variant.Variant;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,21 +28,15 @@ public class FeatureToggleService {
     }
 
     public Map<String, Boolean> hentFeatureToggles(List<String> features) {
-
-        return features.stream().collect(Collectors.toMap(
-                feature -> feature,
-                feature -> isEnabled(feature)
-        ));
+        return features.stream().collect(Collectors.toMap(feature -> feature, this::isEnabled));
     }
 
     public Map<String, Variant> hentVarianter(List<String> features) {
-
         return features.stream().collect(Collectors.toMap(
                 feature -> feature,
                 feature -> unleash.getVariant(feature, contextMedInnloggetBruker())
         ));
     }
-
 
     @Deprecated
     public Boolean isEnabled(String feature) {
@@ -51,6 +49,28 @@ public class FeatureToggleService {
 
     public Boolean isEnabled(FeatureToggle feature, UnleashContext context) {
         return unleash.isEnabled(feature.getToggleNavn(), context);
+    }
+
+    public boolean isTiltakSkrivebeskyttet(Tiltakstype tiltakstype) {
+        boolean isSkrivebeskyttet = isEnabled(FeatureToggle.MIGRERING_SKRIVEBESKYTTET);
+        return tiltakstype == Tiltakstype.MENTOR && isSkrivebeskyttet;
+    }
+
+    public boolean isKanOppretteTiltak(Avtalerolle rolle, Tiltakstype tiltakstype) {
+        if (tiltakstype.isFirearigLonnstilskudd()) {
+            return rolle.erInternBruker() ? isEnabled(FeatureToggle.FIREARIG_LONNSTILSKUDD) : false;
+        }
+        return true;
+    }
+
+    public boolean isKanOppretteAvtale(Avtale avtale) {
+        if (avtale.getTiltakstype().isFirearigLonnstilskudd()) {
+            return Optional.ofNullable(avtale.getEnhetOppfolging())
+                .map(enhet -> UnleashContext.builder().addProperty("enhet", enhet).build())
+                .map(context -> isEnabled(FeatureToggle.FIREARIG_LONNSTILSKUDD, context))
+                .orElse(false);
+        }
+        return true;
     }
 
     private UnleashContext contextMedInnloggetBruker() {
