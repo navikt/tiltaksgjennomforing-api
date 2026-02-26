@@ -29,11 +29,19 @@ public class ByEnhetStrategy implements Strategy {
 
     @Override
     public boolean isEnabled(Map<String, String> parameters, UnleashContext unleashContext) {
+        Set<String> enhetFraToggle = Optional.ofNullable(parameters.get(PARAM))
+            .map(enheterString -> Set.of(enheterString.split(",\\s?")))
+            .orElse(Set.of());
+
+        Optional<String> enhet = unleashContext.getByName("enhet");
+        if (enhet.isPresent()) {
+            return enhetFraToggle.contains(enhet.get());
+        }
+
         return unleashContext.getUserId()
-                .flatMap(currentUserId -> Optional.ofNullable(parameters.get(PARAM))
-                        .map(enheterString -> Set.of(enheterString.split(",\\s?")))
-                        .map(enabledeEnheter -> !Collections.disjoint(enabledeEnheter, brukersEnheter(currentUserId))))
-                .orElse(false);
+            .map(currentUserId -> !Collections.disjoint(enhetFraToggle, brukersEnheter(currentUserId)))
+            .orElse(false);
+
     }
 
     private List<String> brukersEnheter(String currentUserId) {

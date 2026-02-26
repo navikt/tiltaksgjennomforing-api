@@ -11,10 +11,10 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 import java.util.Map;
 
-@ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 @Configuration
 @Slf4j
 @EnableKafka
+@ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 public class DefaultKafkaConfiguration {
 
     @Bean

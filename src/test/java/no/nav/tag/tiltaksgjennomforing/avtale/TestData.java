@@ -13,7 +13,6 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2EnhetStatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
@@ -30,7 +29,6 @@ import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -41,7 +39,6 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -956,36 +953,6 @@ public class TestData {
         }
     }
 
-    public static void setupVeilederMock(
-            Avtale avtale,
-            Avtalepart<NavIdent> veileder,
-            TilgangskontrollService tilgangskontrollService,
-            VeilarboppfolgingService veilarboppfolgingService,
-            PersondataService persondataService,
-            Norg2Client norg2Client
-    ) {
-        lenient().when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                eq((Veileder) veileder),
-                eq(avtale.getDeltakerFnr())
-        )).thenReturn(true);
-
-        lenient().when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any()))
-                .thenReturn(
-                        new Oppfølgingsstatus(
-                                Formidlingsgruppe.ARBEIDSSOKER,
-                                Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
-                                avtale.getEnhetOppfolging()
-                        )
-                );
-        when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.UGRADERT);
-
-        when(norg2Client.hentGeografiskEnhet(any()))
-                .thenReturn(new Norg2GeoResponse(
-                        avtale.getEnhetsnavnOppfolging(),
-                        avtale.getEnhetOppfolging()
-                ));
-    }
-
     public static Veileder enVeileder(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
@@ -1081,16 +1048,6 @@ public class TestData {
         paVegneGrunn.setIkkeBankId(true);
         GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvDeltakerOgArbeidsgiverGrunn = new GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn(arbeidsgiverGrunn, paVegneGrunn);
         return paVegneAvDeltakerOgArbeidsgiverGrunn;
-    }
-
-    public static InnloggetArbeidsgiver innloggetArbeidsgiver(Avtalepart<Fnr> avtalepartMedFnr, BedriftNr bedriftNr) {
-        Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(bedriftNr, Set.of(Tiltakstype.values()));
-        AltinnReportee altinnOrganisasjon = new AltinnReportee("Bedriften AS", "Business", bedriftNr.asString(), "BEDR", "Active", null, null);
-        return new InnloggetArbeidsgiver(avtalepartMedFnr.getIdentifikator(), Set.of(altinnOrganisasjon), tilganger);
-    }
-
-    public static InnloggetDeltaker innloggetDeltaker(Avtalepart<Fnr> avtalepartMedFnr) {
-        return new InnloggetDeltaker(avtalepartMedFnr.getIdentifikator());
     }
 
     public static Identifikator enIdentifikator() {
