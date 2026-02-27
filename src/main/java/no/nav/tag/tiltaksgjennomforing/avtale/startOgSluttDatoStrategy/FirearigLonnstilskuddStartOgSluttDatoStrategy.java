@@ -39,5 +39,9 @@ public class FirearigLonnstilskuddStartOgSluttDatoStrategy implements StartOgSlu
         if (Period.between(startDato, sluttDato).getYears() >= 4) {
             throw new FeilkodeException(Feilkode.FIREARIG_LONNSTILSKUDD_FOR_LANG_VARIGHET);
         }
+
+        if (sluttDato.isAfter(LocalDate.of(2032,12,31))){
+            throw new FeilkodeException(Feilkode.FIREARIG_LONNSTILSKUDD_FOR_SEN_SLUTTDATO);
+        }
     }
 }
