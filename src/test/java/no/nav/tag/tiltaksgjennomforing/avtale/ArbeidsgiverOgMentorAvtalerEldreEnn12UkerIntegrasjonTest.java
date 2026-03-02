@@ -162,7 +162,7 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
     @Transactional
     public void mentor_hentAlleAvtalerMedMuligTilgang_skal_IKKE_returnere_en_gammel_avtale_som_er_eldre_enn_12_uker_fra_db_hvis_den_er_godkjent_av_veileder() {
         Avtale avtale = TestData.enMentorAvtaleSignert();
-        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusMonths(3));
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusMonths(4));
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(13));// ELDRE enn 12 UKER fra idag
         avtale.setGodkjentForEtterregistrering(true);
         Avtale avtaleLagret = avtaleRepository.save(avtale);
