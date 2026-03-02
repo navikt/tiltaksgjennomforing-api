@@ -26,7 +26,7 @@ public class FirearigLonnstilskuddBeregningStrategy extends GenerellLonnstilskud
                     return lagTilskuddsperiode(
                         avtale,
                         datoPar,
-                        getSumLonnsTilskudd(avtale.getGjeldendeInnhold().getSumLonnstilskudd(), prosentForPeriode),
+                        getSumLonnsTilskudd(avtale.getGjeldendeInnhold().getSumLonnsutgifter(), prosentForPeriode),
                         prosentForPeriode
                     );
                 }))
@@ -35,7 +35,7 @@ public class FirearigLonnstilskuddBeregningStrategy extends GenerellLonnstilskud
     }
 
     private int getProsentForPeriode(Avtale avtale, Periode tilskuddsperiode) {
-        int antallAar = Period.between(avtale.getGjeldendeInnhold().getStartDato(), tilskuddsperiode.getSlutt().minusDays(1)).getYears();
+        int antallAar = Period.between(avtale.getGjeldendeInnhold().getStartDato(), tilskuddsperiode.getSlutt()).getYears();
 
         return switch (antallAar) {
             case 0 -> 70;
