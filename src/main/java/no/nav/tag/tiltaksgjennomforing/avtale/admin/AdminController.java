@@ -25,6 +25,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.service.gjeldendetilskuddsperiode.GjeldendeTilskuddsperiodeJobbService;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
@@ -275,6 +276,35 @@ public class AdminController {
                         "kvalifiseringsgruppe", status.getKvalifiseringsgruppe().name(),
                         "oppfolginsenhet", status.getOppfolgingsenhet()
                     )
+                );
+            })
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+
+    @GetMapping("/avtale/{id}/sjekk-enheter")
+    public ResponseEntity<Map<String, String>> sjekkEnheter(@PathVariable UUID id) {
+        return avtaleRepository.findById(id)
+            .map(avtale -> {
+                String enhetOppfolgingFraOppslag = Optional.ofNullable(
+                        veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr().asString()))
+                    .map(Oppfølgingsstatus::getOppfolgingsenhet)
+                    .orElse("ikke funnet");
+
+                String enhetGeografiskFraOppslag = persondataService
+                    .hentGeografiskTilknytning(avtale.getDeltakerFnr())
+                    .map(norg2Client::hentGeografiskEnhet)
+                    .map(Norg2GeoResponse::getEnhetNr)
+                    .orElse("ikke funnet");
+
+                return Map.of(
+                    "enhetOppfolgingPaAvtalen", String.valueOf(avtale.getEnhetOppfolging()),
+                    "enhetsnavnOppfolgingPåAvtalen", String.valueOf(avtale.getEnhetsnavnOppfolging()),
+                    "enhetGeografiskPåAvtalen", String.valueOf(avtale.getEnhetGeografisk()),
+                    "enhetsnavnGeografiskPaAvtalen", String.valueOf(avtale.getEnhetsnavnGeografisk()),
+                    "enhetOppfolgingFraOppslag", enhetOppfolgingFraOppslag,
+                    "enhetGeografiskFraOppslag", enhetGeografiskFraOppslag
                 );
             })
             .map(ResponseEntity::ok)
