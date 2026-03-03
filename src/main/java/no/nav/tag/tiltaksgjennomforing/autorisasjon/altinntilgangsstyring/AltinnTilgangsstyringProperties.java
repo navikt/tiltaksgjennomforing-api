@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
+import java.util.Set;
 
 @Data
 @Component
@@ -12,6 +13,7 @@ import java.net.URI;
 public class AltinnTilgangsstyringProperties {
     private URI uri;
     private URI proxyUri;
+    private URI arbeidsgiverAltinnTilgangerUri;
     private String altinnApiKey;
     private String apiGwApiKey;
     private String beOmRettighetBaseUrl;
@@ -33,4 +35,17 @@ public class AltinnTilgangsstyringProperties {
     private Integer adressesperreServiceEdition;
     private Integer ltsFirearigServiceCode;
     private Integer ltsFirearigServiceEdition;
+
+    public Set<String> alleAltinn2Tilganger() {
+        return Set.of(
+            ltsMidlertidigServiceCode + ":" + ltsMidlertidigServiceEdition,
+            ltsVarigServiceCode + ":" + ltsVarigServiceEdition,
+            arbtreningServiceCode + ":" + arbtreningServiceEdition,
+            sommerjobbServiceCode + ":" + sommerjobbServiceEdition,
+            inkluderingstilskuddServiceCode + ":" + inkluderingstilskuddServiceEdition,
+            mentorServiceCode + ":" + mentorServiceEdition,
+            vtaoServiceCode + ":" + vtaoServiceEdition,
+            ltsFirearigServiceCode + ":" + ltsFirearigServiceEdition
+        );
+    }
 }
