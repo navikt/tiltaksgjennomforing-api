@@ -106,6 +106,10 @@ public class AltinnTilgangsstyringService {
                 arbeidsgiverToken);
         leggTil(tilganger, vtaoOrger, Tiltakstype.VTAO);
 
+        AltinnReportee[] firearigLonnstilskuddOrger = kallAltinn(altinnTilgangsstyringProperties.getLtsFirearigServiceCode(), altinnTilgangsstyringProperties.getLtsFirearigServiceEdition(), fnr,
+            arbeidsgiverToken);
+        leggTil(tilganger, firearigLonnstilskuddOrger, Tiltakstype.FIREARIG_LONNSTILSKUDD);
+
 
         return tilganger.toMap();
     }
