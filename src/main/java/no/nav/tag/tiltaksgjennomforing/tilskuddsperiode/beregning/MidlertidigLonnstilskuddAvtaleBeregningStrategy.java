@@ -7,13 +7,11 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentExcep
 import java.time.LocalDate;
 public class MidlertidigLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
 
-    public void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {
-       super.endreBeregning(avtale,endreTilskuddsberegning);
-    }
     public void reberegnTotal(Avtale avtale) {
         super.reberegnTotal(avtale);
         regnUtDatoOgSumRedusert(avtale);
     }
+
     public void regnUtDatoOgSumRedusert(Avtale avtale) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         LocalDate datoForRedusertProsent = getDatoForRedusertProsent(avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent());
@@ -21,7 +19,6 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy extends GenerellLon
         Integer sumLønnstilskuddRedusert = regnUtRedusertLønnstilskudd(avtale);
         avtaleInnhold.setSumLønnstilskuddRedusert(sumLønnstilskuddRedusert);
     }
-
 
     public Integer regnUtRedusertLønnstilskudd(Avtale avtale) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();

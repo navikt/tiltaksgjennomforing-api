@@ -1343,6 +1343,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         sjekkAtIkkeAvtaleErAnnullert();
         krevEnAvTiltakstyper(
             Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
+            Tiltakstype.FIREARIG_LONNSTILSKUDD,
             Tiltakstype.VARIG_LONNSTILSKUDD,
             Tiltakstype.SOMMERJOBB,
             Tiltakstype.MENTOR
