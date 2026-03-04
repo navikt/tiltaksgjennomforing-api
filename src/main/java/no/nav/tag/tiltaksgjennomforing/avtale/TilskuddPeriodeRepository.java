@@ -24,4 +24,13 @@ public interface TilskuddPeriodeRepository extends JpaRepository<TilskuddPeriode
           and t.beløp is null and year(t.startDato) in (:aar)
         """)
     List<TilskuddPeriode> ubehandledeVtaoTilskuddUtenBelopForAar(Collection<Integer> aar);
+
+    @Query("""
+          select t from TilskuddPeriode t join fetch t.avtale av
+          where av.tiltakstype = 'VTAO'
+          and t.status = 'UBEHANDLET'
+          and year(t.startDato) in (:aar)
+        """)
+    List<TilskuddPeriode> ubehandledeVtaoTilskuddForAar(Collection<Integer> aar);
+
 }
