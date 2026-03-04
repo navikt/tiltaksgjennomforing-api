@@ -334,10 +334,16 @@ public class AdminController {
             : tilskuddPeriodeRepository.ubehandledeVtaoTilskuddUtenBelopForAar(kjenteVtaoSatsAar);
 
         perioderUtenBelop.forEach(tp -> {
+            Integer gjeldendeSats = VTAO_SATS.hentGjeldendeSats(tp.getStartDato());
+
+            if (gjeldendeSats == null) {
+                return;
+            }
+
             Integer nyttBelop = BeregningStrategy.beløpForPeriode(
                 tp.getStartDato(),
                 tp.getSluttDato(),
-                VTAO_SATS.hentGjeldendeSats(tp.getStartDato())
+                gjeldendeSats
             );
             if (tp.getBeløp() == null || !nyttBelop.equals(tp.getBeløp())) {
                 log.info(
