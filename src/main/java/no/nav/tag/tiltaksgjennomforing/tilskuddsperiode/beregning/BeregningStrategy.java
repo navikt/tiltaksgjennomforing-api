@@ -156,7 +156,7 @@ public interface BeregningStrategy {
         return getRedusertLonnstilskuddprosent(tiltakstype, lonnstilskuddprosent);
     }
 
-    public static int getRedusertLonnstilskuddprosent(Tiltakstype tiltakstype, Integer lonnstilskuddprosent) {
+    static int getRedusertLonnstilskuddprosent(Tiltakstype tiltakstype, Integer lonnstilskuddprosent) {
         if (!Tiltakstype.VARIG_LONNSTILSKUDD.equals(tiltakstype)){
             return lonnstilskuddprosent - 10;
         }
