@@ -53,6 +53,13 @@ public enum Kvalifiseringsgruppe {
         };
     }
 
+    public boolean isKvalifisererTilFirearigLonnstilskuddForUnge() {
+        return switch (this) {
+            case SPESIELT_TILPASSET_INNSATS, VARIG_TILPASSET_INNSATS -> true;
+            default -> false;
+        };
+    }
+
     public boolean isKvalifisererTilVariglonnstilskudd() {
         return this == VARIG_TILPASSET_INNSATS;
     }

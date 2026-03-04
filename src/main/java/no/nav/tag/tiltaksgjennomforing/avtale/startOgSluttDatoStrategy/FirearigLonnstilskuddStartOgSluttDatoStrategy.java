@@ -10,15 +10,30 @@ import java.time.Period;
 public class FirearigLonnstilskuddStartOgSluttDatoStrategy implements StartOgSluttDatoStrategy {
 
     @Override
-    public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato, boolean erGodkjentForEtterregistrering, boolean erAvtaleInngått, Fnr deltakerFnr) {
-        StartOgSluttDatoStrategy.super.sjekkStartOgSluttDato(startDato, sluttDato, erGodkjentForEtterregistrering, erAvtaleInngått, deltakerFnr);
-        if (startDato == null){
+    public void sjekkStartOgSluttDato(
+        LocalDate startDato,
+        LocalDate sluttDato,
+        boolean erGodkjentForEtterregistrering,
+        boolean erAvtaleInngått,
+        Fnr deltakerFnr
+    ) {
+        StartOgSluttDatoStrategy.super.sjekkStartOgSluttDato(
+            startDato,
+            sluttDato,
+            erGodkjentForEtterregistrering,
+            erAvtaleInngått,
+            deltakerFnr
+        );
+        if (startDato == null) {
             return;
+        }
+        if (startDato.isBefore(LocalDate.of(2026, 8, 1)) ) {
+            throw new FeilkodeException(Feilkode.FIREARIG_LONNSTILSKUDD_FOR_TIDLIG_OPPSTART);
         }
         if (deltakerFnr != null && deltakerFnr.erOver30årFraOppstartDato(startDato)) {
             throw new FeilkodeException(Feilkode.FIREARIG_LONNSTILSKUDD_FOR_GAMMEL_FRA_OPPSTARTDATO);
         }
-        if (sluttDato == null){
+        if (sluttDato == null) {
             return;
         }
         if (Period.between(startDato, sluttDato).getYears() >= 4) {

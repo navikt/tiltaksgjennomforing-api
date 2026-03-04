@@ -224,13 +224,14 @@ public abstract class Avtalepart<T extends Identifikator> {
     }
 
     public void settLonntilskuddProsentsats(Avtale avtale) {
-        if (avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD) {
-            avtale.getGjeldendeInnhold().setLonnstilskuddProsent(
-                    avtale.getKvalifiseringsgruppe().finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(
-                            40,
-                            60
-                    )
-            );
+        Integer sats = switch (avtale.getTiltakstype()) {
+            case MIDLERTIDIG_LONNSTILSKUDD -> avtale.getKvalifiseringsgruppe().finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(40, 60);
+            case FIREARIG_LONNSTILSKUDD -> 70;
+            default -> null;
+        };
+
+        if (sats != null) {
+            avtale.getGjeldendeInnhold().setLonnstilskuddProsent(sats);
         }
     }
 
