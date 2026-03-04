@@ -30,6 +30,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 import no.nav.tag.tiltaksgjennomforing.varsel.Varsel;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
@@ -329,8 +330,12 @@ public class AdminController {
             kjenteVtaoSatsAar
         );
 
-        perioderUtenBelop.forEach(tilskuddPeriode -> {
-            tilskuddPeriode.setBeløp(VTAO_SATS.hentGjeldendeSats(tilskuddPeriode.getStartDato()));
+        perioderUtenBelop.forEach(tp -> {
+            tp.setBeløp(BeregningStrategy.beløpForPeriode(
+                tp.getStartDato(),
+                tp.getSluttDato(),
+                VTAO_SATS.hentGjeldendeSats(tp.getStartDato())
+            ));
         });
         tilskuddPeriodeRepository.saveAll(perioderUtenBelop);
     }
