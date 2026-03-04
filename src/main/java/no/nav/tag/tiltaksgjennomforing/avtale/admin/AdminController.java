@@ -322,39 +322,22 @@ public class AdminController {
 
     @PostMapping("/oppdater-tilskuddsperiode-belop-vtao")
     @Transactional
-    public void oppdaterTilskuddsperiodeBelopVtao(
-        @RequestParam(value = "korriger-ugyldig-belop", required = false, defaultValue = "false") boolean korrigerUgyldigeBelop
-    ) {
+    public void oppdaterTilskuddsperiodeBelopVtao() {
         Set<Integer> kjenteVtaoSatsAar = VTAO_SATS.getSatsePerioder().keySet().stream()
             .map(LocalDate::getYear)
             .collect(Collectors.toSet());
-
-        List<TilskuddPeriode> perioderUtenBelop = korrigerUgyldigeBelop
-            ? tilskuddPeriodeRepository.ubehandledeVtaoTilskuddForAar(kjenteVtaoSatsAar)
-            : tilskuddPeriodeRepository.ubehandledeVtaoTilskuddUtenBelopForAar(kjenteVtaoSatsAar);
+        List<TilskuddPeriode> perioderUtenBelop = tilskuddPeriodeRepository.ubehandledeVtaoTilskuddUtenBelopForAar(
+            kjenteVtaoSatsAar
+        );
 
         perioderUtenBelop.forEach(tp -> {
-            int nyttBelop = BeregningStrategy.beløpForPeriode(
+            tp.setBeløp(BeregningStrategy.beløpForPeriode(
                 tp.getStartDato(),
                 tp.getSluttDato(),
                 VTAO_SATS.hentGjeldendeSats(tp.getStartDato())
-            );
-            if (nyttBelop != tp.getBeløp()) {
-                log.info(
-                    "Korrigerer beløp for tilskuddsperiode {} på avtale {}. Nytt beløp: {}, gammel beløp: {}",
-                    tp.getId(),
-                    tp.getAvtale().getId(),
-                    nyttBelop,
-                    tp.getBeløp()
-                );
-                tp.setBeløp(nyttBelop);
-                tilskuddPeriodeRepository.save(tp);
-            }
+            ));
         });
-
-        if (!korrigerUgyldigeBelop) {
-            tilskuddPeriodeRepository.saveAll(perioderUtenBelop);
-        }
+        tilskuddPeriodeRepository.saveAll(perioderUtenBelop);
     }
 
     @GetMapping("/avtale/diskresjonssjekk")
