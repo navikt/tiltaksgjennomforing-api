@@ -900,7 +900,7 @@ public class TestData {
     }
 
     public static InnloggetArbeidsgiver enInnloggetArbeidsgiver() {
-        return new InnloggetArbeidsgiver(new Fnr("99999999999"), Collections.emptySet(), Map.of());
+        return new InnloggetArbeidsgiver(new Fnr("99999999999"), Collections.emptySet(), Map.of(), null);
     }
 
     public static InnloggetVeileder enInnloggetVeileder() {
@@ -914,7 +914,7 @@ public class TestData {
     public static Arbeidsgiver enArbeidsgiver() {
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
-        return new Arbeidsgiver(Fnr.generer(1978, 9, 10), Set.of(), Map.of(), List.of(), persondataService, null, null, null);
+        return new Arbeidsgiver(Fnr.generer(1978, 9, 10), Set.of(), Map.of(), null, List.of(), persondataService, null, null, null);
     }
 
     public static Mentor enMentor(Avtale avtale) {
@@ -927,6 +927,7 @@ public class TestData {
                 Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", "", null))
                 , Map.of(avtale.getBedriftNr(),
                 List.of(Tiltakstype.values())),
+                null,
                 List.of(),
                 mock(PersondataService.class),
                 null,
