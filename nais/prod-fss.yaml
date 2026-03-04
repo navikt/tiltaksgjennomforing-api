@@ -21,9 +21,9 @@ spec:
           # Beslutter-gruppe
           - id: 156f4f79-6909-4be1-8045-323f55590898
           # Fortrolig adresse gruppe
-          - id: 9ec6487d-f37a-4aad-a027-cd221c1ac32b
+          - id: e98efc34-12d1-401f-b059-f17e62834065
           # Strengt fortrolig adresse gruppe
-          - id: ad7b87a6-9180-467c-affc-20a566b0fec0
+          - id: 2931da41-8b8e-42cd-99c0-04a169ddae40
         extra:
           - "NAVident"
   kafka:
