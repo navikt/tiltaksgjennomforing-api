@@ -155,12 +155,11 @@ public class AltinnTilgangsstyringService {
 
     public AltinnTilgangerResponse kallAltinn3(AltinnTilgangerRequest altinnTilgangerRequest) {
         try {
-            AltinnTilgangerResponse response = restTemplateAltinn3.postForObject(
+            return restTemplateAltinn3.postForObject(
                     altinnTilgangsstyringProperties.getArbeidsgiverAltinnTilgangerUri(),
                     altinnTilgangerRequest,
                     AltinnTilgangerResponse.class
             );
-            return response;
         } catch (RuntimeException exception) {
             log.error("Feil ved henting av Altinn-tilganger fra arbeidsgiver-altinn-tilganger", exception);
             throw new AltinnFeilException();
