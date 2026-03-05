@@ -44,8 +44,8 @@ public class AltinnTilgangsstyringProperties {
             sommerjobbServiceCode + ":" + sommerjobbServiceEdition,
             inkluderingstilskuddServiceCode + ":" + inkluderingstilskuddServiceEdition,
             mentorServiceCode + ":" + mentorServiceEdition,
-            vtaoServiceCode + ":" + vtaoServiceEdition,
-            ltsFirearigServiceCode + ":" + ltsFirearigServiceEdition
+            vtaoServiceCode + ":" + vtaoServiceEdition
+            //ltsFirearigServiceCode + ":" + ltsFirearigServiceEdition TODO: Vil bli laget kun som Altinn 3 ressurs.
         );
     }
 }
