@@ -89,6 +89,7 @@ import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditerbarEntitet;
 import no.nav.tag.tiltaksgjennomforing.oppfolging.Oppfolging;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
+import no.nav.tag.tiltaksgjennomforing.satser.Sats;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -1221,6 +1222,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     public void lagNyTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
         krevEnAvTiltakstyper(
+            Tiltakstype.VTAO,
             Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
             Tiltakstype.VARIG_LONNSTILSKUDD,
             Tiltakstype.SOMMERJOBB
@@ -1230,6 +1232,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
         TilskuddPeriode nyUbehandletPeriode = annullertTilskuddPeriode.deaktiverOgLagNyUbehandlet();
         annullertTilskuddPeriode.setAktiv(true);
+        if (Tiltakstype.VTAO.equals(tiltakstype)) {
+            Optional.ofNullable(Sats.VTAO_SATS.hentGjeldendeSats(nyUbehandletPeriode.getStartDato()))
+                .ifPresent(sats -> nyUbehandletPeriode.setBeløp(BeregningStrategy.beløpForPeriode(
+                    nyUbehandletPeriode.getStartDato(),
+                    nyUbehandletPeriode.getSluttDato(),
+                    sats
+                )));
+        }
         tilskuddPeriode.add(nyUbehandletPeriode);
         utforEndring();
     }
