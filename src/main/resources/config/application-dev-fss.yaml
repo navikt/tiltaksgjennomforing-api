@@ -78,7 +78,7 @@ no.nav.security.jwt:
           client-jwk: /var/run/secrets/nais.io/jwker/TOKEN_X_PRIVATE_JWK
           client-auth-method: private_key_jwt
         token-exchange:
-          audience: dev-gcp:arbeidsgiver:arbeidsgiver-altinn-tilganger
+          audience: dev-gcp:fager:arbeidsgiver-altinn-tilganger
       oppgave:
         token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
         grant-type: client_credentials
