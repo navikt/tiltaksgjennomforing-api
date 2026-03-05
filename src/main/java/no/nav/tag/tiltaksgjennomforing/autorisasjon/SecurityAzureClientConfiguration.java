@@ -9,6 +9,7 @@ import no.nav.security.token.support.client.spring.oauth2.OAuth2ClientRequestInt
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
 
@@ -42,6 +43,7 @@ public class SecurityAzureClientConfiguration {
             if (accessToken != null) {
                 request.getHeaders().setBearerAuth(accessToken);
             }
+            request.getHeaders().setContentType(MediaType.APPLICATION_JSON);
             return execution.execute(request, body);
         };
         return restTemplateBuilder
