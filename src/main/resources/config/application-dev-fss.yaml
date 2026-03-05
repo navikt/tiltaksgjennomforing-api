@@ -132,6 +132,7 @@ tiltaksgjennomforing:
     maximum-pool-size: 8
     max-lifetime: 300000
   altinn-tilgangsstyring:
+    arbeidsgiverAltinnTilgangerUri: https://arbeidsgiver-altinn-tilganger.intern.dev.nav.no
     uri: https://api-gw-q1.adeo.no
     proxyUri: https://altinn-rettigheter-proxy.intern.dev.nav.no/altinn-rettigheter-proxy
     beOmRettighetBaseUrl: https://min-side-arbeidsgiver.dev.nav.no/min-side-arbeidsgiver/?fragment=be-om-tilgang
