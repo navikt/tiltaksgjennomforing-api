@@ -96,7 +96,7 @@ tiltaksgjennomforing:
     adressesperreServiceCode: 5516
     adressesperreServiceEdition: 7
     ltsFirearigServiceCode: 5516
-    ltsFirearigServiceEdition: 8
+    ltsFirearigServiceEdition: 2
     altinnApiKey: foo
     apiGwApiKey: foo
   ereg:
