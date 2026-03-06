@@ -70,6 +70,15 @@ no.nav.security.jwt:
           client-auth-method: private_key_jwt
         token-exchange:
           audience: dev-gcp:arbeidsgiver:altinn-rettigheter-proxy
+      tokenx-altinn-3:
+        token-endpoint-url: ${TOKEN_X_TOKEN_ENDPOINT}
+        grant-type: urn:ietf:params:oauth:grant-type:token-exchange
+        authentication:
+          client-id: ${TOKEN_X_CLIENT_ID}
+          client-jwk: /var/run/secrets/nais.io/jwker/TOKEN_X_PRIVATE_JWK
+          client-auth-method: private_key_jwt
+        token-exchange:
+          audience: dev-gcp:fager:arbeidsgiver-altinn-tilganger
       oppgave:
         token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
         grant-type: client_credentials
@@ -123,6 +132,7 @@ tiltaksgjennomforing:
     maximum-pool-size: 8
     max-lifetime: 300000
   altinn-tilgangsstyring:
+    arbeidsgiverAltinnTilgangerUri: https://arbeidsgiver-altinn-tilganger.intern.dev.nav.no/altinn-tilganger
     uri: https://api-gw-q1.adeo.no
     proxyUri: https://altinn-rettigheter-proxy.intern.dev.nav.no/altinn-rettigheter-proxy
     beOmRettighetBaseUrl: https://min-side-arbeidsgiver.dev.nav.no/min-side-arbeidsgiver/?fragment=be-om-tilgang

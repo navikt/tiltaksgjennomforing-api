@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerResponse;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
@@ -95,6 +96,7 @@ public class AvtaleControllerTest {
     private FeatureToggleService featureToggleServiceMock;
 
     private Pageable pageable = PageRequest.of(0, 100);
+    private final AltinnTilgangerResponse altinn3Tilganger = null;
 
     @BeforeEach
     public void setup() {
@@ -288,7 +290,7 @@ public class AvtaleControllerTest {
                         Fnr.generer(1956, 7, 8),
                         Set.of(),
                         Map.of(),
-                        List.of(),
+                    altinn3Tilganger, List.of(),
                         persondataService,
                         null,
                         null,
@@ -560,7 +562,7 @@ public class AvtaleControllerTest {
                 TestData.etFodselsnummer(),
                 Set.of(),
                 Map.of(),
-                null,
+            altinn3Tilganger, null,
                 null,
                 null,
                 null,

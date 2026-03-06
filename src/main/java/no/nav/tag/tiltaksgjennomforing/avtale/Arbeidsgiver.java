@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerResponse;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
@@ -30,13 +31,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class Arbeidsgiver extends Avtalepart<Fnr> {
     private final Map<BedriftNr, Collection<Tiltakstype>> tilganger;
+    private final AltinnTilgangerResponse altinn3Tilganger;
     private final Set<AltinnReportee> altinnOrganisasjoner;
     private final List<BedriftNr> adressesperreTilgang;
     private final PersondataService persondataService;
@@ -48,6 +49,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         Fnr identifikator,
         Set<AltinnReportee> altinnOrganisasjoner,
         Map<BedriftNr, Collection<Tiltakstype>> tilganger,
+        AltinnTilgangerResponse altinn3Tilganger,
         List<BedriftNr> adressesperreTilgang,
         PersondataService persondataService,
         Norg2Client norg2Client,
@@ -57,6 +59,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         super(identifikator);
         this.altinnOrganisasjoner = altinnOrganisasjoner;
         this.tilganger = tilganger;
+        this.altinn3Tilganger = altinn3Tilganger;
         this.adressesperreTilgang = adressesperreTilgang;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
@@ -104,7 +107,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     @Override
     public InnloggetBruker innloggetBruker() {
-        return new InnloggetArbeidsgiver(getIdentifikator(), altinnOrganisasjoner, tilganger);
+        return new InnloggetArbeidsgiver(getIdentifikator(), altinnOrganisasjoner, tilganger, altinn3Tilganger);
     }
 
     @Override

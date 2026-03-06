@@ -19,15 +19,16 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.AltinnFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.utils.MultiValueMap;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -35,11 +36,14 @@ import java.util.Set;
 public class AltinnTilgangsstyringService {
     private final AltinnTilgangsstyringProperties altinnTilgangsstyringProperties;
     private final AltinnrettigheterProxyKlient klient;
+    private final RestTemplate restTemplateAltinn3;
 
     public AltinnTilgangsstyringService(
             AltinnTilgangsstyringProperties altinnTilgangsstyringProperties,
             TokenUtils tokenUtils,
+            @Qualifier("tokenxAltinn3RestTemplate") RestTemplate restTemplateAltinn3,
             @Value("${spring.application.name}") String applicationName) {
+        this.restTemplateAltinn3 = restTemplateAltinn3;
 
         if (Utils.erNoenTomme(altinnTilgangsstyringProperties.getArbtreningServiceCode(),
                 altinnTilgangsstyringProperties.getArbtreningServiceEdition(),
@@ -138,6 +142,26 @@ public class AltinnTilgangsstyringService {
 
         } catch (AltinnrettigheterProxyKlientFallbackException exception) {
             log.warn("Feil ved kall mot Altinn.", exception);
+            throw new AltinnFeilException();
+        }
+    }
+
+    public AltinnTilgangerResponse hentTilgangerFrAltinn3() {
+        var request = new AltinnTilgangerRequest(new AltinnTilgangerFilter(
+                altinnTilgangsstyringProperties.alleAltinn2Tilganger(), Set.of()
+        ));
+        return kallAltinn3(request);
+    }
+
+    public AltinnTilgangerResponse kallAltinn3(AltinnTilgangerRequest altinnTilgangerRequest) {
+        try {
+            return restTemplateAltinn3.postForObject(
+                    altinnTilgangsstyringProperties.getArbeidsgiverAltinnTilgangerUri(),
+                    altinnTilgangerRequest,
+                    AltinnTilgangerResponse.class
+            );
+        } catch (RuntimeException exception) {
+            log.error("Feil ved henting av Altinn-tilganger fra arbeidsgiver-altinn-tilganger", exception);
             throw new AltinnFeilException();
         }
     }

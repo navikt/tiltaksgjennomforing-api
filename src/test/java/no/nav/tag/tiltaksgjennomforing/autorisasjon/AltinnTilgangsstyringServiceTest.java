@@ -109,6 +109,6 @@ public class AltinnTilgangsstyringServiceTest {
     @Test
     public void manglende_serviceCode_skal_kaste_feil() {
         AltinnTilgangsstyringProperties altinnTilgangsstyringProperties = new AltinnTilgangsstyringProperties();
-        assertThatThrownBy(() -> new AltinnTilgangsstyringService(altinnTilgangsstyringProperties, tokenUtils, "tiltaksgjennomforing-api")).isExactlyInstanceOf(TiltaksgjennomforingException.class);
+        assertThatThrownBy(() -> new AltinnTilgangsstyringService(altinnTilgangsstyringProperties, tokenUtils, null, "tiltaksgjennomforing-api")).isExactlyInstanceOf(TiltaksgjennomforingException.class);
     }
 }
