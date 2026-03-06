@@ -24,7 +24,7 @@ public class Fnr extends Identifikator {
     }
 
     public static Fnr generer(int aar, int maned, int dag) {
-        return  generer(LocalDate.of(aar, maned, dag));
+        return generer(LocalDate.of(aar, maned, dag));
     }
 
     public static Fnr generer(LocalDate dato) {
