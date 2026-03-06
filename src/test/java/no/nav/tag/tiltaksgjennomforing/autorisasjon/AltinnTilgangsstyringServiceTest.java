@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerResponse;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
@@ -110,5 +111,32 @@ public class AltinnTilgangsstyringServiceTest {
     public void manglende_serviceCode_skal_kaste_feil() {
         AltinnTilgangsstyringProperties altinnTilgangsstyringProperties = new AltinnTilgangsstyringProperties();
         assertThatThrownBy(() -> new AltinnTilgangsstyringService(altinnTilgangsstyringProperties, tokenUtils, null, "tiltaksgjennomforing-api")).isExactlyInstanceOf(TiltaksgjennomforingException.class);
+    }
+
+    @Test
+    public void hentTilgangerFrAltinn3__returnerer_hierarki_og_tilgangsmappinger() {
+        AltinnTilgangerResponse response = altinnTilgangsstyringService.hentTilgangerFrAltinn3();
+
+        assertThat(response).isNotNull();
+        assertThat(response.isError()).isFalse();
+
+        // Sjekk hierarki
+        assertThat(response.hierarki()).isNotEmpty();
+        assertThat(response.hierarki()).extracting(h -> h.orgnr()).contains("910825555", "910825550");
+
+        // Sjekk orgNrTilTilganger
+        assertThat(response.orgNrTilTilganger()).containsKey("999999999");
+        assertThat(response.orgNrTilTilganger().get("999999999")).contains("5332:1", "5516:1", "5516:2", "5516:3");
+        assertThat(response.orgNrTilTilganger().get("910712314")).containsOnly("5516:1");
+        assertThat(response.orgNrTilTilganger().get("910712306")).containsOnly("5516:2");
+
+        // Sjekk tilgangTilOrgNr
+        assertThat(response.tilgangTilOrgNr()).containsKey("5332:1");
+        assertThat(response.tilgangTilOrgNr().get("5332:1")).contains("999999999");
+        assertThat(response.tilgangTilOrgNr().get("5516:1")).contains("999999999", "910712314");
+        assertThat(response.tilgangTilOrgNr().get("5516:2")).contains("999999999", "910712306");
+
+        // Bedrift uten tilganger (IngenTiltak Hjørnet) skal ikke være i orgNrTilTilganger
+        assertThat(response.orgNrTilTilganger()).doesNotContainKey("980712306");
     }
 }
