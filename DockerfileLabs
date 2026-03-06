@@ -3,6 +3,7 @@ FROM europe-north1-docker.pkg.dev/cgr-nav/pull-through/nav.no/jdk:openjdk-21
 COPY /target/tiltaksgjennomforing-api-1.0.0-SNAPSHOT.jar app.jar
 COPY /target/test-classes /test-classes
 
+ENV TZ="Europe/Oslo"
 EXPOSE 8080
 
 # Run the Docker Compose application variant
