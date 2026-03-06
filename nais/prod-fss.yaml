@@ -89,3 +89,4 @@ spec:
         - host: team-tiltak-unleash-api.nav.cloud.nais.io
   envFrom:
     - secret: tiltaksgjennomforing-api-unleash-api-token
+    - secret: tiltaksgjennomforing-api
