@@ -79,7 +79,7 @@ tiltaksgjennomforing:
     vtaoServiceCode: 5516
     vtaoServiceEdition: 6
     ltsFirearigServiceCode: 5516
-    ltsFirearigServiceEdition: 8
+    ltsFirearigServiceEdition: 2
     altinnApiKey: foo
     apiGwApiKey: foo
   ereg:
