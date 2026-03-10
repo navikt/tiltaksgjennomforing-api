@@ -9,6 +9,6 @@ public record AltinnTilgangerFilter(
         boolean inkluderSlettede
 ) {
     public AltinnTilgangerFilter(Set<String> altinn2Tilganger, Set<String> altinn3Tilganger) {
-        this(altinn2Tilganger, altinn3Tilganger, false);
+        this(altinn2Tilganger, altinn3Tilganger, true);
     }
 }
