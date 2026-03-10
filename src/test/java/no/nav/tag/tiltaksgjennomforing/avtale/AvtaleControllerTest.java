@@ -96,7 +96,7 @@ public class AvtaleControllerTest {
     private FeatureToggleService featureToggleServiceMock;
 
     private Pageable pageable = PageRequest.of(0, 100);
-    private final AltinnTilgangerResponse altinn3Tilganger = null;
+    private final AltinnTilgangerResponse altinn3Organisasjoner = null;
 
     @BeforeEach
     public void setup() {
@@ -290,7 +290,7 @@ public class AvtaleControllerTest {
                         Fnr.generer(1956, 7, 8),
                         Set.of(),
                         Map.of(),
-                    altinn3Tilganger, List.of(),
+                    altinn3Organisasjoner, null, List.of(),
                         persondataService,
                         null,
                         null,
@@ -562,7 +562,7 @@ public class AvtaleControllerTest {
                 TestData.etFodselsnummer(),
                 Set.of(),
                 Map.of(),
-            altinn3Tilganger, null,
+            altinn3Organisasjoner, null, null,
                 null,
                 null,
                 null,

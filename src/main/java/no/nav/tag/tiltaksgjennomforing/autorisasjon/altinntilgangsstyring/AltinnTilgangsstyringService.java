@@ -146,11 +146,32 @@ public class AltinnTilgangsstyringService {
         }
     }
 
-    public AltinnTilgangerResponse hentTilgangerFrAltinn3() {
-        var request = new AltinnTilgangerRequest(new AltinnTilgangerFilter(
-                altinnTilgangsstyringProperties.alleAltinn2Tilganger(), Set.of()
-        ));
+    public AltinnTilgangerResponse hentAltinn3Organisasjoner() {
+        var request = new AltinnTilgangerRequest(new AltinnTilgangerFilter(Set.of(), Set.of()));
         return kallAltinn3(request);
+    }
+
+    public Map<BedriftNr, Collection<Tiltakstype>> hentTilgangerFraAltinn3() {
+        AltinnTilgangerResponse response = hentAltinn3Organisasjoner();
+        if (response == null || response.isError() || response.orgNrTilTilganger() == null) {
+            log.warn("Feil eller tom respons fra Altinn 3");
+            throw new AltinnFeilException();
+        }
+
+        Map<String, Tiltakstype> tilgangerTilTiltakstype = altinnTilgangsstyringProperties.altinn2TilgangerTilTiltakstype();
+        MultiValueMap<BedriftNr, Tiltakstype> tilganger = MultiValueMap.empty();
+
+        for (Map.Entry<String, Set<String>> entry : response.orgNrTilTilganger().entrySet()) {
+            BedriftNr bedriftNr = new BedriftNr(entry.getKey());
+            for (String tilgang : entry.getValue()) {
+                Tiltakstype tiltakstype = tilgangerTilTiltakstype.get(tilgang);
+                if (tiltakstype != null) {
+                    tilganger.put(bedriftNr, tiltakstype);
+                }
+            }
+        }
+
+        return tilganger.toMap();
     }
 
     public AltinnTilgangerResponse kallAltinn3(AltinnTilgangerRequest altinnTilgangerRequest) {

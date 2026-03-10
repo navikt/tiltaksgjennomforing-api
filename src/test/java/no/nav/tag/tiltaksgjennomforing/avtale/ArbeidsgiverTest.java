@@ -53,7 +53,7 @@ public class ArbeidsgiverTest {
     @MockitoBean
     private AvtaleRepository avtaleRepository;
 
-    private final AltinnTilgangerResponse altinn3Tilganger = null;
+    private final AltinnTilgangerResponse altinn3Organisasjoner = null;
     private final Pageable pageable = PageRequest.of(0, 100);
 
     @BeforeEach
@@ -122,7 +122,7 @@ public class ArbeidsgiverTest {
                 )
             ),
             Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-            altinn3Tilganger, List.of(),
+            altinn3Organisasjoner, null, List.of(),
             persondataService,
             norg2Client,
             eregService,
@@ -143,7 +143,7 @@ public class ArbeidsgiverTest {
             null,
             null,
             null,
-            altinn3Tilganger, null,
+            altinn3Organisasjoner, null, null,
             null,
             null,
             null,
@@ -161,7 +161,7 @@ public class ArbeidsgiverTest {
             null,
             null,
             null,
-            altinn3Tilganger, null,
+            altinn3Organisasjoner, null, null,
             null,
             null,
             null,
@@ -181,7 +181,7 @@ public class ArbeidsgiverTest {
             null,
             null,
             Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-            altinn3Tilganger, List.of(),
+            altinn3Organisasjoner, null, List.of(),
             persondataService,
             null,
             null,
@@ -222,7 +222,7 @@ public class ArbeidsgiverTest {
             null,
             null,
             Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-            altinn3Tilganger, adressesperreTilganger,
+            altinn3Organisasjoner, null, adressesperreTilganger,
             persondataService,
             norg2Client,
             eregService,
@@ -256,7 +256,7 @@ public class ArbeidsgiverTest {
             null,
             null,
             Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-            altinn3Tilganger, emptyList(),
+            altinn3Organisasjoner, null, emptyList(),
             persondataService,
             null,
             null,
@@ -285,7 +285,7 @@ public class ArbeidsgiverTest {
             null,
             null,
             Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-            altinn3Tilganger, adressesperreTilganger,
+            altinn3Organisasjoner, null, adressesperreTilganger,
             persondataService,
             null,
             null,
@@ -316,7 +316,7 @@ public class ArbeidsgiverTest {
             null,
             null,
             Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-            altinn3Tilganger, emptyList(),
+            altinn3Organisasjoner, null, emptyList(),
             persondataService,
             null,
             null,
@@ -326,7 +326,7 @@ public class ArbeidsgiverTest {
             null,
             null,
             Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-            altinn3Tilganger, adressesperreTilganger,
+            altinn3Organisasjoner, null, adressesperreTilganger,
             persondataService,
             null,
             null,
@@ -381,7 +381,7 @@ public class ArbeidsgiverTest {
                 new BedriftNr("999999999"),
                 Set.of(Tiltakstype.MENTOR)
             ),
-            altinn3Tilganger, List.of(),
+            altinn3Organisasjoner, null, List.of(),
             persondataService,
             null,
             null,

@@ -114,8 +114,8 @@ public class AltinnTilgangsstyringServiceTest {
     }
 
     @Test
-    public void hentTilgangerFrAltinn3__returnerer_hierarki_og_tilgangsmappinger() {
-        AltinnTilgangerResponse response = altinnTilgangsstyringService.hentTilgangerFrAltinn3();
+    public void hentAltinn3__Organisasjoner__returnerer_hierarki_og_tilgangsmappinger() {
+        AltinnTilgangerResponse response = altinnTilgangsstyringService.hentAltinn3Organisasjoner();
 
         assertThat(response).isNotNull();
         assertThat(response.isError()).isFalse();
@@ -138,5 +138,30 @@ public class AltinnTilgangsstyringServiceTest {
 
         // Bedrift uten tilganger (IngenTiltak Hjørnet) skal ikke være i orgNrTilTilganger
         assertThat(response.orgNrTilTilganger()).doesNotContainKey("980712306");
+    }
+
+    @Test
+    public void hentTilgangerFraAltinn3__returnerer_tilganger_per_bedrift() {
+        Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilgangerFraAltinn3();
+
+        assertThat(tilganger).isNotEmpty();
+
+        // Parents skal ikke være i tilgang-map
+        assertThat(tilganger).doesNotContainKeys(new BedriftNr("910825550"), new BedriftNr("910825555"));
+
+        // 999999999 har alle tilganger
+        assertThat(tilganger.get(new BedriftNr("999999999"))).containsOnly(
+            Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD,
+            Tiltakstype.SOMMERJOBB, Tiltakstype.MENTOR, Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.VTAO
+        );
+
+        // 910712314 har bare midlertidig lønnstilskudd
+        assertThat(tilganger.get(new BedriftNr("910712314"))).containsOnly(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+
+        // 910712306 har bare varig lønnstilskudd
+        assertThat(tilganger.get(new BedriftNr("910712306"))).containsOnly(Tiltakstype.VARIG_LONNSTILSKUDD);
+
+        // Bedrift uten tilganger skal ikke være med
+        assertThat(tilganger).doesNotContainKey(new BedriftNr("980712306"));
     }
 }
