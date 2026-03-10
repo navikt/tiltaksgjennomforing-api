@@ -2,7 +2,6 @@
   "mappings": [
     {
       "priority": 1,
-      "scenarioName": "altinn3-tilganger",
       "request": {
         "method": "POST",
         "urlPath": "/altinn-tilganger"
@@ -33,20 +32,24 @@
                   "erSlettet": false
                 },
                 {
-                  "orgnr": "999999999",
+                  "orgnr": "910712314",
                   "altinn3Tilganger": [],
                   "altinn2Tilganger": [
-                    "5332:1",
-                    "5516:1",
-                    "5516:2",
-                    "5516:3",
-                    "5516:4",
-                    "5516:5",
-                    "5516:6",
-                    "5516:7"
+                    "5516:1"
                   ],
                   "underenheter": [],
-                  "navn": "Saltrød og Høneby",
+                  "navn": "Bedriften Med Midlertidi Lts",
+                  "organisasjonsform": "BEDR",
+                  "erSlettet": false
+                },
+                {
+                  "orgnr": "910712306",
+                  "altinn3Tilganger": [],
+                  "altinn2Tilganger": [
+                    "5516:2"
+                  ],
+                  "underenheter": [],
+                  "navn": "Bedriften Med Varig Lts",
                   "organisasjonsform": "BEDR",
                   "erSlettet": false
                 },
@@ -70,24 +73,20 @@
               "altinn2Tilganger": [],
               "underenheter": [
                 {
-                  "orgnr": "910712314",
+                  "orgnr": "999999999",
                   "altinn3Tilganger": [],
                   "altinn2Tilganger": [
-                    "5516:1"
+                    "5332:1",
+                    "5516:1",
+                    "5516:2",
+                    "5516:3",
+                    "5516:4",
+                    "5516:5",
+                    "5516:6",
+                    "5516:7"
                   ],
                   "underenheter": [],
-                  "navn": "Bedriften Med Midlertidi Lts",
-                  "organisasjonsform": "BEDR",
-                  "erSlettet": false
-                },
-                {
-                  "orgnr": "910712306",
-                  "altinn3Tilganger": [],
-                  "altinn2Tilganger": [
-                    "5516:2"
-                  ],
-                  "underenheter": [],
-                  "navn": "Bedriften Med Varig Lts",
+                  "navn": "Saltrød og Høneby",
                   "organisasjonsform": "BEDR",
                   "erSlettet": false
                 }
