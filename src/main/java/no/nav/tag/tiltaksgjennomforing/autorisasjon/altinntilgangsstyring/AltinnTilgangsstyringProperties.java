@@ -4,7 +4,10 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+
 import java.net.URI;
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -46,6 +49,18 @@ public class AltinnTilgangsstyringProperties {
             mentorServiceCode + ":" + mentorServiceEdition,
             vtaoServiceCode + ":" + vtaoServiceEdition
             //ltsFirearigServiceCode + ":" + ltsFirearigServiceEdition TODO: Vil bli laget kun som Altinn 3 ressurs.
+        );
+    }
+
+    public Map<String, Tiltakstype> altinn2TilgangerTilTiltakstype() {
+        return Map.of(
+            arbtreningServiceCode + ":" + arbtreningServiceEdition, Tiltakstype.ARBEIDSTRENING,
+            ltsMidlertidigServiceCode + ":" + ltsMidlertidigServiceEdition, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
+            ltsVarigServiceCode + ":" + ltsVarigServiceEdition, Tiltakstype.VARIG_LONNSTILSKUDD,
+            sommerjobbServiceCode + ":" + sommerjobbServiceEdition, Tiltakstype.SOMMERJOBB,
+            mentorServiceCode + ":" + mentorServiceEdition, Tiltakstype.MENTOR,
+            inkluderingstilskuddServiceCode + ":" + inkluderingstilskuddServiceEdition, Tiltakstype.INKLUDERINGSTILSKUDD,
+            vtaoServiceCode + ":" + vtaoServiceEdition, Tiltakstype.VTAO
         );
     }
 }

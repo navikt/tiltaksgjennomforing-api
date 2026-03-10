@@ -73,12 +73,14 @@ public class InnloggingService {
                 .hentAltinnOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
             Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(
                 new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
-                AltinnTilgangerResponse altinn3Tilganger = altinnTilgangsstyringService.hentTilgangerFrAltinn3();
+                AltinnTilgangerResponse altinn3Organisasjoner = altinnTilgangsstyringService.hentAltinn3Organisasjoner();
+                Map<BedriftNr, Collection<Tiltakstype>> altinn3Tilganger = altinnTilgangsstyringService.hentTilgangerFraAltinn3();
             List<BedriftNr> adressesperreTilganger = altinnTilgangsstyringService.hentAdressesperreTilganger(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
             return new Arbeidsgiver(
                 new Fnr(brukerOgIssuer.getBrukerIdent()),
                 altinnOrganisasjoner,
                 tilganger,
+                altinn3Organisasjoner,
                 altinn3Tilganger,
                 adressesperreTilganger,
                 persondataService,
