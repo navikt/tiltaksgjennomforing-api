@@ -10,8 +10,13 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+
 
 @EnableOAuth2Client(cacheEnabled = true)
 @Configuration
@@ -36,7 +41,8 @@ public class SecurityAzureClientConfiguration {
     ) {
         ClientProperties clientProperties = clientConfigurationProperties.getRegistration().get("tokenx-altinn-3");
         if (clientProperties == null) {
-            return restTemplateBuilder.build();
+            RestTemplate restTemplate = new RestTemplate(new SimpleClientHttpRequestFactory());
+            return restTemplate;
         }
         ClientHttpRequestInterceptor bearerTokenInterceptor = (request, body, execution) -> {
             String accessToken = oAuth2AccessTokenService.getAccessToken(clientProperties).getAccessToken();
@@ -46,8 +52,8 @@ public class SecurityAzureClientConfiguration {
             request.getHeaders().setContentType(MediaType.APPLICATION_JSON);
             return execution.execute(request, body);
         };
-        return restTemplateBuilder
-            .additionalInterceptors(bearerTokenInterceptor)
-            .build();
+        RestTemplate restTemplate = new RestTemplate(new SimpleClientHttpRequestFactory());
+        restTemplate.setInterceptors(List.of(bearerTokenInterceptor));
+        return restTemplate;
     }
 }
