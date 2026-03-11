@@ -1,11 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing;
 
-import no.nav.fnrgen.FnrGen;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -49,13 +49,20 @@ public class TestDataGenerator {
                         currAvtale.getGjeldendeInnhold().setDeltakerEtternavn(NavnGenerator.genererEtternavn());
                         currAvtale.getGjeldendeInnhold().setBedriftNavn(NavnGenerator.genererBedriftsnavn());
                         currAvtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
-                        currAvtale.setDeltakerFnr(new Fnr(FnrGen.singleFnr()));
+                        currAvtale.setDeltakerFnr(genererTilfeldigGyldigFnr());
                         currAvtale.oppdaterStatus();
                         avtaler.add(currAvtale);
                     });
         });
         return avtaler;
     }
+
+    private static Fnr genererTilfeldigGyldigFnr() {
+        long randomAar = Math.round(Math.random() * 32) + 18;
+        long randomDag = randomAar > 19 ? Math.round(Math.random() * 365) : 0;
+        return Fnr.generer(LocalDate.now().minusYears(randomAar).minusDays(randomDag));
+    }
+
      private static String genererTilfeldigGyldigBedriftNr(){
         long tilfeldigIndex = Math.round(Math.random() * (BEDRIFT_NR_FRA_WIREMOCK.size() - 1));
         return BEDRIFT_NR_FRA_WIREMOCK.get((int) tilfeldigIndex); // Tilfeldig valg av bedriftNr
