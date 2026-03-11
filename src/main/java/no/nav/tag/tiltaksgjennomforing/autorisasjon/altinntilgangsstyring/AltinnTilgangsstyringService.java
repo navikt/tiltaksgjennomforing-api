@@ -158,7 +158,7 @@ public class AltinnTilgangsstyringService {
             throw new AltinnFeilException();
         }
 
-        Map<String, Tiltakstype> tilgangerTilTiltakstype = altinnTilgangsstyringProperties.altinn2TilgangerTilTiltakstype();
+        Map<String, Tiltakstype> tilgangerTilTiltakstype = altinnTilgangsstyringProperties.tilgangerTilTiltakstype();
         MultiValueMap<BedriftNr, Tiltakstype> tilganger = MultiValueMap.empty();
 
         for (Map.Entry<String, Set<String>> entry : response.orgNrTilTilganger().entrySet()) {
