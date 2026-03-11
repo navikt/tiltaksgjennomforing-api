@@ -2,10 +2,10 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,22 +14,40 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
-
-    private static final int SUM_LONNSTILSKUDD_PER_MANED = 10_000;
-    private static final int SUM_LONNSTILSKUDD_REDUSERT_PER_MANED = 8_000;
+    private static final int SUM_LONNSUTGIFTER = 15_000;
     private static final int PROSENT = 60;
+    private static final int SUM_LONNSTILSKUDD_PER_MANED = 9_000; // 60% av 15 000
+    private static final int SUM_LONNSTILSKUDD_REDUSERT_PER_MANED = 7_500; // 50% av 15 000 (etter reduksjon på 10 prosentpoeng)
+
+    LocalDate datoForRedusertProsent;
 
     private final GenerellLonnstilskuddAvtaleBeregningStrategy strategy =
-            new GenerellLonnstilskuddAvtaleBeregningStrategy();
+        new GenerellLonnstilskuddAvtaleBeregningStrategy() {
+            @Override
+            public Integer getProsentForPeriode(Avtale avtale, Periode periode) {
+                if (datoForRedusertProsent != null && !periode.getStart().isBefore(datoForRedusertProsent)) {
+                    return PROSENT - 10;
+                }
+                return PROSENT;
+            }
+
+            @Override
+            public List<LocalDate> getDatoerForReduksjon(Avtale avtale) {
+                if (datoForRedusertProsent != null) {
+                    return List.of(datoForRedusertProsent);
+                }
+                return List.of();
+            }
+        };
 
     private Avtale lagAvtale(Tiltakstype tiltakstype, LocalDate datoForRedusertProsent) {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(tiltakstype);
         avtale.getGjeldendeInnhold().setSumLonnstilskudd(SUM_LONNSTILSKUDD_PER_MANED);
         avtale.getGjeldendeInnhold().setSumLønnstilskuddRedusert(SUM_LONNSTILSKUDD_REDUSERT_PER_MANED);
         avtale.getGjeldendeInnhold().setLonnstilskuddProsent(PROSENT);
+        avtale.getGjeldendeInnhold().setSumLonnsutgifter(SUM_LONNSUTGIFTER);
         avtale.getGjeldendeInnhold().setDatoForRedusertProsent(datoForRedusertProsent);
         return avtale;
     }
@@ -96,7 +114,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
     void kun_redusert__alle_perioder_bruker_redusert_prosent_og_belop() {
         LocalDate fra = LocalDate.of(2024, 3, 1);
         LocalDate til = LocalDate.of(2024, 4, 30);
-        LocalDate datoForRedusertProsent = LocalDate.of(2024, 1, 1); // allerede passert
+        datoForRedusertProsent = LocalDate.of(2024, 1, 1); // allerede passert
         Avtale avtale = lagAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, datoForRedusertProsent);
 
         List<TilskuddPeriode> perioder = strategy.beregnTilskuddsperioderForAvtale(avtale, fra, til);
@@ -115,7 +133,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
     void baade_full_og_redusert__splitter_paa_reduksjonsdatoen() {
         LocalDate fra = LocalDate.of(2024, 1, 1);
         LocalDate til = LocalDate.of(2024, 4, 30);
-        LocalDate datoForRedusertProsent = LocalDate.of(2024, 3, 1);
+        datoForRedusertProsent = LocalDate.of(2024, 3, 1);
         Avtale avtale = lagAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, datoForRedusertProsent);
 
         List<TilskuddPeriode> perioder = strategy.beregnTilskuddsperioderForAvtale(avtale, fra, til);
@@ -144,7 +162,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
     void baade_full_og_redusert__ingen_perioder_foer_reduksjonsdato_naar_fra_er_lik_reduksjonsdato() {
         LocalDate fra = LocalDate.of(2024, 1, 1);
         LocalDate til = LocalDate.of(2024, 3, 31);
-        LocalDate datoForRedusertProsent = LocalDate.of(2024, 1, 1); // lik startdato
+        datoForRedusertProsent = LocalDate.of(2024, 1, 1); // lik startdato
         Avtale avtale = lagAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, datoForRedusertProsent);
 
         List<TilskuddPeriode> perioder = strategy.beregnTilskuddsperioderForAvtale(avtale, fra, til);
@@ -157,7 +175,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
     void baade_full_og_redusert__reduksjonsdato_siste_dag_gir_fulle_perioder_foer_og_en_redusert_en_dags_periode() {
         LocalDate fra = LocalDate.of(2024, 1, 1);
         LocalDate til = LocalDate.of(2024, 2, 29);
-        LocalDate datoForRedusertProsent = LocalDate.of(2024, 2, 29); // siste dag
+        datoForRedusertProsent = LocalDate.of(2024, 2, 29); // siste dag
         Avtale avtale = lagAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, datoForRedusertProsent);
 
         List<TilskuddPeriode> perioder = strategy.beregnTilskuddsperioderForAvtale(avtale, fra, til);
@@ -188,7 +206,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
         int prosent = 50; // under grensen på 68
         LocalDate fra = LocalDate.of(2024, 1, 1);
         LocalDate til = LocalDate.of(2024, 3, 31);
-        LocalDate datoForRedusertProsent = LocalDate.of(2024, 2, 1);
+        datoForRedusertProsent = LocalDate.of(2024, 2, 1);
         Avtale avtale = lagAvtale(Tiltakstype.VARIG_LONNSTILSKUDD, datoForRedusertProsent);
         avtale.getGjeldendeInnhold().setLonnstilskuddProsent(prosent);
 
@@ -207,13 +225,14 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
     // -----------------------------------------------------------------------
 
     @Test
-    void ugyldig_tilstand__kaster_feilkode_exception_naar_til_er_foer_reduksjonsdato() {
+    void ugyldig_tilstand_ignoreres() {
         LocalDate fra = LocalDate.of(2024, 1, 1);
         LocalDate til = LocalDate.of(2024, 1, 31);
-        LocalDate datoForRedusertProsent = LocalDate.of(2024, 6, 1); // etter perioden
+        datoForRedusertProsent = LocalDate.of(2024, 6, 1); // etter perioden
         Avtale avtale = lagAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, datoForRedusertProsent);
 
-        assertThatThrownBy(() -> strategy.beregnTilskuddsperioderForAvtale(avtale, fra, til))
-                .isInstanceOf(FeilkodeException.class);
+        List<TilskuddPeriode> tilskuddPerioder = strategy.beregnTilskuddsperioderForAvtale(avtale, fra, til);
+        assertThat(tilskuddPerioder.getFirst().getStartDato()).isEqualTo(fra);
+        assertThat(tilskuddPerioder.getLast().getSluttDato()).isEqualTo(til);
     }
 }

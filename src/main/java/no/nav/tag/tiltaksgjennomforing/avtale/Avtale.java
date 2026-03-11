@@ -1158,7 +1158,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
                 }
             }
 
-            List<TilskuddPeriode> tilskuddsperioder = this.hentBeregningStrategi().hentTilskuddsperioderForPeriode(this, gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato()); //.genererNyeTilskuddsperioder(this);
+            List<TilskuddPeriode> tilskuddsperioder = this.hentBeregningStrategi().beregnTilskuddsperioderForAvtale(this, gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato()); //.genererNyeTilskuddsperioder(this);
 
             BeregningStrategy.settBehandletIArena(migreringsDato, tilskuddsperioder);
 

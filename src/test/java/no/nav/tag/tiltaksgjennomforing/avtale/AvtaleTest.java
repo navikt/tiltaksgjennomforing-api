@@ -39,6 +39,7 @@ import java.util.TreeSet;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enSommerjobbAvtale;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enVarigLonnstilskuddsjobbAvtale;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.endringPåAlleLønnstilskuddFelterForSommerjobb;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.setOppfølgingPåAvtale;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus.GODKJENT;
@@ -65,12 +66,11 @@ public class AvtaleTest {
     @Test
     public void test_riktig_beregning_Varig_Lonnstilskudd_Avtale_som_varer_i_mange_aar_med_redusert_lønnsilskudd() {
         Now.fixedDate(LocalDate.of(2024, 7, 29));
-        Avtale avtale = enSommerjobbAvtale();
+        Avtale avtale = enVarigLonnstilskuddsjobbAvtale();
         setOppfølgingPåAvtale(avtale);
         EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelterForSommerjobb(75);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
-        avtale.setTiltakstype(Tiltakstype.VARIG_LONNSTILSKUDD);
         avtale.getGjeldendeInnhold().setDeltakerFornavn("Lilly");
         avtale.getGjeldendeInnhold().setDeltakerEtternavn("Lønning");
         avtale.getGjeldendeInnhold().setArbeidsgiverKontonummer("22222222222");
@@ -1469,6 +1469,7 @@ public class AvtaleTest {
     @Test
     public void lonnstilskudd_skal_generere_tilskuddsperioder() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         avtale.getGjeldendeInnhold().setLonnstilskuddProsent(60);
         assertThat(avtale.getTilskuddPeriode()).isEmpty();
 

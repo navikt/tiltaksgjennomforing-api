@@ -2,11 +2,11 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.SommerjobbLonnstilskuddAvtaleBeregningStrategy;
 
-public class SommerjobbAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy {
-
+public class SommerjobbAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy<SommerjobbLonnstilskuddAvtaleBeregningStrategy> {
     public SommerjobbAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
-        super(avtaleInnhold);
+        super(avtaleInnhold, new SommerjobbLonnstilskuddAvtaleBeregningStrategy());
     }
 
     @Override
