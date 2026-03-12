@@ -47,22 +47,17 @@ public class Periode {
             return List.of(this);
         }
 
-        List<LocalDate> datoerMedStartOgSlutt =  Stream.of(List.of(start), datoerSomFinnesIPerioden, List.of(slutt))
+        List<LocalDate> datoerMedStartOgSlutt =  Stream.of(List.of(start), datoerSomFinnesIPerioden, List.of(slutt.plusDays(1)))
             .flatMap(Collection::stream)
             .sorted()
             .toList();
 
         return IntStream.range(0, datoerMedStartOgSlutt.size() - 1)
             .mapToObj(i -> {
-                boolean erSisteElement = i == datoerMedStartOgSlutt.size() - 2;
-
                 LocalDate periodeStart = datoerMedStartOgSlutt.get(i);
-                LocalDate periodeSlutt= datoerMedStartOgSlutt.get(i + 1);
+                LocalDate periodeSlutt = datoerMedStartOgSlutt.get(i + 1);
 
-                return new Periode(
-                    periodeStart,
-                    erSisteElement ? periodeSlutt : periodeSlutt.minusDays(1)
-                );
+                return new Periode(periodeStart, periodeSlutt.minusDays(1));
             })
             .toList();
     }
