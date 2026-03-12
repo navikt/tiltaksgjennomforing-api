@@ -29,7 +29,7 @@ public class Periode {
         return !dato.isBefore(start) && !dato.isAfter(slutt);
     }
 
-    public List<Periode> split(LocalDate ...split) {
+    public List<Periode> split(LocalDate... split) {
         return split(Arrays.stream(split).toList());
     }
 
@@ -47,7 +47,11 @@ public class Periode {
             return List.of(this);
         }
 
-        List<LocalDate> datoerMedStartOgSlutt =  Stream.of(List.of(start), datoerSomFinnesIPerioden, List.of(slutt.plusDays(1)))
+        List<LocalDate> datoerMedStartOgSlutt = Stream.of(
+                List.of(start),
+                datoerSomFinnesIPerioden,
+                List.of(slutt.plusDays(1))
+            )
             .flatMap(Collection::stream)
             .sorted()
             .toList();
