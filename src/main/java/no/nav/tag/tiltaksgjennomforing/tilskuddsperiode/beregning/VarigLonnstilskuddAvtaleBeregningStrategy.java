@@ -18,7 +18,7 @@ public class VarigLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstils
         Optional<LocalDate> datoForRedusertProsent = getDatoerForReduksjon(avtale).stream().findFirst();
 
         boolean erRedusert = datoForRedusertProsent
-            .map(dato -> tilskuddsperiode.getSlutt().isAfter(dato))
+            .map(dato -> !tilskuddsperiode.getSlutt().isBefore(dato))
             .orElse(false);
 
         int lonnstilskuddProsent = avtale.getGjeldendeInnhold().getLonnstilskuddProsent() != null ? avtale.getGjeldendeInnhold().getLonnstilskuddProsent() : 0;

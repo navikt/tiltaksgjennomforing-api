@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -14,7 +13,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static no.nav.tag.tiltaksgjennomforing.satser.Sats.VTAO_SATS;
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erNoenTomme;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
 public class VTAOLonnstilskuddAvtaleBeregningStrategy implements BeregningStrategy {
@@ -37,7 +35,11 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy implements BeregningStrate
 
     @Override
     public boolean nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder(Avtale avtale) {
-        return false;
+        var gjeldendeInnhold = avtale.getGjeldendeInnhold();
+        return Utils.erIkkeTomme(
+            gjeldendeInnhold.getStartDato(),
+            gjeldendeInnhold.getSluttDato()
+        );
     }
 
     @Override
@@ -45,8 +47,7 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy implements BeregningStrate
         if (avtale.erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
         }
-        AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
-        if (erNoenTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato())) {
+        if (!nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder(avtale)) {
             return Collections.emptyList();
         }
         List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioderForAvtale(

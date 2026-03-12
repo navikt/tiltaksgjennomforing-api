@@ -16,7 +16,10 @@ public class FirearigLonnstilskuddBeregningStrategy extends GenerellLonnstilskud
 
     @Override
     public Integer getProsentForPeriode(Avtale avtale, Periode tilskuddsperiode) {
-        int antallAar = Period.between(avtale.getGjeldendeInnhold().getStartDato(), tilskuddsperiode.getSlutt()).getYears();
+        LocalDate avtaleStart = avtale.getGjeldendeInnhold().getStartDato();
+        LocalDate tilskuddSluttInklSluttdag = tilskuddsperiode.getSlutt().plusDays(1);
+        int antallAar = Period.between(avtaleStart, tilskuddSluttInklSluttdag).getYears();
+
         return switch (antallAar) {
             case 0 -> TILSKUDDSPROSENT_FORSTE_AAR;
             case 1 -> TILSKUDDSPROSENT_ANDRE_AAR;

@@ -81,7 +81,7 @@ public abstract class GenerellLonnstilskuddAvtaleBeregningStrategy implements Be
             .flatMap(p -> p.splitPerMnd()
                 .stream()
                 .map(datoPar -> {
-                    int prosentForPeriode = getProsentForPeriode(avtale, datoPar);
+                    Integer prosentForPeriode = getProsentForPeriode(avtale, datoPar);
                     return lagTilskuddsperiode(
                         avtale,
                         datoPar,

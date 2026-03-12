@@ -29,7 +29,7 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy extends GenerellLon
         }
 
         boolean erRedusert = datoForRedusertProsent
-            .map(dato -> tilskuddsperiode.getSlutt().isAfter(dato))
+            .map(dato -> !tilskuddsperiode.getSlutt().isBefore(dato))
             .orElse(false);
 
         return erRedusert ? tilskuddsprosent - TILSKUDDSPROSENT_REDUKSJONSFAKTOR : tilskuddsprosent;
