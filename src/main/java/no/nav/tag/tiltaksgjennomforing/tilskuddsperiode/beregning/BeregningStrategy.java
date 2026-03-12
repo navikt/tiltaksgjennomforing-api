@@ -152,6 +152,21 @@ public interface BeregningStrategy {
         return null;
     }
 
+    static Integer getLønnVedFullStilling(Integer manedslonn, BigDecimal stillingsProsent) {
+        if (manedslonn == null || stillingsProsent == null || stillingsProsent.compareTo(BigDecimal.ZERO) == 0) {
+            return null;
+        }
+        return BigDecimal.valueOf(manedslonn).multiply(new BigDecimal(100)).divide(stillingsProsent, RoundingMode.HALF_UP).intValue();
+    }
+
+    static Integer getSumLonnstilskudd(Integer sumLonnsutgifter, Integer lonnstilskuddProsent) {
+        if (sumLonnsutgifter == null || lonnstilskuddProsent == null) {
+            return null;
+        }
+        double lonnstilskuddProsentSomDecimal = lonnstilskuddProsent.doubleValue() / 100;
+        return (int) Math.round(sumLonnsutgifter * lonnstilskuddProsentSomDecimal);
+    }
+
      static Integer tilskuddprosentForPeriode(LocalDate datoTilOgMed, Tiltakstype tiltakstype, LocalDate datoForRedusertProsent, Integer lonnstilskuddprosent) {
         if (datoForRedusertProsent == null || datoTilOgMed.isBefore(datoForRedusertProsent)) {
             return lonnstilskuddprosent;

@@ -57,7 +57,7 @@ public class VarigLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstils
     @Override
     public void reberegnTotal(Avtale avtale) {
         super.reberegnTotal(avtale);
-       regnUtDatoOgSumRedusert(avtale);
+        regnUtDatoOgSumRedusert(avtale);
     }
 
     public void regnUtDatoOgSumRedusert(Avtale avtale) {
@@ -80,7 +80,7 @@ public class VarigLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstils
             if (lonnstilskuddProsent > TILSKUDDSPROSENT_REDUSERT_MAKS) {
                 lonnstilskuddProsent = TILSKUDDSPROSENT_REDUSERT_MAKS;
             }
-            return getSumLonnstilskudd(avtaleInnhold.getSumLonnsutgifter(), lonnstilskuddProsent);
+            return BeregningStrategy.getSumLonnstilskudd(avtaleInnhold.getSumLonnsutgifter(), lonnstilskuddProsent);
         } else {
             return null;
         }

@@ -78,6 +78,7 @@ public record AvtaleInnholdDTO(
     Integer sumLønnstilskuddRedusert,
     LocalDate datoForRedusertProsent,
     Stillingstype stillingstype,
+    List<TilskuddstrinnDTO> tilskuddstrinn,
 
     // Arbeidstrening
     List<MaalDTO> maal,
@@ -160,7 +161,8 @@ public record AvtaleInnholdDTO(
             dbEntitet.getSumLønnstilskuddRedusert(),
             dbEntitet.getDatoForRedusertProsent(),
             dbEntitet.getStillingstype(),
-            dbEntitet.getMaal().stream().map(MaalDTO::new).toList(),
+            TilskuddstrinnDTO.map(dbEntitet),
+            MaalDTO.map(dbEntitet),
             dbEntitet.getInkluderingstilskuddsutgift(),
             dbEntitet.getInkluderingstilskuddBegrunnelse(),
             dbEntitet.getGodkjentAvDeltaker(),
