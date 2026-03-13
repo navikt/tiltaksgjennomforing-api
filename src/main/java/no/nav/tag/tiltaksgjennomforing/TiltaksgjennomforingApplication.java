@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,8 +13,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableJwtTokenValidation(ignore = {
-        "org.springdoc",
-        "springfox.documentation.swagger.web.ApiResourceController",
         "no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleController",
         "org.springframework"
 })
@@ -25,7 +22,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableAsync
 @EnableScheduling
 @EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
-@OpenAPIDefinition
 @EnableRetry
 public class TiltaksgjennomforingApplication {
     public static void main(String[] args) {
