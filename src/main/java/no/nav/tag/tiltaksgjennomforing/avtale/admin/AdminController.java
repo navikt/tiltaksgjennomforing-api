@@ -445,7 +445,7 @@ public class AdminController {
 
     @Transactional
     @PostMapping("/avtale/{id}/opprett-fra-eksisterende")
-    public ResponseEntity<UUID> opprettAvtaleFraEksisterende(@PathVariable UUID id, @RequestParam(defaultValue = "false") boolean force) {
+    public ResponseEntity<UUID> opprettAvtaleFraEksisterende(@PathVariable UUID id, @RequestParam(value = "force", defaultValue = "false") boolean force) {
         Avtale avtale = avtaleRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
 
         if (!force && avtale.isFeilregistrert() && !AnnullertGrunn.UTLØPT.equals(avtale.getAnnullertGrunn())) {
