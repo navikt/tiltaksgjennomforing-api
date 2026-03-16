@@ -86,7 +86,7 @@ public class InnloggingServiceTest {
         when(altinnTilgangsstyringService.hentTilganger(eq(selvbetjeningBruker.getIdentifikator()), any())).thenReturn(Map.of());
         when(altinnTilgangsstyringService.hentAltinnOrganisasjoner(eq(selvbetjeningBruker.getIdentifikator()), any())).thenReturn(Set.of());
         when(altinnTilgangsstyringService.hentAltinn3Organisasjoner()).thenReturn(null);
-        when(altinnTilgangsstyringService.hentTilgangerFraAltinn3()).thenReturn(null);
+        when(altinnTilgangsstyringService.mapTilgangerFraAltinn3(null)).thenReturn(null);
         værInnloggetArbeidsgiver(selvbetjeningBruker);
 
        when(arbeidsgiverTokenStrategyFactory.create(Issuer.ISSUER_TOKENX)).thenReturn(() -> "");

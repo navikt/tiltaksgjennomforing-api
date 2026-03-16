@@ -150,11 +150,10 @@ public class AltinnTilgangsstyringService {
         var request = new AltinnTilgangerRequest(new AltinnTilgangerFilter(Set.of(), Set.of()));
         return kallAltinn3(request);
     }
-
-    public Map<BedriftNr, Collection<Tiltakstype>> hentTilgangerFraAltinn3() {
-        AltinnTilgangerResponse response = hentAltinn3Organisasjoner();
+    
+    public Map<BedriftNr, Collection<Tiltakstype>> mapTilgangerFraAltinn3(AltinnTilgangerResponse response) {
         if (response == null || response.isError() || response.orgNrTilTilganger() == null) {
-            log.warn("Feil eller tom respons fra Altinn 3");
+            log.warn("Feil eller tom respons fra Altinn 3, isError: {}", response != null ? response.isError() : "null");
             throw new AltinnFeilException();
         }
 
