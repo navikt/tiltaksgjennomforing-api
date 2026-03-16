@@ -91,7 +91,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
     void getDatoerForReduksjon__returnerer_tom_liste_naar_sluttdato_er_i_forste_aar() {
         LocalDate startDato = LocalDate.of(2027, 1, 1);
         // Sluttdato er før første reduksjonsdato
-        LocalDate sluttDato = LocalDate.of(2027, 6, 30);
+        LocalDate sluttDato = LocalDate.of(2027, 12, 31);
         Avtale avtale = lagAvtaleMedDatoer(startDato, sluttDato);
 
         List<LocalDate> result = strategy.getDatoerForReduksjon(avtale);
