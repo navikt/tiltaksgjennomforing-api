@@ -445,10 +445,16 @@ public class AdminController {
 
     @Transactional
     @PostMapping("/avtale/{id}/opprett-fra-eksisterende")
-    public ResponseEntity<UUID> opprettAvtaleFraEksisterende(@PathVariable UUID id) {
+    public ResponseEntity<UUID> opprettAvtaleFraEksisterende(@PathVariable UUID id, @RequestParam(defaultValue = "false") boolean force) {
         Avtale avtale = avtaleRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
 
-        if (avtale.isFeilregistrert() && !AnnullertGrunn.UTLØPT.equals(avtale.getAnnullertGrunn())) {
+        if (!force && avtale.isFeilregistrert() && !AnnullertGrunn.UTLØPT.equals(avtale.getAnnullertGrunn())) {
+            log.error(
+                "Avtale {} som er feilregistrert skal ikke kunne kopieres og er derfor skrivebeskyttet. " +
+                "Hvis du vet hva du holder på med så kan du rekjøre spørringen med " +
+                "?force=true for å omgå beskyttelsen.",
+                avtale.getId()
+            );
             throw new IllegalStateException("Kan ikke opprette ny avtale fra en feilregistrert avtale.");
         }
 
@@ -476,7 +482,6 @@ public class AdminController {
         nyAvtale.endreAvtale(endreAvtale, AvtaleHendelseUtførtAv.Rolle.SYSTEM, Identifikator.SYSTEM);
         nyAvtale.getGjeldendeInnhold().setSluttDato(avtale.getGjeldendeInnhold().getSluttDato());
         nyAvtale.getGjeldendeInnhold().setStartDato(avtale.getGjeldendeInnhold().getStartDato());
-
 
         avtaleRepository.save(nyAvtale);
         return ResponseEntity.ok(nyAvtale.getId());
