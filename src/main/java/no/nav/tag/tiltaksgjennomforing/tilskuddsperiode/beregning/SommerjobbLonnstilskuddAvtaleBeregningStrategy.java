@@ -9,9 +9,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class SommerjobbLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
+    public static int TILSKUDDSPROSENT_MAKS = 75;
+    public static int TILSKUDDSPROSENT_MIN = 50;
 
     @Override
-    public Integer getProsentForPeriode(Avtale avtale, Periode tilskuddsperiode) {
+    public Integer getProsentForPeriode(Avtale avtale, Periode periode) {
         return avtale.getGjeldendeInnhold().getLonnstilskuddProsent();
     }
 

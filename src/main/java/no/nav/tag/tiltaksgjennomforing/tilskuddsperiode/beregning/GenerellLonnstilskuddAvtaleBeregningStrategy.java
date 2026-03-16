@@ -18,7 +18,6 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.toBigDecimal;
 
 public abstract class GenerellLonnstilskuddAvtaleBeregningStrategy implements BeregningStrategy {
-    public abstract Integer getProsentForPeriode(Avtale avtale, Periode periode);
     public abstract List<LocalDate> getDatoerForReduksjon(Avtale avtale);
 
     @Override
@@ -32,10 +31,16 @@ public abstract class GenerellLonnstilskuddAvtaleBeregningStrategy implements Be
             return Collections.emptyList();
         }
 
-        List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioderForAvtale(avtale, gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
+        List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioderForAvtale(
+            avtale,
+            gjeldendeInnhold.getStartDato(),
+            gjeldendeInnhold.getSluttDato()
+        );
         if (avtale.getArenaRyddeAvtale() != null) {
             LocalDate standardMigreringsdato = LocalDate.of(2023, 2, 1);
-            LocalDate migreringsdato = avtale.getArenaRyddeAvtale().getMigreringsdato() != null ? avtale.getArenaRyddeAvtale().getMigreringsdato() : standardMigreringsdato;
+            LocalDate migreringsdato = avtale.getArenaRyddeAvtale()
+                .getMigreringsdato() != null ? avtale.getArenaRyddeAvtale()
+                .getMigreringsdato() : standardMigreringsdato;
 
             BeregningStrategy.settBehandletIArena(migreringsdato, tilskuddsperioder);
         }
@@ -56,13 +61,33 @@ public abstract class GenerellLonnstilskuddAvtaleBeregningStrategy implements Be
     @Override
     public void reberegnTotal(Avtale avtale) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
-        BigDecimal feriepengerBelop = BeregningStrategy.getFeriepengerBelop(avtaleInnhold.getFeriepengesats(), avtaleInnhold.getManedslonn());
-        BigDecimal obligTjenestepensjon = BeregningStrategy.getBeregnetOtpBelop(toBigDecimal(avtaleInnhold.getOtpSats()), avtaleInnhold.getManedslonn(), feriepengerBelop);
-        BigDecimal arbeidsgiveravgiftBelop = BeregningStrategy.getArbeidsgiverAvgift(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon,
-                avtaleInnhold.getArbeidsgiveravgift());
-        Integer sumLonnsutgifter = BeregningStrategy.getSumLonnsutgifter(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop);
-        Integer sumlønnTilskudd = BeregningStrategy.getSumLonnstilskudd(sumLonnsutgifter, avtaleInnhold.getLonnstilskuddProsent());
-        Integer månedslønnFullStilling = BeregningStrategy.getLønnVedFullStilling(avtaleInnhold.getManedslonn(), avtaleInnhold.getStillingprosent());
+        BigDecimal feriepengerBelop = BeregningStrategy.getFeriepengerBelop(
+            avtaleInnhold.getFeriepengesats(),
+            avtaleInnhold.getManedslonn()
+        );
+        BigDecimal obligTjenestepensjon = BeregningStrategy.getBeregnetOtpBelop(
+            toBigDecimal(avtaleInnhold.getOtpSats()),
+            avtaleInnhold.getManedslonn(),
+            feriepengerBelop
+        );
+        BigDecimal arbeidsgiveravgiftBelop = BeregningStrategy.getArbeidsgiverAvgift(
+            avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon,
+            avtaleInnhold.getArbeidsgiveravgift()
+        );
+        Integer sumLonnsutgifter = BeregningStrategy.getSumLonnsutgifter(
+            avtaleInnhold.getManedslonn(),
+            feriepengerBelop,
+            obligTjenestepensjon,
+            arbeidsgiveravgiftBelop
+        );
+        Integer sumlønnTilskudd = BeregningStrategy.getSumLonnstilskudd(
+            sumLonnsutgifter,
+            avtaleInnhold.getLonnstilskuddProsent()
+        );
+        Integer månedslønnFullStilling = BeregningStrategy.getLønnVedFullStilling(
+            avtaleInnhold.getManedslonn(),
+            avtaleInnhold.getStillingprosent()
+        );
         avtaleInnhold.setFeriepengerBelop(convertBigDecimalToInt(feriepengerBelop));
         avtaleInnhold.setOtpBelop(convertBigDecimalToInt(obligTjenestepensjon));
         avtaleInnhold.setArbeidsgiveravgiftBelop(convertBigDecimalToInt(arbeidsgiveravgiftBelop));
@@ -72,22 +97,18 @@ public abstract class GenerellLonnstilskuddAvtaleBeregningStrategy implements Be
     }
 
     @Override
-    public List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Avtale avtale, LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
+    public List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(
+        Avtale avtale,
+        LocalDate datoFraOgMed,
+        LocalDate datoTilOgMed
+    ) {
         List<Periode> reduksjonsperioder = Periode.av(datoFraOgMed, datoTilOgMed).split(getDatoerForReduksjon(avtale));
 
         return reduksjonsperioder
             .stream()
             .flatMap(p -> p.splitPerMnd()
                 .stream()
-                .map(datoPar -> {
-                    Integer prosentForPeriode = getProsentForPeriode(avtale, datoPar);
-                    return lagTilskuddsperiode(
-                        avtale,
-                        datoPar,
-                        BeregningStrategy.getSumLonnstilskudd(avtale.getGjeldendeInnhold().getSumLonnsutgifter(), prosentForPeriode),
-                        prosentForPeriode
-                    );
-                })
+                .map(datoPar -> lagTilskuddsperiode(avtale, datoPar))
             )
             .toList();
 
@@ -97,19 +118,34 @@ public abstract class GenerellLonnstilskuddAvtaleBeregningStrategy implements Be
     public boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(Avtale avtale) {
         var gjeldendeInnhold = avtale.getGjeldendeInnhold();
         return Utils.erIkkeTomme(
-                gjeldendeInnhold.getStartDato(),
-                gjeldendeInnhold.getSluttDato(),
-                gjeldendeInnhold.getSumLonnstilskudd(),
-                gjeldendeInnhold.getLonnstilskuddProsent(),
-                gjeldendeInnhold.getArbeidsgiveravgift(),
-                gjeldendeInnhold.getManedslonn(),
-                gjeldendeInnhold.getOtpSats());
+            gjeldendeInnhold.getStartDato(),
+            gjeldendeInnhold.getSluttDato(),
+            gjeldendeInnhold.getSumLonnstilskudd(),
+            gjeldendeInnhold.getLonnstilskuddProsent(),
+            gjeldendeInnhold.getArbeidsgiveravgift(),
+            gjeldendeInnhold.getManedslonn(),
+            gjeldendeInnhold.getOtpSats()
+        );
     }
 
     @Override
     public boolean nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder(Avtale avtale) {
         AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
-        return Utils.erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnstilskudd());
+        return Utils.erIkkeTomme(
+            gjeldendeInnhold.getStartDato(),
+            gjeldendeInnhold.getSluttDato(),
+            gjeldendeInnhold.getSumLonnstilskudd()
+        );
+    }
+
+    @Override
+    public Integer getBeløpForPeriode(Avtale avtale, Periode periode) {
+        Integer prosentForPeriode = getProsentForPeriode(avtale, periode);
+        Integer lonnstilskudd = BeregningStrategy.getSumLonnstilskudd(
+            avtale.getGjeldendeInnhold().getSumLonnsutgifter(),
+            prosentForPeriode
+        );
+        return BeregningStrategy.beløpForPeriode(periode, lonnstilskudd);
     }
 
     public List<Tilskuddstrinn> getTilskuddstrinn(Avtale avtale) {
@@ -137,9 +173,15 @@ public abstract class GenerellLonnstilskuddAvtaleBeregningStrategy implements Be
             .toList();
     }
 
-    TilskuddPeriode lagTilskuddsperiode(Avtale avtale, Periode periode, int lonnstilskudd, int lonnstilskuddProsent) {
-        Integer beløp = BeregningStrategy.beløpForPeriode(periode.getStart(), periode.getSlutt(), lonnstilskudd);
-        TilskuddPeriode tilskuddsperiode = new TilskuddPeriode(beløp, periode.getStart(), periode.getSlutt(), lonnstilskuddProsent);
+    TilskuddPeriode lagTilskuddsperiode(Avtale avtale, Periode periode) {
+        Integer beløp = getBeløpForPeriode(avtale, periode);
+        Integer prosent = getProsentForPeriode(avtale, periode);
+        TilskuddPeriode tilskuddsperiode = new TilskuddPeriode(
+            beløp,
+            periode.getStart(),
+            periode.getSlutt(),
+            prosent
+        );
         tilskuddsperiode.setAvtale(avtale);
         tilskuddsperiode.setEnhet(avtale.getGjeldendeInnhold().getEnhetKostnadssted());
         tilskuddsperiode.setEnhetsnavn(avtale.getGjeldendeInnhold().getEnhetsnavnKostnadssted());

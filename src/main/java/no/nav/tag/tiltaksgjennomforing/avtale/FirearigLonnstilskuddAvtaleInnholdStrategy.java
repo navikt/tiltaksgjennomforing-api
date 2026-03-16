@@ -6,4 +6,11 @@ public class FirearigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvt
     public FirearigLonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold, new FirearigLonnstilskuddBeregningStrategy());
     }
+
+    @Override
+    public void endre(EndreAvtale endreAvtale) {
+        Integer lonstilskuddprosentVedStart = beregningStrategy.getProsentForForstePeriode();
+        avtaleInnhold.setLonnstilskuddProsent(lonstilskuddprosentVedStart);
+        super.endre(endreAvtale);
+    }
 }

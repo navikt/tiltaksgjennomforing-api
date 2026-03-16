@@ -8,15 +8,19 @@ import java.util.Collections;
 import java.util.List;
 
 public class FirearigLonnstilskuddBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
-    private static final int TILSKUDDSPROSENT_FORSTE_AAR = 70;
-    private static final int TILSKUDDSPROSENT_ANDRE_AAR = 60;
-    private static final int TILSKUDDSPROSENT_TREDJE_AAR = 50;
-    private static final int TILSKUDDSPROSENT_FJERDE_AAR = 35;
+    public static final int TILSKUDDSPROSENT_FORSTE_AAR = 70;
+    public static final int TILSKUDDSPROSENT_ANDRE_AAR = 60;
+    public static final int TILSKUDDSPROSENT_TREDJE_AAR = 50;
+    public static final int TILSKUDDSPROSENT_FJERDE_AAR = 35;
+
+    public Integer getProsentForForstePeriode() {
+        return TILSKUDDSPROSENT_FORSTE_AAR;
+    }
 
     @Override
-    public Integer getProsentForPeriode(Avtale avtale, Periode tilskuddsperiode) {
+    public Integer getProsentForPeriode(Avtale avtale, Periode periode) {
         LocalDate avtaleStart = avtale.getGjeldendeInnhold().getStartDato();
-        LocalDate tilskuddSlutt = tilskuddsperiode.getSlutt();
+        LocalDate tilskuddSlutt = periode.getSlutt();
 
         if (tilskuddSlutt.isBefore(avtaleStart.plusYears(1))) {
             return TILSKUDDSPROSENT_FORSTE_AAR;
