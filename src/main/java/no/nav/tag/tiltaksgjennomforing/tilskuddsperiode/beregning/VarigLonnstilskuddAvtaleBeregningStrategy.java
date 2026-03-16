@@ -39,7 +39,7 @@ public class VarigLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstils
             return Collections.emptyList();
         }
 
-        LocalDate datoForReduksjon = avtale.getGjeldendeInnhold().getStartDato().plusYears(1);
+        LocalDate datoForReduksjon = startDato.plusYears(1);
         if (datoForReduksjon.isAfter(sluttDato)) {
             return Collections.emptyList();
         }

@@ -60,9 +60,7 @@ public class DeltakerTest {
                 Tiltakstype.VARIG_LONNSTILSKUDD
             ), Avtaleopphav.VEILEDER, TestData.enNavIdent()
         );
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
-        endreAvtale.setSluttDato(LocalDate.of(2028, 1, 30));
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(LocalDate.of(2021, 6, 1), LocalDate.of(2028, 1, 30));
         assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
 
         Now.resetClock();
@@ -78,9 +76,7 @@ public class DeltakerTest {
                 Tiltakstype.VTAO
             ), Avtaleopphav.VEILEDER, TestData.enNavIdent()
         );
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(LocalDate.of(2025, 1, 9));
-        endreAvtale.setSluttDato(LocalDate.of(2070, 3, 30));
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(LocalDate.of(2025, 1, 9), LocalDate.of(2070, 3, 30));
         assertFeilkode(Feilkode.DELTAKER_67_AAR, () -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
 
         Now.resetClock();

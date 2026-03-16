@@ -48,9 +48,7 @@ public class BeregningStrategyTest {
         LocalDate til = LocalDate.of(2021, 3, 31);
         final int forventetBeløpForPeriode = 48960;
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(fra);
-        endreAvtale.setSluttDato(til);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(fra, til);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
         assertThat(avtale.beregnTilskuddsbeløpForPeriode(fra,til)).isEqualTo(forventetBeløpForPeriode);
@@ -70,9 +68,7 @@ public class BeregningStrategyTest {
         LocalDate til = LocalDate.of(2021, 3, 31);
         final int forventetBeløpForPeriode = 0;
         Avtale avtale = TestData.enAvtale(tiltakstype);
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(fra);
-        endreAvtale.setSluttDato(til);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(fra, til);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
 
@@ -101,9 +97,7 @@ public class BeregningStrategyTest {
 
         Avtale avtale = TestData.enVtaoAvtaleIKKEGodkjentAvArbeidsgiver();
 
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(fra);
-        endreAvtale.setSluttDato(til);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(fra, til);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
 
@@ -121,9 +115,7 @@ public class BeregningStrategyTest {
         LocalDate til = LocalDate.of(2021, 1, 31);
 
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(fra);
-        endreAvtale.setSluttDato(til);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(fra, til);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         var tilskuddPerioder = avtale.getTilskuddPeriode();
 
@@ -165,9 +157,7 @@ public class BeregningStrategyTest {
     public void finnTilskuddsperiodeForDato() {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(LocalDate.of(2021, 1, 1));
-        endreAvtale.setSluttDato(LocalDate.of(2021, 10, 1));
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 10, 1));
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
         TilskuddPeriode tilskuddPeriode1 = finnTilskuddsperiodeForDato(LocalDate.of(2021, 1, 1), avtale);
@@ -184,9 +174,10 @@ public class BeregningStrategyTest {
         final String ENHETS_NAVN = "NAV Ullensaker";
 
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(avtale.getGjeldendeInnhold().getStartDato());
-        endreAvtale.setSluttDato(avtale.getGjeldendeInnhold().getSluttDato());
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(
+            avtale.getGjeldendeInnhold().getStartDato(),
+            avtale.getGjeldendeInnhold().getSluttDato()
+        );
 
         avtale.oppdatereKostnadsstedForTilskuddsperioder(new NyttKostnadssted(ENHETS_NR, ENHETS_NAVN));
         assertThat(avtale.tilskuddsperiode(0).getEnhet()).isEqualTo(ENHETS_NR);
@@ -222,10 +213,8 @@ public class BeregningStrategyTest {
         LocalDate sluttDato = LocalDate.of(2021, 1, 2);
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
 
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         endreAvtale.setLonnstilskuddProsent(40);
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
 
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(9);
@@ -240,9 +229,7 @@ public class BeregningStrategyTest {
         LocalDate sluttDato = LocalDate.of(2022, 1, 10);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
 
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         endreAvtale.setLonnstilskuddProsent(68);
 
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
@@ -261,10 +248,7 @@ public class BeregningStrategyTest {
         LocalDate sluttDato = LocalDate.of(2023, 12, 12);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
         avtale.setGodkjentForEtterregistrering(true);
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         endreAvtale.setLonnstilskuddProsent(70);
 
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
@@ -283,9 +267,7 @@ public class BeregningStrategyTest {
         LocalDate sluttDato = LocalDate.of(2023, 3, 10);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
 
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         endreAvtale.setLonnstilskuddProsent(40);
 
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
@@ -303,9 +285,7 @@ public class BeregningStrategyTest {
         LocalDate sluttDato = LocalDate.of(2021, 3, 1);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
 
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         endreAvtale.setLonnstilskuddProsent(69);
 
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
@@ -323,9 +303,7 @@ public class BeregningStrategyTest {
         LocalDate sluttDato = LocalDate.of(2021, 6, 1);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
 
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         endreAvtale.setLonnstilskuddProsent(35);
 
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
@@ -342,9 +320,7 @@ public class BeregningStrategyTest {
         LocalDate startDato = LocalDate.of(2021, 1, 1);
         LocalDate sluttDato = LocalDate.of(2021, 7, 1);
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         endreAvtale.setLonnstilskuddProsent(40);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
@@ -360,9 +336,7 @@ public class BeregningStrategyTest {
         LocalDate sluttDato = LocalDate.of(2022, 12, 31);
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         endreAvtale.setLonnstilskuddProsent(60);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
@@ -378,9 +352,7 @@ public class BeregningStrategyTest {
         LocalDate sluttDato = LocalDate.of(2021, 12, 31);
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         endreAvtale.setLonnstilskuddProsent(60);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
@@ -393,9 +365,7 @@ public class BeregningStrategyTest {
     public void sjekk_at_varig_lonnstilskudd_ikke_reduserses() {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(LocalDate.of(2021, 1, 1));
-        endreAvtale.setSluttDato(LocalDate.of(2031, 1, 1));
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(LocalDate.of(2021, 1, 1), LocalDate.of(2031, 1, 1));
         endreAvtale.setLonnstilskuddProsent(60);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 

@@ -128,6 +128,26 @@ public class PeriodeTest {
         assertThat(result).containsExactly(new Periode(enDag, enDag));
     }
 
+    @Test
+    public void split__start_skuddaar() {
+        LocalDate start = LocalDate.of(2024, 2, 29);
+        LocalDate slutt = LocalDate.of(2028, 2, 27);
+        Periode periode = Periode.av(start, slutt);
+
+        List<Periode> result = periode.split(
+            LocalDate.of(2025, 2, 28),
+            LocalDate.of(2026, 2, 28),
+            LocalDate.of(2027, 2, 28)
+        );
+
+        assertThat(result).containsExactly(
+            Periode.av(LocalDate.of(2024,2,29), LocalDate.of(2025,2,27)),
+            Periode.av(LocalDate.of(2025,2,28), LocalDate.of(2026,2,27)),
+            Periode.av(LocalDate.of(2026,2,28), LocalDate.of(2027,2,27)),
+            Periode.av(LocalDate.of(2027,2,28), LocalDate.of(2028,2,27))
+        );
+    }
+
 
     @Test
     public void splitPerMnd__hel_maned_gir_en_periode() {
@@ -267,5 +287,30 @@ public class PeriodeTest {
             assertThat(result.get(i).getSlutt().plusDays(1))
                 .isEqualTo(result.get(i + 1).getStart());
         }
+    }
+
+    @Test
+    public void splitPerMnd__start_skuddaar() {
+        LocalDate start = LocalDate.of(2024, 2, 29);
+        LocalDate slutt = LocalDate.of(2025, 2, 28);
+        Periode periode = Periode.av(start, slutt);
+
+        List<Periode> result = periode.splitPerMnd();
+
+        assertThat(result).containsExactly(
+            Periode.av(LocalDate.of(2024,2,29), LocalDate.of(2024,2,29)),
+            Periode.av(LocalDate.of(2024,3,1), LocalDate.of(2024,3,31)),
+            Periode.av(LocalDate.of(2024,4,1), LocalDate.of(2024,4,30)),
+            Periode.av(LocalDate.of(2024,5,1), LocalDate.of(2024,5,31)),
+            Periode.av(LocalDate.of(2024,6,1), LocalDate.of(2024,6,30)),
+            Periode.av(LocalDate.of(2024,7,1), LocalDate.of(2024,7,31)),
+            Periode.av(LocalDate.of(2024,8,1), LocalDate.of(2024,8,31)),
+            Periode.av(LocalDate.of(2024,9,1), LocalDate.of(2024,9,30)),
+            Periode.av(LocalDate.of(2024,10,1), LocalDate.of(2024,10,31)),
+            Periode.av(LocalDate.of(2024,11,1), LocalDate.of(2024,11,30)),
+            Periode.av(LocalDate.of(2024,12,1), LocalDate.of(2024,12,31)),
+            Periode.av(LocalDate.of(2025,1,1), LocalDate.of(2025,1,31)),
+            Periode.av(LocalDate.of(2025,2,1), LocalDate.of(2025,2,28))
+        );
     }
 }
