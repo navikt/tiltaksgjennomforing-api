@@ -377,7 +377,7 @@ public class TestData {
             avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         }
         if (tiltakstype == Tiltakstype.FIREARIG_LONNSTILSKUDD) {
-            LocalDate start = LocalDate.now().isBefore(LocalDate.of(2026, 8, 1)) ? LocalDate.of(2026, 8, 1) : Now.localDate();
+            LocalDate start = Now.localDate().isBefore(LocalDate.of(2026, 8, 1)) ? LocalDate.of(2026, 8, 1) : Now.localDate();
             LocalDate slutt = start.plusYears(4).minusDays(1);
             avtale.endreAvtale(endringPåAlleLønnstilskuddFelter(start, slutt), Avtalerolle.VEILEDER);
         } else {
