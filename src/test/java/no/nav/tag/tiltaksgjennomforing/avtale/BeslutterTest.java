@@ -15,7 +15,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
 import java.util.Set;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
@@ -42,9 +41,6 @@ class BeslutterTest {
 
         //GITT
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(LocalDate.of(2021, 12, 12));
-        endreAvtale.setSluttDato(LocalDate.of(2021, 12, 1).plusYears(1));
         Beslutter beslutter = TestData.enBeslutter(avtale);
 
         // NÅR

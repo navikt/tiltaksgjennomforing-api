@@ -24,7 +24,6 @@ import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.datavarehus.DvhMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.ArbeidsgiverNotifikasjonRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,8 +73,6 @@ class LagVarselFraAvtaleHendelserTest {
     DvhMeldingEntitetRepository dvhMeldingEntitetRepository;
     @Autowired
     AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
-    @Autowired
-    VeilarboppfolgingService veilarboppfolgingService;
     @Autowired
     SmsRepository smsRepository;
 

@@ -66,7 +66,6 @@ public class TestData {
                 return enMentorAvtale();
             default:
                 throw new IllegalArgumentException("Ukjent tiltakstype");
-
         }
     }
 
@@ -245,9 +244,7 @@ public class TestData {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         setOppfølgingOgGeografiskPåAvtale(avtale);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter();
-        endring.setStartDato(startDato);
-        endring.setSluttDato(sluttDato);
+        EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         avtale.setGodkjentForEtterregistrering(true);
         avtale.endreAvtale(endring, Avtalerolle.VEILEDER);
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
@@ -261,9 +258,7 @@ public class TestData {
         avtale.setArenaRyddeAvtale(new ArenaRyddeAvtale());
         setOppfølgingOgGeografiskPåAvtale(avtale);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter();
-        endring.setStartDato(startDato);
-        endring.setSluttDato(sluttDato);
+        EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         avtale.setGodkjentForEtterregistrering(true);
         avtale.endreAvtale(endring, Avtalerolle.VEILEDER);
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
@@ -277,9 +272,7 @@ public class TestData {
         avtale.setArenaRyddeAvtale(new ArenaRyddeAvtale());
         setOppfølgingOgGeografiskPåAvtale(avtale);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter();
-        endring.setStartDato(startDato);
-        endring.setSluttDato(sluttDato);
+        EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         avtale.setGodkjentForEtterregistrering(true);
         avtale.endreAvtale(endring, Avtalerolle.VEILEDER);
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
@@ -383,7 +376,13 @@ public class TestData {
         } else {
             avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         }
-        avtale.endreAvtale(endringPåAlleLønnstilskuddFelter(), Avtalerolle.VEILEDER);
+        if (tiltakstype == Tiltakstype.FIREARIG_LONNSTILSKUDD) {
+            LocalDate start = LocalDate.now().isBefore(LocalDate.of(2026, 8, 1)) ? LocalDate.of(2026, 8, 1) : Now.localDate();
+            LocalDate slutt = start.plusYears(4).minusDays(1);
+            avtale.endreAvtale(endringPåAlleLønnstilskuddFelter(start, slutt), Avtalerolle.VEILEDER);
+        } else {
+            avtale.endreAvtale(endringPåAlleLønnstilskuddFelter(), Avtalerolle.VEILEDER);
+        }
         avtale.setTiltakstype(tiltakstype);
         avtale.getGjeldendeInnhold().setDeltakerFornavn("Lilly");
         avtale.getGjeldendeInnhold().setDeltakerEtternavn("Lønning");
@@ -519,12 +518,10 @@ public class TestData {
     public static Avtale enSommerjobbAvtaleGodkjentAvVeileder() {
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         setOppfølgingPåAvtale(avtale);
-        EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter();
+        EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter(LocalDate.of(2021, 6, 1), LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         endreAvtale.setLonnstilskuddProsent(50);
         endreAvtale.setFeriepengesats(new BigDecimal("0.12"));
         endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
-        endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
-        endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
@@ -539,12 +536,10 @@ public class TestData {
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         setOppfølgingPåAvtale(avtale);
         avtale.setAvtaleNr(1);
-        EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter();
+        EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter(LocalDate.of(2021, 6, 1), LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         endreAvtale.setLonnstilskuddProsent(50);
         endreAvtale.setFeriepengesats(new BigDecimal("0.12"));
         endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
-        endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
-        endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
@@ -560,12 +555,10 @@ public class TestData {
     public static Avtale enSommerjobbAvtaleGodkjentAvArbeidsgiver() {
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         setOppfølgingPåAvtale(avtale);
-        EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter();
+        EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter(LocalDate.of(2021, 6, 1), LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         endreAvtale.setLonnstilskuddProsent(50);
         endreAvtale.setFeriepengesats(new BigDecimal("0.12"));
         endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
-        endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
-        endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
@@ -723,9 +716,7 @@ public class TestData {
     public static Avtale enLonnstilskuddAvtaleMedAltUtfyltMedGodkjentForEtterregistrering(LocalDate avtaleStart, LocalDate avtaleSlutt) {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter();
-        endring.setStartDato(avtaleStart);
-        endring.setSluttDato(avtaleSlutt);
+        EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter(avtaleStart, avtaleSlutt);
         avtale.setGodkjentForEtterregistrering(true);
         avtale.endreAvtale(endring, Avtalerolle.VEILEDER);
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
@@ -826,12 +817,16 @@ public class TestData {
     }
 
     public static EndreAvtale endringPåAlleLønnstilskuddFelter() {
+        return endringPåAlleLønnstilskuddFelter(Now.localDate(), Now.localDate().plusMonths(12).minusDays(1));
+    }
+
+    public static EndreAvtale endringPåAlleLønnstilskuddFelter(LocalDate start, LocalDate slutt) {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreKontaktInfo(endreAvtale);
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
-        endreAvtale.setStartDato(Now.localDate());
-        endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(12).minusDays(1));
+        endreAvtale.setStartDato(start);
+        endreAvtale.setSluttDato(slutt);
         endreAvtale.setStillingprosent(BigDecimal.valueOf(50.7));
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");

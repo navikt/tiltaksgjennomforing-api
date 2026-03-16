@@ -47,9 +47,7 @@ public class MentorAvtaleBeregningStrategyTest {
         final int arbeidsgiverAvgiftBelop = 438;
         final int forventetBeløpForPeriode = 9020;
         Avtale avtale = TestData.enMentorAvtaleUsignert();
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(fra);
-        endreAvtale.setSluttDato(til);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(fra, til);
         endreAvtale.setStillingprosent(BigDecimal.valueOf(50.7));
         endreAvtale.setMentorValgtLonnstype(MentorValgtLonnstype.ÅRSLØNN);
         endreAvtale.setMentorValgtLonnstypeBelop(875000);
