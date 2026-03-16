@@ -4,7 +4,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,15 +17,21 @@ public class FirearigLonnstilskuddBeregningStrategy extends GenerellLonnstilskud
     public Integer getProsentForPeriode(Avtale avtale, Periode tilskuddsperiode) {
         LocalDate avtaleStart = avtale.getGjeldendeInnhold().getStartDato();
         LocalDate tilskuddSlutt = tilskuddsperiode.getSlutt();
-        int antallAar = Period.between(avtaleStart, tilskuddSlutt).getYears();
 
-        return switch (antallAar) {
-            case 0 -> TILSKUDDSPROSENT_FORSTE_AAR;
-            case 1 -> TILSKUDDSPROSENT_ANDRE_AAR;
-            case 2 -> TILSKUDDSPROSENT_TREDJE_AAR;
-            case 3 -> TILSKUDDSPROSENT_FJERDE_AAR;
-            default -> throw new IllegalStateException("Tilskuddsperiode avsluttes mer enn 4 år etter startdato");
-        };
+        if (tilskuddSlutt.isBefore(avtaleStart.plusYears(1))) {
+            return TILSKUDDSPROSENT_FORSTE_AAR;
+        }
+        if (tilskuddSlutt.isBefore(avtaleStart.plusYears(2))) {
+            return TILSKUDDSPROSENT_ANDRE_AAR;
+        }
+        if (tilskuddSlutt.isBefore(avtaleStart.plusYears(3))) {
+            return TILSKUDDSPROSENT_TREDJE_AAR;
+        }
+        if (tilskuddSlutt.isBefore(avtaleStart.plusYears(4))) {
+            return TILSKUDDSPROSENT_FJERDE_AAR;
+        }
+
+        throw new IllegalStateException("Tilskuddsperiode avsluttes mer enn 4 år etter startdato");
     }
 
     @Override

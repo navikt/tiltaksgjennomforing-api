@@ -239,7 +239,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
     @Test
     void getProsentForPeriode_handterer_skuddaar() {
         LocalDate startDato = LocalDate.of(2028, 2, 29);
-        Avtale avtale = lagAvtaleMedDatoer(startDato, LocalDate.of(2032, 2, 27));
+        Avtale avtale = lagAvtaleMedDatoer(startDato, LocalDate.of(2032, 2, 28));
 
         Integer forstePeriode = strategy.getProsentForPeriode(
             avtale,
@@ -261,7 +261,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
 
         Integer fjerdePeriode = strategy.getProsentForPeriode(
             avtale,
-            Periode.av(LocalDate.of(2031, 2, 28), LocalDate.of(2032, 2, 27))
+            Periode.av(LocalDate.of(2031, 2, 28), LocalDate.of(2032, 2, 28))
         );
         assertThat(fjerdePeriode).isEqualTo(PROSENT_AAR_4);
     }
