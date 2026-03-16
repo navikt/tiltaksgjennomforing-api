@@ -10,7 +10,6 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
-import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
@@ -35,7 +34,6 @@ public class SecurityAzureClientConfiguration {
 
     @Bean
     public RestTemplate tokenxAltinn3RestTemplate(
-        RestTemplateBuilder restTemplateBuilder,
         ClientConfigurationProperties clientConfigurationProperties,
         OAuth2AccessTokenService oAuth2AccessTokenService
     ) {
