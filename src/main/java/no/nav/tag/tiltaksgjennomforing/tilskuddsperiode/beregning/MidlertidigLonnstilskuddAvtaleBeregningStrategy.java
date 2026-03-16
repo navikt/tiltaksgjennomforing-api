@@ -74,7 +74,10 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy extends GenerellLon
     public Integer regnUtRedusertLønnstilskudd(Avtale avtale) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         if (avtaleInnhold.getDatoForRedusertProsent() != null && avtaleInnhold.getLonnstilskuddProsent() != null) {
-            return getSumLonnstilskudd(avtaleInnhold.getSumLonnsutgifter(), avtaleInnhold.getLonnstilskuddProsent() - TILSKUDDSPROSENT_REDUKSJONSFAKTOR);
+            return BeregningStrategy.getSumLonnstilskudd(
+                avtaleInnhold.getSumLonnsutgifter(),
+                avtaleInnhold.getLonnstilskuddProsent() - TILSKUDDSPROSENT_REDUKSJONSFAKTOR
+            );
         } else {
             return null;
         }

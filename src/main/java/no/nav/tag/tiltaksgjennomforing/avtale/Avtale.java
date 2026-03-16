@@ -1685,9 +1685,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         return this.fnrOgBedrift;
     }
 
-    protected BeregningStrategy hentBeregningStrategi() {
-        return this.beregningStrategy.updateAndGet(strategy -> strategy == null ? BeregningStrategy.create(
-            tiltakstype) : strategy);
+    public BeregningStrategy hentBeregningStrategi() {
+        return this.beregningStrategy.updateAndGet(
+            strategy -> strategy == null ? BeregningStrategy.create(tiltakstype) : strategy
+        );
     }
 
     public boolean harSluttdatoPassertMedMerEnn12Uker() {
