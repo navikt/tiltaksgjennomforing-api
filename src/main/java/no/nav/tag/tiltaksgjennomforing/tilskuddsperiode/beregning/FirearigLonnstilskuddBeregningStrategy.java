@@ -8,10 +8,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class FirearigLonnstilskuddBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
-    public static final int TILSKUDDSPROSENT_FORSTE_AAR = 70;
-    public static final int TILSKUDDSPROSENT_ANDRE_AAR = 60;
-    public static final int TILSKUDDSPROSENT_TREDJE_AAR = 50;
-    public static final int TILSKUDDSPROSENT_FJERDE_AAR = 35;
+    private static final int TILSKUDDSPROSENT_FORSTE_AAR = 70;
+    private static final int TILSKUDDSPROSENT_ANDRE_AAR = 60;
+    private static final int TILSKUDDSPROSENT_TREDJE_AAR = 50;
+    private static final int TILSKUDDSPROSENT_FJERDE_AAR = 35;
 
     public Integer getProsentForForstePeriode() {
         return TILSKUDDSPROSENT_FORSTE_AAR;
