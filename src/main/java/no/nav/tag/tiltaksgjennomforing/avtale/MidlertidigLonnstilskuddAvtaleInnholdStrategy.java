@@ -1,18 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MidlertidigLonnstilskuddAvtaleBeregningStrategy;
 
 import java.time.LocalDate;
 
-public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy {
+import static no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MidlertidigLonnstilskuddAvtaleBeregningStrategy.TILSKUDDSPROSENT_TILPASSET;
 
-
-    private MidlertidigLonnstilskuddAvtaleBeregningStrategy beregningStrategy;
-
+public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy<MidlertidigLonnstilskuddAvtaleBeregningStrategy> {
     public MidlertidigLonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
-        super(avtaleInnhold);
-        beregningStrategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy();
+        super(avtaleInnhold, new MidlertidigLonnstilskuddAvtaleBeregningStrategy());
     }
 
     @Override
@@ -39,7 +37,13 @@ public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends Lonnstilskudd
     }
 
     private void sjekktilskuddsprosentSats(EndreAvtale endreAvtale) {
-        beregningStrategy.sjekktilskuddsprosentSats(endreAvtale.getLonnstilskuddProsent());
+        Integer lonnstilskuddProsent = endreAvtale.getLonnstilskuddProsent();
+        if (lonnstilskuddProsent == null) {
+            return;
+        }
+        if (lonnstilskuddProsent != MidlertidigLonnstilskuddAvtaleBeregningStrategy.TILSKUDDSPROSENT && lonnstilskuddProsent != TILSKUDDSPROSENT_TILPASSET) {
+            throw new FeilLonnstilskuddsprosentException();
+        }
     }
 
     private void settTilskuddsprosentSats(Kvalifiseringsgruppe kvalifiseringsgruppe) {
@@ -48,12 +52,12 @@ public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends Lonnstilskudd
     }
 
     private void regnUtDatoOgSumRedusert() {
-       LocalDate datoForRedusertProsent = beregningStrategy.getDatoForRedusertProsent(avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent());
+        Avtale avtale = avtaleInnhold.getAvtale();
+        LocalDate datoForRedusertProsent = beregningStrategy.getDatoerForReduksjon(avtale).stream().findFirst().orElse(null);
         avtaleInnhold.setDatoForRedusertProsent(datoForRedusertProsent);
-        Integer sumLønnstilskuddRedusert = beregningStrategy.regnUtRedusertLønnstilskudd(avtaleInnhold.getAvtale());
+        Integer sumLønnstilskuddRedusert = beregningStrategy.regnUtRedusertLønnstilskudd(avtale);
         avtaleInnhold.setSumLønnstilskuddRedusert(sumLønnstilskuddRedusert);
     }
-
 
     @Override
     public void endreSluttDato(LocalDate nySluttDato) {

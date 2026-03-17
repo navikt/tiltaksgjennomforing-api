@@ -5,13 +5,9 @@ import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.VarigLonnstils
 
 import java.util.Map;
 
-public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy {
-
-    private VarigLonnstilskuddAvtaleBeregningStrategy beregningStrategy;
-
+public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy<VarigLonnstilskuddAvtaleBeregningStrategy> {
     public VarigLonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
-        super(avtaleInnhold);
-        beregningStrategy =  new VarigLonnstilskuddAvtaleBeregningStrategy();
+        super(avtaleInnhold, new VarigLonnstilskuddAvtaleBeregningStrategy());
     }
 
     @Override

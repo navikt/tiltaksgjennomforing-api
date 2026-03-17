@@ -39,6 +39,7 @@ import java.util.TreeSet;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enSommerjobbAvtale;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enVarigLonnstilskuddsjobbAvtale;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.endringPåAlleLønnstilskuddFelterForSommerjobb;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.setOppfølgingPåAvtale;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus.GODKJENT;
@@ -65,12 +66,11 @@ public class AvtaleTest {
     @Test
     public void test_riktig_beregning_Varig_Lonnstilskudd_Avtale_som_varer_i_mange_aar_med_redusert_lønnsilskudd() {
         Now.fixedDate(LocalDate.of(2024, 7, 29));
-        Avtale avtale = enSommerjobbAvtale();
+        Avtale avtale = enVarigLonnstilskuddsjobbAvtale();
         setOppfølgingPåAvtale(avtale);
         EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelterForSommerjobb(75);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
-        avtale.setTiltakstype(Tiltakstype.VARIG_LONNSTILSKUDD);
         avtale.getGjeldendeInnhold().setDeltakerFornavn("Lilly");
         avtale.getGjeldendeInnhold().setDeltakerEtternavn("Lønning");
         avtale.getGjeldendeInnhold().setArbeidsgiverKontonummer("22222222222");
@@ -1469,6 +1469,7 @@ public class AvtaleTest {
     @Test
     public void lonnstilskudd_skal_generere_tilskuddsperioder() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         avtale.getGjeldendeInnhold().setLonnstilskuddProsent(60);
         assertThat(avtale.getTilskuddPeriode()).isEmpty();
 
@@ -1524,9 +1525,7 @@ public class AvtaleTest {
     public void forleng_og_forkort_skal_redusere_prosent() {
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(Now.localDate());
-        endreAvtale.setSluttDato(Now.localDate().plusMonths(12).minusDays(1));
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(Now.localDate(), Now.localDate().plusMonths(12).minusDays(1));
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         avtale.godkjennForDeltaker(TestData.etFodselsnummer());
         avtale.godkjennForArbeidsgiver(TestData.etFodselsnummer());
@@ -1710,9 +1709,7 @@ public class AvtaleTest {
     public void beregning_av_lønnstilskudd_ut_ifra_kvalifiseringsgruppe_SPESIELT_TILPASSET_INNSATS_og_SOMMERJOBB() {
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.SOMMERJOBB), Avtaleopphav.VEILEDER, TestData.enNavIdent());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
-        endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(LocalDate.of(2021, 6, 1), LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(75);
     }
@@ -1735,9 +1732,7 @@ public class AvtaleTest {
         Now.fixedDate(LocalDate.of(2021, 12, 20));
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
         avtale.togglegodkjennEtterregistrering(TestData.enNavIdent());
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(LocalDate.of(2021, 12, 12));
-        endreAvtale.setSluttDato(LocalDate.of(2021, 12, 1).plusYears(1));
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(LocalDate.of(2021, 12, 12), LocalDate.of(2021, 12, 1).plusYears(1));
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
         assertThat(avtale.getGjeldendeInnhold().getStartDato()).isEqualTo(LocalDate.of(2021, 12, 12));
@@ -1748,9 +1743,7 @@ public class AvtaleTest {
     public void avtale_FORTIDLIG_STARTDATO() {
         Now.fixedDate(LocalDate.of(2021, 12, 20));
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setStartDato(LocalDate.of(2021, 12, 12));
-        endreAvtale.setSluttDato(LocalDate.of(2021, 12, 1).plusYears(1));
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(LocalDate.of(2021, 12, 12), LocalDate.of(2021, 12, 1).plusYears(1));
 
         assertFeilkode(Feilkode.FORTIDLIG_STARTDATO, () -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
     }

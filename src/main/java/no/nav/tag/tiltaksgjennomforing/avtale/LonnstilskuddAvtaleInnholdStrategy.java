@@ -5,24 +5,25 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.GenerellLonnstilskuddAvtaleBeregningStrategy;
-import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LonnstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
+public class LonnstilskuddAvtaleInnholdStrategy<T extends GenerellLonnstilskuddAvtaleBeregningStrategy> extends BaseAvtaleInnholdStrategy {
+    private static final Double MAX_OTP_SATS = 0.3;
+    private static final Double MIN_OTP_SATS = 0.0;
 
-    private BeregningStrategy beregningStrategy;
+    protected T beregningStrategy;
 
-    public LonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
+    public LonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold, T beregningStrategy) {
         super(avtaleInnhold);
-        beregningStrategy = new GenerellLonnstilskuddAvtaleBeregningStrategy();
+        this.beregningStrategy = beregningStrategy;
     }
 
     @Override
     public void endre(EndreAvtale nyAvtale) {
-        if (nyAvtale.getOtpSats() != null && (nyAvtale.getOtpSats() > 0.3 || nyAvtale.getOtpSats() < 0.0)) {
+        if (nyAvtale.getOtpSats() != null && (nyAvtale.getOtpSats() > MAX_OTP_SATS || nyAvtale.getOtpSats() < MIN_OTP_SATS)) {
             throw new FeilkodeException(Feilkode.FEIL_OTP_SATS);
         }
         if (nyAvtale.getArbeidsgiverKid() != null && !KidnummerValidator.isValid(nyAvtale.getArbeidsgiverKid())) {
@@ -52,7 +53,7 @@ public class LonnstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnholdStrateg
         avtaleInnhold.setOtpSats(endreTilskuddsberegning.getOtpSats());
         avtaleInnhold.setManedslonn(endreTilskuddsberegning.getManedslonn());
         avtaleInnhold.setFeriepengesats(endreTilskuddsberegning.getFeriepengesats());
-       regnUtTotalLonnstilskudd();
+        regnUtTotalLonnstilskudd();
     }
 
     public void regnUtTotalLonnstilskudd() {

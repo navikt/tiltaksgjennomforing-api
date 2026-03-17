@@ -18,7 +18,6 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.toBigDecimal;
 
 public class MentorBeregningStrategy implements BeregningStrategy {
-
     private final LocalDate MIGRERINGSDATO_FOR_TILSKUDD = ArenaTiltakskode.MENTOR.getMigreringsdatoForTilskudd();
 
     @Override
@@ -80,22 +79,17 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         return Utils.erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnsutgifter());
     }
 
-    /** Brukes primært ved forlenging - og skiller seg derfor fra beregnTilskuddsperioderForAvtale() ved at vi her trenger å oppgi en annen stardato.  **/
     @Override
-    public List<TilskuddPeriode> hentTilskuddsperioderForPeriode(
+    public List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(
         Avtale avtale,
         LocalDate startDato,
         LocalDate sluttDato
     ) {
-        return beregnTilskuddsperioderForAvtale(avtale.getGjeldendeInnhold().getSumLonnsutgifter(), startDato, sluttDato, avtale);
-    }
-
-    private List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Integer tilskuddsbeløpPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Avtale avtale) {
-        List<TilskuddPeriode> perioder = BeregningStrategy.lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
+        List<TilskuddPeriode> perioder = BeregningStrategy.lagPeriode(startDato, sluttDato).stream().map(datoPar -> {
                 Integer beløp = BeregningStrategy.beløpForPeriode(
                     datoPar.getStart(),
                     datoPar.getSlutt(),
-                    tilskuddsbeløpPerMåned
+                    avtale.getGjeldendeInnhold().getSumLonnsutgifter()
                 );
                 return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), 100);
             })
@@ -124,7 +118,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         LocalDate start = innhold.getStartDato();
         LocalDate slutt = innhold.getSluttDato();
 
-        List<TilskuddPeriode> perioder = beregnTilskuddsperioderForAvtale(innhold.getSumLonnsutgifter(), start, slutt, avtale);
+        List<TilskuddPeriode> perioder = beregnTilskuddsperioderForAvtale(avtale, start, slutt);
         // Etterregistreringer skal håndteres i vårt system, så vi skal kun sette behandlet i arena på avtaler hvor
         // avtalen har opphav=ARENA eller om det eksisterer en avtaleversjon med innholdstype = ENDRET_AV_ARENA
         if (avtale.harArenaOpphavEllerHistoriskEndretAvArena()) {

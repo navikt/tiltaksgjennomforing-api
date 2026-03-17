@@ -37,11 +37,9 @@ public class MentorStartOgSluttDatoStrategyTest {
 
     @Test
     public void endreMentortilskudd__startdato_er_etter_sluttdato() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.minusDays(1);
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         assertFeilkode(Feilkode.START_ETTER_SLUTT, () -> endreAvtale(endreAvtale));
     }
 
@@ -51,55 +49,43 @@ public class MentorStartOgSluttDatoStrategyTest {
 
     @Test
     public void endreMentortilskudd__startdato_og_sluttdato_satt_6mnd_hvis_ikke_spesiellt_tilpasset() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(6).minusDays(1);
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         endreAvtale(endreAvtale);
     }
 
     @Test
     public void endreMentortilskudd__startdato_og_sluttdato_satt_over_6mnd_hvis_ikke_spesiellt_tilpasset() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(6);
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MENTOR_6_MND, () -> endreAvtale(endreAvtale));
     }
 
     @Test
     public void endreMentortilskudd__startdato_og_sluttdato_satt_over_6mnd_hvis_ikke_spesiellt() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(6);
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MENTOR_6_MND, () -> endreAvtale(endreAvtale));
     }
 
     @Test
     public void endreMentortilskudd__startdato_og_sluttdato_satt_36mnd_spesiellt_tilpasset() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(36).minusDays(1);
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         endreAvtale(endreAvtale);
     }
 
     @Test
     public void endreMentortilskudd__startdato_og_sluttdato_satt_over_36mnd_spesiellt_tilpasset() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(36);
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MENTOR_36_MND, () -> endreAvtale(endreAvtale));
     }

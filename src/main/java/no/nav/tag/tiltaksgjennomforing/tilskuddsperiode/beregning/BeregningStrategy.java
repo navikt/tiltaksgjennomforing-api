@@ -30,12 +30,15 @@ public interface BeregningStrategy {
     List<TilskuddPeriode> genererNyeTilskuddsperioder(Avtale avtale);
     void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning);
     void reberegnTotal(Avtale avtale);
+    boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(Avtale avtale);
+    boolean nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder(Avtale avtale);
+    List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Avtale avtale, LocalDate startDato, LocalDate sluttDato);
 
     static BeregningStrategy create(Tiltakstype tiltakstype){
         return switch (tiltakstype) {
             case ARBEIDSTRENING,INKLUDERINGSTILSKUDD -> new IkkeLonnstilskuddAvtaleBeregningStrategy();
             case MENTOR -> new MentorBeregningStrategy();
-            case MIDLERTIDIG_LONNSTILSKUDD ->new MidlertidigLonnstilskuddAvtaleBeregningStrategy();
+            case MIDLERTIDIG_LONNSTILSKUDD -> new MidlertidigLonnstilskuddAvtaleBeregningStrategy();
             case VARIG_LONNSTILSKUDD -> new VarigLonnstilskuddAvtaleBeregningStrategy();
             case SOMMERJOBB -> new SommerjobbLonnstilskuddAvtaleBeregningStrategy();
             case VTAO -> new VTAOLonnstilskuddAvtaleBeregningStrategy();
@@ -54,17 +57,17 @@ public interface BeregningStrategy {
         if (sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
             // Kan utvide siste tilskuddsperiode hvis den er ubehandlet
             tilskuddPeriode.remove(sisteTilskuddsperiode);
-            List<TilskuddPeriode> nyeTilskuddperioder = hentTilskuddsperioderForPeriode(avtale,sisteTilskuddsperiode.getStartDato(), nySluttDato);
+            List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioderForAvtale(avtale,sisteTilskuddsperiode.getStartDato(), nySluttDato);
             fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer());
             tilskuddPeriode.addAll(nyeTilskuddperioder);
         } else if (sisteTilskuddsperiode.getSluttDato().isBefore(sisteDatoIMnd(sisteTilskuddsperiode.getSluttDato())) && sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.GODKJENT && (!sisteTilskuddsperiode.erRefusjonGodkjent() && !sisteTilskuddsperiode.erUtbetalt())) {
             avtale.annullerTilskuddsperiode(sisteTilskuddsperiode);
-            List<TilskuddPeriode> nyeTilskuddperioder = hentTilskuddsperioderForPeriode(avtale,sisteTilskuddsperiode.getStartDato(), nySluttDato);
+            List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioderForAvtale(avtale,sisteTilskuddsperiode.getStartDato(), nySluttDato);
             fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
             tilskuddPeriode.addAll(nyeTilskuddperioder);
         } else {
             // Regner ut nye perioder fra gammel avtaleslutt til ny avtaleslutt
-            List<TilskuddPeriode> nyeTilskuddperioder = hentTilskuddsperioderForPeriode(avtale,gammelSluttDato.plusDays(1), nySluttDato);
+            List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioderForAvtale(avtale,gammelSluttDato.plusDays(1), nySluttDato);
             fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
             tilskuddPeriode.addAll(nyeTilskuddperioder);
         }
@@ -149,6 +152,21 @@ public interface BeregningStrategy {
         return null;
     }
 
+    static Integer getLønnVedFullStilling(Integer manedslonn, BigDecimal stillingsProsent) {
+        if (manedslonn == null || stillingsProsent == null || stillingsProsent.compareTo(BigDecimal.ZERO) == 0) {
+            return null;
+        }
+        return BigDecimal.valueOf(manedslonn).multiply(new BigDecimal(100)).divide(stillingsProsent, RoundingMode.HALF_UP).intValue();
+    }
+
+    static Integer getSumLonnstilskudd(Integer sumLonnsutgifter, Integer lonnstilskuddProsent) {
+        if (sumLonnsutgifter == null || lonnstilskuddProsent == null) {
+            return null;
+        }
+        double lonnstilskuddProsentSomDecimal = lonnstilskuddProsent.doubleValue() / 100;
+        return (int) Math.round(sumLonnsutgifter * lonnstilskuddProsentSomDecimal);
+    }
+
      static Integer tilskuddprosentForPeriode(LocalDate datoTilOgMed, Tiltakstype tiltakstype, LocalDate datoForRedusertProsent, Integer lonnstilskuddprosent) {
         if (datoForRedusertProsent == null || datoTilOgMed.isBefore(datoForRedusertProsent)) {
             return lonnstilskuddprosent;
@@ -160,8 +178,8 @@ public interface BeregningStrategy {
         if (!Tiltakstype.VARIG_LONNSTILSKUDD.equals(tiltakstype)){
             return lonnstilskuddprosent - 10;
         }
-        if (lonnstilskuddprosent >= VarigLonnstilskuddAvtaleBeregningStrategy.GRENSE_68_PROSENT_ETTER_12_MND) {
-            return VarigLonnstilskuddAvtaleBeregningStrategy.MAX_67_PROSENT_ETTER_12_MND;
+        if (lonnstilskuddprosent > VarigLonnstilskuddAvtaleBeregningStrategy.TILSKUDDSPROSENT_REDUSERT_MAKS) {
+            return VarigLonnstilskuddAvtaleBeregningStrategy.TILSKUDDSPROSENT_REDUSERT_MAKS;
         }
         return lonnstilskuddprosent;
     }
@@ -216,11 +234,6 @@ public interface BeregningStrategy {
             return List.of(new Periode(fraDato, tilDato));
         }
     }
-
-    boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(Avtale avtale);
-    boolean nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder(Avtale avtale);
-
-    List<TilskuddPeriode> hentTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato);
 
     static void settBehandletIArena(LocalDate migreringsdato, List<TilskuddPeriode> tilskuddPeriode) {
         // Her har vi en antakelse om at tilskuddsperioder ikke kan gå på tvers av måneder, og at vi derfor
