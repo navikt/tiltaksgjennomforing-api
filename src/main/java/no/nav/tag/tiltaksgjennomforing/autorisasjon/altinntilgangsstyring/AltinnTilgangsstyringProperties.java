@@ -5,11 +5,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 @Data
 @Component
@@ -49,19 +47,6 @@ public class AltinnTilgangsstyringProperties {
     private String inkluderingstilskudd = "nav_tiltak_inkluderingstilskudd";
     private String vtao = "nav_tiltak_varig-tilrettelagt-arbeid-ordinaer";
     private String adressesperre = "nav_tiltak_adressesperre";
-
-    public Set<String> alleAltinn2Tilganger() {
-        return Set.of(
-            ltsMidlertidigServiceCode + ":" + ltsMidlertidigServiceEdition,
-            ltsVarigServiceCode + ":" + ltsVarigServiceEdition,
-            arbtreningServiceCode + ":" + arbtreningServiceEdition,
-            sommerjobbServiceCode + ":" + sommerjobbServiceEdition,
-            inkluderingstilskuddServiceCode + ":" + inkluderingstilskuddServiceEdition,
-            mentorServiceCode + ":" + mentorServiceEdition,
-            vtaoServiceCode + ":" + vtaoServiceEdition
-            //ltsFirearigServiceCode + ":" + ltsFirearigServiceEdition TODO: Vil bli laget kun som Altinn 3 ressurs.
-        );
-    }
 
     public Map<String, Tiltakstype> tilgangerTilTiltakstype() {
         Map<String, Tiltakstype> map = new HashMap<>();
