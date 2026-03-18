@@ -65,7 +65,7 @@ All topic names are constants in `Topics.java` (e.g. `TILSKUDDSPERIODE_GODKJENT`
 
 ### Database migrations
 
-Flyway scripts in `src/main/resources/db/migration/common/` follow the naming convention `V{number}__{description}.sql`. Vendor-specific overrides live in `db/migration/postgresql/`.
+Flyway scripts in `src/main/resources/db/migration/common/` follow the naming convention `V{version}__{description}.sql` (for example, `V124__...`, `V124_1__...`). Vendor-specific overrides live in `src/main/resources/db/migration/postgresql/`.
 
 ## Code Standards
 
