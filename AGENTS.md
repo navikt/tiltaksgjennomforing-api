@@ -72,7 +72,7 @@ Flyway scripts in `src/main/resources/db/migration/common/` follow the naming co
 - **Java** (not Kotlin) — follow standard Java conventions
 - Use Lombok annotations consistently; avoid manual getters/setters
 - Use sealed interfaces for access-control types (see `Tilgang.java`)
-- Repository queries use JPQL (`@Query` annotations) or Spring Data method names — never raw string concatenation
+- Prefer JPQL (`@Query` annotations) or Spring Data method names for repository queries; never build dynamic SQL/JPQL by string-concatenating user input—always use parameter binding
 - Use `FeilkodeException(Feilkode.*)` for domain validation errors; add new codes to `Feilkode.java` enum
 - Annotate controller methods that read personal data with `@AuditLogging`
 - Feature toggles: add new toggles to the `FeatureToggle` enum; use `FeatureToggleService.isEnabled()`
