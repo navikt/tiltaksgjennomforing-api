@@ -48,11 +48,12 @@ mvn test         # Run tests (uses H2 + EmbeddedKafka)
 ### Authentication
 
 JWT issuers (configured in `no.nav.security.jwt`):
-- `tokenx` — external users (deltaker, arbeidsgiver, mentor)
-- `aad` — NAV internal users (veileder, beslutter, admin)
-- `system` — system/service accounts
+- `tokenx` — external users (deltaker, arbeidsgiver, mentor) calling end-user endpoints
+- `aad` — NAV internal users (veileder, beslutter) calling regular internal endpoints
+- `azure-access-token` — NAV admins calling admin/operations endpoints protected with `@ProtectedWithClaims`
+- `system` — system/service accounts (e.g. scheduled jobs, integrations)
 
-Controllers are secured with `@Protected` (from `token-validation-spring`). Admin endpoints require Azure AD group membership (`AdGruppeProperties`). Access control for NAV employees uses POAO-tilgang (`TilgangskontrollService`); employer access uses Altinn (`AltinnTilgangsstyringService`).
+Controllers are secured with `@Protected` (from `token-validation-spring`). Admin/operations controllers that require specific Azure AD groups use `@ProtectedWithClaims` with tokens from the `azure-access-token` issuer; group membership is configured via `AdGruppeProperties`. Access control for NAV employees uses POAO-tilgang (`TilgangskontrollService`); employer access uses Altinn (`AltinnTilgangsstyringService`).
 
 ### Environment profiles
 
