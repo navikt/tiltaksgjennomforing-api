@@ -38,9 +38,9 @@ public abstract class GenerellLonnstilskuddAvtaleBeregningStrategy implements Be
         );
         if (avtale.getArenaRyddeAvtale() != null) {
             LocalDate standardMigreringsdato = LocalDate.of(2023, 2, 1);
-            LocalDate migreringsdato = avtale.getArenaRyddeAvtale()
-                .getMigreringsdato() != null ? avtale.getArenaRyddeAvtale()
-                .getMigreringsdato() : standardMigreringsdato;
+            LocalDate migreringsdato = avtale.getArenaRyddeAvtale().getMigreringsdato() != null
+                ? avtale.getArenaRyddeAvtale().getMigreringsdato()
+                : standardMigreringsdato;
 
             BeregningStrategy.settBehandletIArena(migreringsdato, tilskuddsperioder);
         }
@@ -141,9 +141,13 @@ public abstract class GenerellLonnstilskuddAvtaleBeregningStrategy implements Be
     @Override
     public Integer getBeløpForPeriode(Avtale avtale, Periode periode) {
         Integer prosentForPeriode = getProsentForPeriode(avtale, periode);
+        return getBeløpForPeriode(avtale, prosentForPeriode, periode);
+    }
+
+    private Integer getBeløpForPeriode(Avtale avtale, Integer prosent, Periode periode) {
         Integer lonnstilskudd = BeregningStrategy.getSumLonnstilskudd(
             avtale.getGjeldendeInnhold().getSumLonnsutgifter(),
-            prosentForPeriode
+            prosent
         );
         return BeregningStrategy.beløpForPeriode(periode, lonnstilskudd);
     }
@@ -174,8 +178,8 @@ public abstract class GenerellLonnstilskuddAvtaleBeregningStrategy implements Be
     }
 
     TilskuddPeriode lagTilskuddsperiode(Avtale avtale, Periode periode) {
-        Integer beløp = getBeløpForPeriode(avtale, periode);
         Integer prosent = getProsentForPeriode(avtale, periode);
+        Integer beløp = getBeløpForPeriode(avtale, prosent, periode);
         TilskuddPeriode tilskuddsperiode = new TilskuddPeriode(
             beløp,
             periode.getStart(),
