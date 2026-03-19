@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 public class Arbeidsgiver extends Avtalepart<Fnr> {
     private final Map<BedriftNr, Collection<Tiltakstype>> tilganger;
     private final AltinnTilgangerResponse altinn3Organisasjoner;
-    private final Map<BedriftNr, Collection<Tiltakstype>> altinn3Tilganger;
+    private final Map<BedriftNr, Set<Tiltakstype>> altinn3Tilganger;
     private final Set<AltinnReportee> altinnOrganisasjoner;
     private final List<BedriftNr> adressesperreTilgang;
     private final PersondataService persondataService;
@@ -51,7 +51,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         Set<AltinnReportee> altinnOrganisasjoner,
         Map<BedriftNr, Collection<Tiltakstype>> tilganger,
         AltinnTilgangerResponse altinn3Organisasjoner,
-        Map<BedriftNr, Collection<Tiltakstype>> altinn3Tilganger,
+        Map<BedriftNr, Set<Tiltakstype>> altinn3Tilganger,
         List<BedriftNr> adressesperreTilgang,
         PersondataService persondataService,
         Norg2Client norg2Client,

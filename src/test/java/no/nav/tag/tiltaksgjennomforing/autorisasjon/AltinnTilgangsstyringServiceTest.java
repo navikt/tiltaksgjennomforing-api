@@ -143,7 +143,7 @@ public class AltinnTilgangsstyringServiceTest {
     @Test
     public void mapTilgangerFraAltinn3__returnerer_tilganger_per_bedrift() {
         AltinnTilgangerResponse response = altinnTilgangsstyringService.hentAltinn3Organisasjoner();
-        Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.mapTilgangerFraAltinn3(response);
+        Map<BedriftNr, Set<Tiltakstype>> tilganger = altinnTilgangsstyringService.mapTilgangerFraAltinn3(response);
 
         assertThat(tilganger).isNotEmpty();
 
