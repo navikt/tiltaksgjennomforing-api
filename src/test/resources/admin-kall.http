@@ -63,3 +63,4 @@ Authorization: Bearer <TOKEN>
 POST http://localhost:12345/tiltaksgjennomforing-api/utvikler-admin/avtale-hendelse/send-melding-en-avtale/<UUID>
 Content-Type: application/json
 Authorization: Bearer <TOKEN>
+
