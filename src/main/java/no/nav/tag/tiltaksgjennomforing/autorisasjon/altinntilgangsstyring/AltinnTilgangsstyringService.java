@@ -25,6 +25,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -150,26 +151,25 @@ public class AltinnTilgangsstyringService {
         return kallAltinn3(request);
     }
     
-    public Map<BedriftNr, Collection<Tiltakstype>> mapTilgangerFraAltinn3(AltinnTilgangerResponse response) {
+    public Map<BedriftNr, Set<Tiltakstype>> mapTilgangerFraAltinn3(AltinnTilgangerResponse response) {
         if (response == null || response.isError() || response.orgNrTilTilganger() == null) {
             log.warn("Feil eller tom respons fra Altinn 3, isError: {}", response != null ? response.isError() : "null");
             throw new AltinnFeilException();
         }
 
         Map<String, Tiltakstype> tilgangerTilTiltakstype = altinnTilgangsstyringProperties.tilgangerTilTiltakstype();
-        MultiValueMap<BedriftNr, Tiltakstype> tilganger = MultiValueMap.empty();
-
+        Map<BedriftNr, Set<Tiltakstype>> tilganger = new HashMap<>();
         for (Map.Entry<String, Set<String>> entry : response.orgNrTilTilganger().entrySet()) {
             BedriftNr bedriftNr = new BedriftNr(entry.getKey());
             for (String tilgang : entry.getValue()) {
                 Tiltakstype tiltakstype = tilgangerTilTiltakstype.get(tilgang);
                 if (tiltakstype != null) {
-                    tilganger.put(bedriftNr, tiltakstype);
+                    tilganger.computeIfAbsent(bedriftNr, k -> new HashSet<>()).add(tiltakstype);
                 }
             }
         }
 
-        return tilganger.toMap();
+        return tilganger;
     }
 
     public AltinnTilgangerResponse kallAltinn3(AltinnTilgangerRequest altinnTilgangerRequest) {

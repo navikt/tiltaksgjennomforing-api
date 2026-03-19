@@ -18,7 +18,7 @@ public class InnloggetArbeidsgiver implements InnloggetBruker {
     Set<AltinnReportee> altinnOrganisasjoner;
     Map<BedriftNr, Collection<Tiltakstype>> tilganger;
     AltinnTilgangerResponse altinn3Organisasjoner;
-    Map<BedriftNr, Collection<Tiltakstype>> altinn3Tilganger;
+    Map<BedriftNr, Set<Tiltakstype>> altinn3Tilganger;
     Avtalerolle rolle = Avtalerolle.ARBEIDSGIVER;
     boolean erNavAnsatt = false;
 }
