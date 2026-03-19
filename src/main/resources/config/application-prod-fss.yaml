@@ -67,7 +67,7 @@ no.nav.security.jwt:
           client-auth-method: private_key_jwt
         token-exchange:
           audience: prod-gcp:arbeidsgiver:altinn-rettigheter-proxy
-      tokenx-altinn-3:
+      arbeidsgiver-altinn-tilganger:
         token-endpoint-url: ${TOKEN_X_TOKEN_ENDPOINT}
         grant-type: urn:ietf:params:oauth:grant-type:token-exchange
         authentication:

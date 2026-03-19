@@ -19,7 +19,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.AltinnFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.utils.MultiValueMap;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -36,14 +35,13 @@ import java.util.Set;
 public class AltinnTilgangsstyringService {
     private final AltinnTilgangsstyringProperties altinnTilgangsstyringProperties;
     private final AltinnrettigheterProxyKlient klient;
-    private final RestTemplate restTemplateAltinn3;
+    private final RestTemplate azureRestTemplate;
 
     public AltinnTilgangsstyringService(
             AltinnTilgangsstyringProperties altinnTilgangsstyringProperties,
             TokenUtils tokenUtils,
-            @Qualifier("tokenxAltinn3RestTemplate") RestTemplate restTemplateAltinn3,
+            RestTemplate azureRestTemplate,
             @Value("${spring.application.name}") String applicationName) {
-        this.restTemplateAltinn3 = restTemplateAltinn3;
 
         if (Utils.erNoenTomme(altinnTilgangsstyringProperties.getArbtreningServiceCode(),
                 altinnTilgangsstyringProperties.getArbtreningServiceEdition(),
@@ -58,6 +56,7 @@ public class AltinnTilgangsstyringService {
             throw new TiltaksgjennomforingException("Altinn konfigurasjon ikke komplett");
         }
         this.altinnTilgangsstyringProperties = altinnTilgangsstyringProperties;
+        this.azureRestTemplate = azureRestTemplate;
 
         String altinnProxyUrl = altinnTilgangsstyringProperties.getProxyUri().toString();
         String altinnProxyFallbackUrl = altinnTilgangsstyringProperties.getUri().toString();
@@ -175,7 +174,7 @@ public class AltinnTilgangsstyringService {
 
     public AltinnTilgangerResponse kallAltinn3(AltinnTilgangerRequest altinnTilgangerRequest) {
         try {
-            return restTemplateAltinn3.postForObject(
+            return azureRestTemplate.postForObject(
                     altinnTilgangsstyringProperties.getArbeidsgiverAltinnTilgangerUri(),
                     altinnTilgangerRequest,
                     AltinnTilgangerResponse.class
