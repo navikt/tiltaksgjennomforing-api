@@ -69,7 +69,7 @@ public class InnloggingService {
         if (issuer == Issuer.ISSUER_TOKENX && avtalerolle == Avtalerolle.ARBEIDSGIVER) {
             HentArbeidsgiverToken hentArbeidsgiverToken = arbeidsgiverTokenStrategyFactory.create(issuer);
             Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService
-                    .hentAltinnOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
+                .hentAltinnOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
             Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(
                 new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
             List<BedriftNr> adressesperreTilganger = altinnTilgangsstyringService.hentAdressesperreTilganger(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
@@ -118,7 +118,9 @@ public class InnloggingService {
                 tilgangskontrollService,
                 norg2Client,
                 persondataService,
-                adGruppeTilganger
+                adGruppeTilganger,
+                veilarboppfolgingService,
+                featureToggleService
             );
         }
 
@@ -152,8 +154,8 @@ public class InnloggingService {
 
     public void validerSystembruker() {
         tokenUtils.hentBrukerOgIssuer()
-                .filter(t -> (Issuer.ISSUER_SYSTEM == t.getIssuer() && systembrukerProperties.getId().equals(t.getBrukerIdent())))
-                .orElseThrow(() -> new TilgangskontrollException("Systemet har ikke tilgang til tjenesten"));
+            .filter(t -> (Issuer.ISSUER_SYSTEM == t.getIssuer() && systembrukerProperties.getId().equals(t.getBrukerIdent())))
+            .orElseThrow(() -> new TilgangskontrollException("Systemet har ikke tilgang til tjenesten"));
     }
 
     public Beslutter hentBeslutter() {
