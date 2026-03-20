@@ -146,12 +146,16 @@ public class AltinnTilgangsstyringService {
         }
     }
 
-    public AltinnTilgangerResponse hentAltinn3Organisasjoner() {
+    public AltinnTilgangerDto hentAltinnTilganger() {
         var request = new AltinnTilgangerRequest(new AltinnTilgangerFilter(Set.of(), Set.of()));
-        return kallAltinn3(request);
+        AltinnTilgangerResponse altinn3Response = kallAltinn3(request);
+        return new AltinnTilgangerDto(
+            altinn3Response.hierarki(),
+            mapTilgangerFraAltinn3(altinn3Response)
+        );
     }
     
-    public Map<BedriftNr, Set<Tiltakstype>> mapTilgangerFraAltinn3(AltinnTilgangerResponse response) {
+    private Map<BedriftNr, Set<Tiltakstype>> mapTilgangerFraAltinn3(AltinnTilgangerResponse response) {
         if (response == null || response.isError() || response.orgNrTilTilganger() == null) {
             log.warn("Feil eller tom respons fra Altinn 3, isError: {}", response != null ? response.isError() : "null");
             throw new AltinnFeilException();
@@ -172,7 +176,7 @@ public class AltinnTilgangsstyringService {
         return tilganger;
     }
 
-    public AltinnTilgangerResponse kallAltinn3(AltinnTilgangerRequest altinnTilgangerRequest) {
+    private AltinnTilgangerResponse kallAltinn3(AltinnTilgangerRequest altinnTilgangerRequest) {
         try {
             return azureRestTemplate.postForObject(
                     altinnTilgangsstyringProperties.getArbeidsgiverAltinnTilgangerUri(),

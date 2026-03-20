@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerResponse;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
@@ -115,35 +115,31 @@ public class AltinnTilgangsstyringServiceTest {
 
     @Test
     public void hentAltinn3__Organisasjoner__returnerer_hierarki_og_tilgangsmappinger() {
-        AltinnTilgangerResponse response = altinnTilgangsstyringService.hentAltinn3Organisasjoner();
+        AltinnTilgangerDto dto = altinnTilgangsstyringService.hentAltinnTilganger();
 
-        assertThat(response).isNotNull();
-        assertThat(response.isError()).isFalse();
+        assertThat(dto).isNotNull();
 
         // Sjekk hierarki
-        assertThat(response.hierarki()).isNotEmpty();
-        assertThat(response.hierarki()).extracting(h -> h.orgnr()).contains("910825555", "910825550");
+        assertThat(dto.hierarki()).isNotEmpty();
+        assertThat(dto.hierarki()).extracting(h -> h.orgnr()).contains("910825555", "910825550");
 
-        // Sjekk orgNrTilTilganger
-        assertThat(response.orgNrTilTilganger()).containsKey("999999999");
-        assertThat(response.orgNrTilTilganger().get("999999999")).contains("5332:1", "5516:1", "5516:2", "5516:3");
-        assertThat(response.orgNrTilTilganger().get("910712314")).containsOnly("5516:1");
-        assertThat(response.orgNrTilTilganger().get("910712306")).containsOnly("5516:2");
+        // Sjekk tilganger
+        assertThat(dto.tilganger()).containsKey(new BedriftNr("999999999"));
+        assertThat(dto.tilganger().get(new BedriftNr("999999999"))).containsOnly(
+            Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD,
+            Tiltakstype.SOMMERJOBB, Tiltakstype.MENTOR, Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.VTAO
+        );
+        assertThat(dto.tilganger().get(new BedriftNr("910712314"))).containsOnly(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        assertThat(dto.tilganger().get(new BedriftNr("910712306"))).containsOnly(Tiltakstype.VARIG_LONNSTILSKUDD);
 
-        // Sjekk tilgangTilOrgNr
-        assertThat(response.tilgangTilOrgNr()).containsKey("5332:1");
-        assertThat(response.tilgangTilOrgNr().get("5332:1")).contains("999999999");
-        assertThat(response.tilgangTilOrgNr().get("5516:1")).contains("999999999", "910712314");
-        assertThat(response.tilgangTilOrgNr().get("5516:2")).contains("999999999", "910712306");
-
-        // Bedrift uten tilganger (IngenTiltak Hjørnet) skal ikke være i orgNrTilTilganger
-        assertThat(response.orgNrTilTilganger()).doesNotContainKey("980712306");
+        // Bedrift uten tilganger (IngenTiltak Hjørnet) skal ikke være i tilganger
+        assertThat(dto.tilganger()).doesNotContainKey(new BedriftNr("980712306"));
     }
 
     @Test
     public void mapTilgangerFraAltinn3__returnerer_tilganger_per_bedrift() {
-        AltinnTilgangerResponse response = altinnTilgangsstyringService.hentAltinn3Organisasjoner();
-        Map<BedriftNr, Set<Tiltakstype>> tilganger = altinnTilgangsstyringService.mapTilgangerFraAltinn3(response);
+        AltinnTilgangerDto dto = altinnTilgangsstyringService.hentAltinnTilganger();
+        Map<BedriftNr, Set<Tiltakstype>> tilganger = dto.tilganger();
 
         assertThat(tilganger).isNotEmpty();
 
