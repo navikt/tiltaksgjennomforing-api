@@ -26,7 +26,7 @@
         <jsonschema-generator.version>4.38.0</jsonschema-generator.version>
         <kafka-avro-serializer.version>7.9.0</kafka-avro-serializer.version>
         <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
-        <nocommons.version>0.16.0</nocommons.version>
+        <nocommons.version>0.17.0</nocommons.version>
         <poao-tilgang.version>2025.02.18_14.13-ac4265f31ef3</poao-tilgang.version>
         <shedlock.version>6.3.1</shedlock.version>
         <tiltak-persondata.version>2026.02.05_09.21-4a5e6165dedd</tiltak-persondata.version>
