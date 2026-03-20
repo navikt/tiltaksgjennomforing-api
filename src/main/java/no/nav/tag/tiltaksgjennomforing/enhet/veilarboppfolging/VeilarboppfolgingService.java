@@ -71,6 +71,7 @@ public class VeilarboppfolgingService {
 
     public Oppfølgingsstatus hentOgSjekkOppfolgingstatus(Fnr fnr, Tiltakstype tiltakstype) {
         Oppfølgingsstatus oppfølgingStatus = hentOppfolgingsstatus(fnr);
+
         if (tiltakstype.isSommerjobb()) {
             return oppfølgingStatus;
         }

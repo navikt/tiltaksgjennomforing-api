@@ -9,10 +9,13 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
+import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.NavEnhetIkkeFunnetException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RolleHarIkkeTilgangException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
@@ -38,6 +41,8 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
     private final Set<NavEnhet> navEnheter;
     private final PersondataService persondataService;
     private final AdGruppeTilganger adGruppeTilganger;
+    private final FeatureToggleService featureToggleService;
+    private final VeilarboppfolgingService veilarboppfolgingService;
 
     public Beslutter(
         NavIdent identifikator,
@@ -46,7 +51,9 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         TilgangskontrollService tilgangskontrollService,
         Norg2Client norg2Client,
         PersondataService persondataService,
-        AdGruppeTilganger adGruppeTilganger
+        AdGruppeTilganger adGruppeTilganger,
+        VeilarboppfolgingService veilarboppfolgingService,
+        FeatureToggleService featureToggleService
     ) {
         super(identifikator);
         this.azureOid = azureOid;
@@ -55,15 +62,25 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         this.norg2Client = norg2Client;
         this.persondataService = persondataService;
         this.adGruppeTilganger = adGruppeTilganger;
+        this.veilarboppfolgingService = veilarboppfolgingService;
+        this.featureToggleService = featureToggleService;
     }
 
     public void godkjennTilskuddsperiode(Avtale avtale, String enhet) {
         sjekkTilgang(avtale);
-        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhet(enhet);
+        Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhet(enhet);
 
         if (response == null) {
             throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);
         }
+
+        Tiltakstype tiltakstype = avtale.getTiltakstype();
+        Oppfølgingsstatus status = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale.getDeltakerFnr(), avtale.getTiltakstype());
+        boolean harOppfolgingsenhetTilgangPaTiltak = featureToggleService.harEnhetTilgangPaTiltak(tiltakstype, status.getOppfolgingsenhet());
+        if (!harOppfolgingsenhetTilgangPaTiltak) {
+            throw new FeilkodeException(Feilkode.ENHET_IKKE_TILGANG_PA_TILTAK);
+        }
+
         avtale.godkjennTilskuddsperiode(getIdentifikator(), enhet);
     }
 
