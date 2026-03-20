@@ -10,8 +10,8 @@ public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends Lonnstilskudd
     @Override
     public void endre(EndreAvtale endreAvtale) {
         Avtale avtale = avtaleInnhold.getAvtale();
-        Integer lonstilskuddprosentVedStart = beregningStrategy.getProsentForForstePeriode(avtale);
-        avtaleInnhold.setLonnstilskuddProsent(lonstilskuddprosentVedStart);
+        Integer lonnstilskuddprosentVedStart = beregningStrategy.getProsentForForstePeriode(avtale);
+        avtaleInnhold.setLonnstilskuddProsent(lonnstilskuddprosentVedStart);
         super.endre(endreAvtale);
     }
 
