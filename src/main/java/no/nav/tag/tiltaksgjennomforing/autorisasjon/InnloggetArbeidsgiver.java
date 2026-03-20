@@ -2,6 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import lombok.Value;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerResponse;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
@@ -16,6 +18,7 @@ public class InnloggetArbeidsgiver implements InnloggetBruker {
     Fnr identifikator;
     Set<AltinnReportee> altinnOrganisasjoner;
     Map<BedriftNr, Collection<Tiltakstype>> tilganger;
+    AltinnTilgangerDto altinnTilganger;
     Avtalerolle rolle = Avtalerolle.ARBEIDSGIVER;
     boolean erNavAnsatt = false;
 }

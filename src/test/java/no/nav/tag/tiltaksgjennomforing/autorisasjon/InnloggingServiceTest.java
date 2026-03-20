@@ -82,9 +82,10 @@ public class InnloggingServiceTest {
 
     @Test
     public void hentInnloggetBruker__selvbetjeningbruker_type_arbeidsgiver_skal_hente_organisasjoner() {
-        InnloggetArbeidsgiver selvbetjeningBruker = new InnloggetArbeidsgiver(new Fnr("11111111111"), Set.of(), Map.of());
+        InnloggetArbeidsgiver selvbetjeningBruker = new InnloggetArbeidsgiver(new Fnr("11111111111"), Set.of(), Map.of(), null);
         when(altinnTilgangsstyringService.hentTilganger(eq(selvbetjeningBruker.getIdentifikator()), any())).thenReturn(Map.of());
         when(altinnTilgangsstyringService.hentAltinnOrganisasjoner(eq(selvbetjeningBruker.getIdentifikator()), any())).thenReturn(Set.of());
+        when(altinnTilgangsstyringService.hentAltinnTilganger()).thenReturn(null);
         værInnloggetArbeidsgiver(selvbetjeningBruker);
 
        when(arbeidsgiverTokenStrategyFactory.create(Issuer.ISSUER_TOKENX)).thenReturn(() -> "");

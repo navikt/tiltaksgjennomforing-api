@@ -21,13 +21,14 @@ import no.nav.tag.tiltaksgjennomforing.utils.MultiValueMap;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -35,10 +36,12 @@ import java.util.Set;
 public class AltinnTilgangsstyringService {
     private final AltinnTilgangsstyringProperties altinnTilgangsstyringProperties;
     private final AltinnrettigheterProxyKlient klient;
+    private final RestTemplate azureRestTemplate;
 
     public AltinnTilgangsstyringService(
             AltinnTilgangsstyringProperties altinnTilgangsstyringProperties,
             TokenUtils tokenUtils,
+            RestTemplate azureRestTemplate,
             @Value("${spring.application.name}") String applicationName) {
 
         if (Utils.erNoenTomme(altinnTilgangsstyringProperties.getArbtreningServiceCode(),
@@ -54,6 +57,7 @@ public class AltinnTilgangsstyringService {
             throw new TiltaksgjennomforingException("Altinn konfigurasjon ikke komplett");
         }
         this.altinnTilgangsstyringProperties = altinnTilgangsstyringProperties;
+        this.azureRestTemplate = azureRestTemplate;
 
         String altinnProxyUrl = altinnTilgangsstyringProperties.getProxyUri().toString();
         String altinnProxyFallbackUrl = altinnTilgangsstyringProperties.getUri().toString();
@@ -138,6 +142,49 @@ public class AltinnTilgangsstyringService {
 
         } catch (AltinnrettigheterProxyKlientFallbackException exception) {
             log.warn("Feil ved kall mot Altinn.", exception);
+            throw new AltinnFeilException();
+        }
+    }
+
+    public AltinnTilgangerDto hentAltinnTilganger() {
+        var request = new AltinnTilgangerRequest(new AltinnTilgangerFilter(Set.of(), Set.of()));
+        AltinnTilgangerResponse altinn3Response = kallAltinn3(request);
+        return new AltinnTilgangerDto(
+            altinn3Response.hierarki(),
+            mapTilgangerFraAltinn3(altinn3Response)
+        );
+    }
+    
+    private Map<BedriftNr, Set<Tiltakstype>> mapTilgangerFraAltinn3(AltinnTilgangerResponse response) {
+        if (response == null || response.isError() || response.orgNrTilTilganger() == null) {
+            log.warn("Feil eller tom respons fra Altinn 3, isError: {}", response != null ? response.isError() : "null");
+            throw new AltinnFeilException();
+        }
+
+        Map<String, Tiltakstype> tilgangerTilTiltakstype = altinnTilgangsstyringProperties.tilgangerTilTiltakstype();
+        Map<BedriftNr, Set<Tiltakstype>> tilganger = new HashMap<>();
+        for (Map.Entry<String, Set<String>> entry : response.orgNrTilTilganger().entrySet()) {
+            BedriftNr bedriftNr = new BedriftNr(entry.getKey());
+            for (String tilgang : entry.getValue()) {
+                Tiltakstype tiltakstype = tilgangerTilTiltakstype.get(tilgang);
+                if (tiltakstype != null) {
+                    tilganger.computeIfAbsent(bedriftNr, k -> new HashSet<>()).add(tiltakstype);
+                }
+            }
+        }
+
+        return tilganger;
+    }
+
+    private AltinnTilgangerResponse kallAltinn3(AltinnTilgangerRequest altinnTilgangerRequest) {
+        try {
+            return azureRestTemplate.postForObject(
+                    altinnTilgangsstyringProperties.getArbeidsgiverAltinnTilgangerUri(),
+                    altinnTilgangerRequest,
+                    AltinnTilgangerResponse.class
+            );
+        } catch (RuntimeException exception) {
+            log.error("Feil ved henting av Altinn-tilganger fra arbeidsgiver-altinn-tilganger", exception);
             throw new AltinnFeilException();
         }
     }
