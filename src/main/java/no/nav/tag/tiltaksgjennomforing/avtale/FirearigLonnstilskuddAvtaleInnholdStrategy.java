@@ -9,8 +9,8 @@ public class FirearigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvt
 
     @Override
     public void endre(EndreAvtale endreAvtale) {
-        Integer lonstilskuddprosentVedStart = beregningStrategy.getProsentForForstePeriode();
-        avtaleInnhold.setLonnstilskuddProsent(lonstilskuddprosentVedStart);
+        Integer lonnstilskuddprosentVedStart = beregningStrategy.getProsentForForstePeriode();
+        avtaleInnhold.setLonnstilskuddProsent(lonnstilskuddprosentVedStart);
         super.endre(endreAvtale);
     }
 }
