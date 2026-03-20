@@ -21,6 +21,7 @@ class BeregningLonnstilskuddTest {
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
 
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         avtaleInnhold = avtale.getGjeldendeInnhold();
         strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, MIDLERTIDIG_LONNSTILSKUDD);
     }
@@ -56,7 +57,7 @@ class BeregningLonnstilskuddTest {
         endreAvtale.setArbeidsgiveravgift(new BigDecimal(0.141));
 
         // WHEN
-        strategy.endreAvtaleInnholdMedKvalifiseringsgruppe(endreAvtale, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        strategy.endre(endreAvtale);
 
         // THEN
         assertThat(avtaleInnhold.getSumLonnstilskudd()).isEqualTo(15642);
@@ -73,7 +74,7 @@ class BeregningLonnstilskuddTest {
         endreAvtale.setArbeidsgiveravgift(new BigDecimal(0.141));
 
         // WHEN
-        strategy.endreAvtaleInnholdMedKvalifiseringsgruppe(endreAvtale, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        strategy.endre(endreAvtale);
 
         // THEN
         assertThat(avtaleInnhold.getSumLonnsutgifter()).isEqualTo(21375);
@@ -90,7 +91,7 @@ class BeregningLonnstilskuddTest {
         endreAvtale.setArbeidsgiveravgift(new BigDecimal(0.141));
 
         // WHEN
-        strategy.endreAvtaleInnholdMedKvalifiseringsgruppe(endreAvtale, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        strategy.endre(endreAvtale);
 
         // THEN
         assertThat(avtaleInnhold.getSumLonnstilskudd()).isEqualTo(15642);

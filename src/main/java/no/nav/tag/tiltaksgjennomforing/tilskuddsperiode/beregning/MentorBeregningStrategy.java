@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
 import java.math.BigDecimal;
@@ -85,10 +86,9 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         LocalDate startDato,
         LocalDate sluttDato
     ) {
-        List<TilskuddPeriode> perioder = BeregningStrategy.lagPeriode(startDato, sluttDato).stream().map(datoPar -> {
+        List<TilskuddPeriode> perioder = Periode.av(startDato, sluttDato).splitPerMnd().stream().map(datoPar -> {
                 Integer beløp = BeregningStrategy.beløpForPeriode(
-                    datoPar.getStart(),
-                    datoPar.getSlutt(),
+                    datoPar,
                     avtale.getGjeldendeInnhold().getSumLonnsutgifter()
                 );
                 return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), 100);
@@ -150,11 +150,11 @@ public class MentorBeregningStrategy implements BeregningStrategy {
     }
 
     @Override
-    public Integer beregnTilskuddsbeløpForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
+    public Integer getBeløpForPeriode(Avtale avtale, Periode periode) {
         if (!nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(avtale)) {
             return null;
         }
 
-        return BeregningStrategy.beløpForPeriode(startDato, sluttDato, avtale.getGjeldendeInnhold().getSumLonnsutgifter());
+        return BeregningStrategy.beløpForPeriode(periode, avtale.getGjeldendeInnhold().getSumLonnsutgifter());
     }
 }
