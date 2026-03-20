@@ -6,7 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerResponse;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
@@ -37,8 +37,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class Arbeidsgiver extends Avtalepart<Fnr> {
     private final Map<BedriftNr, Collection<Tiltakstype>> tilganger;
-    private final AltinnTilgangerResponse altinn3Organisasjoner;
-    private final Map<BedriftNr, Set<Tiltakstype>> altinn3Tilganger;
+    private final AltinnTilgangerDto altinnTilganger;
     private final Set<AltinnReportee> altinnOrganisasjoner;
     private final List<BedriftNr> adressesperreTilgang;
     private final PersondataService persondataService;
@@ -50,8 +49,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         Fnr identifikator,
         Set<AltinnReportee> altinnOrganisasjoner,
         Map<BedriftNr, Collection<Tiltakstype>> tilganger,
-        AltinnTilgangerResponse altinn3Organisasjoner,
-        Map<BedriftNr, Set<Tiltakstype>> altinn3Tilganger,
+        AltinnTilgangerDto altinnTilganger,
         List<BedriftNr> adressesperreTilgang,
         PersondataService persondataService,
         Norg2Client norg2Client,
@@ -61,8 +59,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         super(identifikator);
         this.altinnOrganisasjoner = altinnOrganisasjoner;
         this.tilganger = tilganger;
-        this.altinn3Organisasjoner = altinn3Organisasjoner;
-        this.altinn3Tilganger = altinn3Tilganger;
+        this.altinnTilganger = altinnTilganger;
         this.adressesperreTilgang = adressesperreTilgang;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
@@ -110,7 +107,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     @Override
     public InnloggetBruker innloggetBruker() {
-        return new InnloggetArbeidsgiver(getIdentifikator(), altinnOrganisasjoner, tilganger, altinn3Organisasjoner, altinn3Tilganger);
+        return new InnloggetArbeidsgiver(getIdentifikator(), altinnOrganisasjoner, tilganger, altinnTilganger);
     }
 
     @Override
