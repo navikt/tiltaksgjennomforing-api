@@ -48,11 +48,7 @@ public class AktivitetsplanAdminController {
      */
     @PostMapping("/avtale/{avtaleId}/ta-over-kort/{aktivitetskortId}")
     public void taOverAktivitetsplankortMedSpesifisertId(@PathVariable UUID avtaleId,  @PathVariable UUID aktivitetskortId) {
-        Optional<Avtale> avtale = avtaleRepository.findById(avtaleId);
-        if (avtale.isEmpty()) {
-            log.error("Fant ikke avtale {}", avtaleId);
-            throw new RessursFinnesIkkeException();
-        }
+        avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         hendelseAktivitetsplanClient.putAktivitetsplanId(avtaleId, aktivitetskortId, true);
     }
 
