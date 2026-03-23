@@ -26,25 +26,15 @@ public enum Avslagskode {
 
         Decision.Deny deny = (Decision.Deny) decision;
         return switch (deny.getReason()) {
-            case "MANGLER_TILGANG_TIL_AD_GRUPPE" -> {
-                if (deny.getMessage().contains("0000-GA-Strengt_Fortrolig_Adresse")) {
-                    yield STRENGT_FORTROLIG_ADRESSE;
-                }
-                if (deny.getMessage().contains("0000-GA-Fortrolig_Adresse")) {
-                    yield FORTROLIG_ADRESSE;
-                }
-                if (deny.getMessage().contains("0000-GA-Egne_ansatte")) {
-                    yield EGNE_ANSATTE;
-                }
-                yield IKKE_TILGANG_TIL_NAV_ENHET;
-            }
+            case "MANGLER_TILGANG_TIL_AD_GRUPPE", "IKKE_TILGANG_TIL_NAV_ENHET" -> IKKE_TILGANG_TIL_NAV_ENHET;
             case "POLICY_IKKE_IMPLEMENTERT" -> POLICY_IKKE_IMPLEMENTERT;
             case "IKKE_TILGANG_FRA_ABAC" -> IKKE_TILGANG_FRA_ABAC;
-            case "IKKE_TILGANG_TIL_NAV_ENHET" -> IKKE_TILGANG_TIL_NAV_ENHET;
             case "IKKE_TILGANG_TIL_DELTAKER" -> IKKE_TILGANG_TIL_DELTAKER;
             case "UKLAR_TILGANG_MANGLENDE_INFORMASJON" -> UKLAR_TILGANG_MANGLENDE_INFORMASJON;
             case "EKSTERN_BRUKER_HAR_IKKE_TILGANG" -> EKSTERN_BRUKER_HAR_IKKE_TILGANG;
-
+            case "IKKE_TILGANG_TIL_FORTROLIG_BRUKER" -> FORTROLIG_ADRESSE;
+            case "IKKE_TILGANG_TIL_STRENGT_FORTROLIG_BRUKER", "IKKE_TILGANG_TIL_STRENGT_FORTROLIG_UTLAND_BRUKER" -> STRENGT_FORTROLIG_ADRESSE;
+            case "IKKE_TILGANG_TIL_SKJERMET_PERSON" -> EGNE_ANSATTE;
             default -> UKJENT;
         };
     }
