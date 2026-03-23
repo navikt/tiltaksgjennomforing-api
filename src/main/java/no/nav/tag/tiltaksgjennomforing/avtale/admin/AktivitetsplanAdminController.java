@@ -40,6 +40,14 @@ public class AktivitetsplanAdminController {
         UUID aktivitetsplanId = hentAktivitetsplanIdForAvtale(avtaleId);
         hendelseAktivitetsplanClient.putAktivitetsplanId(avtaleId, aktivitetsplanId, true);
     }
+    /*
+     * Tar over aktivitetsplankortet fra Arena og sender siste melding på nytt.
+     * Merk at her oppgir man selv aktivitetskortet. Brukes kun i spesielle tilfeller der mappingen har blitt feil.
+     */
+    @PostMapping("/avtale/{avtaleId}/ta-over-kort/{aktivitetskortId}")
+    public void taOverAktivitetsplankortMedSpesifisertId(@PathVariable UUID avtaleId,  @PathVariable UUID aktivitetskortId) {
+        hendelseAktivitetsplanClient.putAktivitetsplanId(avtaleId, aktivitetskortId, true);
+    }
 
     /*
      * Hent aktivitetsplan-id som vi vil brukt dersom vi tok over kort fra Arena.
