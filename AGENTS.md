@@ -19,7 +19,7 @@ REST API backend for NAV's tiltaksgjennomføring system — manages employment-m
 ## Build & Test Commands
 
 ```bash
-mvn install      # Build and package (produces target/*.jar)
+mvn package      # Build and package (produces target/*.jar)
 mvn compile      # Compile only
 mvn test         # Run tests (uses H2 + EmbeddedKafka)
 ```
