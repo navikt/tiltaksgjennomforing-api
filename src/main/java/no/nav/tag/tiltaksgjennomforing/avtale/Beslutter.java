@@ -75,10 +75,23 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         }
 
         Tiltakstype tiltakstype = avtale.getTiltakstype();
-        Oppfølgingsstatus status = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale.getDeltakerFnr(), avtale.getTiltakstype());
-        boolean harOppfolgingsenhetTilgangPaTiltak = featureToggleService.harEnhetTilgangPaTiltak(tiltakstype, status.getOppfolgingsenhet());
-        if (!harOppfolgingsenhetTilgangPaTiltak) {
-            throw new FeilkodeException(Feilkode.ENHET_IKKE_TILGANG_PA_TILTAK);
+
+        try {
+            Oppfølgingsstatus status = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(
+                avtale.getDeltakerFnr(),
+                avtale.getTiltakstype()
+            );
+            boolean harOppfolgingsenhetTilgangPaTiltak = featureToggleService.harEnhetTilgangPaTiltak(
+                tiltakstype,
+                status.getOppfolgingsenhet()
+            );
+            if (!harOppfolgingsenhetTilgangPaTiltak) {
+                throw new FeilkodeException(Feilkode.ENHET_IKKE_TILGANG_PA_TILTAK);
+            }
+        } catch (FeilkodeException e) {
+            if (!Feilkode.HENTING_AV_INNSATSBEHOV_FEILET.equals(e.getFeilkode())) {
+                throw e;
+            }
         }
 
         avtale.godkjennTilskuddsperiode(getIdentifikator(), enhet);

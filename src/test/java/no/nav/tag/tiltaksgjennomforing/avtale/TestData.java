@@ -1019,6 +1019,12 @@ public class TestData {
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(beslutter, avtale.getDeltakerFnr())).thenReturn(true);
         when(norg2Client.hentOppfølgingsEnhet(eq("0000"))).thenReturn(new Norg2OppfølgingResponse(0, "0000", "Oslo", Norg2EnhetStatus.AKTIV));
         when(norg2Client.hentOppfølgingsEnhet(eq("0906"))).thenReturn(new Norg2OppfølgingResponse(906, "0906", "Oslo", Norg2EnhetStatus.AKTIV));
+        when(featureToggleService.harEnhetTilgangPaTiltak(any(), any())).thenReturn(true);
+        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any(), any())).thenReturn(new Oppfølgingsstatus(
+            null,
+            Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
+            "0000"
+        ));
         return beslutter;
     }
 
