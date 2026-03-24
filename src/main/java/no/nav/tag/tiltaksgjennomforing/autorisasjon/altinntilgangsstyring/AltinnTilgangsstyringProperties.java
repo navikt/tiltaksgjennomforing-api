@@ -47,6 +47,7 @@ public class AltinnTilgangsstyringProperties {
     private String inkluderingstilskudd = "nav_tiltak_inkluderingstilskudd";
     private String vtao = "nav_tiltak_varig-tilrettelagt-arbeid-ordinaer";
     private String adressesperre = "nav_tiltak_adressesperre";
+    private String firearigLonnstilskudd = "nav_tiltak_firearig-lonnstilskudd";
 
     public Map<String, Tiltakstype> tilgangerTilTiltakstype() {
         Map<String, Tiltakstype> map = new HashMap<>();
@@ -66,6 +67,7 @@ public class AltinnTilgangsstyringProperties {
         map.put(mentor, Tiltakstype.MENTOR);
         map.put(inkluderingstilskudd, Tiltakstype.INKLUDERINGSTILSKUDD);
         map.put(vtao, Tiltakstype.VTAO);
+        map.put(firearigLonnstilskudd, Tiltakstype.FIREARIG_LONNSTILSKUDD);
         return map;
     }
 }
