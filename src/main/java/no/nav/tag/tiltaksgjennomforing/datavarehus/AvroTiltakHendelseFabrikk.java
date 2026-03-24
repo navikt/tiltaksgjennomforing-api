@@ -48,8 +48,8 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setOtpBelop(avtale.getGjeldendeInnhold().getOtpBelop());
         hendelse.setSumLonnsutgifter(avtale.getGjeldendeInnhold().getSumLonnsutgifter());
         hendelse.setSumLonnstilskudd(avtale.getGjeldendeInnhold().getSumLonnstilskudd());
-        hendelse.setSumLonnstilskuddRedusert(avtale.getGjeldendeInnhold().getSumLønnstilskuddRedusert());
-        hendelse.setDatoForRedusertProsent(avtale.getGjeldendeInnhold().getDatoForRedusertProsent());
+        hendelse.setSumLonnstilskuddRedusert(null);
+        hendelse.setDatoForRedusertProsent(null);
         hendelse.setGodkjentPaVegneAv(avtale.getGjeldendeInnhold().isGodkjentPaVegneAv());
         hendelse.setIkkeBankId(avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn() != null && avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn().isIkkeBankId());
         hendelse.setReservert(avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn() != null && avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn().isReservert());
