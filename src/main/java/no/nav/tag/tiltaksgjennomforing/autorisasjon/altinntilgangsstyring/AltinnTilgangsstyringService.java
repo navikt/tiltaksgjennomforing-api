@@ -53,7 +53,8 @@ public class AltinnTilgangsstyringService {
                 altinnTilgangsstyringProperties.getSommerjobbServiceCode(),
                 altinnTilgangsstyringProperties.getSommerjobbServiceEdition(),
                 altinnTilgangsstyringProperties.getVtaoServiceCode(),
-                altinnTilgangsstyringProperties.getVtaoServiceEdition())) {
+                altinnTilgangsstyringProperties.getVtaoServiceEdition(),
+                altinnTilgangsstyringProperties.getArbeidsgiverAltinnTilgangerUri())) {
             throw new TiltaksgjennomforingException("Altinn konfigurasjon ikke komplett");
         }
         this.altinnTilgangsstyringProperties = altinnTilgangsstyringProperties;
