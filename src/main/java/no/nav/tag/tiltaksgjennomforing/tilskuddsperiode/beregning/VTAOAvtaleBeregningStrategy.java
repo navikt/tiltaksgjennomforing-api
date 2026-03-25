@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
 import java.time.LocalDate;
@@ -15,7 +16,7 @@ import java.util.List;
 import static no.nav.tag.tiltaksgjennomforing.satser.Sats.VTAO_SATS;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
-public class VTAOLonnstilskuddAvtaleBeregningStrategy implements BeregningStrategy {
+public class VTAOAvtaleBeregningStrategy implements BeregningStrategy {
     private final LocalDate STANDARD_MIGRERINGSDATO = ArenaTiltakskode.VTAO.getMigreringsdatoForTilskudd();
 
     @Override
@@ -75,9 +76,9 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy implements BeregningStrate
         LocalDate startDato,
         LocalDate sluttDato
     ) {
-        return BeregningStrategy.lagPeriode(startDato, sluttDato).stream().map(datoPar -> {
+        return Periode.av(startDato, sluttDato).splitPerMnd().stream().map(datoPar -> {
             var sats = VTAO_SATS.hentGjeldendeSats(datoPar.getStart());
-            Integer beløp = sats != null ? BeregningStrategy.beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sats) : null;
+            Integer beløp = sats != null ? BeregningStrategy.beløpForPeriode(datoPar, sats) : null;
             TilskuddPeriode tilskuddPeriode = new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt());
             tilskuddPeriode.setAvtale(avtale);
             tilskuddPeriode.setEnhet(avtale.getGjeldendeInnhold().getEnhetKostnadssted());
@@ -87,11 +88,11 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy implements BeregningStrate
     }
 
     @Override
-    public Integer beregnTilskuddsbeløpForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
-        var vtaoSats = VTAO_SATS.hentGjeldendeSats(startDato);
+    public Integer getBeløpForPeriode(Avtale avtale, Periode periode) {
+        var vtaoSats = VTAO_SATS.hentGjeldendeSats(periode.getStart());
         if (vtaoSats == null) {
             return null;
         }
-        return BeregningStrategy.beløpForPeriode(startDato, sluttDato, vtaoSats);
+        return BeregningStrategy.beløpForPeriode(periode, vtaoSats);
     }
 }
