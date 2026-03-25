@@ -149,19 +149,20 @@ public class AltinnTilgangsstyringService {
 
     public AltinnTilgangerDto hentAltinnTilganger() {
         var request = new AltinnTilgangerRequest(new AltinnTilgangerFilter(Set.of(), Set.of()));
-        AltinnTilgangerResponse altinn3Response = kallAltinn3(request);
-        return new AltinnTilgangerDto(
-            altinn3Response.hierarki(),
-            mapTilgangerFraAltinn3(altinn3Response)
-        );
-    }
-    
-    private Map<BedriftNr, Set<Tiltakstype>> mapTilgangerFraAltinn3(AltinnTilgangerResponse response) {
+        AltinnTilgangerResponse response = kallAltinn3(request);
+
         if (response == null || response.isError() || response.orgNrTilTilganger() == null) {
             log.warn("Feil eller tom respons fra Altinn 3, isError: {}", response != null ? response.isError() : "null");
             throw new AltinnFeilException();
         }
 
+        return new AltinnTilgangerDto(
+            response.hierarki(),
+            mapTilgangerFraAltinn3(response)
+        );
+    }
+    
+    private Map<BedriftNr, Set<Tiltakstype>> mapTilgangerFraAltinn3(AltinnTilgangerResponse response) {
         Map<String, Tiltakstype> tilgangerTilTiltakstype = altinnTilgangsstyringProperties.tilgangerTilTiltakstype();
         Map<BedriftNr, Set<Tiltakstype>> tilganger = new HashMap<>();
         for (Map.Entry<String, Set<String>> entry : response.orgNrTilTilganger().entrySet()) {
