@@ -39,15 +39,15 @@ public class AltinnTilgangsstyringProperties {
     private Integer ltsFirearigServiceCode;
     private Integer ltsFirearigServiceEdition;
     // Altinn 3 ressurser
-    private String arbeidstrening = "nav_tiltak_arbeidstrening";
-    private String midlertidigLonnstilskudd = "nav_tiltak_midlertidig-lonnstilskudd";
-    private String varigLonnstilskudd = "nav_tiltak_varig-lonnstilskudd";
-    private String sommerjobb = "nav_tiltak_sommerjobb";
-    private String mentor = "nav_tiltak_mentor";
-    private String inkluderingstilskudd = "nav_tiltak_inkluderingstilskudd";
-    private String vtao = "nav_tiltak_varig-tilrettelagt-arbeid-ordinaer";
-    private String adressesperre = "nav_tiltak_adressesperre";
-    private String firearigLonnstilskudd = "nav_tiltak_firearig-lonnstilskudd";
+    private static final String ARBEIDSTRENING = "nav_tiltak_arbeidstrening";
+    private static final String MIDLERTIDIG_LONNSTILSKUDD = "nav_tiltak_midlertidig-lonnstilskudd";
+    private static final String VARIG_LONNSTILSKUDD = "nav_tiltak_varig-lonnstilskudd";
+    private static final String SOMMERJOBB = "nav_tiltak_sommerjobb";
+    private static final String MENTOR = "nav_tiltak_mentor";
+    private static final String INKLUDERINGSTILSKUDD = "nav_tiltak_inkluderingstilskudd";
+    private static final String VTAO = "nav_tiltak_varig-tilrettelagt-arbeid-ordinaer";
+    private static final String ADRESSESPERRE = "nav_tiltak_adressesperre";
+    private static final String FIREARIG_LONNSTILSKUDD = "nav_tiltak_firearig-lonnstilskudd";
 
     public Map<String, Tiltakstype> tilgangerTilTiltakstype() {
         Map<String, Tiltakstype> map = new HashMap<>();
@@ -60,14 +60,14 @@ public class AltinnTilgangsstyringProperties {
         map.put(inkluderingstilskuddServiceCode + ":" + inkluderingstilskuddServiceEdition, Tiltakstype.INKLUDERINGSTILSKUDD);
         map.put(vtaoServiceCode + ":" + vtaoServiceEdition, Tiltakstype.VTAO);
         // Altinn 3 ressurser
-        map.put(arbeidstrening, Tiltakstype.ARBEIDSTRENING);
-        map.put(midlertidigLonnstilskudd, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
-        map.put(varigLonnstilskudd, Tiltakstype.VARIG_LONNSTILSKUDD);
-        map.put(sommerjobb, Tiltakstype.SOMMERJOBB);
-        map.put(mentor, Tiltakstype.MENTOR);
-        map.put(inkluderingstilskudd, Tiltakstype.INKLUDERINGSTILSKUDD);
-        map.put(vtao, Tiltakstype.VTAO);
-        map.put(firearigLonnstilskudd, Tiltakstype.FIREARIG_LONNSTILSKUDD);
+        map.put(ARBEIDSTRENING, Tiltakstype.ARBEIDSTRENING);
+        map.put(MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        map.put(VARIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD);
+        map.put(SOMMERJOBB, Tiltakstype.SOMMERJOBB);
+        map.put(MENTOR, Tiltakstype.MENTOR);
+        map.put(INKLUDERINGSTILSKUDD, Tiltakstype.INKLUDERINGSTILSKUDD);
+        map.put(VTAO, Tiltakstype.VTAO);
+        map.put(FIREARIG_LONNSTILSKUDD, Tiltakstype.FIREARIG_LONNSTILSKUDD);
         return map;
     }
 }

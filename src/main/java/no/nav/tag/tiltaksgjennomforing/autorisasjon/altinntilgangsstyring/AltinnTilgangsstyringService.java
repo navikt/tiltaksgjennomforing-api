@@ -21,6 +21,8 @@ import no.nav.tag.tiltaksgjennomforing.utils.MultiValueMap;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
@@ -151,11 +153,6 @@ public class AltinnTilgangsstyringService {
         var request = new AltinnTilgangerRequest(new AltinnTilgangerFilter(Set.of(), Set.of()));
         AltinnTilgangerResponse response = kallAltinn3(request);
 
-        if (response == null || response.isError() || response.orgNrTilTilganger() == null) {
-            log.warn("Feil eller tom respons fra Altinn 3, isError: {}", response != null ? response.isError() : "null");
-            throw new AltinnFeilException();
-        }
-
         return new AltinnTilgangerDto(
             response.hierarki(),
             mapTilgangerFraAltinn3(response)
@@ -179,15 +176,26 @@ public class AltinnTilgangsstyringService {
     }
 
     private AltinnTilgangerResponse kallAltinn3(AltinnTilgangerRequest altinnTilgangerRequest) {
+        AltinnTilgangerResponse response;
         try {
-            return azureRestTemplate.postForObject(
+            response = azureRestTemplate.postForObject(
                     altinnTilgangsstyringProperties.getArbeidsgiverAltinnTilgangerUri(),
                     altinnTilgangerRequest,
                     AltinnTilgangerResponse.class
             );
-        } catch (RuntimeException exception) {
-            log.error("Feil ved henting av Altinn-tilganger fra arbeidsgiver-altinn-tilganger", exception);
+        } catch (RestClientResponseException e) {
+            log.error("HTTP-feil fra arbeidsgiver-altinn-tilganger: status={}, body={}", e.getStatusCode(), e.getResponseBodyAsString(), e);
+            throw new AltinnFeilException();
+        } catch (ResourceAccessException e) {
+            log.error("Nettverksfeil ved kall til arbeidsgiver-altinn-tilganger", e);
             throw new AltinnFeilException();
         }
+
+        if (response == null || response.isError() || response.orgNrTilTilganger() == null) {
+            log.warn("Ugyldig respons fra arbeidsgiver-altinn-tilganger, isError: {}", response != null ? response.isError() : "null");
+            throw new AltinnFeilException();
+        }
+
+        return response;
     }
 }
