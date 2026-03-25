@@ -150,8 +150,7 @@ public class AltinnTilgangsstyringService {
     }
 
     public AltinnTilgangerDto hentAltinnTilganger() {
-        var request = new AltinnTilgangerRequest(new AltinnTilgangerFilter(Set.of(), Set.of()));
-        AltinnTilgangerResponse response = kallAltinn3(request);
+        AltinnTilgangerResponse response = kallAltinn3();
 
         return new AltinnTilgangerDto(
             response.hierarki(),
@@ -175,12 +174,12 @@ public class AltinnTilgangsstyringService {
         return tilganger;
     }
 
-    private AltinnTilgangerResponse kallAltinn3(AltinnTilgangerRequest altinnTilgangerRequest) {
+    private AltinnTilgangerResponse kallAltinn3() {
         AltinnTilgangerResponse response;
         try {
             response = azureRestTemplate.postForObject(
                     altinnTilgangsstyringProperties.getArbeidsgiverAltinnTilgangerUri(),
-                    altinnTilgangerRequest,
+                    null,
                     AltinnTilgangerResponse.class
             );
         } catch (RestClientResponseException e) {
