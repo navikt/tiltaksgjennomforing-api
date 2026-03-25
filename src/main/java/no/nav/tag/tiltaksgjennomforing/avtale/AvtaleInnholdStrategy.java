@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 
 import java.time.LocalDate;
@@ -11,9 +10,7 @@ public interface AvtaleInnholdStrategy {
     default void endreTilskuddsberegning(EndreTilskuddsberegning endreTilskuddsberegning) {
         throw new RuntimeException("Ikke implementert");
     }
-    default void endreAvtaleInnholdMedKvalifiseringsgruppe(EndreAvtale endreAvtale, Kvalifiseringsgruppe kvalifiseringsgruppe) {}
 
-    default void reUtregnRedusertProsentOgSum() {}
     Map<String, Object> alleFelterSomMåFyllesUt();
 
     void endreSluttDato(LocalDate nySluttDato);

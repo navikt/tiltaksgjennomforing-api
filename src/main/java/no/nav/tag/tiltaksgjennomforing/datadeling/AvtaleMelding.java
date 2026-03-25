@@ -110,7 +110,9 @@ public class AvtaleMelding {
     Integer sumLonnsutgifter;
     Integer sumLonnstilskudd;
     Integer manedslonn100pst;
+    @Deprecated
     Integer sumLønnstilskuddRedusert;
+    @Deprecated
     LocalDate datoForRedusertProsent;
     Stillingstype stillingstype;
 
@@ -216,8 +218,8 @@ public class AvtaleMelding {
         avtaleMelding.setSumLonnsutgifter(avtaleInnhold.getSumLonnsutgifter());
         avtaleMelding.setSumLonnstilskudd(avtaleInnhold.getSumLonnstilskudd());
         avtaleMelding.setManedslonn100pst(avtaleInnhold.getManedslonn100pst());
-        avtaleMelding.setSumLønnstilskuddRedusert(avtaleInnhold.getSumLønnstilskuddRedusert());
-        avtaleMelding.setDatoForRedusertProsent(avtaleInnhold.getDatoForRedusertProsent());
+        avtaleMelding.setSumLønnstilskuddRedusert(null);
+        avtaleMelding.setDatoForRedusertProsent(null);
         avtaleMelding.setStillingstype(avtaleInnhold.getStillingstype());
         avtaleMelding.setInkluderingstilskuddBegrunnelse(avtaleInnhold.getInkluderingstilskuddBegrunnelse());
         avtaleMelding.setInkluderingstilskuddTotalBeløp(avtaleInnhold.inkluderingstilskuddTotalBeløp());

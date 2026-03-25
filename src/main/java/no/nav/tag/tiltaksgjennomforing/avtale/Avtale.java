@@ -93,6 +93,7 @@ import no.nav.tag.tiltaksgjennomforing.satser.Sats;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
@@ -1069,7 +1070,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET)
             .forEach(t -> {
                 t.setBeløp(beregnTilskuddsbeløpForPeriode(t.getStartDato(), t.getSluttDato()));
-                t.setLonnstilskuddProsent(beregnTilskuddsprosentForPeriode(t.getSluttDato()));
+                t.setLonnstilskuddProsent(beregnTilskuddsprosentForPeriode(t.getStartDato(), t.getSluttDato()));
             });
     }
 
@@ -1089,17 +1090,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
     }
 
-    protected Integer beregnTilskuddsprosentForPeriode(LocalDate sluttDato) {
-        return BeregningStrategy.tilskuddprosentForPeriode(
-            sluttDato,
-            tiltakstype,
-            gjeldendeInnhold.getDatoForRedusertProsent(),
-            gjeldendeInnhold.getLonnstilskuddProsent()
-        );
+    Integer beregnTilskuddsprosentForPeriode(LocalDate startdato, LocalDate sluttdato) {
+        return this.hentBeregningStrategi().getProsentForPeriode(this, Periode.av(startdato, sluttdato));
     }
 
-    protected Integer beregnTilskuddsbeløpForPeriode(LocalDate startDato, LocalDate sluttDato) {
-        return this.hentBeregningStrategi().beregnTilskuddsbeløpForPeriode(this, startDato, sluttDato);
+    Integer beregnTilskuddsbeløpForPeriode(LocalDate startdato, LocalDate sluttdato) {
+        return this.hentBeregningStrategi().getBeløpForPeriode(this, Periode.av(startdato, sluttdato));
     }
 
     private void nyeTilskuddsperioder() {
@@ -1235,8 +1231,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (Tiltakstype.VTAO.equals(tiltakstype)) {
             Optional.ofNullable(Sats.VTAO_SATS.hentGjeldendeSats(nyUbehandletPeriode.getStartDato()))
                 .ifPresent(sats -> nyUbehandletPeriode.setBeløp(BeregningStrategy.beløpForPeriode(
-                    nyUbehandletPeriode.getStartDato(),
-                    nyUbehandletPeriode.getSluttDato(),
+                    nyUbehandletPeriode.getPeriode(),
                     sats
                 )));
         }
@@ -1422,30 +1417,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             gjeldendeInnhold.getOtpSats()
         )) {
             getGjeldendeInnhold().reberegnLønnstilskudd();
-            return;
-        }
-        throw new FeilkodeException(Feilkode.KAN_IKKE_REBEREGNE);
-    }
-
-    public void reUtregnRedusert() {
-        sjekkAtIkkeAvtaleErAnnullert();
-        krevEnAvTiltakstyper(
-            Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
-            Tiltakstype.VARIG_LONNSTILSKUDD,
-            Tiltakstype.SOMMERJOBB
-        );
-        if (Utils.erIkkeTomme(
-            gjeldendeInnhold.getStartDato(),
-            gjeldendeInnhold.getSluttDato(),
-            gjeldendeInnhold.getSumLonnstilskudd(),
-            gjeldendeInnhold.getLonnstilskuddProsent(),
-            gjeldendeInnhold.getArbeidsgiveravgift(),
-            gjeldendeInnhold.getFeriepengesats(),
-            gjeldendeInnhold.getManedslonn(),
-            gjeldendeInnhold.getOtpSats()
-        )) {
-
-            getGjeldendeInnhold().reberegnRedusertProsentOgRedusertLonnstilskudd();
             return;
         }
         throw new FeilkodeException(Feilkode.KAN_IKKE_REBEREGNE);

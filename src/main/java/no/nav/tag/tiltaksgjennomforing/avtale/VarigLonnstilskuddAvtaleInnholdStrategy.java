@@ -5,6 +5,8 @@ import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.VarigLonnstils
 
 import java.util.Map;
 
+import static no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.VarigLonnstilskuddAvtaleBeregningStrategy.TILSKUDDSPROSENT_MAKS;
+
 public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy<VarigLonnstilskuddAvtaleBeregningStrategy> {
     public VarigLonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold, new VarigLonnstilskuddAvtaleBeregningStrategy());
@@ -19,27 +21,21 @@ public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtale
 
     @Override
     public void endre(EndreAvtale endreAvtale) {
-        if (endreAvtale.getLonnstilskuddProsent() != null && (
-            endreAvtale.getLonnstilskuddProsent() < 0 || endreAvtale.getLonnstilskuddProsent() > 75)) {
+        Integer lonnstilskuddProsent = endreAvtale.getLonnstilskuddProsent();
+
+        if (!erTilskuddsprosentGyldig(lonnstilskuddProsent)) {
             throw new FeilLonnstilskuddsprosentException();
         }
-        avtaleInnhold.setLonnstilskuddProsent(endreAvtale.getLonnstilskuddProsent());
+
+        avtaleInnhold.setLonnstilskuddProsent(lonnstilskuddProsent);
         super.endre(endreAvtale);
     }
 
-    @Override
-    public void regnUtTotalLonnstilskudd() {
-        Avtale avtale = avtaleInnhold.getAvtale();
-        beregningStrategy.reberegnTotal(avtale);
-    }
-
-    @Override
-    public void reUtregnRedusertProsentOgSum() {
-        regnUtDatoOgSumRedusert();
-    }
-
-    private void regnUtDatoOgSumRedusert() {
-        beregningStrategy.regnUtDatoOgSumRedusert(avtaleInnhold.getAvtale());
+    private boolean erTilskuddsprosentGyldig(Integer prosent) {
+        if (prosent == null) {
+            return true;
+        }
+        return prosent >= 0 && prosent <= TILSKUDDSPROSENT_MAKS;
     }
 
 }
