@@ -162,7 +162,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
             ));
 
         Set<Status> avtaleStatus = queryParametre.getAvtaleNr() == null
-            ? Set.of(Status.PÅBEGYNT, Status.GJENNOMFØRES, Status.MANGLER_GODKJENNING, Status.KLAR_FOR_OPPSTART)
+            ? Set.of(Status.PÅBEGYNT, Status.GJENNOMFØRES, Status.MANGLER_GODKJENNING, Status.KLAR_FOR_OPPSTART, Status.AVSLUTTET)
             : null;
 
         Set<String> enheter = Optional.ofNullable(queryParametre.getNavEnhet())
