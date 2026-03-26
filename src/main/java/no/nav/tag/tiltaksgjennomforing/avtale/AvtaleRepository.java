@@ -193,6 +193,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
           AND (:bedriftNr IS NULL OR a.bedriftNr = :bedriftNr)
           AND (:harReturnertSomKanBehandles IS FALSE OR ashrskb.avtaleHarReturnertSomKanBehandles = :harReturnertSomKanBehandles)
           AND (:avtaleStatus IS NULL OR a.status IN :avtaleStatus)
+          AND (:avtaleStatus IS NULL OR a.status <> 'AVSLUTTET' OR a.gjeldendeTilskuddsperiode.status IN ('UBEHANDLET', 'AVSLÅTT'))
     """)
     Page<BeslutterOversiktEntity> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
         TilskuddPeriodeStatus tilskuddsperiodestatus,
