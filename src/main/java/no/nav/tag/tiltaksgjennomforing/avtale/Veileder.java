@@ -356,7 +356,24 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             return;
         }
 
-        this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
+        Boolean oppfolgingHarEndret = Optional.ofNullable(avtale.getKvalifiseringsgruppe())
+            .map(kg -> !kg.equals(oppfølgingsstatus.getKvalifiseringsgruppe()))
+            .orElse(false);
+
+        if (oppfolgingHarEndret && !avtale.erAvtaleInngått()) {
+            log.info(
+                "Kvalifiseringsgruppe for avtale {} har endret seg fra {} til {}, oppdaterer avtale",
+                avtale.getId(),
+                avtale.getKvalifiseringsgruppe(),
+                oppfølgingsstatus.getKvalifiseringsgruppe()
+            );
+            avtale.opphevGodkjenningerSomVeileder();
+            avtale.endreTilskuddsberegning();
+            settOppfølgingsStatus(avtale, oppfølgingsstatus);
+            throw new FeilkodeException(Feilkode.OPPFOLGINGSTATUS_ENDRET);
+        }
+
+        settOppfølgingsStatus(avtale, oppfølgingsstatus);
     }
 
     private void sjekkOmBedriftErGyldigOgOppdaterNavn(Avtale avtale) {
