@@ -368,7 +368,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
                 oppfølgingsstatus.getKvalifiseringsgruppe()
             );
             avtale.opphevGodkjenningerSomVeileder();
-            avtale.endreTilskuddsberegning();
+            avtale.endreBeløpOgProsentITilskuddsperioder();
             settOppfølgingsStatus(avtale, oppfølgingsstatus);
             throw new FeilkodeException(Feilkode.OPPFOLGINGSTATUS_ENDRET);
         }

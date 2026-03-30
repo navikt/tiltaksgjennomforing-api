@@ -805,4 +805,22 @@ public class VeilederTest {
         assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
 
     }
+
+    @Test
+    public void forskjellig_kvalifiseringskode_ved_opprett_og_godkjening_av_veileder(){
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        Deltaker deltaker = TestData.enDeltaker(avtale);
+        deltaker.godkjennForAvtalepart(avtale);
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        arbeidsgiver.godkjennAvtale(avtale);
+        Veileder veileder = TestData.enVeileder(avtale);
+        Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus(
+            Formidlingsgruppe.ARBEIDSSOKER,
+            Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
+            "0906"
+        );
+        VeilarboppfolgingService veilarboppfolgingService = Mockito.spy(new VeilarboppfolgingService(null));
+        Mockito.doReturn(oppfølgingsstatus).when(veilarboppfolgingService).hentOppfolgingsstatus(anyString());
+        assertFeilkode(Feilkode.OPPFOLGINGSTATUS_ENDRET, () -> veileder.godkjennForAvtalepart(avtale));
+    }
 }
