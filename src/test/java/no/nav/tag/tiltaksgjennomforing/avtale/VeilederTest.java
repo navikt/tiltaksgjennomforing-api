@@ -114,12 +114,10 @@ public class VeilederTest {
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
 
         // NÅR
-        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
         veileder.godkjennAvtale(avtale);
 
         // SÅ
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
-        assertThat(avtale.getKvalifiseringsgruppe().getKvalifiseringskode()).isEqualTo(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS.getKvalifiseringskode());
     }
 
     @Test

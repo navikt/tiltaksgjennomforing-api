@@ -360,7 +360,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             .map(kg -> !kg.equals(oppfølgingsstatus.getKvalifiseringsgruppe()))
             .orElse(false);
 
-        if (oppfolgingHarEndret && !avtale.erAvtaleInngått()) {
+        if (oppfolgingHarEndret && !avtale.erAvtaleInngått() && avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD) {
             log.info(
                 "Kvalifiseringsgruppe for avtale {} har endret seg fra {} til {}, oppdaterer avtale",
                 avtale.getId(),
