@@ -425,7 +425,6 @@ public class VeilederTest {
         VeilarboppfolgingService veilarboppfolgingServiceMock = mock(VeilarboppfolgingService.class);
         PersondataService persondataService = mock(PersondataService.class);
         FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
-        when(veilarboppfolgingServiceMock.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
