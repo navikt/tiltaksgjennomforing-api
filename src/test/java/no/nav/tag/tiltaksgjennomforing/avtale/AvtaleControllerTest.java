@@ -286,20 +286,21 @@ public class AvtaleControllerTest {
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         Avtale avtale = TestData.enArbeidstreningAvtale();
         værInnloggetSom(
-                new Arbeidsgiver(
-                        Fnr.generer(1956, 7, 8),
-                        Set.of(),
-                        Map.of(),
-                    altinn3Organisasjoner, List.of(),
-                        persondataService,
-                        null,
-                        null,
-                        null
-                )
+            new Arbeidsgiver(
+                Fnr.generer(1956, 7, 8),
+                Set.of(),
+                Map.of(),
+                altinn3Organisasjoner,
+                List.of(),
+                persondataService,
+                null,
+                null,
+                null
+            )
         );
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         assertThatThrownBy(
-                () -> avtaleController.hent(avtale.getId(), Avtalerolle.ARBEIDSGIVER, null)
+            () -> avtaleController.hent(avtale.getId(), Avtalerolle.ARBEIDSGIVER, null)
         ).isExactlyInstanceOf(IkkeTilgangTilAvtaleException.class);
     }
 
@@ -560,14 +561,15 @@ public class AvtaleControllerTest {
         when(featureToggleServiceMock.kanOppretteAvtale(any())).thenCallRealMethod();
 
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-                TestData.etFodselsnummer(),
-                Set.of(),
-                Map.of(),
-            altinn3Organisasjoner, null,
-                null,
-                null,
-                null,
-                null
+            TestData.etFodselsnummer(),
+            Set.of(),
+            Map.of(),
+            altinn3Organisasjoner,
+            null,
+            null,
+            null,
+            null,
+            null
         );
         værInnloggetSom(arbeidsgiver);
         assertThatThrownBy(
