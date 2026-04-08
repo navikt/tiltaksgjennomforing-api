@@ -122,13 +122,15 @@ public class AvtaleApiTest {
 
         var beslutterIdent = TestData.enNavIdent();
         var beslutter = new Beslutter(
-                beslutterIdent,
-                UUID.randomUUID(),
-                Set.of(ENHET_OPPFØLGING),
-                tilgangskontrollService,
-                norg2Client,
-                persondataService,
-                TestData.INGEN_AD_GRUPPER
+            beslutterIdent,
+            UUID.randomUUID(),
+            Set.of(ENHET_OPPFØLGING),
+            tilgangskontrollService,
+            norg2Client,
+            persondataService,
+            TestData.INGEN_AD_GRUPPER,
+            veilarboppfolgingService,
+            featureToggleService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(beslutter), any(Fnr.class))).thenReturn(true);
         when(entraproxyService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of(ENHET_OPPFØLGING));
