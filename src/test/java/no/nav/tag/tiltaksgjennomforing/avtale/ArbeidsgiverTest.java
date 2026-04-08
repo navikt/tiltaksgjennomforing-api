@@ -122,7 +122,8 @@ public class ArbeidsgiverTest {
                 )
             ),
             Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-            altinn3Organisasjoner, List.of(),
+            altinn3Organisasjoner,
+            List.of(),
             persondataService,
             norg2Client,
             eregService,
