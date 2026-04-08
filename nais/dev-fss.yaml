@@ -85,6 +85,7 @@ spec:
           namespace: pdl
       external:
         - host: team-tiltak-unleash-api.nav.cloud.nais.io
+        - host: arbeidsgiver-altinn-tilganger.intern.dev.nav.no
   envFrom:
     - secret: tiltaksgjennomforing-api
     - secret: tiltaksgjennomforing-api-unleash-api-token
