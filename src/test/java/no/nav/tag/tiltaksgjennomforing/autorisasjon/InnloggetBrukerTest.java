@@ -173,16 +173,17 @@ public class InnloggetBrukerTest {
     @Test
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avtale() {
         assertThat(
-                new Arbeidsgiver(
-                        TestData.etFodselsnummer(),
-                        Set.of(),
-                        Map.of(),
-                    altinn3Organisasjoner, List.of(),
-                        persondataService,
-                        null,
-                        null,
-                        null
-                ).harTilgangTilAvtale(avtale).erTillat()
+            new Arbeidsgiver(
+                TestData.etFodselsnummer(),
+                Set.of(),
+                Map.of(),
+                altinn3Organisasjoner,
+                List.of(),
+                persondataService,
+                null,
+                null,
+                null
+            ).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
     }
 
