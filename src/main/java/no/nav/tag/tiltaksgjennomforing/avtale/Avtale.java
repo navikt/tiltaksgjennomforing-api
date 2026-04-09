@@ -1108,6 +1108,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void regenererMentorTilskuddsperioder() {
+        sjekkAtIkkeAvtaleErAnnullert();
         if (tiltakstype != Tiltakstype.MENTOR) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_FEIL_TILTAKSTYPE);
         }
@@ -1121,7 +1122,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (tilskuddPeriode.isEmpty()) {
             throw new IllegalStateException("Kunne ikke generere tilskuddsperioder. Sjekk at nødvendige felter er utfylt.");
         }
-        log.info("Regenererte {} tilskuddsperioder for avtale {}", tilskuddPeriode.size(), id);
+        utforEndring();
+        log.atInfo()
+            .addKeyValue("avtaleId", id.toString())
+            .log("Regenererte {} tilskuddsperioder", tilskuddPeriode.size());
     }
 
     private boolean sjekkRyddingAvTilskuddsperioder() {
