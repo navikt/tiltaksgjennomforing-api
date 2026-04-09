@@ -494,7 +494,7 @@ public class AdminController {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         avtale.regenererMentorTilskuddsperioder();
         avtaleRepository.save(avtale);
-        return ResponseEntity.ok("Regenererte " + avtale.getTilskuddPeriode().size() + " tilskuddsperioder for avtale " + avtaleId);
+        return ResponseEntity.ok("Regenererte " + avtale.getTilskuddPeriode().size() + " tilskuddsperioder");
     }
 
 
