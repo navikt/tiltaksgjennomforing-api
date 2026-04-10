@@ -486,4 +486,16 @@ public class AdminController {
         }
         return resultat;
     }
+
+    @Transactional
+    @PostMapping("/avtale/{avtaleId}/regenerer-tilskuddsperioder-mentor")
+    public ResponseEntity<String> regenererTilskuddsperioderForMentor(@PathVariable UUID avtaleId) {
+        log.info("Admin: Regenererer tilskuddsperioder for mentor-avtale {}", avtaleId);
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        avtale.regenererMentorTilskuddsperioder();
+        avtaleRepository.save(avtale);
+        return ResponseEntity.ok("Regenererte " + avtale.getTilskuddPeriode().size() + " tilskuddsperioder");
+    }
+
+
 }
