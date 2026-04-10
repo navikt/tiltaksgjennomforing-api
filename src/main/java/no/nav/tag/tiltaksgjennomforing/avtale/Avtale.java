@@ -1107,27 +1107,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
     }
 
-    public void regenererMentorTilskuddsperioder() {
-        sjekkAtIkkeAvtaleErAnnullert();
-        if (tiltakstype != Tiltakstype.MENTOR) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_FEIL_TILTAKSTYPE);
-        }
-        if (erAvtaleInngått()) {
-            throw new IllegalStateException("Kan ikke regenerere tilskuddsperioder for en inngått avtale");
-        }
-        if (!tilskuddPeriode.isEmpty()) {
-            throw new IllegalStateException("Avtalen har allerede tilskuddsperioder");
-        }
-        nyeTilskuddsperioder();
-        if (tilskuddPeriode.isEmpty()) {
-            throw new IllegalStateException("Kunne ikke generere tilskuddsperioder. Sjekk at nødvendige felter er utfylt.");
-        }
-        utforEndring();
-        log.atInfo()
-            .addKeyValue("avtaleId", id.toString())
-            .log("Regenererte {} tilskuddsperioder", tilskuddPeriode.size());
-    }
-
     private boolean sjekkRyddingAvTilskuddsperioder() {
         if (!this.hentBeregningStrategi().nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(this)) {
             // TODO: Her blir det trøbbel i migrering pga start og sluttdato. her må vi refaktorere litt!!

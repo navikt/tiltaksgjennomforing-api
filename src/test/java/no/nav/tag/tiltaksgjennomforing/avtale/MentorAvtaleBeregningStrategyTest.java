@@ -1,10 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.bekk.bekkopen.person.FodselsnummerValidator;
-import no.nav.tag.tiltaksgjennomforing.AssertFeilkode;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentorBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -20,7 +18,6 @@ import java.util.Set;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(properties = {
     "tiltaksgjennomforing.mentor-tilskuddsperioder.enabled=true"
@@ -246,67 +243,5 @@ public class MentorAvtaleBeregningStrategyTest {
         assertThat(avtale.getGjeldendeInnhold().getMentorAntallTimer()).isEqualTo(endring.getMentorAntallTimer());
         assertThat(avtale.getGjeldendeInnhold().getSumLonnsutgifter()).isNotEqualTo(sumFør);
         assertThat(avtale.getGjeldendeInnhold().getSumLonnsutgifter()).isNotNull().isPositive();
-    }
-
-    @Test
-    public void regenererMentorTilskuddsperioder__genererer_perioder_når_de_mangler() {
-        Now.fixedDate(LocalDate.of(2026, 2, 4));
-        Avtale avtale = TestData.enMentorAvtaleSignertAvAlle();
-
-        avtale.getTilskuddPeriode().clear();
-        assertThat(avtale.getTilskuddPeriode()).isEmpty();
-
-        avtale.regenererMentorTilskuddsperioder();
-
-        assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
-        assertThat(avtale.getGjeldendeTilskuddsperiode()).isNotNull();
-        assertThat(avtale.getSistEndret()).isNotNull();
-    }
-
-    @Test
-    public void regenererMentorTilskuddsperioder__feiler_for_ikke_mentor_avtale() {
-        Now.fixedDate(LocalDate.of(2026, 2, 4));
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-
-        AssertFeilkode.assertFeilkode(Feilkode.KAN_IKKE_ENDRE_FEIL_TILTAKSTYPE,
-            avtale::regenererMentorTilskuddsperioder);
-    }
-
-    @Test
-    public void regenererMentorTilskuddsperioder__feiler_for_inngått_avtale() {
-        Now.fixedDate(LocalDate.of(2026, 2, 4));
-        Avtale avtale = TestData.enMentorAvtaleSignertAvAlle();
-
-        Beslutter beslutter = TestData.enBeslutter(avtale);
-        beslutter.godkjennTilskuddsperiode(avtale, TestData.ENHET_OPPFØLGING.getVerdi());
-        assertThat(avtale.erAvtaleInngått()).isTrue();
-
-        avtale.getTilskuddPeriode().clear();
-
-        assertThatThrownBy(avtale::regenererMentorTilskuddsperioder)
-            .isInstanceOf(IllegalStateException.class);
-    }
-
-    @Test
-    public void regenererMentorTilskuddsperioder__feiler_for_annullert_avtale() {
-        Now.fixedDate(LocalDate.of(2026, 2, 4));
-        Avtale avtale = TestData.enMentorAvtaleSignertAvAlle();
-        avtale.getTilskuddPeriode().clear();
-
-        avtale.annuller(AnnullertGrunn.FEILREGISTRERING, Identifikator.SYSTEM);
-
-        AssertFeilkode.assertFeilkode(Feilkode.KAN_IKKE_ENDRE_ANNULLERT_AVTALE,
-            avtale::regenererMentorTilskuddsperioder);
-    }
-
-    @Test
-    public void regenererMentorTilskuddsperioder__feiler_når_perioder_allerede_eksisterer() {
-        Now.fixedDate(LocalDate.of(2026, 2, 4));
-        Avtale avtale = TestData.enMentorAvtaleSignertAvAlle();
-
-        assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
-
-        assertThatThrownBy(avtale::regenererMentorTilskuddsperioder)
-            .isInstanceOf(IllegalStateException.class);
     }
 }
