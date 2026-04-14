@@ -75,6 +75,13 @@ public class InnloggingService {
                 new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
             AltinnTilgangerDto altinnTilganger = altinnTilgangsstyringService.hentAltinnTilganger();
             List<BedriftNr> adressesperreTilganger = altinnTilgangsstyringService.hentAdressesperreTilganger(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
+            log.info(
+                "InnloggetArbeidsgiver - bedrifter: altinn2TilgangerBedrifter={}, altinn3TilgangerBedrifter={}, tilganger: altinn2TotaltTilganger={}, altinn3TotaltTilganger={}",
+                tilganger.size(),
+                altinnTilganger.tilganger().size(),
+                tilganger.values().stream().mapToInt(Collection::size).sum(),
+                altinnTilganger.tilganger().values().stream().mapToInt(Set::size).sum()
+            );
             return new Arbeidsgiver(
                 new Fnr(brukerOgIssuer.getBrukerIdent()),
                 altinnOrganisasjoner,
