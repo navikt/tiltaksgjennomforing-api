@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
@@ -95,6 +96,7 @@ public class AvtaleControllerTest {
     private FeatureToggleService featureToggleServiceMock;
 
     private Pageable pageable = PageRequest.of(0, 100);
+    private final AltinnTilgangerDto altinn3Organisasjoner = null;
 
     @BeforeEach
     public void setup() {
@@ -284,20 +286,21 @@ public class AvtaleControllerTest {
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         Avtale avtale = TestData.enArbeidstreningAvtale();
         værInnloggetSom(
-                new Arbeidsgiver(
-                        Fnr.generer(1956, 7, 8),
-                        Set.of(),
-                        Map.of(),
-                        List.of(),
-                        persondataService,
-                        null,
-                        null,
-                        null
-                )
+            new Arbeidsgiver(
+                Fnr.generer(1956, 7, 8),
+                Set.of(),
+                Map.of(),
+                altinn3Organisasjoner,
+                List.of(),
+                persondataService,
+                null,
+                null,
+                null
+            )
         );
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         assertThatThrownBy(
-                () -> avtaleController.hent(avtale.getId(), Avtalerolle.ARBEIDSGIVER, null)
+            () -> avtaleController.hent(avtale.getId(), Avtalerolle.ARBEIDSGIVER, null)
         ).isExactlyInstanceOf(IkkeTilgangTilAvtaleException.class);
     }
 
@@ -558,14 +561,15 @@ public class AvtaleControllerTest {
         when(featureToggleServiceMock.kanOppretteAvtale(any())).thenCallRealMethod();
 
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-                TestData.etFodselsnummer(),
-                Set.of(),
-                Map.of(),
-                null,
-                null,
-                null,
-                null,
-                null
+            TestData.etFodselsnummer(),
+            Set.of(),
+            Map.of(),
+            altinn3Organisasjoner,
+            null,
+            null,
+            null,
+            null,
+            null
         );
         værInnloggetSom(arbeidsgiver);
         assertThatThrownBy(

@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
@@ -55,6 +56,7 @@ public class InnloggetBrukerTest {
     private VeilarboppfolgingService veilarboppfolgingService;
     private AvtaleRepository avtaleRepository;
     private FeatureToggleService featureToggleService;
+    private final AltinnTilgangerDto altinn3Organisasjoner = null;
     @Value("${tiltaksgjennomforing.mentor-tilskuddsperioder.enabled}")
     private boolean mentorTilskuddsperioderEnabled;
 
@@ -171,16 +173,17 @@ public class InnloggetBrukerTest {
     @Test
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avtale() {
         assertThat(
-                new Arbeidsgiver(
-                        TestData.etFodselsnummer(),
-                        Set.of(),
-                        Map.of(),
-                        List.of(),
-                        persondataService,
-                        null,
-                        null,
-                        null
-                ).harTilgangTilAvtale(avtale).erTillat()
+            new Arbeidsgiver(
+                TestData.etFodselsnummer(),
+                Set.of(),
+                Map.of(),
+                altinn3Organisasjoner,
+                List.of(),
+                persondataService,
+                null,
+                null,
+                null
+            ).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
     }
 
@@ -232,7 +235,7 @@ public class InnloggetBrukerTest {
                 Fnr.generer(1956, 7, 8),
                 Set.of(),
                 Map.of(),
-                List.of(),
+                altinn3Organisasjoner, List.of(),
                 persondataService,
                 null,
                 null,
@@ -249,7 +252,7 @@ public class InnloggetBrukerTest {
                 Fnr.generer(1956, 7, 8),
                 Set.of(),
                 tilganger,
-                List.of(),
+            altinn3Organisasjoner, List.of(),
                 persondataService,
                 null,
                 null,
@@ -267,7 +270,7 @@ public class InnloggetBrukerTest {
             Fnr.generer(1956, 7, 8),
                 Set.of(),
                 tilganger,
-                List.of(),
+            altinn3Organisasjoner, List.of(),
                 persondataService,
                 null,
                 null,
@@ -304,7 +307,7 @@ public class InnloggetBrukerTest {
                 Fnr.generer(1956, 7, 8),
                 Set.of(),
                 tilganger,
-                List.of(),
+            altinn3Organisasjoner, List.of(),
                 persondataService,
                 null,
                 null,
@@ -322,7 +325,7 @@ public class InnloggetBrukerTest {
                 Fnr.generer(1956, 7, 8),
                 Set.of(),
                 tilganger,
-                List.of(),
+            altinn3Organisasjoner, List.of(),
                 persondataService,
                 null,
                 null,

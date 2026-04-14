@@ -1,0 +1,164 @@
+{
+  "mappings": [
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPath": "/altinn-tilganger"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "isError": false,
+          "hierarki": [
+            {
+              "orgnr": "910825555",
+              "altinn3Tilganger": [],
+              "altinn2Tilganger": [],
+              "underenheter": [
+                {
+                  "orgnr": "910712307",
+                  "altinn3Tilganger": [],
+                  "altinn2Tilganger": [
+                    "5516:3",
+                    "5516:4",
+                    "5516:5",
+                    "5516:6",
+                    "5516:7"
+                  ],
+                  "underenheter": [],
+                  "navn": "Bedriften Med Sommerjobb",
+                  "organisasjonsform": "BEDR",
+                  "erSlettet": false
+                },
+                {
+                  "orgnr": "910712314",
+                  "altinn3Tilganger": [],
+                  "altinn2Tilganger": [
+                    "5516:1"
+                  ],
+                  "underenheter": [],
+                  "navn": "Bedriften Med Midlertidi Lts",
+                  "organisasjonsform": "BEDR",
+                  "erSlettet": false
+                },
+                {
+                  "orgnr": "910712306",
+                  "altinn3Tilganger": [],
+                  "altinn2Tilganger": [
+                    "5516:2"
+                  ],
+                  "underenheter": [],
+                  "navn": "Bedriften Med Varig Lts",
+                  "organisasjonsform": "BEDR",
+                  "erSlettet": false
+                },
+                {
+                  "orgnr": "980712306",
+                  "altinn3Tilganger": [],
+                  "altinn2Tilganger": [],
+                  "underenheter": [],
+                  "navn": "IngenTiltak Hjørnet",
+                  "organisasjonsform": "BEDR",
+                  "erSlettet": false
+                }
+              ],
+              "navn": "BIRTAVARRE OG VÆRLANDET",
+              "organisasjonsform": "AS",
+              "erSlettet": false
+            },
+            {
+              "orgnr": "910825550",
+              "altinn3Tilganger": [],
+              "altinn2Tilganger": [],
+              "underenheter": [
+                {
+                  "orgnr": "999999999",
+                  "altinn3Tilganger": [],
+                  "altinn2Tilganger": [
+                    "5332:1",
+                    "5516:1",
+                    "5516:2",
+                    "5516:3",
+                    "5516:4",
+                    "5516:5",
+                    "5516:6",
+                    "5516:7"
+                  ],
+                  "underenheter": [],
+                  "navn": "Saltrød og Høneby",
+                  "organisasjonsform": "BEDR",
+                  "erSlettet": false
+                }
+              ],
+              "navn": "SALTRØD FORELDER",
+              "organisasjonsform": "AS",
+              "erSlettet": false
+            }
+          ],
+          "orgNrTilTilganger": {
+            "999999999": [
+              "5332:1",
+              "5516:1",
+              "5516:2",
+              "5516:3",
+              "5516:4",
+              "5516:5",
+              "5516:6",
+              "5516:7"
+            ],
+            "910712307": [
+              "5516:3",
+              "5516:4",
+              "5516:5",
+              "5516:6",
+              "5516:7"
+            ],
+            "910712314": [
+              "5516:1"
+            ],
+            "910712306": [
+              "5516:2"
+            ]
+          },
+          "tilgangTilOrgNr": {
+            "5332:1": [
+              "999999999"
+            ],
+            "5516:1": [
+              "999999999",
+              "910712314"
+            ],
+            "5516:2": [
+              "999999999",
+              "910712306"
+            ],
+            "5516:3": [
+              "999999999",
+              "910712307"
+            ],
+            "5516:4": [
+              "999999999",
+              "910712307"
+            ],
+            "5516:5": [
+              "999999999",
+              "910712307"
+            ],
+            "5516:6": [
+              "999999999",
+              "910712307"
+            ],
+            "5516:7": [
+              "999999999",
+              "910712307"
+            ]
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}
