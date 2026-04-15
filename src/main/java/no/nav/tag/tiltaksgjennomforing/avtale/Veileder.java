@@ -17,6 +17,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Kode6SperretForOpprettelseOgEndringException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.OppfolgingstatusEndretException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
@@ -370,7 +371,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             avtale.opphevGodkjenningerSomVeileder();
             avtale.endreBeløpOgProsentITilskuddsperioder();
             settOppfølgingsStatus(avtale, oppfølgingsstatus);
-            throw new FeilkodeException(Feilkode.OPPFOLGINGSTATUS_ENDRET);
+            throw new OppfolgingstatusEndretException();
         }
 
         settOppfølgingsStatus(avtale, oppfølgingsstatus);

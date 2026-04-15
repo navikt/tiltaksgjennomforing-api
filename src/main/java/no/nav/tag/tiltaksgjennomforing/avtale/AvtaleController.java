@@ -14,6 +14,7 @@ import no.nav.tag.tiltaksgjennomforing.dokgen.DokgenService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.OppfolgingstatusEndretException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
@@ -340,8 +341,9 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
+    // Derson kvalifiseringsgruppen er endret på en avtale vil alle godkjenninger oppheves, og vil derfor ikke rulle tilbake for å lagre opphevingene.
     @PostMapping("/{avtaleId}/godkjenn")
-    @Transactional
+    @Transactional(noRollbackFor = OppfolgingstatusEndretException.class)
     public void godkjenn(
             @PathVariable("avtaleId") UUID avtaleId,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
