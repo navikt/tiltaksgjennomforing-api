@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.AdGruppeTilganger;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetMentor;
@@ -29,6 +30,7 @@ import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -906,10 +908,17 @@ public class TestData {
         return new InnloggetBeslutter(new NavIdent("F888888"), Set.of(ENHET_OPPFØLGING));
     }
 
+    public static AltinnTilgangerDto enAltinnTilgangerDto(Map<BedriftNr, ? extends Collection<Tiltakstype>> tilganger) {
+        Map<BedriftNr, Set<Tiltakstype>> converted = tilganger.entrySet().stream()
+            .collect(java.util.stream.Collectors.toMap(Map.Entry::getKey, e -> Set.copyOf(e.getValue())));
+        return new AltinnTilgangerDto(List.of(), converted);
+    }
+
     public static Arbeidsgiver enArbeidsgiver() {
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
-        return new Arbeidsgiver(Fnr.generer(1978, 9, 10), Set.of(), Map.of(), null, List.of(), persondataService, null, null, null);
+        Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of();
+        return new Arbeidsgiver(Fnr.generer(1978, 9, 10), Set.of(), tilganger, enAltinnTilgangerDto(tilganger), List.of(), persondataService, null, null, null);
     }
 
     public static Mentor enMentor(Avtale avtale) {
@@ -917,12 +926,12 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
+        Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), List.of(Tiltakstype.values()));
         return new Arbeidsgiver(
                 TestData.etFodselsnummer(),
-                Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", "", null))
-                , Map.of(avtale.getBedriftNr(),
-                List.of(Tiltakstype.values())),
-                null,
+                Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", "", null)),
+                tilganger,
+                enAltinnTilgangerDto(tilganger),
                 List.of(),
                 mock(PersondataService.class),
                 null,
