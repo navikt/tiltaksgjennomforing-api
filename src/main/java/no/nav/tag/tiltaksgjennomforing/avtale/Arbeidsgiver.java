@@ -112,7 +112,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     @Override
     public Collection<BedriftNr> identifikatorer() {
-        return tilganger.keySet();
+        return altinnTilganger.tilganger().keySet();
     }
 
     @Override
@@ -196,10 +196,10 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     private boolean harTilgangPåTiltakIBedrift(BedriftNr bedriftNr, Tiltakstype tiltakstype) {
-        if (!tilganger.containsKey(bedriftNr)) {
+        if (!altinnTilganger.tilganger().containsKey(bedriftNr)) {
             return false;
         }
-        Collection<Tiltakstype> gyldigeTilgangerPåBedriftNr = tilganger.get(bedriftNr);
+        Collection<Tiltakstype> gyldigeTilgangerPåBedriftNr = altinnTilganger.tilganger().get(bedriftNr);
         return gyldigeTilgangerPåBedriftNr.contains(tiltakstype);
     }
 
@@ -219,7 +219,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         AvtaleQueryParameter queryParametre,
         Pageable pageable
     ) {
-        if (tilganger.isEmpty()) {
+        if (altinnTilganger.tilganger().isEmpty()) {
             return Page.empty();
         }
         Page<Avtale> avtaler;
@@ -232,7 +232,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                 );
             } else if (queryParametre.getBedriftNr() == null) {
                 avtaler = avtaleRepository.findAllByBedriftNrAndTiltakstype(
-                    tilganger.keySet(),
+                    altinnTilganger.tilganger().keySet(),
                     queryParametre.getTiltakstype(),
                     pageable
                 );
@@ -240,13 +240,13 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                 avtaler = Page.empty();
             }
         } else {
-            if (queryParametre.getBedriftNr() != null && tilganger.containsKey(queryParametre.getBedriftNr())) {
+            if (queryParametre.getBedriftNr() != null && altinnTilganger.tilganger().containsKey(queryParametre.getBedriftNr())) {
                 avtaler = avtaleRepository.findAllByBedriftNr(
                     Set.of(queryParametre.getBedriftNr()),
                     pageable
                 );
             } else if (queryParametre.getBedriftNr() == null) {
-                avtaler = avtaleRepository.findAllByBedriftNr(tilganger.keySet(), pageable);
+                avtaler = avtaleRepository.findAllByBedriftNr(altinnTilganger.tilganger().keySet(), pageable);
             } else { // Bruker ba om informasjon på en bedrift hen ikke har tilgang til, og får dermed tom liste
                 avtaler = Page.empty();
             }
