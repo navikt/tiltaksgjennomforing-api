@@ -164,9 +164,9 @@ public class AltinnTilgangsstyringService {
 
         // Altinn 2 serviceCode:serviceEdition
         // Kan fjernes på sikt (juni 26) - letter overgangen til Altinn 3
-        String altinn2Key = altinnTilgangsstyringProperties.getAdressesperreServiceCode()
+        String altinn2Tilgang = altinnTilgangsstyringProperties.getAdressesperreServiceCode()
             + ":" + altinnTilgangsstyringProperties.getAdressesperreServiceEdition();
-        Set<String> altinn2 = response.tilgangTilOrgNr().get(altinn2Key);
+        Set<String> altinn2 = response.tilgangTilOrgNr().get(altinn2Tilgang);
         if (altinn2 != null) {
             orgNrs.addAll(altinn2);
         }
