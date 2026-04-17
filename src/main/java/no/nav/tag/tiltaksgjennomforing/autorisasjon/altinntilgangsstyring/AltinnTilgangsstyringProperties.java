@@ -46,7 +46,7 @@ public class AltinnTilgangsstyringProperties {
     private static final String MENTOR = "nav_tiltak_mentor";
     private static final String INKLUDERINGSTILSKUDD = "nav_tiltak_inkluderingstilskudd";
     private static final String VTAO = "nav_tiltak_varig-tilrettelagt-arbeid-ordinaer";
-    private static final String ADRESSESPERRE = "nav_tiltak_adressesperre";
+    static final String ADRESSESPERRE = "nav_tiltak_adressesperre";
     private static final String FIREARIG_LONNSTILSKUDD = "nav_tiltak_firearig-lonnstilskudd";
 
     public Map<String, Tiltakstype> tilgangerTilTiltakstype() {
