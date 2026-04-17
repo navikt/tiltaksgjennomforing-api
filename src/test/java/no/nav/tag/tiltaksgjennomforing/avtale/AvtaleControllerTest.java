@@ -96,7 +96,7 @@ public class AvtaleControllerTest {
     private FeatureToggleService featureToggleServiceMock;
 
     private Pageable pageable = PageRequest.of(0, 100);
-    private final AltinnTilgangerDto altinn3Organisasjoner = null;
+    private final AltinnTilgangerDto altinn3Organisasjoner = TestData.enAltinnTilgangerDto(Map.of());
 
     @BeforeEach
     public void setup() {

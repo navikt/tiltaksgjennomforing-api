@@ -56,7 +56,7 @@ public class InnloggetBrukerTest {
     private VeilarboppfolgingService veilarboppfolgingService;
     private AvtaleRepository avtaleRepository;
     private FeatureToggleService featureToggleService;
-    private final AltinnTilgangerDto altinn3Organisasjoner = null;
+    private final AltinnTilgangerDto altinn3Organisasjoner = TestData.enAltinnTilgangerDto(Map.of());
     @Value("${tiltaksgjennomforing.mentor-tilskuddsperioder.enabled}")
     private boolean mentorTilskuddsperioderEnabled;
 
@@ -252,7 +252,7 @@ public class InnloggetBrukerTest {
                 Fnr.generer(1956, 7, 8),
                 Set.of(),
                 tilganger,
-            altinn3Organisasjoner, List.of(),
+            TestData.enAltinnTilgangerDto(tilganger), List.of(),
                 persondataService,
                 null,
                 null,
@@ -270,7 +270,7 @@ public class InnloggetBrukerTest {
             Fnr.generer(1956, 7, 8),
                 Set.of(),
                 tilganger,
-            altinn3Organisasjoner, List.of(),
+            TestData.enAltinnTilgangerDto(tilganger), List.of(),
                 persondataService,
                 null,
                 null,
@@ -307,7 +307,7 @@ public class InnloggetBrukerTest {
                 Fnr.generer(1956, 7, 8),
                 Set.of(),
                 tilganger,
-            altinn3Organisasjoner, List.of(),
+            TestData.enAltinnTilgangerDto(tilganger), List.of(),
                 persondataService,
                 null,
                 null,
@@ -325,7 +325,7 @@ public class InnloggetBrukerTest {
                 Fnr.generer(1956, 7, 8),
                 Set.of(),
                 tilganger,
-            altinn3Organisasjoner, List.of(),
+            TestData.enAltinnTilgangerDto(tilganger), List.of(),
                 persondataService,
                 null,
                 null,
