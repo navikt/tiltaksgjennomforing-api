@@ -56,6 +56,8 @@ public class AltinnTilgangsstyringService {
                 altinnTilgangsstyringProperties.getSommerjobbServiceEdition(),
                 altinnTilgangsstyringProperties.getVtaoServiceCode(),
                 altinnTilgangsstyringProperties.getVtaoServiceEdition(),
+                altinnTilgangsstyringProperties.getLtsFirearigServiceCode(),
+                altinnTilgangsstyringProperties.getLtsFirearigServiceEdition(),
                 altinnTilgangsstyringProperties.getArbeidsgiverAltinnTilgangerUri())) {
             throw new TiltaksgjennomforingException("Altinn konfigurasjon ikke komplett");
         }
@@ -113,6 +115,9 @@ public class AltinnTilgangsstyringService {
                 arbeidsgiverToken);
         leggTil(tilganger, vtaoOrger, Tiltakstype.VTAO);
 
+        AltinnReportee[] firearigLonnstilskuddOrger = kallAltinn(altinnTilgangsstyringProperties.getLtsFirearigServiceCode(), altinnTilgangsstyringProperties.getLtsFirearigServiceEdition(), fnr,
+            arbeidsgiverToken);
+        leggTil(tilganger, firearigLonnstilskuddOrger, Tiltakstype.FIREARIG_LONNSTILSKUDD);
 
         return tilganger.toMap();
     }
@@ -157,7 +162,7 @@ public class AltinnTilgangsstyringService {
             mapTilgangerFraAltinn3(response)
         );
     }
-    
+
     private Map<BedriftNr, Set<Tiltakstype>> mapTilgangerFraAltinn3(AltinnTilgangerResponse response) {
         Map<String, Tiltakstype> tilgangerTilTiltakstype = altinnTilgangsstyringProperties.tilgangerTilTiltakstype();
         Map<BedriftNr, Set<Tiltakstype>> tilganger = new HashMap<>();
