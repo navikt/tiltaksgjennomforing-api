@@ -9,5 +9,6 @@ import java.util.Set;
 
 public record AltinnTilgangerDto(
     List<AltinnTilgang> hierarki,
-    Map<BedriftNr, Set<Tiltakstype>> tilganger
+    Map<BedriftNr, Set<Tiltakstype>> tilganger,
+    List<BedriftNr> adressesperreTilganger
 ) {}
