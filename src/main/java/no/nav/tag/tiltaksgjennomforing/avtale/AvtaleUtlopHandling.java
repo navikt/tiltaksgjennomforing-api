@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.time.Duration;
@@ -11,12 +12,18 @@ public enum AvtaleUtlopHandling {
     UTLOP,
     INGEN;
 
+    public static final Instant TIDLIGEST_DATO_FOR_RYDDING_AV_ARENA_MENTOR = Instant.parse("2026-06-01T12:00:00.000Z");
+
     private static final Duration EN_DAG = Duration.ofDays(1);
     private static final Duration EN_UKE = EN_DAG.multipliedBy(7);
     private static final Duration TOLV_UKER = EN_UKE.multipliedBy(12);
     private static final Duration ELLEVE_UKER = EN_UKE.multipliedBy(11);
 
     public static AvtaleUtlopHandling parse(Avtale avtale) {
+        if (Tiltakstype.MENTOR.equals(avtale.getTiltakstype()) && avtale.erOpprettetEllerEndretAvArena()) {
+            var sistEndret = DatoUtils.maksDato(avtale.getSistEndret(), TIDLIGEST_DATO_FOR_RYDDING_AV_ARENA_MENTOR.minus(TOLV_UKER));
+            return parse(sistEndret);
+        }
         return parse(avtale.getSistEndret());
     }
 
