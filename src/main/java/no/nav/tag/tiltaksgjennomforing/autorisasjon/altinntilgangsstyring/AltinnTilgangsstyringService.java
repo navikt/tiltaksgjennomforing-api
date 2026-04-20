@@ -44,7 +44,7 @@ public class AltinnTilgangsstyringService {
             TokenUtils tokenUtils,
             RestTemplate azureRestTemplate,
             @Value("${spring.application.name}") String applicationName) {
-Œ
+
         if (Utils.erNoenTomme(altinnTilgangsstyringProperties.getArbtreningServiceCode(),
                 altinnTilgangsstyringProperties.getArbtreningServiceEdition(),
                 altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(),
