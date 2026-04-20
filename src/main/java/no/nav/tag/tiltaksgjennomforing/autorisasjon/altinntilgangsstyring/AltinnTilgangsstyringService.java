@@ -25,7 +25,6 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,7 +44,7 @@ public class AltinnTilgangsstyringService {
             TokenUtils tokenUtils,
             RestTemplate azureRestTemplate,
             @Value("${spring.application.name}") String applicationName) {
-
+Œ
         if (Utils.erNoenTomme(altinnTilgangsstyringProperties.getArbtreningServiceCode(),
                 altinnTilgangsstyringProperties.getArbtreningServiceEdition(),
                 altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(),
