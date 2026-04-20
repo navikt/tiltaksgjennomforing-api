@@ -30,6 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -53,7 +54,6 @@ public class ArbeidsgiverTest {
     @MockitoBean
     private AvtaleRepository avtaleRepository;
 
-    private final AltinnTilgangerDto altinn3Organisasjoner = null;
     private final Pageable pageable = PageRequest.of(0, 100);
 
     @BeforeEach
@@ -108,6 +108,7 @@ public class ArbeidsgiverTest {
             "0411"
         ));
 
+        Map<BedriftNr, Collection<Tiltakstype>> tilgangerMap = Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
             TestData.etFodselsnummer(),
             Set.of(
@@ -121,8 +122,8 @@ public class ArbeidsgiverTest {
                     null
                 )
             ),
-            Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-            altinn3Organisasjoner,
+            tilgangerMap,
+            TestData.enAltinnTilgangerDto(tilgangerMap),
             List.of(),
             persondataService,
             norg2Client,
@@ -144,7 +145,7 @@ public class ArbeidsgiverTest {
             null,
             null,
             null,
-            altinn3Organisasjoner,
+            TestData.enAltinnTilgangerDto(Map.of()),
             null,
             null,
             null,
@@ -163,7 +164,7 @@ public class ArbeidsgiverTest {
             null,
             null,
             null,
-            altinn3Organisasjoner,
+            TestData.enAltinnTilgangerDto(Map.of()),
             null,
             null,
             null,
@@ -180,11 +181,12 @@ public class ArbeidsgiverTest {
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
 
+        Map<BedriftNr, Collection<Tiltakstype>> tilgangerMap = Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
             null,
             null,
-            Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-            altinn3Organisasjoner,
+            tilgangerMap,
+            TestData.enAltinnTilgangerDto(tilgangerMap),
             List.of(),
             persondataService,
             null,
@@ -222,11 +224,12 @@ public class ArbeidsgiverTest {
         ));
 
         List<BedriftNr> adressesperreTilganger = List.of(TestData.etBedriftNr());
+        Map<BedriftNr, Collection<Tiltakstype>> tilgangerMap = Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
             null,
             null,
-            Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-            altinn3Organisasjoner, 
+            tilgangerMap,
+            TestData.enAltinnTilgangerDto(tilgangerMap),
             adressesperreTilganger,
             persondataService,
             norg2Client,
@@ -257,11 +260,12 @@ public class ArbeidsgiverTest {
             Diskresjonskode.STRENGT_FORTROLIG
         ));
 
+        Map<BedriftNr, Collection<Tiltakstype>> tilgangerMap = Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
             null,
             null,
-            Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-            altinn3Organisasjoner, 
+            tilgangerMap,
+            TestData.enAltinnTilgangerDto(tilgangerMap),
             emptyList(),
             persondataService,
             null,
@@ -287,11 +291,12 @@ public class ArbeidsgiverTest {
 
 
         List<BedriftNr> adressesperreTilganger = List.of(TestData.etBedriftNr());
+        Map<BedriftNr, Collection<Tiltakstype>> tilgangerMap = Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
             null,
             null,
-            Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-            altinn3Organisasjoner, 
+            tilgangerMap,
+            TestData.enAltinnTilgangerDto(tilgangerMap),
             adressesperreTilganger,
             persondataService,
             null,
@@ -319,11 +324,12 @@ public class ArbeidsgiverTest {
 
 
         List<BedriftNr> adressesperreTilganger = List.of(TestData.etBedriftNr());
+        Map<BedriftNr, Collection<Tiltakstype>> tilgangerMap = Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
         Arbeidsgiver arbeidsgiverUtenAdressesperreTilgang = new Arbeidsgiver(
             null,
             null,
-            Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-            altinn3Organisasjoner, 
+            tilgangerMap,
+            TestData.enAltinnTilgangerDto(tilgangerMap),
             emptyList(),
             persondataService,
             null,
@@ -333,8 +339,8 @@ public class ArbeidsgiverTest {
         Arbeidsgiver arbeidsgiverMedAdressesperreTilgang = new Arbeidsgiver(
             null,
             null,
-            Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-            altinn3Organisasjoner, 
+            tilgangerMap,
+            TestData.enAltinnTilgangerDto(tilgangerMap),
             adressesperreTilganger,
             persondataService,
             null,
@@ -381,16 +387,17 @@ public class ArbeidsgiverTest {
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
 
+        Map<BedriftNr, Collection<Tiltakstype>> tilgangerMap = Map.of(
+            TestData.etBedriftNr(),
+            Set.of(Tiltakstype.MENTOR),
+            new BedriftNr("999999999"),
+            Set.of(Tiltakstype.MENTOR)
+        );
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
             null,
             null,
-            Map.of(
-                TestData.etBedriftNr(),
-                Set.of(Tiltakstype.MENTOR),
-                new BedriftNr("999999999"),
-                Set.of(Tiltakstype.MENTOR)
-            ),
-            altinn3Organisasjoner,
+            tilgangerMap,
+            TestData.enAltinnTilgangerDto(tilgangerMap),
             List.of(),
             persondataService,
             null,
