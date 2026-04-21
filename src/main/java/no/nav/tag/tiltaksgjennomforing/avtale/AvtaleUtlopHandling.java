@@ -15,7 +15,10 @@ public enum AvtaleUtlopHandling {
     UTLOP,
     INGEN;
 
-    private static final LocalDate TIDLIGEST_DATO_FOR_RYDDING_AV_ARENA_MENTOR = LocalDate.of(2026, 6, 1);
+    private static final Instant TIDLIGEST_DATO_FOR_RYDDING_AV_ARENA_MENTOR = LocalDate.of(2026, 6, 1)
+        .atTime(LocalTime.NOON)
+        .atOffset(ZoneOffset.UTC)
+        .toInstant();
 
     private static final Duration EN_DAG = Duration.ofDays(1);
     private static final Duration EN_UKE = EN_DAG.multipliedBy(7);
@@ -24,11 +27,7 @@ public enum AvtaleUtlopHandling {
 
     public static AvtaleUtlopHandling parse(Avtale avtale) {
         if (Tiltakstype.MENTOR.equals(avtale.getTiltakstype()) && avtale.erOpprettetEllerEndretAvArena()) {
-            var terskel = TIDLIGEST_DATO_FOR_RYDDING_AV_ARENA_MENTOR
-                .atTime(LocalTime.NOON)
-                .atOffset(ZoneOffset.UTC)
-                .toInstant();
-            var sistEndret = DatoUtils.maksDato(avtale.getSistEndret(), terskel.minus(TOLV_UKER));
+            var sistEndret = DatoUtils.maksDato(avtale.getSistEndret(), TIDLIGEST_DATO_FOR_RYDDING_AV_ARENA_MENTOR.minus(TOLV_UKER));
             return parse(sistEndret);
         }
         return parse(avtale.getSistEndret());
