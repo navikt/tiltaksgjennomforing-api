@@ -5,6 +5,9 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
 
 public enum AvtaleUtlopHandling {
     VARSEL_EN_UKE,
@@ -12,7 +15,7 @@ public enum AvtaleUtlopHandling {
     UTLOP,
     INGEN;
 
-    private static final Instant TIDLIGEST_DATO_FOR_RYDDING_AV_ARENA_MENTOR = Instant.parse("2026-06-01T12:00:00.000Z");
+    private static final LocalDate TIDLIGEST_DATO_FOR_RYDDING_AV_ARENA_MENTOR = LocalDate.of(2026, 6, 1);
 
     private static final Duration EN_DAG = Duration.ofDays(1);
     private static final Duration EN_UKE = EN_DAG.multipliedBy(7);
@@ -21,7 +24,11 @@ public enum AvtaleUtlopHandling {
 
     public static AvtaleUtlopHandling parse(Avtale avtale) {
         if (Tiltakstype.MENTOR.equals(avtale.getTiltakstype()) && avtale.erOpprettetEllerEndretAvArena()) {
-            var sistEndret = DatoUtils.maksDato(avtale.getSistEndret(), TIDLIGEST_DATO_FOR_RYDDING_AV_ARENA_MENTOR.minus(TOLV_UKER));
+            var terskel = TIDLIGEST_DATO_FOR_RYDDING_AV_ARENA_MENTOR
+                .atTime(LocalTime.NOON)
+                .atOffset(ZoneOffset.UTC)
+                .toInstant();
+            var sistEndret = DatoUtils.maksDato(avtale.getSistEndret(), terskel.minus(TOLV_UKER));
             return parse(sistEndret);
         }
         return parse(avtale.getSistEndret());
