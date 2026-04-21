@@ -29,7 +29,7 @@
         <nocommons.version>0.17.0</nocommons.version>
         <poao-tilgang.version>2025.02.18_14.13-ac4265f31ef3</poao-tilgang.version>
         <shedlock.version>6.3.1</shedlock.version>
-        <tiltak-persondata.version>2026.02.05_09.21-4a5e6165dedd</tiltak-persondata.version>
+        <tiltak-persondata.version>2026.04.21_06.19-b62bcf9d7d1d</tiltak-persondata.version>
         <token-client-spring.version>5.0.27</token-client-spring.version>
         <token-validation-spring.version>5.0.27</token-validation-spring.version>
         <unleash-client-java.version>12.0.1</unleash-client-java.version>
