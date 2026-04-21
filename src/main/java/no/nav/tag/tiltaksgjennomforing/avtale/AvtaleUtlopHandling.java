@@ -12,7 +12,7 @@ public enum AvtaleUtlopHandling {
     UTLOP,
     INGEN;
 
-    public static final Instant TIDLIGEST_DATO_FOR_RYDDING_AV_ARENA_MENTOR = Instant.parse("2026-06-01T12:00:00.000Z");
+    private static final Instant TIDLIGEST_DATO_FOR_RYDDING_AV_ARENA_MENTOR = Instant.parse("2026-06-01T12:00:00.000Z");
 
     private static final Duration EN_DAG = Duration.ofDays(1);
     private static final Duration EN_UKE = EN_DAG.multipliedBy(7);
