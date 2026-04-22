@@ -7,7 +7,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 
 public enum AvtaleUtlopHandling {
     VARSEL_EN_UKE,
@@ -17,7 +17,7 @@ public enum AvtaleUtlopHandling {
 
     private static final Instant TIDLIGEST_DATO_FOR_RYDDING_AV_ARENA_MENTOR = LocalDate.of(2026, 6, 1)
         .atTime(LocalTime.NOON)
-        .atOffset(ZoneOffset.UTC)
+        .atZone(ZoneId.systemDefault())
         .toInstant();
 
     private static final Duration EN_DAG = Duration.ofDays(1);
