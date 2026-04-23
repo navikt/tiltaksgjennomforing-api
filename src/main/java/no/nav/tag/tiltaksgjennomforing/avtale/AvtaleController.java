@@ -720,7 +720,7 @@ public class AvtaleController {
     }
 
     @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av")
-    @Transactional
+    @Transactional(noRollbackFor = OppfolgingstatusEndretException.class)
     public void godkjennPaVegneAv(
             @PathVariable("avtaleId") UUID avtaleId,
             @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn,
