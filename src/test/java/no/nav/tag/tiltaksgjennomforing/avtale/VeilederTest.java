@@ -6,7 +6,9 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2EnhetStatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
@@ -529,6 +531,45 @@ public class VeilederTest {
             anyString());
         nyVeileder.oppdatereOppfølgingStatusVedEndreAvtale(avtale);
         assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(nyOppfølgingsstatusSomSkalSettes.getKvalifiseringsgruppe());
+    }
+
+    @Test
+    public void settOppfølgingsStatus__oppdaterer_enhetsnavnOppfolging_når_oppfolgingsenhet_endres() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setEnhetOppfolging("0101");
+        avtale.setEnhetsnavnOppfolging("Gammelt kontor");
+
+        String nyEnhet = "1234";
+        String nyttEnhetsnavn = "Nytt kontor";
+
+        Norg2Client norg2ClientMock = mock(Norg2Client.class);
+        when(norg2ClientMock.hentOppfølgingsEnhet(nyEnhet))
+            .thenReturn(new Norg2OppfølgingResponse(1234, nyEnhet, nyttEnhetsnavn, Norg2EnhetStatus.AKTIV));
+
+        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        when(veilarboppfolgingService.hentOppfolgingsstatus(anyString()))
+            .thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, nyEnhet));
+
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
+        Veileder veileder = new Veileder(
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            norg2ClientMock,
+            Set.of(new NavEnhet("4802", "Trysil")),
+            TestData.INGEN_AD_GRUPPER,
+            veilarboppfolgingService,
+            mock(FeatureToggleService.class),
+            mock(EregService.class)
+        );
+
+        veileder.oppdatereOppfølgingStatusVedEndreAvtale(avtale);
+
+        assertThat(avtale.getEnhetOppfolging()).isEqualTo(nyEnhet);
+        assertThat(avtale.getEnhetsnavnOppfolging()).isEqualTo(nyttEnhetsnavn);
+        verify(norg2ClientMock).hentOppfølgingsEnhet(nyEnhet);
     }
 
     @Test
