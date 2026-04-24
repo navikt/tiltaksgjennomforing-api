@@ -34,6 +34,8 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -232,14 +234,121 @@ class PabegynteAvtalerRyddeServiceTest {
         verify(avtaleRepositoryMock, times(2)).save(any());
     }
 
+    @Test
+    void mentor_avtale_endret_av_arena_bruker_tidligste_rydde_dato_for_varsel_og_utlop() {
+        var gammelSistEndret = LocalDateTime.of(2025, 1, 1, 12, 0);
+        Avtale mentorAvtaleEndretAvArena = mockAvtale(gammelSistEndret, Tiltakstype.MENTOR, Avtaleopphav.VEILEDER, true);
+
+        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleEndretAvArena));
+
+        PabegynteAvtalerRyddeService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeService(
+            avtaleRepositoryMock,
+            featureToggleServiceMock
+        );
+
+        Now.fixedDate(LocalDate.of(2026, 5, 24));
+        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
+
+        verify(mentorAvtaleEndretAvArena, never()).utlop(any(AvtaleUtlopHandling.class));
+        verify(avtaleRepositoryMock, never()).save(any());
+
+        clearInvocations(mentorAvtaleEndretAvArena, avtaleRepositoryMock);
+        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleEndretAvArena));
+
+        Now.fixedDate(LocalDate.of(2026, 5, 26));
+        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
+
+        verify(mentorAvtaleEndretAvArena, times(1)).utlop(AvtaleUtlopHandling.VARSEL_EN_UKE);
+        verify(avtaleRepositoryMock, times(1)).save(mentorAvtaleEndretAvArena);
+
+        clearInvocations(mentorAvtaleEndretAvArena, avtaleRepositoryMock);
+        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleEndretAvArena));
+
+        Now.fixedDate(LocalDate.of(2026, 6, 1));
+        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
+
+        verify(mentorAvtaleEndretAvArena, times(1)).utlop(AvtaleUtlopHandling.VARSEL_24_TIMER);
+        verify(avtaleRepositoryMock, times(1)).save(mentorAvtaleEndretAvArena);
+
+        clearInvocations(mentorAvtaleEndretAvArena, avtaleRepositoryMock);
+        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleEndretAvArena));
+
+        Now.fixedDate(LocalDate.of(2026, 6, 2));
+        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
+
+        verify(mentorAvtaleEndretAvArena, times(1)).utlop(AvtaleUtlopHandling.UTLOP);
+        verify(avtaleRepositoryMock, times(1)).save(mentorAvtaleEndretAvArena);
+    }
+
+    @Test
+    void mentor_avtale_opprettet_av_arena_bruker_tidligste_rydde_dato_for_utlop() {
+        var gammelSistEndret = LocalDateTime.of(2025, 1, 1, 12, 0);
+        Avtale mentorAvtaleFraArena = mockAvtale(gammelSistEndret, Tiltakstype.MENTOR, Avtaleopphav.ARENA);
+
+        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleFraArena));
+
+        PabegynteAvtalerRyddeService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeService(
+            avtaleRepositoryMock,
+            featureToggleServiceMock
+        );
+
+        Now.fixedDate(LocalDate.of(2026, 5, 24));
+        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
+
+        verify(mentorAvtaleFraArena, never()).utlop(any(AvtaleUtlopHandling.class));
+        verify(avtaleRepositoryMock, never()).save(any());
+
+        clearInvocations(mentorAvtaleFraArena, avtaleRepositoryMock);
+        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleFraArena));
+
+        Now.fixedDate(LocalDate.of(2026, 6, 1));
+        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
+
+        verify(mentorAvtaleFraArena, times(1)).utlop(AvtaleUtlopHandling.VARSEL_24_TIMER);
+        verify(avtaleRepositoryMock, times(1)).save(mentorAvtaleFraArena);
+
+        clearInvocations(mentorAvtaleFraArena, avtaleRepositoryMock);
+        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleFraArena));
+
+        Now.fixedDate(LocalDate.of(2026, 6, 2));
+        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
+
+        verify(mentorAvtaleFraArena, times(1)).utlop(AvtaleUtlopHandling.UTLOP);
+        verify(avtaleRepositoryMock, times(1)).save(mentorAvtaleFraArena);
+    }
+
+    @Test
+    void mentor_avtale_som_ikke_er_fra_arena_bruker_faktisk_sist_endret() {
+        var gammelSistEndret = LocalDateTime.of(2025, 1, 1, 12, 0);
+        Avtale mentorAvtaleIkkeFraArena = mockAvtale(gammelSistEndret, Tiltakstype.MENTOR, Avtaleopphav.VEILEDER, false);
+
+        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleIkkeFraArena));
+
+        PabegynteAvtalerRyddeService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeService(
+            avtaleRepositoryMock,
+            featureToggleServiceMock
+        );
+
+        Now.fixedDate(LocalDate.of(2026, 5, 24));
+        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
+
+        verify(mentorAvtaleIkkeFraArena, times(1)).utlop(AvtaleUtlopHandling.UTLOP);
+        verify(avtaleRepositoryMock, times(1)).save(mentorAvtaleIkkeFraArena);
+    }
+
     private static Avtale mockAvtale(LocalDateTime sistEndret) {
         return mockAvtale(sistEndret, tilfeldig(TILTAKSTYPER), tilfeldig(AVTALEOPPHAV));
     }
 
     private static Avtale mockAvtale(LocalDateTime sistEndret, Tiltakstype tiltakstype, Avtaleopphav avtaleopphav) {
+        return mockAvtale(sistEndret, tiltakstype, avtaleopphav, avtaleopphav == Avtaleopphav.ARENA);
+    }
+
+    private static Avtale mockAvtale(LocalDateTime sistEndret, Tiltakstype tiltakstype, Avtaleopphav avtaleopphav, boolean erOpprettetEllerEndretAvArena) {
         Avtale avtale = Mockito.mock(Avtale.class);
         when(avtale.getTiltakstype()).thenReturn(tiltakstype);
         when(avtale.getOpphav()).thenReturn(avtaleopphav);
+        when(avtale.erOpprettetEllerEndretAvArena()).thenReturn(erOpprettetEllerEndretAvArena);
         when(avtale.getSistEndret()).thenReturn(ZonedDateTime.of(sistEndret, ZoneId.systemDefault()).toInstant());
         when(avtale.getStatus()).thenReturn(tilfeldig(STATUSER));
         return avtale;
