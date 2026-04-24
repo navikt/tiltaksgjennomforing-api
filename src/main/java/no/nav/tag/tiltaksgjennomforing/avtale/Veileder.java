@@ -371,9 +371,14 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     private void settOppfølgingsStatus(Avtale avtale, Oppfølgingsstatus oppfølgingsstatus) {
-        avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
+        String oppfolgingsenhet = oppfølgingsstatus.getOppfolgingsenhet();
+        if (oppfolgingsenhet != null && !oppfolgingsenhet.equals(avtale.getEnhetOppfolging())) {
+            avtale.setEnhetOppfolging(oppfolgingsenhet);
+            hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
+        }
         avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
         avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
+
     }
 
     public void endreMål(EndreMål endreMål, Avtale avtale) {
