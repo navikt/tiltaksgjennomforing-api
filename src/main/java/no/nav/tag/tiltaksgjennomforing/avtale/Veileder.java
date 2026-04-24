@@ -255,7 +255,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     protected void oppdatereEnheterVedEndreAvtale(Avtale avtale) {
         this.oppdatereOppfølgingStatusVedEndreAvtale(avtale);
         this.oppdatereGeoEnhetVedEndreAvtale(avtale);
-        this.oppdatereOppfølgingEnhetsnavnVedEndreAvtale(avtale);
 
     }
 
@@ -268,16 +267,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         }
         avtale.setEnhetGeografisk(norg2GeoResponse.getEnhetNr());
         avtale.setEnhetsnavnGeografisk(norg2GeoResponse.getNavn());
-    }
-
-    private void oppdatereOppfølgingEnhetsnavnVedEndreAvtale(Avtale avtale) {
-        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetFraCacheNorg2(
-            avtale.getEnhetOppfolging()
-        );
-        if (response == null) {
-            return;
-        }
-        avtale.setEnhetsnavnOppfolging(response.getNavn());
     }
 
     public void oppdatereOppfølgingStatusVedEndreAvtale(Avtale avtale) {
@@ -323,7 +312,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     public void hentOppfolgingEnhetsnavnFraNorg2(Avtale avtale, Norg2Client norg2Client) {
-        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhet(avtale.getEnhetOppfolging());
+        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetFraCacheNorg2(avtale.getEnhetOppfolging());
         if (response == null) {
             return;
         }

@@ -543,7 +543,7 @@ public class VeilederTest {
         String nyttEnhetsnavn = "Nytt kontor";
 
         Norg2Client norg2ClientMock = mock(Norg2Client.class);
-        when(norg2ClientMock.hentOppfølgingsEnhet(nyEnhet))
+        when(norg2ClientMock.hentOppfølgingsEnhetFraCacheNorg2(nyEnhet))
             .thenReturn(new Norg2OppfølgingResponse(1234, nyEnhet, nyttEnhetsnavn, Norg2EnhetStatus.AKTIV));
 
         VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
@@ -569,7 +569,7 @@ public class VeilederTest {
 
         assertThat(avtale.getEnhetOppfolging()).isEqualTo(nyEnhet);
         assertThat(avtale.getEnhetsnavnOppfolging()).isEqualTo(nyttEnhetsnavn);
-        verify(norg2ClientMock).hentOppfølgingsEnhet(nyEnhet);
+        verify(norg2ClientMock).hentOppfølgingsEnhetFraCacheNorg2(nyEnhet);
     }
 
     @Test
