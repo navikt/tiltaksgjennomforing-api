@@ -34,6 +34,7 @@ import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrat
 import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 import no.nav.tag.tiltaksgjennomforing.varsel.Varsel;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
+import no.nav.tag.tiltaksgjennomforing.varsel.oppgave.GosysVarselService;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -76,6 +77,7 @@ public class AdminController {
     private final GjeldendeTilskuddsperiodeJobbService gjeldendeTilskuddsperiodeJobbService;
     private final Norg2Client norg2Client;
     private final VarselRepository varselRepository;
+    private final GosysVarselService gosysVarselService;
 
     @PostMapping("reberegn")
     public void reberegnLønnstilskudd(@RequestBody List<UUID> avtaleIder) {
@@ -84,6 +86,14 @@ public class AdminController {
             avtale.reberegnLønnstilskudd();
             avtaleRepository.save(avtale);
         }
+    }
+
+    @PostMapping("/avtaler/send-gosys-varsel")
+    public void sendGosysVarsel(@RequestBody List<AvtaleGosysVarselRequest> body) {
+        body.forEach(request -> {
+            Avtale avtale = avtaleRepository.findById(request.avtale()).orElseThrow(RessursFinnesIkkeException::new);
+            gosysVarselService.varsle(avtale, request.type());
+        });
     }
 
     @PostMapping("/annuller-tilskuddsperiode/{tilskuddsperiodeId}")
