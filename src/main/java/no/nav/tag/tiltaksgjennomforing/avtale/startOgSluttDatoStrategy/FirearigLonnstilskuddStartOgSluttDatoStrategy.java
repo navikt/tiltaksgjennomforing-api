@@ -9,6 +9,16 @@ import java.time.Period;
 
 public class FirearigLonnstilskuddStartOgSluttDatoStrategy implements StartOgSluttDatoStrategy {
 
+    private final LocalDate firearigOppstartsdato;
+
+    public FirearigLonnstilskuddStartOgSluttDatoStrategy() {
+        this.firearigOppstartsdato = FirearigLonnstilskuddProperties.getInstance().getDato();
+    }
+
+    public FirearigLonnstilskuddStartOgSluttDatoStrategy(LocalDate firearigOppstartsdato) {
+        this.firearigOppstartsdato = firearigOppstartsdato;
+    }
+
     @Override
     public void sjekkStartOgSluttDato(
         LocalDate startDato,
@@ -27,7 +37,7 @@ public class FirearigLonnstilskuddStartOgSluttDatoStrategy implements StartOgSlu
         if (startDato == null) {
             return;
         }
-        if (startDato.isBefore(LocalDate.of(2026, 8, 1)) ) {
+        if (startDato.isBefore(firearigOppstartsdato)) {
             throw new FeilkodeException(Feilkode.FIREARIG_LONNSTILSKUDD_FOR_TIDLIG_OPPSTART);
         }
         if (deltakerFnr != null && deltakerFnr.erOver30årFraOppstartDato(startDato)) {

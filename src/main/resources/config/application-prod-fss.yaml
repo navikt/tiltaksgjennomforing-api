@@ -189,3 +189,5 @@ tiltaksgjennomforing:
       url: https://tiltak-hendelse-aktivitetsplan.intern.nav.no
   entraproxy:
     uri: https://entraproxy.intern.nav.no
+  firearig-oppstartsdato:
+    dato: 2026-08-01

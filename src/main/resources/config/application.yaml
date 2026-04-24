@@ -55,6 +55,8 @@ spring:
         user.info: ${KAFKA_SCHEMA_REGISTRY_USER}:${KAFKA_SCHEMA_REGISTRY_PASSWORD}
 
 tiltaksgjennomforing:
+  firearig-oppstartsdato:
+    dato: 2000-01-01
   retry: # Delay i millisekunder mellom hver retry
     delay: 1000
     max-delay: 20000
