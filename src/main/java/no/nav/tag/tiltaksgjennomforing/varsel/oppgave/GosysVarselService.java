@@ -30,13 +30,6 @@ public class GosysVarselService {
     private final OppgaveVarselService oppgaveVarselService;
     private final PersondataService persondataService;
 
-    public void varsle(Avtale avtale, GosysVarselType varselType) {
-        switch (varselType) {
-            case OPPRETTET_AVTALE -> varsleGosysOmOpprettetAvtale(avtale);
-            case INNGAATT_VTAO_AVTALE -> varsleGosysOmInngaattVTAOAvtale(avtale);
-        }
-    }
-
     void varsleGosysOmOpprettetAvtale(Avtale avtale) {
         final AktorId aktørid = persondataService
             .hentGjeldendeAktørId(avtale.getDeltakerFnr())
