@@ -736,7 +736,7 @@ public class AvtaleController {
     }
 
     @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av-arbeidsgiver")
-    @Transactional
+    @Transactional(noRollbackFor = OppfolgingstatusEndretException.class)
     public void godkjennPaVegneAvArbeidsgiver(
             @PathVariable("avtaleId") UUID avtaleId,
             @RequestBody GodkjentPaVegneAvArbeidsgiverGrunn paVegneAvGrunn,
@@ -752,7 +752,7 @@ public class AvtaleController {
     }
 
     @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av-deltaker-og-arbeidsgiver")
-    @Transactional
+    @Transactional(noRollbackFor = OppfolgingstatusEndretException.class)
     public void godkjennPaVegneAvDeltakerOgArbeidsgiver(
             @PathVariable("avtaleId") UUID avtaleId,
             @RequestBody GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvGrunn,
