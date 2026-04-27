@@ -15,6 +15,10 @@ public class DatoUtils {
         return LocalDate.of(dato.getYear(), dato.getMonth(), dato.lengthOfMonth());
     }
 
+    public static Instant maksDato(Instant date1, Instant date2) {
+        return date1.isAfter(date2) ? date1 : date2;
+    }
+
     public static LocalDate maksDato(LocalDate date1, LocalDate date2) {
         return date1.isAfter(date2) ? date1 : date2;
     }

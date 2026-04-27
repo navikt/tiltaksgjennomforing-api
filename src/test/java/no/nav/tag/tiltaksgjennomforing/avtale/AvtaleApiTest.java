@@ -46,7 +46,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ActiveProfiles(Miljø.TEST)
+@ActiveProfiles({ Miljø.TEST, Miljø.WIREMOCK })
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext

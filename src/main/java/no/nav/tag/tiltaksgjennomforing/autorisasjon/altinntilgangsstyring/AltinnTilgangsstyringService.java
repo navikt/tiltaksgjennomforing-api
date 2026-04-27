@@ -25,7 +25,6 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -76,15 +75,6 @@ public class AltinnTilgangsstyringService {
         this.klient = new AltinnrettigheterProxyKlient(proxyKlientConfig);
     }
 
-    public List<BedriftNr> hentAdressesperreTilganger(Fnr fnr, HentArbeidsgiverToken hentArbeidsgiverToken) {
-        String arbeidsgiverToken = hentArbeidsgiverToken.hentArbeidsgiverToken();
-        AltinnReportee[] adressesperreTilganger = kallAltinn(altinnTilgangsstyringProperties.getAdressesperreServiceCode(), altinnTilgangsstyringProperties.getAdressesperreServiceEdition(), fnr, arbeidsgiverToken);
-        List<BedriftNr> bedrifter = Arrays.stream(adressesperreTilganger)
-                .filter(altinnReportee -> !altinnReportee.getType().equals("Enterprise"))
-                .map(altinnReportee -> new BedriftNr(altinnReportee.getOrganizationNumber()))
-                .toList();
-        return bedrifter;
-    }
 
     public Map<BedriftNr, Collection<Tiltakstype>> hentTilganger(Fnr fnr, HentArbeidsgiverToken hentArbeidsgiverToken) {
         MultiValueMap<BedriftNr, Tiltakstype> tilganger = MultiValueMap.empty();
@@ -154,10 +144,35 @@ public class AltinnTilgangsstyringService {
 
         return new AltinnTilgangerDto(
             response.hierarki(),
-            mapTilgangerFraAltinn3(response)
+            mapTilgangerFraAltinn3(response),
+            mapAdressesperreFraAltinn3(response)
         );
     }
-    
+
+    private List<BedriftNr> mapAdressesperreFraAltinn3(AltinnTilgangerResponse response) {
+        if (response.tilgangTilOrgNr() == null) {
+            return List.of();
+        }
+        Set<String> orgNrs = new HashSet<>();
+
+        // Altinn 3 ressurs
+        Set<String> altinn3 = response.tilgangTilOrgNr().get(AltinnTilgangsstyringProperties.ADRESSESPERRE);
+        if (altinn3 != null) {
+            orgNrs.addAll(altinn3);
+        }
+
+        // Altinn 2 serviceCode:serviceEdition
+        // Kan fjernes på sikt (juni 26) - letter overgangen til Altinn 3
+        String altinn2Tilgang = altinnTilgangsstyringProperties.getAdressesperreServiceCode()
+            + ":" + altinnTilgangsstyringProperties.getAdressesperreServiceEdition();
+        Set<String> altinn2 = response.tilgangTilOrgNr().get(altinn2Tilgang);
+        if (altinn2 != null) {
+            orgNrs.addAll(altinn2);
+        }
+
+        return orgNrs.stream().map(BedriftNr::new).toList();
+    }
+
     private Map<BedriftNr, Set<Tiltakstype>> mapTilgangerFraAltinn3(AltinnTilgangerResponse response) {
         Map<String, Tiltakstype> tilgangerTilTiltakstype = altinnTilgangsstyringProperties.tilgangerTilTiltakstype();
         Map<BedriftNr, Set<Tiltakstype>> tilganger = new HashMap<>();

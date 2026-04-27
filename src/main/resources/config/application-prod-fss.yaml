@@ -154,7 +154,7 @@ tiltaksgjennomforing:
   ereg:
     uri: https://ereg-services.intern.nav.no/api/v2/organisasjon
   oppgave:
-    oppgave-uri: https://oppgave.nais.adeo.no/api/v1/oppgaver
+    oppgave-uri: https://oppgave.intern.nav.no/api/v1/oppgaver
   unleash:
     enabled: true
     api-uri: ${UNLEASH_SERVER_API_URL}/api

@@ -74,7 +74,7 @@ public class InnloggingService {
             Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(
                 new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
             AltinnTilgangerDto altinnTilganger = altinnTilgangsstyringService.hentAltinnTilganger();
-            List<BedriftNr> adressesperreTilganger = altinnTilgangsstyringService.hentAdressesperreTilganger(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
+            List<BedriftNr> adressesperreTilganger = altinnTilganger.adressesperreTilganger();
             log.info(
                 "InnloggetArbeidsgiver - bedrifter: altinn2TilgangerBedrifter={}, altinn3TilgangerBedrifter={}, tilganger: altinn2TotaltTilganger={}, altinn3TotaltTilganger={}",
                 tilganger.size(),

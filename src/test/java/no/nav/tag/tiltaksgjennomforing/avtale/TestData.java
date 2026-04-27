@@ -911,7 +911,7 @@ public class TestData {
     public static AltinnTilgangerDto enAltinnTilgangerDto(Map<BedriftNr, ? extends Collection<Tiltakstype>> tilganger) {
         Map<BedriftNr, Set<Tiltakstype>> converted = tilganger.entrySet().stream()
             .collect(java.util.stream.Collectors.toMap(Map.Entry::getKey, e -> Set.copyOf(e.getValue())));
-        return new AltinnTilgangerDto(List.of(), converted);
+        return new AltinnTilgangerDto(List.of(), converted, List.of());
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
