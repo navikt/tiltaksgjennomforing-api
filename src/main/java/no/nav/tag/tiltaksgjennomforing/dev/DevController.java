@@ -8,7 +8,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.oppfolging.OppfølgingVarsleJobb;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -67,7 +66,7 @@ public class DevController {
         if (!avtale.erGodkjentAvVeileder()) {
             avtale.godkjennForVeileder(avtale.getVeilederNavIdent());
         }
-        if (!avtale.erAvtaleInngått()) {
+        if (!avtale.erAvtaleInngått() && godkjennAvtaleRequest.beslutterIdent() != null) {
             avtale.godkjennTilskuddsperiode(godkjennAvtaleRequest.beslutterIdent(), godkjennAvtaleRequest.kostnadssted());
         }
         avtaleRepository.save(avtale);
