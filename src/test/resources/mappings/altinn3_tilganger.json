@@ -20,11 +20,11 @@
                   "orgnr": "910712307",
                   "altinn3Tilganger": [],
                   "altinn2Tilganger": [
-                    "5516:3",
-                    "5516:4",
-                    "5516:5",
-                    "5516:6",
-                    "5516:7"
+                    "nav_tiltak_sommerjobb",
+                    "nav_tiltak_mentor",
+                    "nav_tiltak_inkluderingstilskudd",
+                    "nav_tiltak_varig-tilrettelagt-arbeid-ordinaer",
+                    "nav_tiltak_adressesperre"
                   ],
                   "underenheter": [],
                   "navn": "Bedriften Med Sommerjobb",
@@ -35,7 +35,7 @@
                   "orgnr": "910712314",
                   "altinn3Tilganger": [],
                   "altinn2Tilganger": [
-                    "5516:1"
+                    "nav_tiltak_midlertidig-lonnstilskudd"
                   ],
                   "underenheter": [],
                   "navn": "Bedriften Med Midlertidi Lts",
@@ -46,7 +46,7 @@
                   "orgnr": "910712306",
                   "altinn3Tilganger": [],
                   "altinn2Tilganger": [
-                    "5516:2"
+                    "nav_tiltak_varig-lonnstilskudd"
                   ],
                   "underenheter": [],
                   "navn": "Bedriften Med Varig Lts",
@@ -76,14 +76,14 @@
                   "orgnr": "999999999",
                   "altinn3Tilganger": [],
                   "altinn2Tilganger": [
-                    "5332:1",
-                    "5516:1",
-                    "5516:2",
-                    "5516:3",
-                    "5516:4",
-                    "5516:5",
-                    "5516:6",
-                    "5516:7"
+                    "nav_tiltak_arbeidstrening",
+                    "nav_tiltak_midlertidig-lonnstilskudd",
+                    "nav_tiltak_varig-lonnstilskudd",
+                    "nav_tiltak_sommerjobb",
+                    "nav_tiltak_mentor",
+                    "nav_tiltak_inkluderingstilskudd",
+                    "nav_tiltak_varig-tilrettelagt-arbeid-ordinaer",
+                    "nav_tiltak_adressesperre"
                   ],
                   "underenheter": [],
                   "navn": "Saltrød og Høneby",
@@ -98,58 +98,58 @@
           ],
           "orgNrTilTilganger": {
             "999999999": [
-              "5332:1",
-              "5516:1",
-              "5516:2",
-              "5516:3",
-              "5516:4",
-              "5516:5",
-              "5516:6",
-              "5516:7"
+              "nav_tiltak_arbeidstrening",
+              "nav_tiltak_midlertidig-lonnstilskudd",
+              "nav_tiltak_varig-lonnstilskudd",
+              "nav_tiltak_sommerjobb",
+              "nav_tiltak_mentor",
+              "nav_tiltak_inkluderingstilskudd",
+              "nav_tiltak_varig-tilrettelagt-arbeid-ordinaer",
+              "nav_tiltak_adressesperre"
             ],
             "910712307": [
-              "5516:3",
-              "5516:4",
-              "5516:5",
-              "5516:6",
-              "5516:7"
+              "nav_tiltak_sommerjobb",
+              "nav_tiltak_mentor",
+              "nav_tiltak_inkluderingstilskudd",
+              "nav_tiltak_varig-tilrettelagt-arbeid-ordinaer",
+              "nav_tiltak_adressesperre"
             ],
             "910712314": [
-              "5516:1"
+              "nav_tiltak_midlertidig-lonnstilskudd"
             ],
             "910712306": [
-              "5516:2"
+              "nav_tiltak_varig-lonnstilskudd"
             ]
           },
           "tilgangTilOrgNr": {
-            "5332:1": [
+            "nav_tiltak_arbeidstrening": [
               "999999999"
             ],
-            "5516:1": [
+            "nav_tiltak_midlertidig-lonnstilskudd": [
               "999999999",
               "910712314"
             ],
-            "5516:2": [
+            "nav_tiltak_varig-lonnstilskudd": [
               "999999999",
               "910712306"
             ],
-            "5516:3": [
+            "nav_tiltak_sommerjobb": [
               "999999999",
               "910712307"
             ],
-            "5516:4": [
+            "nav_tiltak_mentor": [
               "999999999",
               "910712307"
             ],
-            "5516:5": [
+            "nav_tiltak_inkluderingstilskudd": [
               "999999999",
               "910712307"
             ],
-            "5516:6": [
+            "nav_tiltak_varig-tilrettelagt-arbeid-ordinaer": [
               "999999999",
               "910712307"
             ],
-            "5516:7": [
+            "nav_tiltak_adressesperre": [
               "999999999",
               "910712307"
             ]

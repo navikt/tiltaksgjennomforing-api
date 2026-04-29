@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
 
 @Data
@@ -15,7 +16,9 @@ public class AltinnTilgangsstyringProperties {
     private URI arbeidsgiverAltinnTilgangerUri;
     private String beOmRettighetBaseUrl;
 
-    // Altinn 2 service codes/editions — brukes fortsatt av fager-notifikasjons-API for å identifisere mottakere
+    // Altinn 2 service codes/editions — brukes fortsatt av fager-notifikasjons-API for å adressere
+    // notifikasjoner per tiltakstype. Tilgangskontroll bruker dem ikke lenger
+    // (Altinn 2-tjenester ble dekommisjonert 20.04.2026 og delegeringer migrert til Altinn 3).
     private Integer arbtreningServiceCode;
     private Integer arbtreningServiceEdition;
     private Integer ltsMidlertidigServiceCode;
@@ -45,7 +48,7 @@ public class AltinnTilgangsstyringProperties {
     static final String ADRESSESPERRE = "nav_tiltak_adressesperre";
 
     public Map<String, Tiltakstype> tilgangerTilTiltakstype() {
-        Map<String, Tiltakstype> map = new java.util.HashMap<>();
+        Map<String, Tiltakstype> map = new HashMap<>();
         map.put(ARBEIDSTRENING, Tiltakstype.ARBEIDSTRENING);
         map.put(MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         map.put(VARIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD);
