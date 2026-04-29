@@ -61,15 +61,6 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
-      tokenx-altinn:
-        token-endpoint-url: ${TOKEN_X_TOKEN_ENDPOINT}
-        grant-type: urn:ietf:params:oauth:grant-type:token-exchange
-        authentication:
-          client-id: ${TOKEN_X_CLIENT_ID}
-          client-jwk: /var/run/secrets/nais.io/jwker/TOKEN_X_PRIVATE_JWK
-          client-auth-method: private_key_jwt
-        token-exchange:
-          audience: dev-gcp:arbeidsgiver:altinn-rettigheter-proxy
       arbeidsgiver-altinn-tilganger:
         token-endpoint-url: ${TOKEN_X_TOKEN_ENDPOINT}
         grant-type: urn:ietf:params:oauth:grant-type:token-exchange
@@ -133,8 +124,6 @@ tiltaksgjennomforing:
     max-lifetime: 300000
   altinn-tilgangsstyring:
     arbeidsgiverAltinnTilgangerUri: https://arbeidsgiver-altinn-tilganger.intern.dev.nav.no/altinn-tilganger
-    uri: https://api-gw-q1.adeo.no
-    proxyUri: https://altinn-rettigheter-proxy.intern.dev.nav.no/altinn-rettigheter-proxy
     beOmRettighetBaseUrl: https://min-side-arbeidsgiver.dev.nav.no/min-side-arbeidsgiver/?fragment=be-om-tilgang
     ltsMidlertidigServiceCode: 5516
     ltsMidlertidigServiceEdition: 1
@@ -150,8 +139,6 @@ tiltaksgjennomforing:
     arbtreningServiceEdition: 1
     vtaoServiceCode: 5516
     vtaoServiceEdition: 6
-    adressesperreServiceCode: 5516
-    adressesperreServiceEdition: 7
     ltsFirearigServiceCode: 5516
     ltsFirearigServiceEdition: 8
   ereg:

@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.bekk.bekkopen.person.FodselsnummerValidator;
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
@@ -111,17 +110,6 @@ public class ArbeidsgiverTest {
         Map<BedriftNr, Collection<Tiltakstype>> tilgangerMap = Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
             TestData.etFodselsnummer(),
-            Set.of(
-                new AltinnReportee(
-                    "",
-                    "",
-                    null,
-                    TestData.etBedriftNr().asString(),
-                    null,
-                    null,
-                    null
-                )
-            ),
             tilgangerMap,
             TestData.enAltinnTilgangerDto(tilgangerMap),
             List.of(),
@@ -144,7 +132,6 @@ public class ArbeidsgiverTest {
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
             null,
             null,
-            null,
             TestData.enAltinnTilgangerDto(Map.of()),
             null,
             null,
@@ -161,7 +148,6 @@ public class ArbeidsgiverTest {
     public void endreAvtale_validererTilDato() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-            null,
             null,
             null,
             TestData.enAltinnTilgangerDto(Map.of()),
@@ -183,7 +169,6 @@ public class ArbeidsgiverTest {
 
         Map<BedriftNr, Collection<Tiltakstype>> tilgangerMap = Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-            null,
             null,
             tilgangerMap,
             TestData.enAltinnTilgangerDto(tilgangerMap),
@@ -227,7 +212,6 @@ public class ArbeidsgiverTest {
         Map<BedriftNr, Collection<Tiltakstype>> tilgangerMap = Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
             null,
-            null,
             tilgangerMap,
             TestData.enAltinnTilgangerDto(tilgangerMap),
             adressesperreTilganger,
@@ -263,7 +247,6 @@ public class ArbeidsgiverTest {
         Map<BedriftNr, Collection<Tiltakstype>> tilgangerMap = Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
             null,
-            null,
             tilgangerMap,
             TestData.enAltinnTilgangerDto(tilgangerMap),
             emptyList(),
@@ -293,7 +276,6 @@ public class ArbeidsgiverTest {
         List<BedriftNr> adressesperreTilganger = List.of(TestData.etBedriftNr());
         Map<BedriftNr, Collection<Tiltakstype>> tilgangerMap = Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-            null,
             null,
             tilgangerMap,
             TestData.enAltinnTilgangerDto(tilgangerMap),
@@ -327,7 +309,6 @@ public class ArbeidsgiverTest {
         Map<BedriftNr, Collection<Tiltakstype>> tilgangerMap = Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
         Arbeidsgiver arbeidsgiverUtenAdressesperreTilgang = new Arbeidsgiver(
             null,
-            null,
             tilgangerMap,
             TestData.enAltinnTilgangerDto(tilgangerMap),
             emptyList(),
@@ -337,7 +318,6 @@ public class ArbeidsgiverTest {
             null
         );
         Arbeidsgiver arbeidsgiverMedAdressesperreTilgang = new Arbeidsgiver(
-            null,
             null,
             tilgangerMap,
             TestData.enAltinnTilgangerDto(tilgangerMap),
@@ -394,7 +374,6 @@ public class ArbeidsgiverTest {
             Set.of(Tiltakstype.MENTOR)
         );
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-            null,
             null,
             tilgangerMap,
             TestData.enAltinnTilgangerDto(tilgangerMap),

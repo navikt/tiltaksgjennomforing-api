@@ -24,8 +24,7 @@ public class FeatureToggleConfig {
             @Value("${tiltaksgjennomforing.unleash.api-uri}") String unleashUrl,
             @Value("${tiltaksgjennomforing.unleash.api-token}") String apiKey,
                                      ByEnvironmentStrategy byEnvironmentStrategy,
-                                     ByEnhetStrategy byEnhetStrategy,
-                                     ByOrgnummerStrategy byOrgnummerStrategy) {
+                                     ByEnhetStrategy byEnhetStrategy) {
         UnleashConfig config = UnleashConfig.builder()
                 .appName(APP_NAME)
                 .instanceId(APP_NAME + "-" + byEnvironmentStrategy.getEnvironment())
@@ -36,8 +35,7 @@ public class FeatureToggleConfig {
         return new DefaultUnleash(
                 config,
                 byEnvironmentStrategy,
-                byEnhetStrategy,
-                byOrgnummerStrategy
+                byEnhetStrategy
         );
     }
 

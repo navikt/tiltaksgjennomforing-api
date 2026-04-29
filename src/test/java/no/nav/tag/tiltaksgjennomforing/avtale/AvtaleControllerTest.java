@@ -286,9 +286,7 @@ public class AvtaleControllerTest {
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         Avtale avtale = TestData.enArbeidstreningAvtale();
         værInnloggetSom(
-            new Arbeidsgiver(
-                Fnr.generer(1956, 7, 8),
-                Set.of(),
+            new Arbeidsgiver(Fnr.generer(1956, 7, 8),
                 Map.of(),
                 altinn3Organisasjoner,
                 List.of(),
@@ -560,9 +558,7 @@ public class AvtaleControllerTest {
         when(featureToggleServiceMock.kanOppretteTiltak(any(), any())).thenCallRealMethod();
         when(featureToggleServiceMock.kanOppretteAvtale(any())).thenCallRealMethod();
 
-        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-            TestData.etFodselsnummer(),
-            Set.of(),
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(TestData.etFodselsnummer(),
             Map.of(),
             altinn3Organisasjoner,
             null,

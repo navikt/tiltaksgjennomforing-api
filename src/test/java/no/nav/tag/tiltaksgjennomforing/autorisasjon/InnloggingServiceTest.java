@@ -4,7 +4,6 @@ import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.ArbeidsgiverTokenStrategyFactoryImpl;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
@@ -54,9 +53,6 @@ public class InnloggingServiceTest {
     @Mock
     private AdGruppeProperties beslutterAdGruppeProperties;
 
-    @Mock
-    private ArbeidsgiverTokenStrategyFactoryImpl arbeidsgiverTokenStrategyFactory;
-
     @BeforeEach
     public void setup() {
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
@@ -83,17 +79,12 @@ public class InnloggingServiceTest {
 
     @Test
     public void hentInnloggetBruker__selvbetjeningbruker_type_arbeidsgiver_skal_hente_organisasjoner() {
-        InnloggetArbeidsgiver selvbetjeningBruker = new InnloggetArbeidsgiver(new Fnr("11111111111"), Set.of(), Map.of(), new AltinnTilgangerDto(List.of(), Map.of(), List.of()));
-        when(altinnTilgangsstyringService.hentTilganger(eq(selvbetjeningBruker.getIdentifikator()), any())).thenReturn(Map.of());
-        when(altinnTilgangsstyringService.hentAltinnOrganisasjoner(eq(selvbetjeningBruker.getIdentifikator()), any())).thenReturn(Set.of());
+        InnloggetArbeidsgiver selvbetjeningBruker = new InnloggetArbeidsgiver(new Fnr("11111111111"), Map.of(), new AltinnTilgangerDto(List.of(), Map.of(), List.of()));
         when(altinnTilgangsstyringService.hentAltinnTilganger()).thenReturn(new AltinnTilgangerDto(List.of(), Map.of(), List.of()));
         værInnloggetArbeidsgiver(selvbetjeningBruker);
 
-       when(arbeidsgiverTokenStrategyFactory.create(Issuer.ISSUER_TOKENX)).thenReturn(() -> "");
-
         assertThat(innloggingService.hentInnloggetBruker(Optional.of(Avtalerolle.ARBEIDSGIVER).get())).isEqualTo(selvbetjeningBruker);
-        verify(altinnTilgangsstyringService).hentTilganger(eq(selvbetjeningBruker.getIdentifikator()), any());
-        verify(altinnTilgangsstyringService).hentAltinnOrganisasjoner(eq(selvbetjeningBruker.getIdentifikator()), any());
+        verify(altinnTilgangsstyringService).hentAltinnTilganger();
     }
 
     @Test
