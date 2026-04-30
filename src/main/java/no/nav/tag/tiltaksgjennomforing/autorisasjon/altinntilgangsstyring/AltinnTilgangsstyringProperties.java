@@ -18,7 +18,6 @@ public class AltinnTilgangsstyringProperties {
 
     // Altinn 2 service codes/editions — brukes fortsatt av fager-notifikasjons-API for å adressere
     // notifikasjoner per tiltakstype. Tilgangskontroll bruker dem ikke lenger
-    // (Altinn 2-tjenester ble dekommisjonert 20.04.2026 og delegeringer migrert til Altinn 3).
     private Integer arbtreningServiceCode;
     private Integer arbtreningServiceEdition;
     private Integer ltsMidlertidigServiceCode;
@@ -57,16 +56,6 @@ public class AltinnTilgangsstyringProperties {
         map.put(INKLUDERINGSTILSKUDD, Tiltakstype.INKLUDERINGSTILSKUDD);
         map.put(VTAO, Tiltakstype.VTAO);
         map.put(FIREARIG_LONNSTILSKUDD, Tiltakstype.FIREARIG_LONNSTILSKUDD);
-        // Fager-API-en kan også returnere Altinn 2 service codes på formen "<code>:<edition>".
-        // Disse mappes for å gi fortsatt funksjonalitet inntil alle ressurser er migrert til Altinn 3.
-        if (arbtreningServiceCode != null) map.put(arbtreningServiceCode + ":" + arbtreningServiceEdition, Tiltakstype.ARBEIDSTRENING);
-        if (ltsMidlertidigServiceCode != null) map.put(ltsMidlertidigServiceCode + ":" + ltsMidlertidigServiceEdition, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
-        if (ltsVarigServiceCode != null) map.put(ltsVarigServiceCode + ":" + ltsVarigServiceEdition, Tiltakstype.VARIG_LONNSTILSKUDD);
-        if (sommerjobbServiceCode != null) map.put(sommerjobbServiceCode + ":" + sommerjobbServiceEdition, Tiltakstype.SOMMERJOBB);
-        if (mentorServiceCode != null) map.put(mentorServiceCode + ":" + mentorServiceEdition, Tiltakstype.MENTOR);
-        if (inkluderingstilskuddServiceCode != null) map.put(inkluderingstilskuddServiceCode + ":" + inkluderingstilskuddServiceEdition, Tiltakstype.INKLUDERINGSTILSKUDD);
-        if (vtaoServiceCode != null) map.put(vtaoServiceCode + ":" + vtaoServiceEdition, Tiltakstype.VTAO);
-        if (ltsFirearigServiceCode != null) map.put(ltsFirearigServiceCode + ":" + ltsFirearigServiceEdition, Tiltakstype.FIREARIG_LONNSTILSKUDD);
         return map;
     }
 }
