@@ -78,7 +78,7 @@ public class InnloggingServiceTest {
     }
 
     @Test
-    public void hentInnloggetBruker__selvbetjeningbruker_type_arbeidsgiver_skal_hente_organisasjoner() {
+    public void hentInnloggetBruker__selvbetjeningbruker_type_arbeidsgiver_skal_hente_altinn_tilganger() {
         InnloggetArbeidsgiver selvbetjeningBruker = new InnloggetArbeidsgiver(new Fnr("11111111111"), Map.of(), new AltinnTilgangerDto(List.of(), Map.of(), List.of()));
         when(altinnTilgangsstyringService.hentAltinnTilganger()).thenReturn(new AltinnTilgangerDto(List.of(), Map.of(), List.of()));
         værInnloggetArbeidsgiver(selvbetjeningBruker);
