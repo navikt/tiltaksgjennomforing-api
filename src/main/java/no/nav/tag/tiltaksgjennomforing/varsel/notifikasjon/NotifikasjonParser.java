@@ -72,11 +72,8 @@ public class NotifikasjonParser {
             case VTAO -> new AltinnNotifikasjonsProperties(
                     altinnTilgangsstyringProperties.getVtaoServiceCode(),
                     altinnTilgangsstyringProperties.getVtaoServiceEdition());
-            // TODO: Fireårig lønnstilskudd har ingen Altinn 2-tjeneste og vil ikke sende notifikasjoner
-            //  i prod før koden flyttes til tiltak-notifikasjon og migreres til Altinn 3-mottaker.
-            case FIREARIG_LONNSTILSKUDD -> new AltinnNotifikasjonsProperties(
-                    altinnTilgangsstyringProperties.getLtsFirearigServiceCode(),
-                    altinnTilgangsstyringProperties.getLtsFirearigServiceEdition());
+            case FIREARIG_LONNSTILSKUDD ->
+                    throw new IllegalStateException("Notifikasjoner støttes ikke for tiltakstype FIREARIG_LONNSTILSKUDD");
         };
     }
 }
