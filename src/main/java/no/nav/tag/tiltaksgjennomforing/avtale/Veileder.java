@@ -358,12 +358,13 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
                 oppfølgingsstatus.getKvalifiseringsgruppe()
             );
             avtale.opphevGodkjenningerSomVeileder();
-            avtale.endreBeløpOgProsentITilskuddsperioder();
             settOppfølgingsStatus(avtale, oppfølgingsstatus);
+            avtale.endreBeløpOgProsentITilskuddsperioder();
             throw new OppfolgingstatusEndretException();
         }
-
-        settOppfølgingsStatus(avtale, oppfølgingsstatus);
+        else{
+            settOppfølgingsStatus(avtale, oppfølgingsstatus);
+        }
     }
 
     private void sjekkOmBedriftErGyldigOgOppdaterNavn(Avtale avtale) {
