@@ -32,6 +32,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.Varsel;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
@@ -129,6 +130,23 @@ public class AdminController {
         }
         avtale.lagNyTilskuddsperiodeFraAnnullertPeriode(tilskuddPeriode);
         avtaleRepository.save(avtale);
+    }
+
+    @PostMapping("/endre_annulleringsgrunn_til_feilregistrering/{avtaleId}/")
+    @Transactional
+    public void endreAnnulleringsgrunnTilFeilregistrering(@PathVariable("avtaleId")UUID avtaleId) {
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        if(avtale.getStatus() == Status.ANNULLERT) {
+            String annullerGrunn = "Feilregistrering";
+            log.info("Setter annulerings grunn på avtalen til Feilregistrering på en allerede annulert avtale", avtaleId);
+            avtale.setAnnullertGrunn(annullerGrunn);
+            avtale.setFeilregistrert(AnnullertGrunn.skalFeilregistreres(annullerGrunn));
+            avtale.setAnnullertTidspunkt(Now.instant());
+            avtaleRepository.save(avtale);
+        }
+        else{
+            throw new IllegalStateException("Kan kun endre annuleringsgrunn på en avtale som er annullert. Denne avtalen har status: " + avtale.getStatus());
+        }
     }
 
     @PostMapping("/annuller-og-generer-behandlet-i-arena-perioder/{avtaleId}/{dato}")
