@@ -139,7 +139,7 @@ public class AdminController {
             throw new IllegalStateException("Kan kun endre annulleringsgrunn på en avtale som er annullert. Denne avtalen har status: " + avtale.getStatus());
         }
         log.info("Setter annulleringsgrunn på avtaleid: {} til Feilregistrering. Avtale er annullert med feil årsak.", avtaleId);
-        avtale.annullerMedFeilregistering(AnnullertGrunn.FEILREGISTRERING, Identifikator.SYSTEM);
+        avtale.annullerMedFeilregistrering(AnnullertGrunn.FEILREGISTRERING, Identifikator.SYSTEM);
         avtaleRepository.save(avtale);
     }
 

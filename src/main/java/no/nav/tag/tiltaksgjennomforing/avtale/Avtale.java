@@ -851,7 +851,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         utforEndring(new AnnullertAvVeileder(this, veilederNavIdent));
     }
 
-    public void annullerMedFeilregistering(String annullerGrunn, Identifikator identifikator) {
+    public void annullerMedFeilregistrering(String annullerGrunn, Identifikator identifikator) {
         sjekkAtIkkeAvtalenInneholderUtbetaltTilskuddsperiode();
         setAnnullertGrunn(annullerGrunn);
         setFeilregistrert(true);
