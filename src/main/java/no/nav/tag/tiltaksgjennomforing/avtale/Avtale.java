@@ -851,6 +851,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         utforEndring(new AnnullertAvVeileder(this, veilederNavIdent));
     }
 
+    public void annullerMedFeilregistering(String annullerGrunn, Identifikator identifikator) {
+        sjekkAtIkkeAvtalenInneholderUtbetaltTilskuddsperiode();
+        setAnnullertGrunn(annullerGrunn);
+        setFeilregistrert(true);
+        utforEndring(new AnnullertAvSystem(this, identifikator));
+    }
+
     public void utlop(AvtaleUtlopHandling handling) {
         switch (handling) {
             case VARSEL_EN_UKE -> registerEvent(new AvtaleUtloperVarsel(this, AvtaleUtloperVarsel.Type.OM_EN_UKE));

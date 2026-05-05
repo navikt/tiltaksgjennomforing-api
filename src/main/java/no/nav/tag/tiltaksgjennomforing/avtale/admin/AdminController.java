@@ -32,7 +32,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.Varsel;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
@@ -132,21 +131,16 @@ public class AdminController {
         avtaleRepository.save(avtale);
     }
 
-    @PostMapping("/endre_annulleringsgrunn_til_feilregistrering/{avtaleId}/")
+    @PostMapping("/avtale/{avtaleId}/annullert-feilregistrert")
     @Transactional
-    public void endreAnnulleringsgrunnTilFeilregistrering(@PathVariable("avtaleId")UUID avtaleId) {
+    public void endreAnnulleringsgrunnTilFeilregistrering(@PathVariable("avtaleId") UUID avtaleId) {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        if(avtale.getStatus() == Status.ANNULLERT) {
-            String annullerGrunn = "Feilregistrering";
-            log.info("Setter annulerings grunn på avtalen til Feilregistrering på en allerede annulert avtale", avtaleId);
-            avtale.setAnnullertGrunn(annullerGrunn);
-            avtale.setFeilregistrert(AnnullertGrunn.skalFeilregistreres(annullerGrunn));
-            avtale.setAnnullertTidspunkt(Now.instant());
-            avtaleRepository.save(avtale);
+        if (avtale.getStatus() != Status.ANNULLERT) {
+            throw new IllegalStateException("Kan kun endre annulleringsgrunn på en avtale som er annullert. Denne avtalen har status: " + avtale.getStatus());
         }
-        else{
-            throw new IllegalStateException("Kan kun endre annuleringsgrunn på en avtale som er annullert. Denne avtalen har status: " + avtale.getStatus());
-        }
+        log.info("Setter annulleringsgrunn på avtaleid: {} til Feilregistrering. Avtale er annullert med feil årsak.", avtaleId);
+        avtale.annullerMedFeilregistering(AnnullertGrunn.FEILREGISTRERING, Identifikator.SYSTEM);
+        avtaleRepository.save(avtale);
     }
 
     @PostMapping("/annuller-og-generer-behandlet-i-arena-perioder/{avtaleId}/{dato}")
