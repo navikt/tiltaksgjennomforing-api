@@ -341,7 +341,7 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    // Derson kvalifiseringsgruppen er endret på en avtale vil alle godkjenninger oppheves, og vil derfor ikke rulle tilbake for å lagre opphevingene.
+    // Dersom kvalifiseringsgruppen er endret på en avtale vil alle godkjenninger oppheves, og vil derfor ikke rulle tilbake for å lagre opphevingene.
     @PostMapping("/{avtaleId}/godkjenn")
     @Transactional(noRollbackFor = OppfolgingstatusEndretException.class)
     public void godkjenn(
