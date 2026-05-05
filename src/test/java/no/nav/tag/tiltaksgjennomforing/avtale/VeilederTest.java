@@ -851,14 +851,14 @@ public class VeilederTest {
         deltaker.godkjennForAvtalepart(avtale);
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         arbeidsgiver.godkjennAvtale(avtale);
-        Veileder veileder = TestData.enVeileder(avtale);
         Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus(
             Formidlingsgruppe.ARBEIDSSOKER,
             Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
             "0906"
         );
-        VeilarboppfolgingService veilarboppfolgingService = Mockito.spy(new VeilarboppfolgingService(null));
-        Mockito.doReturn(oppfølgingsstatus).when(veilarboppfolgingService).hentOppfolgingsstatus(anyString());
+        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(oppfølgingsstatus);
+        Veileder veileder = TestData.enVeileder(avtale.getVeilederNavIdent(), veilarboppfolgingService);
         assertFeilkode(Feilkode.OPPFOLGINGSTATUS_ENDRET, () -> veileder.godkjennForAvtalepart(avtale));
     }
 }
