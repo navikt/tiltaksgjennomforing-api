@@ -62,6 +62,7 @@ public class EndreAvtale {
     private Boolean harFamilietilknytning;
     private String familietilknytningForklaring;
     private Stillingstype stillingstype;
+    private Arbeidstilknytning arbeidstilknytning;
 
     // Mentorfelter
     private String mentorFornavn;
@@ -133,6 +134,7 @@ public class EndreAvtale {
                 innhold.getHarFamilietilknytning(),
                 innhold.getFamilietilknytningForklaring(),
                 innhold.getStillingstype(),
+                innhold.getArbeidstilknytning(),
                 innhold.getMentorFornavn(),
                 innhold.getMentorEtternavn(),
                 innhold.getMentorOppgaver(),

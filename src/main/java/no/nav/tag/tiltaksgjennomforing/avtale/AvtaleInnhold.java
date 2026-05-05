@@ -117,6 +117,8 @@ public class AvtaleInnhold {
     private LocalDate datoForRedusertProsent;
     @Enumerated(EnumType.STRING)
     private Stillingstype stillingstype;
+    @Enumerated(EnumType.STRING)
+    private Arbeidstilknytning arbeidstilknytning;
 
     // Arbeidstrening
     @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

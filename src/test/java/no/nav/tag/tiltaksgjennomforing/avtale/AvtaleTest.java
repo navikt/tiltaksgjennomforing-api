@@ -825,6 +825,7 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.oppfolging,
                 AvtaleInnhold.Fields.harFamilietilknytning,
                 AvtaleInnhold.Fields.lonnstilskuddProsent,
+                AvtaleInnhold.Fields.arbeidstilknytning,
                 Fields.refusjonKontaktpersonFornavn
         );
 
