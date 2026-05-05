@@ -845,7 +845,7 @@ public class VeilederTest {
     }
 
     @Test
-    public void forskjellig_kvalifiseringskode_ved_opprett_og_godkjening_av_veileder(){
+    public void forskjellig_kvalifiseringskode_ved_opprett_og_godkjenning_av_veileder(){
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         Deltaker deltaker = TestData.enDeltaker(avtale);
         deltaker.godkjennForAvtalepart(avtale);
