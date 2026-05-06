@@ -21,13 +21,15 @@ import no.nav.tag.tiltaksgjennomforing.utils.MultiValueMap;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -35,10 +37,12 @@ import java.util.Set;
 public class AltinnTilgangsstyringService {
     private final AltinnTilgangsstyringProperties altinnTilgangsstyringProperties;
     private final AltinnrettigheterProxyKlient klient;
+    private final RestTemplate azureRestTemplate;
 
     public AltinnTilgangsstyringService(
             AltinnTilgangsstyringProperties altinnTilgangsstyringProperties,
             TokenUtils tokenUtils,
+            RestTemplate azureRestTemplate,
             @Value("${spring.application.name}") String applicationName) {
 
         if (Utils.erNoenTomme(altinnTilgangsstyringProperties.getArbtreningServiceCode(),
@@ -50,10 +54,12 @@ public class AltinnTilgangsstyringService {
                 altinnTilgangsstyringProperties.getSommerjobbServiceCode(),
                 altinnTilgangsstyringProperties.getSommerjobbServiceEdition(),
                 altinnTilgangsstyringProperties.getVtaoServiceCode(),
-                altinnTilgangsstyringProperties.getVtaoServiceEdition())) {
+                altinnTilgangsstyringProperties.getVtaoServiceEdition(),
+                altinnTilgangsstyringProperties.getArbeidsgiverAltinnTilgangerUri())) {
             throw new TiltaksgjennomforingException("Altinn konfigurasjon ikke komplett");
         }
         this.altinnTilgangsstyringProperties = altinnTilgangsstyringProperties;
+        this.azureRestTemplate = azureRestTemplate;
 
         String altinnProxyUrl = altinnTilgangsstyringProperties.getProxyUri().toString();
         String altinnProxyFallbackUrl = altinnTilgangsstyringProperties.getUri().toString();
@@ -69,15 +75,6 @@ public class AltinnTilgangsstyringService {
         this.klient = new AltinnrettigheterProxyKlient(proxyKlientConfig);
     }
 
-    public List<BedriftNr> hentAdressesperreTilganger(Fnr fnr, HentArbeidsgiverToken hentArbeidsgiverToken) {
-        String arbeidsgiverToken = hentArbeidsgiverToken.hentArbeidsgiverToken();
-        AltinnReportee[] adressesperreTilganger = kallAltinn(altinnTilgangsstyringProperties.getAdressesperreServiceCode(), altinnTilgangsstyringProperties.getAdressesperreServiceEdition(), fnr, arbeidsgiverToken);
-        List<BedriftNr> bedrifter = Arrays.stream(adressesperreTilganger)
-                .filter(altinnReportee -> !altinnReportee.getType().equals("Enterprise"))
-                .map(altinnReportee -> new BedriftNr(altinnReportee.getOrganizationNumber()))
-                .toList();
-        return bedrifter;
-    }
 
     public Map<BedriftNr, Collection<Tiltakstype>> hentTilganger(Fnr fnr, HentArbeidsgiverToken hentArbeidsgiverToken) {
         MultiValueMap<BedriftNr, Tiltakstype> tilganger = MultiValueMap.empty();
@@ -140,5 +137,79 @@ public class AltinnTilgangsstyringService {
             log.warn("Feil ved kall mot Altinn.", exception);
             throw new AltinnFeilException();
         }
+    }
+
+    public AltinnTilgangerDto hentAltinnTilganger() {
+        AltinnTilgangerResponse response = kallAltinn3();
+
+        return new AltinnTilgangerDto(
+            response.hierarki(),
+            mapTilgangerFraAltinn3(response),
+            mapAdressesperreFraAltinn3(response)
+        );
+    }
+
+    private List<BedriftNr> mapAdressesperreFraAltinn3(AltinnTilgangerResponse response) {
+        if (response.tilgangTilOrgNr() == null) {
+            return List.of();
+        }
+        Set<String> orgNrs = new HashSet<>();
+
+        // Altinn 3 ressurs
+        Set<String> altinn3 = response.tilgangTilOrgNr().get(AltinnTilgangsstyringProperties.ADRESSESPERRE);
+        if (altinn3 != null) {
+            orgNrs.addAll(altinn3);
+        }
+
+        // Altinn 2 serviceCode:serviceEdition
+        // Kan fjernes på sikt (juni 26) - letter overgangen til Altinn 3
+        String altinn2Tilgang = altinnTilgangsstyringProperties.getAdressesperreServiceCode()
+            + ":" + altinnTilgangsstyringProperties.getAdressesperreServiceEdition();
+        Set<String> altinn2 = response.tilgangTilOrgNr().get(altinn2Tilgang);
+        if (altinn2 != null) {
+            orgNrs.addAll(altinn2);
+        }
+
+        return orgNrs.stream().map(BedriftNr::new).toList();
+    }
+
+    private Map<BedriftNr, Set<Tiltakstype>> mapTilgangerFraAltinn3(AltinnTilgangerResponse response) {
+        Map<String, Tiltakstype> tilgangerTilTiltakstype = altinnTilgangsstyringProperties.tilgangerTilTiltakstype();
+        Map<BedriftNr, Set<Tiltakstype>> tilganger = new HashMap<>();
+        for (Map.Entry<String, Set<String>> entry : response.orgNrTilTilganger().entrySet()) {
+            BedriftNr bedriftNr = new BedriftNr(entry.getKey());
+            for (String tilgang : entry.getValue()) {
+                Tiltakstype tiltakstype = tilgangerTilTiltakstype.get(tilgang);
+                if (tiltakstype != null) {
+                    tilganger.computeIfAbsent(bedriftNr, k -> new HashSet<>()).add(tiltakstype);
+                }
+            }
+        }
+
+        return tilganger;
+    }
+
+    private AltinnTilgangerResponse kallAltinn3() {
+        AltinnTilgangerResponse response;
+        try {
+            response = azureRestTemplate.postForObject(
+                    altinnTilgangsstyringProperties.getArbeidsgiverAltinnTilgangerUri(),
+                    null,
+                    AltinnTilgangerResponse.class
+            );
+        } catch (RestClientResponseException e) {
+            log.error("HTTP-feil fra arbeidsgiver-altinn-tilganger: status={}, body={}", e.getStatusCode(), e.getResponseBodyAsString(), e);
+            throw new AltinnFeilException();
+        } catch (ResourceAccessException e) {
+            log.error("Nettverksfeil ved kall til arbeidsgiver-altinn-tilganger", e);
+            throw new AltinnFeilException();
+        }
+
+        if (response == null || response.isError() || response.orgNrTilTilganger() == null) {
+            log.warn("Ugyldig respons fra arbeidsgiver-altinn-tilganger, isError: {}", response != null ? response.isError() : "null");
+            throw new AltinnFeilException();
+        }
+
+        return response;
     }
 }

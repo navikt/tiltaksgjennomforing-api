@@ -21,6 +21,7 @@ import lombok.ToString;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.jetbrains.annotations.NotNull;
 
@@ -281,6 +282,10 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
 
     public boolean erRefusjonGodkjent() {
         return refusjonStatus == RefusjonStatus.SENDT_KRAV || refusjonStatus == RefusjonStatus.GODKJENT_MINUSBELØP || refusjonStatus == RefusjonStatus.GODKJENT_NULLBELØP;
+    }
+
+    public Periode getPeriode() {
+        return Periode.av(startDato, sluttDato);
     }
 
 }

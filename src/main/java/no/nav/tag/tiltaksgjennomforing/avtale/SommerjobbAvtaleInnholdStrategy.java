@@ -1,8 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.SommerjobbLonnstilskuddAvtaleBeregningStrategy;
+
+import java.util.Map;
+
+import static no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.SommerjobbLonnstilskuddAvtaleBeregningStrategy.TILSKUDDSPROSENT_MAKS;
+import static no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.SommerjobbLonnstilskuddAvtaleBeregningStrategy.TILSKUDDSPROSENT_MIN;
+
 
 public class SommerjobbAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy<SommerjobbLonnstilskuddAvtaleBeregningStrategy> {
     public SommerjobbAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
@@ -10,35 +15,30 @@ public class SommerjobbAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdS
     }
 
     @Override
-    public void endreAvtaleInnholdMedKvalifiseringsgruppe(EndreAvtale endreAvtale, Kvalifiseringsgruppe kvalifiseringsgruppe) {
-        if (kvalifiseringsgruppe != null) {
-            final EndreAvtale endreAvtaleMedOppdatertProsentsats = settTilskuddsprosentSats(endreAvtale, kvalifiseringsgruppe);
-            super.endre(endreAvtaleMedOppdatertProsentsats);
-        } else {
-            sjekkSommerjobbProsentsats(endreAvtale);
-            super.endre(endreAvtale);
-        }
+    public Map<String, Object> alleFelterSomMåFyllesUt() {
+        Map<String, Object> felterSomMåFyllesUt = super.alleFelterSomMåFyllesUt();
+        felterSomMåFyllesUt.put(AvtaleInnhold.Fields.lonnstilskuddProsent, avtaleInnhold.getLonnstilskuddProsent());
+        return felterSomMåFyllesUt;
     }
 
     @Override
     public void endre(EndreAvtale endreAvtale) {
+        Integer lonnstilskuddProsent = endreAvtale.getLonnstilskuddProsent();
         endreAvtale.setStillingstype(Stillingstype.MIDLERTIDIG);
-        sjekkSommerjobbProsentsats(endreAvtale);
-        avtaleInnhold.setLonnstilskuddProsent(endreAvtale.getLonnstilskuddProsent());
+
+        if (!erTilskuddsprosentGyldig(lonnstilskuddProsent)) {
+            throw new FeilLonnstilskuddsprosentException();
+        }
+
+        avtaleInnhold.setLonnstilskuddProsent(lonnstilskuddProsent);
         super.endre(endreAvtale);
     }
 
-    private void sjekkSommerjobbProsentsats(EndreAvtale endreAvtale) {
-        Integer lonnstilskuddProsent = endreAvtale.getLonnstilskuddProsent();
-        if (lonnstilskuddProsent != null && !(lonnstilskuddProsent == 75 || lonnstilskuddProsent == 50)) {
-            throw new FeilLonnstilskuddsprosentException();
+    private boolean erTilskuddsprosentGyldig(Integer prosent) {
+        if (prosent == null) {
+            return true;
         }
-    }
-
-    private EndreAvtale settTilskuddsprosentSats(EndreAvtale endreAvtale, Kvalifiseringsgruppe kvalifiseringsgruppe) {
-        final Integer sats = kvalifiseringsgruppe.finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(50, 75);
-        endreAvtale.setLonnstilskuddProsent(sats);
-        return endreAvtale;
+        return prosent == TILSKUDDSPROSENT_MAKS || prosent == TILSKUDDSPROSENT_MIN;
     }
 
 }

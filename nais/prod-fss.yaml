@@ -85,8 +85,12 @@ spec:
           namespace: poao
         - application: pdl-api
           namespace: pdl
+        - application: arbeidsgiver-altinn-tilganger
+          namespace: fager
+          cluster: prod-gcp
       external:
         - host: team-tiltak-unleash-api.nav.cloud.nais.io
+        - host: arbeidsgiver-altinn-tilganger.intern.nav.no
   envFrom:
     - secret: tiltaksgjennomforing-api
     - secret: tiltaksgjennomforing-api-unleash-api-token

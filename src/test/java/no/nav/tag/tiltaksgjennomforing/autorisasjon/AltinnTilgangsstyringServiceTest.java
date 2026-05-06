@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
@@ -109,6 +110,55 @@ public class AltinnTilgangsstyringServiceTest {
     @Test
     public void manglende_serviceCode_skal_kaste_feil() {
         AltinnTilgangsstyringProperties altinnTilgangsstyringProperties = new AltinnTilgangsstyringProperties();
-        assertThatThrownBy(() -> new AltinnTilgangsstyringService(altinnTilgangsstyringProperties, tokenUtils, "tiltaksgjennomforing-api")).isExactlyInstanceOf(TiltaksgjennomforingException.class);
+        assertThatThrownBy(() -> new AltinnTilgangsstyringService(altinnTilgangsstyringProperties, tokenUtils, null, "tiltaksgjennomforing-api")).isExactlyInstanceOf(TiltaksgjennomforingException.class);
+    }
+
+    @Test
+    public void hentAltinn3__Organisasjoner__returnerer_hierarki_og_tilgangsmappinger() {
+        AltinnTilgangerDto dto = altinnTilgangsstyringService.hentAltinnTilganger();
+
+        assertThat(dto).isNotNull();
+
+        // Sjekk hierarki
+        assertThat(dto.hierarki()).isNotEmpty();
+        assertThat(dto.hierarki()).extracting(h -> h.orgnr()).contains("910825555", "910825550");
+
+        // Sjekk tilganger
+        assertThat(dto.tilganger()).containsKey(new BedriftNr("999999999"));
+        assertThat(dto.tilganger().get(new BedriftNr("999999999"))).containsOnly(
+            Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD,
+            Tiltakstype.SOMMERJOBB, Tiltakstype.MENTOR, Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.VTAO
+        );
+        assertThat(dto.tilganger().get(new BedriftNr("910712314"))).containsOnly(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        assertThat(dto.tilganger().get(new BedriftNr("910712306"))).containsOnly(Tiltakstype.VARIG_LONNSTILSKUDD);
+
+        // Bedrift uten tilganger (IngenTiltak Hjørnet) skal ikke være i tilganger
+        assertThat(dto.tilganger()).doesNotContainKey(new BedriftNr("980712306"));
+    }
+
+    @Test
+    public void mapTilgangerFraAltinn3__returnerer_tilganger_per_bedrift() {
+        AltinnTilgangerDto dto = altinnTilgangsstyringService.hentAltinnTilganger();
+        Map<BedriftNr, Set<Tiltakstype>> tilganger = dto.tilganger();
+
+        assertThat(tilganger).isNotEmpty();
+
+        // Parents skal ikke være i tilgang-map
+        assertThat(tilganger).doesNotContainKeys(new BedriftNr("910825550"), new BedriftNr("910825555"));
+
+        // 999999999 har alle tilganger
+        assertThat(tilganger.get(new BedriftNr("999999999"))).containsOnly(
+            Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD,
+            Tiltakstype.SOMMERJOBB, Tiltakstype.MENTOR, Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.VTAO
+        );
+
+        // 910712314 har bare midlertidig lønnstilskudd
+        assertThat(tilganger.get(new BedriftNr("910712314"))).containsOnly(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+
+        // 910712306 har bare varig lønnstilskudd
+        assertThat(tilganger.get(new BedriftNr("910712306"))).containsOnly(Tiltakstype.VARIG_LONNSTILSKUDD);
+
+        // Bedrift uten tilganger skal ikke være med
+        assertThat(tilganger).doesNotContainKey(new BedriftNr("980712306"));
     }
 }

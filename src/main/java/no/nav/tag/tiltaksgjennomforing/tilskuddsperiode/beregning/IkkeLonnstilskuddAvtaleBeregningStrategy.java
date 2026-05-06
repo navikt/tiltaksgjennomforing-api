@@ -23,11 +23,6 @@ public class IkkeLonnstilskuddAvtaleBeregningStrategy implements BeregningStrate
     public void reberegnTotal(Avtale avtale) {}
 
     @Override
-    public Integer beregnTilskuddsbeløpForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
-        return 0;
-    }
-
-    @Override
     public void forleng(Avtale avtale, LocalDate gammelSluttDato, LocalDate nySluttDato){}
 
     @Override

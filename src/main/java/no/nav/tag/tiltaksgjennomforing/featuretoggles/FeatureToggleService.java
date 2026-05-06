@@ -56,21 +56,25 @@ public class FeatureToggleService {
         return tiltakstype == Tiltakstype.MENTOR && isSkrivebeskyttet;
     }
 
-    public boolean isKanOppretteTiltak(Avtalerolle rolle, Tiltakstype tiltakstype) {
-        if (tiltakstype.isFirearigLonnstilskudd()) {
-            return rolle.erInternBruker() ? isEnabled(FeatureToggle.FIREARIG_LONNSTILSKUDD) : false;
+    public boolean kanOppretteTiltak(Avtalerolle rolle, Tiltakstype tiltakstype) {
+        if (!tiltakstype.isFirearigLonnstilskudd()) {
+            return true;
         }
-        return true;
+        return rolle.erInternBruker() ? isEnabled(FeatureToggle.FIREARIG_LONNSTILSKUDD) : false;
     }
 
-    public boolean isKanOppretteAvtale(Avtale avtale) {
-        if (avtale.getTiltakstype().isFirearigLonnstilskudd()) {
-            return Optional.ofNullable(avtale.getEnhetOppfolging())
-                .map(enhet -> UnleashContext.builder().addProperty("enhet", enhet).build())
-                .map(context -> isEnabled(FeatureToggle.FIREARIG_LONNSTILSKUDD, context))
-                .orElse(false);
+    public boolean kanOppretteAvtale(Avtale avtale) {
+        return harEnhetTilgangPaTiltak(avtale.getTiltakstype(), avtale.getEnhetOppfolging());
+    }
+
+    public boolean harEnhetTilgangPaTiltak(Tiltakstype tiltakstype, String enhet) {
+        if (!tiltakstype.isFirearigLonnstilskudd()) {
+            return true;
         }
-        return true;
+        return Optional.ofNullable(enhet)
+            .map(e -> UnleashContext.builder().addProperty("enhet", e).build())
+            .map(context -> isEnabled(FeatureToggle.FIREARIG_LONNSTILSKUDD, context))
+            .orElse(false);
     }
 
     private UnleashContext contextMedInnloggetBruker() {

@@ -103,8 +103,6 @@ public class AvtaleTest {
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         final int FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE = 74;
         assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE);
-        assertThat(avtale.getGjeldendeInnhold().getSumLønnstilskuddRedusert()).isEqualTo(27336);
-        assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isEqualTo(LocalDate.of(2025,07,29));
     }
 
 
@@ -1192,35 +1190,6 @@ public class AvtaleTest {
         assertThat(avtale.erGodkjentAvArbeidsgiver()).isTrue();
     }
 
-
-    @Test
-    public void ufordelt_midlertidig_lts_avtale_endrer_avtale_med_lavere_lønnstilskuddprosent_enn_mellom_kun_40_60_prosent() {
-        Avtale avtale = Avtale.opprett(
-                new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD),
-                Avtaleopphav.VEILEDER,
-                new NavIdent("Z123456"));
-        avtale.setKvalifiseringsgruppe(null);
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setLonnstilskuddProsent(20);
-        assertThatThrownBy(() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER))
-                .isInstanceOf(FeilLonnstilskuddsprosentException.class);
-    }
-
-    @Test
-    public void ufordelt_midlertidig_lts_avtale_endrer_avtale_med_høyere_enn_maks_lønnstilskuddprosent_enn_60_prosent() {
-        Avtale avtale = Avtale.opprett(
-                new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD),
-                Avtaleopphav.VEILEDER,
-                new NavIdent("Z123456")
-        );
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
-        avtale.setKvalifiseringsgruppe(null);
-        endreAvtale.setLonnstilskuddProsent(67);
-        assertThatThrownBy(() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER))
-                .isInstanceOf(FeilLonnstilskuddsprosentException.class);
-    }
-
-
     @Test
     public void ufordelt_varig_lts_avtale_endrer_avtale_med_lavere_lønnstilskuddprosent_enn_0_prosent() {
         Avtale avtale = Avtale.opprett(
@@ -1519,25 +1488,6 @@ public class AvtaleTest {
         // Kan heller ikke godkjenne når avtalen er tildelt en annen
         avtale.overtaAvtale(new NavIdent("P887766"));
         assertFeilkode(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE, () -> avtale.godkjennTilskuddsperiode(avtale.getGjeldendeInnhold().getGodkjentAvNavIdent(), "4444"));
-    }
-
-    @Test
-    public void forleng_og_forkort_skal_redusere_prosent() {
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(Now.localDate(), Now.localDate().plusMonths(12).minusDays(1));
-        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
-        avtale.godkjennForDeltaker(TestData.etFodselsnummer());
-        avtale.godkjennForArbeidsgiver(TestData.etFodselsnummer());
-        avtale.godkjennForVeileder(TestData.enNavIdent());
-
-        avtale.forlengAvtale(Now.localDate().plusMonths(12), TestData.enNavIdent());
-        assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isEqualTo(Now.localDate().plusMonths(12));
-        assertThat(avtale.getGjeldendeInnhold().getSumLønnstilskuddRedusert()).isNotNull();
-
-        avtale.forkortAvtale(Now.localDate().plusMonths(12).minusDays(1), ForkortetGrunn.av("grunn", ""), TestData.enNavIdent());
-        assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isNull();
-        assertThat(avtale.getGjeldendeInnhold().getSumLønnstilskuddRedusert()).isNull();
     }
 
     @Test

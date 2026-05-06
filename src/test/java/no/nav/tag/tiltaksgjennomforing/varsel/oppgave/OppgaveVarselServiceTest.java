@@ -21,7 +21,7 @@ import java.util.UUID;
 
 import static java.lang.String.format;
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.VARIG_LONNSTILSKUDD;
-import static no.nav.tag.tiltaksgjennomforing.varsel.oppgave.LagGosysVarselLytter.GOSYS_OPPRETTET_AVTALE_BESKRIVELSE;
+import static no.nav.tag.tiltaksgjennomforing.varsel.oppgave.GosysVarselService.GOSYS_OPPRETTET_AVTALE_BESKRIVELSE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;

@@ -75,8 +75,6 @@ public record AvtaleInnholdDTO(
     Integer sumLonnsutgifter,
     Integer sumLonnstilskudd,
     Integer manedslonn100pst,
-    Integer sumLønnstilskuddRedusert,
-    LocalDate datoForRedusertProsent,
     Stillingstype stillingstype,
     List<TilskuddstrinnDTO> tilskuddstrinn,
 
@@ -158,8 +156,6 @@ public record AvtaleInnholdDTO(
             dbEntitet.getSumLonnsutgifter(),
             dbEntitet.getSumLonnstilskudd(),
             dbEntitet.getManedslonn100pst(),
-            dbEntitet.getSumLønnstilskuddRedusert(),
-            dbEntitet.getDatoForRedusertProsent(),
             dbEntitet.getStillingstype(),
             TilskuddstrinnDTO.map(dbEntitet),
             MaalDTO.map(dbEntitet),

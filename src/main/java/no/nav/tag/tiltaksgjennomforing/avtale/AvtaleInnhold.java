@@ -111,7 +111,9 @@ public class AvtaleInnhold {
     private Integer sumLonnsutgifter;
     private Integer sumLonnstilskudd;
     private Integer manedslonn100pst;
+    @Deprecated
     private Integer sumLønnstilskuddRedusert;
+    @Deprecated
     private LocalDate datoForRedusertProsent;
     @Enumerated(EnumType.STRING)
     private Stillingstype stillingstype;
@@ -202,11 +204,7 @@ public class AvtaleInnhold {
     }
 
     void endreAvtale(EndreAvtale nyAvtale) {
-        if (tiltakstypeHarFastsattLonnstilskuddsprosentsatsUtIfraKvalifiseringsgruppe()) {
-            innholdStrategi().endreAvtaleInnholdMedKvalifiseringsgruppe(nyAvtale, avtale.getKvalifiseringsgruppe());
-        } else {
-            innholdStrategi().endre(nyAvtale);
-        }
+        innholdStrategi().endre(nyAvtale);
     }
 
     public Set<String> felterSomIkkeErFyltUt() {
@@ -221,25 +219,12 @@ public class AvtaleInnhold {
         return AvtaleInnholdStrategyFactory.create(this, avtale.getTiltakstype());
     }
 
-    private boolean tiltakstypeHarFastsattLonnstilskuddsprosentsatsUtIfraKvalifiseringsgruppe() {
-        // Midlertidig skrudd av utleding av lønnstilskuddprosent for Sommerjobb fra kvalifiseringsgruppe for å åpne for etterregistrering.
-        return avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD;
-    }
-
-    public boolean skalJournalfores() {
-        return this.godkjentAvVeileder != null && this.getJournalpostId() == null;
-    }
-
     public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning) {
         innholdStrategi().endreTilskuddsberegning(tilskuddsberegning);
     }
 
     public void reberegnLønnstilskudd() {
         avtale.hentBeregningStrategi().reberegnTotal(avtale);
-    }
-
-    public void reberegnRedusertProsentOgRedusertLonnstilskudd() {
-        innholdStrategi().reUtregnRedusertProsentOgSum();
     }
 
     public void endreKontaktInfo(EndreKontaktInformasjon endreKontaktInformasjon) {

@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 
 import java.time.LocalDate;
@@ -14,22 +13,25 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy extends GenerellLon
     public static final int TILSKUDDSPROSENT_TILPASSET = 60;
     public static final int TILSKUDDSPROSENT_REDUKSJONSFAKTOR = 10;
 
-    @Override
-    public Integer getProsentForPeriode(Avtale avtale, Periode tilskuddsperiode) {
-        Optional<LocalDate> datoForRedusertProsent = getDatoerForReduksjon(avtale).stream().findFirst();
-
-        Integer tilskuddsprosent = switch (avtale.getKvalifiseringsgruppe()) {
+    public Integer getProsentForForstePeriode(Avtale avtale) {
+        return switch (avtale.getKvalifiseringsgruppe()) {
             case SPESIELT_TILPASSET_INNSATS, VARIG_TILPASSET_INNSATS -> TILSKUDDSPROSENT_TILPASSET;
             case SITUASJONSBESTEMT_INNSATS -> TILSKUDDSPROSENT;
             case null, default -> null;
         };
+    }
 
+    @Override
+    public Integer getProsentForPeriode(Avtale avtale, Periode periode) {
+        Optional<LocalDate> datoForRedusertProsent = getDatoerForReduksjon(avtale).stream().findFirst();
+
+        Integer tilskuddsprosent = getProsentForForstePeriode(avtale);
         if (tilskuddsprosent == null) {
             return null;
         }
 
         boolean erRedusert = datoForRedusertProsent
-            .map(dato -> !tilskuddsperiode.getSlutt().isBefore(dato))
+            .map(dato -> !periode.getSlutt().isBefore(dato))
             .orElse(false);
 
         return erRedusert ? tilskuddsprosent - TILSKUDDSPROSENT_REDUKSJONSFAKTOR : tilskuddsprosent;
@@ -56,31 +58,4 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy extends GenerellLon
 
         return List.of(datoForReduksjon);
     }
-
-    @Override
-    public void reberegnTotal(Avtale avtale) {
-        super.reberegnTotal(avtale);
-        regnUtDatoOgSumRedusert(avtale);
-    }
-
-    public void regnUtDatoOgSumRedusert(Avtale avtale) {
-        AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
-        LocalDate datoForRedusertProsent = getDatoerForReduksjon(avtale).stream().findFirst().orElse(null);
-        avtaleInnhold.setDatoForRedusertProsent(datoForRedusertProsent);
-        Integer sumLønnstilskuddRedusert = regnUtRedusertLønnstilskudd(avtale);
-        avtaleInnhold.setSumLønnstilskuddRedusert(sumLønnstilskuddRedusert);
-    }
-
-    public Integer regnUtRedusertLønnstilskudd(Avtale avtale) {
-        AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
-        if (avtaleInnhold.getDatoForRedusertProsent() != null && avtaleInnhold.getLonnstilskuddProsent() != null) {
-            return BeregningStrategy.getSumLonnstilskudd(
-                avtaleInnhold.getSumLonnsutgifter(),
-                avtaleInnhold.getLonnstilskuddProsent() - TILSKUDDSPROSENT_REDUKSJONSFAKTOR
-            );
-        } else {
-            return null;
-        }
-    }
-
 }

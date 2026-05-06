@@ -399,7 +399,7 @@ public class AvtaleController {
         sjekkSkrivebeskyttelse(opprettAvtale.getTiltakstype());
 
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
-        if (!featureToggleService.isKanOppretteTiltak(arbeidsgiver.rolle(), opprettAvtale.getTiltakstype())) {
+        if (!featureToggleService.kanOppretteTiltak(arbeidsgiver.rolle(), opprettAvtale.getTiltakstype())) {
             throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_OPPRETTE_TILTAK);
         }
 
@@ -462,12 +462,12 @@ public class AvtaleController {
         sjekkSkrivebeskyttelse(opprettAvtale.getTiltakstype());
 
         Veileder veileder = innloggingService.hentVeileder();
-        if (!featureToggleService.isKanOppretteTiltak(veileder.rolle(), opprettAvtale.getTiltakstype())) {
+        if (!featureToggleService.kanOppretteTiltak(veileder.rolle(), opprettAvtale.getTiltakstype())) {
             throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_OPPRETTE_TILTAK);
         }
 
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
-        if (!featureToggleService.isKanOppretteAvtale(avtale)) {
+        if (!featureToggleService.kanOppretteAvtale(avtale)) {
             throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_A_OPPRETTE_AVTALE);
         }
 

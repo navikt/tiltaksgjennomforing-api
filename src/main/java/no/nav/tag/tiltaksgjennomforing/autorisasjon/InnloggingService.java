@@ -6,6 +6,7 @@ import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.BrukerOgIssuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.ArbeidsgiverTokenStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.HentArbeidsgiverToken;
@@ -69,14 +70,23 @@ public class InnloggingService {
         if (issuer == Issuer.ISSUER_TOKENX && avtalerolle == Avtalerolle.ARBEIDSGIVER) {
             HentArbeidsgiverToken hentArbeidsgiverToken = arbeidsgiverTokenStrategyFactory.create(issuer);
             Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService
-                    .hentAltinnOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
+                .hentAltinnOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
             Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(
                 new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
-            List<BedriftNr> adressesperreTilganger = altinnTilgangsstyringService.hentAdressesperreTilganger(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
+            AltinnTilgangerDto altinnTilganger = altinnTilgangsstyringService.hentAltinnTilganger();
+            List<BedriftNr> adressesperreTilganger = altinnTilganger.adressesperreTilganger();
+            log.info(
+                "InnloggetArbeidsgiver - bedrifter: altinn2TilgangerBedrifter={}, altinn3TilgangerBedrifter={}, tilganger: altinn2TotaltTilganger={}, altinn3TotaltTilganger={}",
+                tilganger.size(),
+                altinnTilganger.tilganger().size(),
+                tilganger.values().stream().mapToInt(Collection::size).sum(),
+                altinnTilganger.tilganger().values().stream().mapToInt(Set::size).sum()
+            );
             return new Arbeidsgiver(
                 new Fnr(brukerOgIssuer.getBrukerIdent()),
                 altinnOrganisasjoner,
                 tilganger,
+                altinnTilganger,
                 adressesperreTilganger,
                 persondataService,
                 norg2Client,
@@ -118,7 +128,9 @@ public class InnloggingService {
                 tilgangskontrollService,
                 norg2Client,
                 persondataService,
-                adGruppeTilganger
+                adGruppeTilganger,
+                veilarboppfolgingService,
+                featureToggleService
             );
         }
 
@@ -152,8 +164,8 @@ public class InnloggingService {
 
     public void validerSystembruker() {
         tokenUtils.hentBrukerOgIssuer()
-                .filter(t -> (Issuer.ISSUER_SYSTEM == t.getIssuer() && systembrukerProperties.getId().equals(t.getBrukerIdent())))
-                .orElseThrow(() -> new TilgangskontrollException("Systemet har ikke tilgang til tjenesten"));
+            .filter(t -> (Issuer.ISSUER_SYSTEM == t.getIssuer() && systembrukerProperties.getId().equals(t.getBrukerIdent())))
+            .orElseThrow(() -> new TilgangskontrollException("Systemet har ikke tilgang til tjenesten"));
     }
 
     public Beslutter hentBeslutter() {

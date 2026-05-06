@@ -6,6 +6,7 @@ import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.arena.client.acl.AktivitetArenaAclClient;
 import no.nav.tag.tiltaksgjennomforing.arena.client.hendelse.HendelseAktivitetsplanClient;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaAgreementMigrationRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -39,6 +41,15 @@ public class AktivitetsplanAdminController {
     public void taOverAktivitetsplankort(@PathVariable UUID avtaleId) {
         UUID aktivitetsplanId = hentAktivitetsplanIdForAvtale(avtaleId);
         hendelseAktivitetsplanClient.putAktivitetsplanId(avtaleId, aktivitetsplanId, true);
+    }
+    /*
+     * Tar over aktivitetsplankortet fra Arena og sender siste melding på nytt.
+     * Merk at her oppgir man selv aktivitetskortet. Brukes kun i spesielle tilfeller der mappingen har blitt feil.
+     */
+    @PostMapping("/avtale/{avtaleId}/ta-over-kort/{aktivitetskortId}")
+    public void taOverAktivitetsplankortMedSpesifisertId(@PathVariable UUID avtaleId,  @PathVariable UUID aktivitetskortId) {
+        avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        hendelseAktivitetsplanClient.putAktivitetsplanId(avtaleId, aktivitetskortId, true);
     }
 
     /*
