@@ -135,11 +135,7 @@ public class AdminController {
     @Transactional
     public void endreAnnulleringsgrunnTilFeilregistrering(@PathVariable("avtaleId") UUID avtaleId) {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        if (avtale.getStatus() != Status.ANNULLERT) {
-            throw new IllegalStateException("Kan kun endre annulleringsgrunn på en avtale som er annullert. Denne avtalen har status: " + avtale.getStatus());
-        }
-        log.info("Setter annulleringsgrunn på avtaleid: {} til Feilregistrering. Avtale er annullert med feil årsak.", avtaleId);
-        avtale.annullerMedFeilregistrering(AnnullertGrunn.FEILREGISTRERING, Identifikator.SYSTEM);
+        avtale.annullerMedFeilregistrering(Identifikator.SYSTEM);
         avtaleRepository.save(avtale);
     }
 

@@ -851,9 +851,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         utforEndring(new AnnullertAvVeileder(this, veilederNavIdent));
     }
 
-    public void annullerMedFeilregistrering(String annullerGrunn, Identifikator identifikator) {
+    public void annullerMedFeilregistrering(Identifikator identifikator) {
         sjekkAtIkkeAvtalenInneholderUtbetaltTilskuddsperiode();
-        setAnnullertGrunn(annullerGrunn);
+        if (getStatus() != Status.ANNULLERT) {
+            throw new IllegalStateException("Kan kun endre annulleringsgrunn på en avtale som er annullert. Denne avtalen har status: " + getStatus());
+        }
+        setAnnullertGrunn(AnnullertGrunn.FEILREGISTRERING);
+        log.info("Setter annulleringsgrunn på avtaleid: {} til Feilregistrering. Avtale er annullert med feil årsak.", getId());
         setFeilregistrert(true);
         utforEndring(new AnnullertAvSystem(this, identifikator));
     }
