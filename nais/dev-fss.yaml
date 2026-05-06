@@ -51,6 +51,7 @@ spec:
       memory: 600Mi
   ingresses:
     - https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/
+    - https://tiltaksgjennomforing-api.intern.dev.nav.no/
   vault:
     enabled: true
   webproxy: true
