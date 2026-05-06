@@ -19,13 +19,7 @@
                 {
                   "orgnr": "910712307",
                   "altinn3Tilganger": [],
-                  "altinn2Tilganger": [
-                    "nav_tiltak_sommerjobb",
-                    "nav_tiltak_mentor",
-                    "nav_tiltak_inkluderingstilskudd",
-                    "nav_tiltak_varig-tilrettelagt-arbeid-ordinaer",
-                    "nav_tiltak_adressesperre"
-                  ],
+                  "altinn2Tilganger": [],
                   "underenheter": [],
                   "navn": "Bedriften Med Sommerjobb",
                   "organisasjonsform": "BEDR",
@@ -34,9 +28,7 @@
                 {
                   "orgnr": "910712314",
                   "altinn3Tilganger": [],
-                  "altinn2Tilganger": [
-                    "nav_tiltak_midlertidig-lonnstilskudd"
-                  ],
+                  "altinn2Tilganger": [],
                   "underenheter": [],
                   "navn": "Bedriften Med Midlertidi Lts",
                   "organisasjonsform": "BEDR",
@@ -45,9 +37,7 @@
                 {
                   "orgnr": "910712306",
                   "altinn3Tilganger": [],
-                  "altinn2Tilganger": [
-                    "nav_tiltak_varig-lonnstilskudd"
-                  ],
+                  "altinn2Tilganger": [],
                   "underenheter": [],
                   "navn": "Bedriften Med Varig Lts",
                   "organisasjonsform": "BEDR",
@@ -75,16 +65,7 @@
                 {
                   "orgnr": "999999999",
                   "altinn3Tilganger": [],
-                  "altinn2Tilganger": [
-                    "nav_tiltak_arbeidstrening",
-                    "nav_tiltak_midlertidig-lonnstilskudd",
-                    "nav_tiltak_varig-lonnstilskudd",
-                    "nav_tiltak_sommerjobb",
-                    "nav_tiltak_mentor",
-                    "nav_tiltak_inkluderingstilskudd",
-                    "nav_tiltak_varig-tilrettelagt-arbeid-ordinaer",
-                    "nav_tiltak_adressesperre"
-                  ],
+                  "altinn2Tilganger": [],
                   "underenheter": [],
                   "navn": "Saltrød og Høneby",
                   "organisasjonsform": "BEDR",
