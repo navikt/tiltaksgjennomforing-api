@@ -29,7 +29,7 @@ public record TilskuddstrinnDTO(
         Avtale avtale = db.getAvtale();
         BeregningStrategy strategy = avtale.hentBeregningStrategi();
         if (strategy instanceof GenerellLonnstilskuddAvtaleBeregningStrategy ltsStrategy) {
-            return ltsStrategy.getTilskuddstrinn(avtale).stream().map(TilskuddstrinnDTO::new).toList();
+            return ltsStrategy.getTilskuddstrinn(avtale, db).stream().map(TilskuddstrinnDTO::new).toList();
         }
         return Collections.emptyList();
     }
