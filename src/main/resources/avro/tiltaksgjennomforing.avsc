@@ -126,10 +126,22 @@
     },
     {
       "name": "maal",
-      "type": [
-        "null",
-        "string"
-      ]
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "enum",
+          "name": "MaalKategori",
+          "symbols": [
+            "FÅ_JOBB_I_BEDRIFTEN",
+            "ARBEIDSERFARING",
+            "UTPRØVING",
+            "SPRÅKOPPLÆRING",
+            "OPPNÅ_FAGBREV_KOMPETANSEBEVIS",
+            "ANNET"
+          ]
+        }
+      },
+      "default": []
     },
     {
       "name": "stillingstype",
@@ -359,6 +371,104 @@
         "string"
       ],
       "default": null
+    },
+    {
+      "name": "avtaleNr",
+      "type": ["null", "int"],
+      "default": null
+    },
+    {
+      "name": "mentorTimelonn",
+      "type": ["null", "int"],
+      "default": null
+    },
+    {
+      "name": "mentorAntallTimer",
+      "type": ["null", "double"],
+      "default": null
+    },
+    {
+      "name": "lonnstilskuddFormaal",
+      "type": [
+        "null",
+        {
+          "type": "enum",
+          "name": "LonnstilskuddFormaal",
+          "symbols": ["SKAFFE_ARBEID", "BEHOLDE_ARBEID"]
+        }
+      ],
+      "default": null
+    },
+    {
+      "name": "inkluderingstilskuddsutgift",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "InkluderingstilskuddsutgiftRecord",
+          "fields": [
+            {
+              "name": "belop",
+              "type": ["null", "int"],
+              "default": null
+            },
+            {
+              "name": "type",
+              "type": [
+                "null",
+                {
+                  "type": "enum",
+                  "name": "InkluderingstilskuddsutgiftType",
+                  "symbols": [
+                    "TILRETTELEGGINGSBEHOV",
+                    "TILTAKSPLASS",
+                    "UTSTYR",
+                    "PROGRAMVARE",
+                    "ARBEIDSHJELPEMIDLER",
+                    "OPPLÆRING",
+                    "FORSIKRING_LISENS_SERTIFISERING"
+                  ]
+                }
+              ],
+              "default": null
+            }
+          ]
+        }
+      },
+      "default": []
+    },
+    {
+      "name": "tilskuddstrinn",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "TilskuddstrinnRecord",
+          "fields": [
+            {
+              "name": "start",
+              "type": ["null", {"type": "int", "logicalType": "date"}],
+              "default": null
+            },
+            {
+              "name": "slutt",
+              "type": ["null", {"type": "int", "logicalType": "date"}],
+              "default": null
+            },
+            {
+              "name": "prosent",
+              "type": ["null", "int"],
+              "default": null
+            },
+            {
+              "name": "belopPerMnd",
+              "type": ["null", "int"],
+              "default": null
+            }
+          ]
+        }
+      },
+      "default": []
     }
   ]
 }
