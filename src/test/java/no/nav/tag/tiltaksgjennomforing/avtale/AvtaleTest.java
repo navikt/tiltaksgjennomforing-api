@@ -787,7 +787,8 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.arbeidsgiveravgift,
                 AvtaleInnhold.Fields.tilrettelegging,
                 AvtaleInnhold.Fields.oppfolging,
-                AvtaleInnhold.Fields.harFamilietilknytning
+                AvtaleInnhold.Fields.harFamilietilknytning,
+                AvtaleInnhold.Fields.lonnstilskuddFormaal
         );
 
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
