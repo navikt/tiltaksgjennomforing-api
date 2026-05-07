@@ -841,7 +841,7 @@ public class TestData {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.ONE);
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setStillingstype(Stillingstype.FAST);
-        endreAvtale.setArbeidstilknytning(Arbeidstilknytning.SKAFFE_ARBEID);
+        endreAvtale.setLonnstilskuddFormaal(LonnstilskuddFormaal.SKAFFE_ARBEID);
         endreAvtale.setAntallDagerPerUke(BigDecimal.valueOf(5.0));
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         return endreAvtale;

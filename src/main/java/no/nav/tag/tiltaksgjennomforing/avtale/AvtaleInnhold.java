@@ -118,7 +118,7 @@ public class AvtaleInnhold {
     @Enumerated(EnumType.STRING)
     private Stillingstype stillingstype;
     @Enumerated(EnumType.STRING)
-    private Arbeidstilknytning arbeidstilknytning;
+    private LonnstilskuddFormaal lonnstilskuddFormaal;
 
     // Arbeidstrening
     @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

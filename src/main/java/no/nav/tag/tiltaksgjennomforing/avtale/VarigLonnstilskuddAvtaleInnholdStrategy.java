@@ -16,7 +16,7 @@ public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtale
     public Map<String, Object> alleFelterSomMåFyllesUt() {
         Map<String, Object> felterSomMåFyllesUt = super.alleFelterSomMåFyllesUt();
         felterSomMåFyllesUt.put(AvtaleInnhold.Fields.lonnstilskuddProsent, avtaleInnhold.getLonnstilskuddProsent());
-        felterSomMåFyllesUt.put(AvtaleInnhold.Fields.arbeidstilknytning, avtaleInnhold.getArbeidstilknytning());
+        felterSomMåFyllesUt.put(AvtaleInnhold.Fields.lonnstilskuddFormaal, avtaleInnhold.getLonnstilskuddFormaal());
         return felterSomMåFyllesUt;
     }
 
@@ -29,7 +29,7 @@ public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtale
         }
 
         avtaleInnhold.setLonnstilskuddProsent(lonnstilskuddProsent);
-        avtaleInnhold.setArbeidstilknytning(endreAvtale.getArbeidstilknytning());
+        avtaleInnhold.setLonnstilskuddFormaal(endreAvtale.getLonnstilskuddFormaal());
 
         super.endre(endreAvtale);
     }
