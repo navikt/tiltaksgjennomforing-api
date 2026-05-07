@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -88,7 +89,7 @@ public class VTAOAvtaleBeregningStrategy implements BeregningStrategy {
     }
 
     @Override
-    public Integer getBeløpForPeriode(Avtale avtale, Periode periode) {
+    public Integer getBeløpForPeriode(Avtale avtale, AvtaleInnhold avtaleInnhold, Periode periode) {
         var vtaoSats = VTAO_SATS.hentGjeldendeSats(periode.getStart());
         if (vtaoSats == null) {
             return null;

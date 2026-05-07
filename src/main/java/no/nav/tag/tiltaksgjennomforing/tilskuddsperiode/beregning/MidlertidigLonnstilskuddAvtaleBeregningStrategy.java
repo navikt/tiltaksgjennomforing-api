@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 
 import java.time.LocalDate;
@@ -22,8 +23,8 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy extends GenerellLon
     }
 
     @Override
-    public Integer getProsentForPeriode(Avtale avtale, Periode periode) {
-        Optional<LocalDate> datoForRedusertProsent = getDatoerForReduksjon(avtale).stream().findFirst();
+    public Integer getProsentForPeriode(Avtale avtale, AvtaleInnhold avtaleInnhold, Periode periode) {
+        Optional<LocalDate> datoForRedusertProsent = getDatoerForReduksjon(avtale, avtaleInnhold).stream().findFirst();
 
         Integer tilskuddsprosent = getProsentForForstePeriode(avtale);
         if (tilskuddsprosent == null) {
@@ -38,9 +39,9 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy extends GenerellLon
     }
 
     @Override
-    public List<LocalDate> getDatoerForReduksjon(Avtale avtale) {
-        LocalDate startDato = avtale.getGjeldendeInnhold().getStartDato();
-        LocalDate sluttDato = avtale.getGjeldendeInnhold().getSluttDato();
+    public List<LocalDate> getDatoerForReduksjon(Avtale avtale, AvtaleInnhold avtaleInnhold) {
+        LocalDate startDato = avtaleInnhold.getStartDato();
+        LocalDate sluttDato = avtaleInnhold.getSluttDato();
 
         if (startDato == null || sluttDato == null) {
             return Collections.emptyList();
