@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
@@ -31,28 +32,32 @@ class VarigLonnstilskuddAvtaleBeregningStrategyTest {
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
     }
 
-    private Avtale lagAvtaleMedDatoerOgProsent(LocalDate startDato, LocalDate sluttDato, Integer lonnstilskuddProsent) {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
-        avtale.getGjeldendeInnhold().setLonnstilskuddProsent(lonnstilskuddProsent);
-        avtale.getGjeldendeInnhold().setStartDato(startDato);
-        avtale.getGjeldendeInnhold().setSluttDato(sluttDato);
-        return avtale;
+    private Avtale lagAvtale() {
+        return TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+    }
+
+    private static AvtaleInnhold innholdMedDatoerOgProsent(LocalDate startDato, LocalDate sluttDato, Integer lonnstilskuddProsent) {
+        AvtaleInnhold innhold = new AvtaleInnhold();
+        innhold.setStartDato(startDato);
+        innhold.setSluttDato(sluttDato);
+        innhold.setLonnstilskuddProsent(lonnstilskuddProsent);
+        return innhold;
     }
 
     @Test
     void getDatoerForReduksjon__returnerer_tom_liste_naar_startdato_er_null() {
-        Avtale avtale = lagAvtaleMedDatoerOgProsent(null, LocalDate.of(2025, 1, 1), 75);
+        Avtale avtale = lagAvtale();
 
-        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale);
+        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale, innholdMedDatoerOgProsent(null, LocalDate.of(2025, 1, 1), 75));
 
         assertThat(result).isEmpty();
     }
 
     @Test
     void getDatoerForReduksjon__returnerer_tom_liste_naar_sluttdato_er_null() {
-        Avtale avtale = lagAvtaleMedDatoerOgProsent(LocalDate.of(2024, 1, 1), null, 75);
+        Avtale avtale = lagAvtale();
 
-        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale);
+        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale, innholdMedDatoerOgProsent(LocalDate.of(2024, 1, 1), null, 75));
 
         assertThat(result).isEmpty();
     }
@@ -62,9 +67,9 @@ class VarigLonnstilskuddAvtaleBeregningStrategyTest {
         // When prosent is null the "lonnstilskuddProsent <= REDUSERT_MAKS" guard is skipped,
         // so the code falls through and returns the date 1 year after start.
         LocalDate startDato = LocalDate.of(2024, 1, 1);
-        Avtale avtale = lagAvtaleMedDatoerOgProsent(startDato, LocalDate.of(2026, 1, 1), null);
+        Avtale avtale = lagAvtale();
 
-        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale);
+        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale, innholdMedDatoerOgProsent(startDato, LocalDate.of(2026, 1, 1), null));
 
         assertThat(result).containsExactly(startDato.plusYears(1));
     }
@@ -72,13 +77,13 @@ class VarigLonnstilskuddAvtaleBeregningStrategyTest {
     @Test
     void getDatoerForReduksjon__returnerer_tom_liste_naar_prosent_er_under_eller_lik_redusert_maks() {
         // TILSKUDDSPROSENT_REDUSERT_MAKS = 67
-        Avtale avtale = lagAvtaleMedDatoerOgProsent(
+        Avtale avtale = lagAvtale();
+
+        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale, innholdMedDatoerOgProsent(
                 LocalDate.of(2024, 1, 1),
                 LocalDate.of(2026, 1, 1),
                 TILSKUDDSPROSENT_REDUSERT_MAKS
-        );
-
-        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale);
+        ));
 
         assertThat(result).isEmpty();
     }
@@ -86,13 +91,13 @@ class VarigLonnstilskuddAvtaleBeregningStrategyTest {
     @Test
     void getDatoerForReduksjon__gir_reduksjonsdato_etter_1_aar_naar_prosent_er_over_redusert_maks() {
         LocalDate startDato = LocalDate.of(2024, 1, 1);
-        Avtale avtale = lagAvtaleMedDatoerOgProsent(
+        Avtale avtale = lagAvtale();
+
+        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale, innholdMedDatoerOgProsent(
                 startDato,
                 LocalDate.of(2026, 1, 1),
                 TILSKUDDSPROSENT_MAKS
-        );
-
-        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale);
+        ));
 
         assertThat(result).containsExactly(startDato.plusYears(1));
     }
@@ -102,13 +107,13 @@ class VarigLonnstilskuddAvtaleBeregningStrategyTest {
         LocalDate startDato = LocalDate.of(2024, 1, 1);
         // Sluttdato er bare 6 måneder frem, men reduksjon skjer etter 1 år
         LocalDate sluttDato = LocalDate.of(2024, 6, 30);
-        Avtale avtale = lagAvtaleMedDatoerOgProsent(
+        Avtale avtale = lagAvtale();
+
+        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale, innholdMedDatoerOgProsent(
                 startDato,
                 sluttDato,
                 TILSKUDDSPROSENT_MAKS
-        );
-
-        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale);
+        ));
 
         assertThat(result).isEmpty();
     }
@@ -119,13 +124,13 @@ class VarigLonnstilskuddAvtaleBeregningStrategyTest {
         // so the date IS returned (the reduksjon starts on the very last day of the avtale).
         LocalDate startDato = LocalDate.of(2024, 1, 1);
         LocalDate sluttDato = LocalDate.of(2025, 1, 1);
-        Avtale avtale = lagAvtaleMedDatoerOgProsent(
+        Avtale avtale = lagAvtale();
+
+        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale, innholdMedDatoerOgProsent(
                 startDato,
                 sluttDato,
                 TILSKUDDSPROSENT_MAKS
-        );
-
-        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale);
+        ));
 
         assertThat(result).containsExactly(LocalDate.of(2025, 1, 1));
     }
@@ -133,8 +138,8 @@ class VarigLonnstilskuddAvtaleBeregningStrategyTest {
     @Test
     void getDatoerForReduksjon_handterer_skuddaar() {
         LocalDate varigTilpassetStart = LocalDate.of(2024, 2, 29);
-        Avtale varigTilpassetAvtale = lagAvtaleMedDatoerOgProsent(varigTilpassetStart, LocalDate.of(2030, 2, 28), TILSKUDDSPROSENT_MAKS);
-        List<LocalDate> reduksjon = strategy.getDatoerForReduksjon(varigTilpassetAvtale);
+        Avtale varigTilpassetAvtale = lagAvtale();
+        List<LocalDate> reduksjon = strategy.getDatoerForReduksjon(varigTilpassetAvtale, innholdMedDatoerOgProsent(varigTilpassetStart, LocalDate.of(2030, 2, 28), TILSKUDDSPROSENT_MAKS));
 
         assertThat(reduksjon).containsExactly(LocalDate.of(2025, 2, 28));
     }
@@ -142,14 +147,14 @@ class VarigLonnstilskuddAvtaleBeregningStrategyTest {
     @Test
     void getDatoerForReduksjon_handterer_skuddaar_i_midten_av_trinn() {
         LocalDate varigTilpassetStart = LocalDate.of(2023, 2, 28);
-        Avtale varigTilpassetAvtale = lagAvtaleMedDatoerOgProsent(varigTilpassetStart, LocalDate.of(2025, 2, 28), TILSKUDDSPROSENT_MAKS);
-        List<LocalDate> reduksjon = strategy.getDatoerForReduksjon(varigTilpassetAvtale);
+        Avtale varigTilpassetAvtale = lagAvtale();
+        List<LocalDate> reduksjon = strategy.getDatoerForReduksjon(varigTilpassetAvtale, innholdMedDatoerOgProsent(varigTilpassetStart, LocalDate.of(2025, 2, 28), TILSKUDDSPROSENT_MAKS));
 
         assertThat(reduksjon).containsExactly(LocalDate.of(2024, 2, 28)); // 2024 = skuddaar
 
         varigTilpassetStart = LocalDate.of(2023, 3, 1);
-        varigTilpassetAvtale = lagAvtaleMedDatoerOgProsent(varigTilpassetStart, LocalDate.of(2025, 2, 28), TILSKUDDSPROSENT_MAKS);
-        reduksjon = strategy.getDatoerForReduksjon(varigTilpassetAvtale);
+        varigTilpassetAvtale = lagAvtale();
+        reduksjon = strategy.getDatoerForReduksjon(varigTilpassetAvtale, innholdMedDatoerOgProsent(varigTilpassetStart, LocalDate.of(2025, 2, 28), TILSKUDDSPROSENT_MAKS));
 
         assertThat(reduksjon).containsExactly(LocalDate.of(2024, 3, 1)); // 2024 = skuddaar
     }
@@ -160,10 +165,10 @@ class VarigLonnstilskuddAvtaleBeregningStrategyTest {
         // Sluttdato kort slik at ingen reduksjon
         LocalDate sluttDato = LocalDate.of(2024, 6, 30);
         int lonnstilskuddProsent = TILSKUDDSPROSENT_MAKS;
-        Avtale avtale = lagAvtaleMedDatoerOgProsent(startDato, sluttDato, lonnstilskuddProsent);
+        Avtale avtale = lagAvtale();
         Periode periode = new Periode(LocalDate.of(2024, 2, 1), LocalDate.of(2024, 2, 29));
 
-        Integer prosent = strategy.getProsentForPeriode(avtale, periode);
+        Integer prosent = strategy.getProsentForPeriode(avtale, innholdMedDatoerOgProsent(startDato, sluttDato, lonnstilskuddProsent), periode);
 
         assertThat(prosent).isEqualTo(lonnstilskuddProsent);
     }
@@ -173,10 +178,10 @@ class VarigLonnstilskuddAvtaleBeregningStrategyTest {
         LocalDate startDato = LocalDate.of(2024, 1, 1);
         LocalDate sluttDato = LocalDate.of(2024, 6, 30);
         // Sett en for høy prosent – skal begrenses til TILSKUDDSPROSENT_MAKS (75)
-        Avtale avtale = lagAvtaleMedDatoerOgProsent(startDato, sluttDato, 80);
+        Avtale avtale = lagAvtale();
         Periode periode = new Periode(LocalDate.of(2024, 2, 1), LocalDate.of(2024, 2, 29));
 
-        Integer prosent = strategy.getProsentForPeriode(avtale, periode);
+        Integer prosent = strategy.getProsentForPeriode(avtale, innholdMedDatoerOgProsent(startDato, sluttDato, 80), periode);
 
         assertThat(prosent).isEqualTo(TILSKUDDSPROSENT_MAKS);
     }
@@ -186,15 +191,15 @@ class VarigLonnstilskuddAvtaleBeregningStrategyTest {
         LocalDate startDato = LocalDate.of(2024, 1, 1);
         LocalDate sluttDato = LocalDate.of(2026, 1, 1);
         // Prosenten er over TILSKUDDSPROSENT_REDUSERT_MAKS, så reduksjon skal skje etter 1 år
-        Avtale avtale = lagAvtaleMedDatoerOgProsent(
-                startDato,
-                sluttDato,
-                TILSKUDDSPROSENT_MAKS
-        );
+        Avtale avtale = lagAvtale();
         // Periode er etter reduksjonsdato (2025-01-01)
         Periode periode = new Periode(LocalDate.of(2025, 3, 1), LocalDate.of(2025, 3, 31));
 
-        Integer prosent = strategy.getProsentForPeriode(avtale, periode);
+        Integer prosent = strategy.getProsentForPeriode(avtale, innholdMedDatoerOgProsent(
+                startDato,
+                sluttDato,
+                TILSKUDDSPROSENT_MAKS
+        ), periode);
 
         assertThat(prosent).isEqualTo(TILSKUDDSPROSENT_REDUSERT_MAKS);
     }
@@ -204,11 +209,11 @@ class VarigLonnstilskuddAvtaleBeregningStrategyTest {
         LocalDate startDato = LocalDate.of(2024, 1, 1);
         LocalDate sluttDato = LocalDate.of(2026, 1, 1);
         int lonnstilskuddProsent = 50; // under TILSKUDDSPROSENT_REDUSERT_MAKS (67)
-        Avtale avtale = lagAvtaleMedDatoerOgProsent(startDato, sluttDato, lonnstilskuddProsent);
+        Avtale avtale = lagAvtale();
         // Periode langt etter startdato – men getDatoerForReduksjon returnerer tom liste
         Periode periode = new Periode(LocalDate.of(2025, 6, 1), LocalDate.of(2025, 6, 30));
 
-        Integer prosent = strategy.getProsentForPeriode(avtale, periode);
+        Integer prosent = strategy.getProsentForPeriode(avtale, innholdMedDatoerOgProsent(startDato, sluttDato, lonnstilskuddProsent), periode);
 
         assertThat(prosent).isEqualTo(lonnstilskuddProsent);
     }
@@ -217,10 +222,10 @@ class VarigLonnstilskuddAvtaleBeregningStrategyTest {
     void getProsentForPeriode__returnerer_0_naar_lonnstilskuddprosent_er_null() {
         LocalDate startDato = LocalDate.of(2024, 1, 1);
         LocalDate sluttDato = LocalDate.of(2024, 6, 30);
-        Avtale avtale = lagAvtaleMedDatoerOgProsent(startDato, sluttDato, null);
+        Avtale avtale = lagAvtale();
         Periode periode = new Periode(LocalDate.of(2024, 2, 1), LocalDate.of(2024, 2, 29));
 
-        Integer prosent = strategy.getProsentForPeriode(avtale, periode);
+        Integer prosent = strategy.getProsentForPeriode(avtale, innholdMedDatoerOgProsent(startDato, sluttDato, null), periode);
 
         assertThat(prosent).isZero();
     }
@@ -229,35 +234,33 @@ class VarigLonnstilskuddAvtaleBeregningStrategyTest {
     void getProsentForPeriode__periode_slutter_paa_reduksjonsdato_er_redusert() {
         LocalDate startDato = LocalDate.of(2024, 1, 1);
         LocalDate sluttDato = LocalDate.of(2026, 1, 1);
-        Avtale avtale = lagAvtaleMedDatoerOgProsent(
-                startDato,
-                sluttDato,
-                TILSKUDDSPROSENT_MAKS
-        );
+        Avtale avtale = lagAvtale();
 
         Periode periode = new Periode(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 1, 1));
 
-        Integer prosent = strategy.getProsentForPeriode(avtale, periode);
+        Integer prosent = strategy.getProsentForPeriode(avtale, innholdMedDatoerOgProsent(
+                startDato,
+                sluttDato,
+                TILSKUDDSPROSENT_MAKS
+        ), periode);
         assertThat(prosent).isEqualTo(TILSKUDDSPROSENT_REDUSERT_MAKS);
     }
 
     @Test
     void getProsentForPeriode_handterer_skuddaar() {
         LocalDate startDato = LocalDate.of(2024, 2, 29);
-        Avtale avtale = lagAvtaleMedDatoerOgProsent(
-            startDato,
-            LocalDate.of(2026, 2, 28),
-            TILSKUDDSPROSENT_MAKS
-        );
+        Avtale avtale = lagAvtale();
 
         Integer forstePeriode = strategy.getProsentForPeriode(
             avtale,
+            innholdMedDatoerOgProsent(startDato, LocalDate.of(2026, 2, 28), TILSKUDDSPROSENT_MAKS),
             Periode.av(LocalDate.of(2024, 2, 29), LocalDate.of(2025, 2, 27))
         );
         assertThat(forstePeriode).isEqualTo(TILSKUDDSPROSENT_MAKS);
 
         Integer andrePeriode = strategy.getProsentForPeriode(
             avtale,
+            innholdMedDatoerOgProsent(startDato, LocalDate.of(2026, 2, 28), TILSKUDDSPROSENT_MAKS),
             Periode.av(LocalDate.of(2025, 2, 28), LocalDate.of(2026, 2, 28))
         );
         assertThat(andrePeriode).isEqualTo(TILSKUDDSPROSENT_REDUSERT_MAKS);
@@ -266,20 +269,18 @@ class VarigLonnstilskuddAvtaleBeregningStrategyTest {
     @Test
     void getProsentForPeriode_handterer_skuddaar_i_midten_av_trinn() {
         LocalDate startDato = LocalDate.of(2023, 3, 1);
-        Avtale avtale = lagAvtaleMedDatoerOgProsent(
-            startDato,
-            LocalDate.of(2025, 2, 28),
-            TILSKUDDSPROSENT_MAKS
-        );
+        Avtale avtale = lagAvtale();
 
         Integer forstePeriode = strategy.getProsentForPeriode(
             avtale,
+            innholdMedDatoerOgProsent(startDato, LocalDate.of(2025, 2, 28), TILSKUDDSPROSENT_MAKS),
             Periode.av(LocalDate.of(2023, 3, 1), LocalDate.of(2024, 2, 29))
         );
         assertThat(forstePeriode).isEqualTo(TILSKUDDSPROSENT_MAKS);
 
         Integer andrePeriode = strategy.getProsentForPeriode(
             avtale,
+            innholdMedDatoerOgProsent(startDato, LocalDate.of(2025, 2, 28), TILSKUDDSPROSENT_MAKS),
             Periode.av(LocalDate.of(2024, 3, 1), LocalDate.of(2025, 2, 28))
         );
         assertThat(andrePeriode).isEqualTo(TILSKUDDSPROSENT_REDUSERT_MAKS);

@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 
 import java.time.LocalDate;
@@ -18,8 +19,8 @@ public class FirearigLonnstilskuddBeregningStrategy extends GenerellLonnstilskud
     }
 
     @Override
-    public Integer getProsentForPeriode(Avtale avtale, Periode periode) {
-        LocalDate avtaleStart = avtale.getGjeldendeInnhold().getStartDato();
+    public Integer getProsentForPeriode(Avtale avtale, AvtaleInnhold avtaleInnhold, Periode periode) {
+        LocalDate avtaleStart = avtaleInnhold.getStartDato();
         LocalDate tilskuddSlutt = periode.getSlutt();
 
         if (tilskuddSlutt.isBefore(avtaleStart.plusYears(1))) {
@@ -39,9 +40,9 @@ public class FirearigLonnstilskuddBeregningStrategy extends GenerellLonnstilskud
     }
 
     @Override
-    public List<LocalDate> getDatoerForReduksjon(Avtale avtale) {
-        LocalDate startDato = avtale.getGjeldendeInnhold().getStartDato();
-        LocalDate sluttDato = avtale.getGjeldendeInnhold().getSluttDato();
+    public List<LocalDate> getDatoerForReduksjon(Avtale avtale, AvtaleInnhold avtaleInnhold) {
+        LocalDate startDato = avtaleInnhold.getStartDato();
+        LocalDate sluttDato = avtaleInnhold.getSluttDato();
 
         if (startDato == null || sluttDato == null) {
             return Collections.emptyList();

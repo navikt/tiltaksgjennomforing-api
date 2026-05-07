@@ -1102,11 +1102,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     Integer beregnTilskuddsprosentForPeriode(LocalDate startdato, LocalDate sluttdato) {
-        return this.hentBeregningStrategi().getProsentForPeriode(this, Periode.av(startdato, sluttdato));
+        return this.hentBeregningStrategi().getProsentForPeriode(this, gjeldendeInnhold, Periode.av(startdato, sluttdato));
     }
 
     Integer beregnTilskuddsbeløpForPeriode(LocalDate startdato, LocalDate sluttdato) {
-        return this.hentBeregningStrategi().getBeløpForPeriode(this, Periode.av(startdato, sluttdato));
+        return this.hentBeregningStrategi().getBeløpForPeriode(this, gjeldendeInnhold, Periode.av(startdato, sluttdato));
     }
 
     private void nyeTilskuddsperioder() {
