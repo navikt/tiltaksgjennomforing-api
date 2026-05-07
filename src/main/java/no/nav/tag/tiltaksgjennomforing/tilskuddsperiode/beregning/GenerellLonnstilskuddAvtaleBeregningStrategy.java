@@ -18,7 +18,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.toBigDecimal;
 
 public abstract class GenerellLonnstilskuddAvtaleBeregningStrategy implements BeregningStrategy {
-    public abstract List<LocalDate> getDatoerForReduksjon(Avtale avtale);
+    public abstract List<LocalDate> getDatoerForReduksjon(Avtale avtale, AvtaleInnhold avtaleInnhold);
 
     @Override
     public List<TilskuddPeriode> genererNyeTilskuddsperioder(Avtale avtale) {
@@ -102,7 +102,8 @@ public abstract class GenerellLonnstilskuddAvtaleBeregningStrategy implements Be
         LocalDate datoFraOgMed,
         LocalDate datoTilOgMed
     ) {
-        List<Periode> reduksjonsperioder = Periode.av(datoFraOgMed, datoTilOgMed).split(getDatoerForReduksjon(avtale));
+        List<Periode> reduksjonsperioder = Periode.av(datoFraOgMed, datoTilOgMed)
+            .split(getDatoerForReduksjon(avtale, avtale.getGjeldendeInnhold()));
 
         return reduksjonsperioder
             .stream()
@@ -139,33 +140,33 @@ public abstract class GenerellLonnstilskuddAvtaleBeregningStrategy implements Be
     }
 
     @Override
-    public Integer getBeløpForPeriode(Avtale avtale, Periode periode) {
-        Integer prosentForPeriode = getProsentForPeriode(avtale, periode);
-        return getBeløpForPeriode(avtale, prosentForPeriode, periode);
+    public Integer getBeløpForPeriode(Avtale avtale, AvtaleInnhold avtaleInnhold, Periode periode) {
+        Integer prosentForPeriode = getProsentForPeriode(avtale, avtaleInnhold, periode);
+        return getBeløpForPeriode(avtaleInnhold, prosentForPeriode, periode);
     }
 
-    private Integer getBeløpForPeriode(Avtale avtale, Integer prosent, Periode periode) {
+    private Integer getBeløpForPeriode(AvtaleInnhold avtaleInnhold, Integer prosent, Periode periode) {
         Integer lonnstilskudd = BeregningStrategy.getSumLonnstilskudd(
-            avtale.getGjeldendeInnhold().getSumLonnsutgifter(),
+            avtaleInnhold.getSumLonnsutgifter(),
             prosent
         );
         return BeregningStrategy.beløpForPeriode(periode, lonnstilskudd);
     }
 
-    public List<Tilskuddstrinn> getTilskuddstrinn(Avtale avtale) {
-        LocalDate startdato = avtale.getGjeldendeInnhold().getStartDato();
-        LocalDate sluttdato = avtale.getGjeldendeInnhold().getSluttDato();
-        Integer sumLonnsutgifter = avtale.getGjeldendeInnhold().getSumLonnsutgifter();
+    public List<Tilskuddstrinn> getTilskuddstrinn(Avtale avtale, AvtaleInnhold avtaleInnhold) {
+        LocalDate startdato = avtaleInnhold.getStartDato();
+        LocalDate sluttdato = avtaleInnhold.getSluttDato();
+        Integer sumLonnsutgifter = avtaleInnhold.getSumLonnsutgifter();
 
         if (startdato == null || sluttdato == null) {
             return Collections.emptyList();
         }
 
         return Periode.av(startdato, sluttdato)
-            .split(getDatoerForReduksjon(avtale))
+            .split(getDatoerForReduksjon(avtale, avtaleInnhold))
             .stream()
             .map(periode -> {
-                Integer prosent = getProsentForPeriode(avtale, periode);
+                Integer prosent = getProsentForPeriode(avtale, avtaleInnhold, periode);
                 Integer belopPerMnd = BeregningStrategy.getSumLonnstilskudd(sumLonnsutgifter, prosent);
                 return new Tilskuddstrinn(
                     periode.getStart(),
@@ -178,8 +179,8 @@ public abstract class GenerellLonnstilskuddAvtaleBeregningStrategy implements Be
     }
 
     TilskuddPeriode lagTilskuddsperiode(Avtale avtale, Periode periode) {
-        Integer prosent = getProsentForPeriode(avtale, periode);
-        Integer beløp = getBeløpForPeriode(avtale, prosent, periode);
+        Integer prosent = getProsentForPeriode(avtale, avtale.getGjeldendeInnhold(), periode);
+        Integer beløp = getBeløpForPeriode(avtale.getGjeldendeInnhold(), prosent, periode);
         TilskuddPeriode tilskuddsperiode = new TilskuddPeriode(
             beløp,
             periode.getStart(),
