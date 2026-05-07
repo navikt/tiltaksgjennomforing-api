@@ -14,27 +14,27 @@ public class VarigLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstils
     public static final int TILSKUDDSPROSENT_REDUSERT_MAKS = 67;
 
     @Override
-    public Integer getProsentForPeriode(Avtale avtale, Periode periode) {
-        Optional<LocalDate> datoForRedusertProsent = getDatoerForReduksjon(avtale).stream().findFirst();
+    public Integer getProsentForPeriode(Avtale avtale, AvtaleInnhold avtaleInnhold, Periode periode) {
+        Optional<LocalDate> datoForRedusertProsent = getDatoerForReduksjon(avtale, avtaleInnhold).stream().findFirst();
 
         boolean erRedusert = datoForRedusertProsent
             .map(dato -> !periode.getSlutt().isBefore(dato))
             .orElse(false);
 
-        int lonnstilskuddProsent = avtale.getGjeldendeInnhold().getLonnstilskuddProsent() != null ? avtale.getGjeldendeInnhold().getLonnstilskuddProsent() : 0;
+        int lonnstilskuddProsent = avtaleInnhold.getLonnstilskuddProsent() != null ? avtaleInnhold.getLonnstilskuddProsent() : 0;
 
         return Math.min(lonnstilskuddProsent, erRedusert ? TILSKUDDSPROSENT_REDUSERT_MAKS : TILSKUDDSPROSENT_MAKS);
     }
 
     @Override
-    public List<LocalDate> getDatoerForReduksjon(Avtale avtale) {
-        LocalDate startDato = avtale.getGjeldendeInnhold().getStartDato();
-        LocalDate sluttDato = avtale.getGjeldendeInnhold().getSluttDato();
+    public List<LocalDate> getDatoerForReduksjon(Avtale avtale, AvtaleInnhold avtaleInnhold) {
+        LocalDate startDato = avtaleInnhold.getStartDato();
+        LocalDate sluttDato = avtaleInnhold.getSluttDato();
         if (startDato == null || sluttDato == null) {
             return Collections.emptyList();
         }
 
-        Integer lonnstilskuddProsent = avtale.getGjeldendeInnhold().getLonnstilskuddProsent();
+        Integer lonnstilskuddProsent = avtaleInnhold.getLonnstilskuddProsent();
         if (lonnstilskuddProsent != null && lonnstilskuddProsent <= TILSKUDDSPROSENT_REDUSERT_MAKS) {
             return Collections.emptyList();
         }

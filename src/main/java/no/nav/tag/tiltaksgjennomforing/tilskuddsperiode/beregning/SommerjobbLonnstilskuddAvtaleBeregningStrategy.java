@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 
 import java.time.LocalDate;
@@ -13,12 +14,12 @@ public class SommerjobbLonnstilskuddAvtaleBeregningStrategy extends GenerellLonn
     public static int TILSKUDDSPROSENT_MIN = 50;
 
     @Override
-    public Integer getProsentForPeriode(Avtale avtale, Periode periode) {
-        return avtale.getGjeldendeInnhold().getLonnstilskuddProsent();
+    public Integer getProsentForPeriode(Avtale avtale, AvtaleInnhold avtaleInnhold, Periode periode) {
+        return avtaleInnhold.getLonnstilskuddProsent();
     }
 
     @Override
-    public List<LocalDate> getDatoerForReduksjon(Avtale avtale) {
+    public List<LocalDate> getDatoerForReduksjon(Avtale avtale, AvtaleInnhold avtaleInnhold) {
         return Collections.emptyList();
     }
 
