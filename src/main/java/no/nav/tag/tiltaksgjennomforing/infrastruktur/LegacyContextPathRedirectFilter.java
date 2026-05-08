@@ -37,9 +37,6 @@ public class LegacyContextPathRedirectFilter extends OncePerRequestFilter {
     private static final String LEGACY_COUNTER = "legacy_url_path_counter";
     private static final String LEGACY_CONTEXT_PATH = "/tiltaksgjennomforing-api";
 
-    @Value("${tiltaksgjennomforing.legacy-context-path.rewrite-enabled:true}")
-    private boolean rewriteEnabled;
-
     @Override
     protected void doFilterInternal(
         HttpServletRequest request,
@@ -50,7 +47,7 @@ public class LegacyContextPathRedirectFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
 
         // Vi skal skrive om url'en dersom den starter med gammel base path
-        if (rewriteEnabled && requestURI.startsWith(LEGACY_CONTEXT_PATH)) {
+        if (requestURI.startsWith(LEGACY_CONTEXT_PATH)) {
             meterRegistry.counter(LEGACY_COUNTER).increment();
             final String newPath = requestURI.substring(LEGACY_CONTEXT_PATH.length()).isEmpty()
                     ? "/"

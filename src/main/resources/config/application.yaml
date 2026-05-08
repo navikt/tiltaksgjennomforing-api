@@ -66,11 +66,6 @@ tiltaksgjennomforing:
   notifikasjoner:
     uri: https://ag-notifikasjon-produsent-api.dev.intern.nav.no/api/graphql
     lenke: https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/
-  legacy-context-path:
-    # Transparent URL rewrite from old /tiltaksgjennomforing-api prefix to new root path
-    # Both paths work simultaneously without redirects
-    # TODO: Disable after migration period (e.g., 6 months after deployment)
-    rewrite-enabled: true
 
 no.nav.security.jwt:
   client:

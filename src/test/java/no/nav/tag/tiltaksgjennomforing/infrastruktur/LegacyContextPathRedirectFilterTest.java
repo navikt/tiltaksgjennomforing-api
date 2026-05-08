@@ -28,7 +28,6 @@ class LegacyContextPathRedirectFilterTest {
     @BeforeEach
     void setUp() {
         filter = new LegacyContextPathRedirectFilter(new SimpleMeterRegistry());
-        ReflectionTestUtils.setField(filter, "rewriteEnabled", true);
         request = new MockHttpServletRequest();
         response = new MockHttpServletResponse();
         filterChain = mock(FilterChain.class);
@@ -86,19 +85,6 @@ class LegacyContextPathRedirectFilterTest {
     void shouldNotRewriteNonLegacyPaths() throws ServletException, IOException {
         // Given
         request.setRequestURI("/avtaler");
-
-        // When
-        filter.doFilterInternal(request, response, filterChain);
-
-        // Then
-        verify(filterChain, times(1)).doFilter(eq(request), eq(response));
-    }
-
-    @Test
-    void shouldNotRewriteWhenDisabled() throws ServletException, IOException {
-        // Given
-        ReflectionTestUtils.setField(filter, "rewriteEnabled", false);
-        request.setRequestURI("/tiltaksgjennomforing-api/avtaler");
 
         // When
         filter.doFilterInternal(request, response, filterChain);
