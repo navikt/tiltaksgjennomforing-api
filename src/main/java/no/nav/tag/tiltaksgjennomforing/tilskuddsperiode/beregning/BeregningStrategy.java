@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
@@ -70,11 +71,11 @@ public interface BeregningStrategy {
         }
     }
 
-    default Integer getBeløpForPeriode(Avtale avtale, Periode periode) {
+    default Integer getBeløpForPeriode(Avtale avtale, AvtaleInnhold avtaleInnhold, Periode periode) {
         return 0;
     }
 
-    default Integer getProsentForPeriode(Avtale avtale, Periode periode) {
+    default Integer getProsentForPeriode(Avtale avtale, AvtaleInnhold avtaleInnhold, Periode periode) {
         return null;
     }
 

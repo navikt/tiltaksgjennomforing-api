@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
@@ -26,7 +27,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
     private final GenerellLonnstilskuddAvtaleBeregningStrategy strategy =
         new GenerellLonnstilskuddAvtaleBeregningStrategy() {
             @Override
-            public Integer getProsentForPeriode(Avtale avtale, Periode periode) {
+            public Integer getProsentForPeriode(Avtale avtale, AvtaleInnhold avtaleInnhold, Periode periode) {
                 if (datoForRedusertProsent != null && !periode.getStart().isBefore(datoForRedusertProsent)) {
                     return PROSENT - 10;
                 }
@@ -34,7 +35,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
             }
 
             @Override
-            public List<LocalDate> getDatoerForReduksjon(Avtale avtale) {
+            public List<LocalDate> getDatoerForReduksjon(Avtale avtale, AvtaleInnhold avtaleInnhold) {
                 if (datoForRedusertProsent != null) {
                     return List.of(datoForRedusertProsent);
                 }
@@ -118,7 +119,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
         List<TilskuddPeriode> perioder = strategy.beregnTilskuddsperioderForAvtale(avtale, fra, til);
 
         assertThat(perioder).hasSize(2);
-        int redusertProsent = strategy.getProsentForPeriode(avtale, Periode.av(datoForRedusertProsent, til));
+        int redusertProsent = strategy.getProsentForPeriode(avtale, avtale.getGjeldendeInnhold(), Periode.av(datoForRedusertProsent, til));
         assertThat(perioder).allMatch(p -> p.getLonnstilskuddProsent() == redusertProsent);
         assertThat(perioder).allMatch(p -> p.getBeløp() == SUM_LONNSTILSKUDD_REDUSERT_PER_MANED);
     }
@@ -150,7 +151,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
         assertThat(forReduksjon).allMatch(p -> p.getLonnstilskuddProsent() == PROSENT);
         assertThat(forReduksjon).allMatch(p -> p.getBeløp() == SUM_LONNSTILSKUDD_PER_MANED);
 
-        int redusertProsent = strategy.getProsentForPeriode(avtale, Periode.av(datoForRedusertProsent, til));
+        int redusertProsent = strategy.getProsentForPeriode(avtale, avtale.getGjeldendeInnhold(), Periode.av(datoForRedusertProsent, til));
         assertThat(etterReduksjon).hasSize(2);
         assertThat(etterReduksjon).allMatch(p -> p.getLonnstilskuddProsent() == redusertProsent);
         assertThat(etterReduksjon).allMatch(p -> p.getBeløp() == SUM_LONNSTILSKUDD_REDUSERT_PER_MANED);
@@ -165,7 +166,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
 
         List<TilskuddPeriode> perioder = strategy.beregnTilskuddsperioderForAvtale(avtale, fra, til);
 
-        int redusertProsent = strategy.getProsentForPeriode(avtale, Periode.av(datoForRedusertProsent, til));
+        int redusertProsent = strategy.getProsentForPeriode(avtale, avtale.getGjeldendeInnhold(), Periode.av(datoForRedusertProsent, til));
         assertThat(perioder).allMatch(p -> p.getLonnstilskuddProsent() == redusertProsent);
     }
 
@@ -181,7 +182,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
         // Jan 1–31 og Feb 1–28 → full prosent (2 perioder), Feb 29–29 → redusert (1 periode)
         assertThat(perioder).hasSize(3);
 
-        int redusertProsent = strategy.getProsentForPeriode(avtale, Periode.av(datoForRedusertProsent, til));
+        int redusertProsent = strategy.getProsentForPeriode(avtale, avtale.getGjeldendeInnhold(), Periode.av(datoForRedusertProsent, til));
 
         List<TilskuddPeriode> fullePerioder = perioder.stream()
                 .filter(p -> p.getSluttDato().isBefore(datoForRedusertProsent))

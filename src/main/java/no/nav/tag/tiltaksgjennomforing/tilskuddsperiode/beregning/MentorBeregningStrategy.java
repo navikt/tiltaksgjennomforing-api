@@ -150,11 +150,11 @@ public class MentorBeregningStrategy implements BeregningStrategy {
     }
 
     @Override
-    public Integer getBeløpForPeriode(Avtale avtale, Periode periode) {
+    public Integer getBeløpForPeriode(Avtale avtale, AvtaleInnhold avtaleInnhold, Periode periode) {
         if (!nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(avtale)) {
             return null;
         }
 
-        return BeregningStrategy.beløpForPeriode(periode, avtale.getGjeldendeInnhold().getSumLonnsutgifter());
+        return BeregningStrategy.beløpForPeriode(periode, avtaleInnhold.getSumLonnsutgifter());
     }
 }
