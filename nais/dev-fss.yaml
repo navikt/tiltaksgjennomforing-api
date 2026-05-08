@@ -51,6 +51,7 @@ spec:
       memory: 600Mi
   ingresses:
     - https://tiltaksgjennomforing-api.intern.dev.nav.no/
+    - https://tiltaksgjennomforing-api.dev-fss-pub.nais.io/
   vault:
     enabled: true
   webproxy: true
