@@ -116,12 +116,10 @@ public class VeilederTest {
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
 
         // NÅR
-        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
         veileder.godkjennAvtale(avtale);
 
         // SÅ
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
-        assertThat(avtale.getKvalifiseringsgruppe().getKvalifiseringskode()).isEqualTo(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS.getKvalifiseringskode());
     }
 
     @Test
@@ -429,7 +427,6 @@ public class VeilederTest {
         VeilarboppfolgingService veilarboppfolgingServiceMock = mock(VeilarboppfolgingService.class);
         PersondataService persondataService = mock(PersondataService.class);
         FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
-        when(veilarboppfolgingServiceMock.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
@@ -845,5 +842,42 @@ public class VeilederTest {
         assertThat(avtale.getFormidlingsgruppe()).isEqualTo(Formidlingsgruppe.FRA_NAV_NO);
         assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
 
+    }
+
+    @Test
+    public void forskjellig_kvalifiseringskode_ved_opprett_og_godkjenning_av_veileder_skal_kaste_exception(){
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        Deltaker deltaker = TestData.enDeltaker(avtale);
+        deltaker.godkjennForAvtalepart(avtale);
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        arbeidsgiver.godkjennAvtale(avtale);
+        Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus(
+            Formidlingsgruppe.ARBEIDSSOKER,
+            Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
+            "0906"
+        );
+        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(oppfølgingsstatus);
+        Veileder veileder = TestData.enVeileder(avtale.getVeilederNavIdent(), veilarboppfolgingService);
+        assertFeilkode(Feilkode.OPPFOLGINGSTATUS_ENDRET, () -> veileder.godkjennForAvtalepart(avtale));
+    }
+
+    @Test
+    public void forskjellig_kvalifiseringskode_ved_forlengelse_skal_ikke_kaste_exception(){
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder();
+
+        Oppfølgingsstatus annenOppfølgingsstatus = new Oppfølgingsstatus(
+            Formidlingsgruppe.ARBEIDSSOKER,
+            Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
+            avtale.getEnhetOppfolging()
+        );
+        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(annenOppfølgingsstatus);
+        Veileder veileder = TestData.enVeileder(avtale.getVeilederNavIdent(), veilarboppfolgingService);
+
+        LocalDate nySluttDato = avtale.getGjeldendeInnhold().getSluttDato().plusMonths(1);
+
+        veileder.forlengAvtale(nySluttDato, avtale);
+        assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(nySluttDato);
     }
 }
