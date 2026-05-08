@@ -73,7 +73,10 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        - application: tiltak-proxy
+        - application: tiltak-proxy # Fjernes etter frontend-app er migrert til ny path
+        - application: tiltaksgjennomforing
+          namespace: arbeidsgiver
+          cluster: dev-gcp
         - application: min-side-arbeidsgiver
           namespace: fager
           cluster: dev-gcp
