@@ -11,6 +11,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Inkluderingstilskuddsutgift;
 import no.nav.tag.tiltaksgjennomforing.avtale.MentorValgtLonnstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
+import no.nav.tag.tiltaksgjennomforing.avtale.LonnstilskuddFormaal;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 
 import java.math.BigDecimal;
@@ -76,6 +77,7 @@ public record AvtaleInnholdDTO(
     Integer sumLonnstilskudd,
     Integer manedslonn100pst,
     Stillingstype stillingstype,
+    LonnstilskuddFormaal lonnstilskuddFormaal,
     List<TilskuddstrinnDTO> tilskuddstrinn,
 
     // Arbeidstrening
@@ -157,6 +159,7 @@ public record AvtaleInnholdDTO(
             dbEntitet.getSumLonnstilskudd(),
             dbEntitet.getManedslonn100pst(),
             dbEntitet.getStillingstype(),
+            dbEntitet.getLonnstilskuddFormaal(),
             TilskuddstrinnDTO.map(dbEntitet),
             MaalDTO.map(dbEntitet),
             dbEntitet.getInkluderingstilskuddsutgift(),
