@@ -31,13 +31,13 @@ spec:
   image: {{image}}
   port: 8080
   liveness:
-    path: /tiltaksgjennomforing-api/internal/healthcheck
+    path: /internal/healthcheck
     initialDelay: 30
     timeout: 1
     periodSeconds: 30
     failureThreshold: 10
   readiness:
-    path: /tiltaksgjennomforing-api/internal/healthcheck
+    path: /internal/healthcheck
     initialDelay: 30
     timeout: 1
     periodSeconds: 30
@@ -60,7 +60,7 @@ spec:
     enabled: true
   prometheus:
     enabled: true
-    path: /tiltaksgjennomforing-api/internal/actuator/prometheus
+    path: /internal/actuator/prometheus
   observability:
     autoInstrumentation:
       enabled: true
