@@ -131,14 +131,6 @@ public class AdminController {
         avtaleRepository.save(avtale);
     }
 
-    @PostMapping("/avtale/{avtaleId}/annullert-feilregistrert")
-    @Transactional
-    public void endreAnnulleringsgrunnTilFeilregistrering(@PathVariable("avtaleId") UUID avtaleId) {
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        avtale.annullerMedFeilregistrering(Identifikator.SYSTEM);
-        avtaleRepository.save(avtale);
-    }
-
     @PostMapping("/annuller-og-generer-behandlet-i-arena-perioder/{avtaleId}/{dato}")
     @Transactional
     public void annullerOgGenererBehandletIArenaPerioder(@PathVariable("avtaleId") UUID avtaleId, @PathVariable("dato") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dato) {
