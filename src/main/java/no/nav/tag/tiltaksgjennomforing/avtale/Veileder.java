@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
@@ -17,6 +18,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Kode6SperretForOpprettelseOgEndringException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.OppfolgingstatusEndretException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
@@ -345,7 +347,23 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             return;
         }
 
-        this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
+        Kvalifiseringsgruppe gammelKvalifiseringsgruppe = avtale.getKvalifiseringsgruppe();
+        Boolean oppfolgingHarEndret = Optional.ofNullable(gammelKvalifiseringsgruppe)
+            .map(kg -> !kg.equals(oppfølgingsstatus.getKvalifiseringsgruppe()))
+            .orElse(false);
+        settOppfølgingsStatus(avtale, oppfølgingsstatus);
+
+        if (oppfolgingHarEndret && !avtale.erAvtaleInngått() && avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD) {
+            log.info(
+                "Kvalifiseringsgruppe for avtale {} har endret seg fra {} til {}, oppdaterer avtale",
+                avtale.getId(),
+                gammelKvalifiseringsgruppe,
+                oppfølgingsstatus.getKvalifiseringsgruppe()
+            );
+            avtale.opphevGodkjenningerSomVeileder();
+            avtale.endreBeløpOgProsentITilskuddsperioder();
+            throw new OppfolgingstatusEndretException();
+        }
     }
 
     private void sjekkOmBedriftErGyldigOgOppdaterNavn(Avtale avtale) {
