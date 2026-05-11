@@ -52,7 +52,8 @@ spec:
       cpu: 500m
       memory: 6000Mi
   ingresses:
-    - https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing-api/
+    - https://tiltaksgjennomforing-api.intern.nav.no/
+    - https://tiltaksgjennomforing-api.prod-fss-pub.nais.io/
   vault:
     enabled: true
   webproxy: true
@@ -75,7 +76,13 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        - application: tiltak-proxy
+        - application: tiltak-proxy # Fjernes etter frontend-app er migrert til ny path
+        - application: tiltaksgjennomforing
+          namespace: arbeidsgiver
+          cluster: prod-gcp
+        - application: tiltaksgjennomforing-intern
+          namespace: arbeidsgiver
+          cluster: prod-gcp
         - application: min-side-arbeidsgiver
           namespace: fager
           cluster: prod-gcp
