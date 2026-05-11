@@ -1227,7 +1227,8 @@ public class AvtaleTest {
         Integer stillingKonseptId = 9999;
         BigDecimal stillingprosent = BigDecimal.valueOf(90.0);
         BigDecimal antallDagerPerUke = BigDecimal.valueOf(4.0);
-        var endreStillingsbeskrivelse = new EndreStillingsbeskrivelse(stillingstittel, arbeidsoppgaver, stillingStyrk08, stillingKonseptId, stillingprosent, antallDagerPerUke);
+        LonnstilskuddFormaal lonnstilskuddFormaal = LonnstilskuddFormaal.SKAFFE_ARBEID;
+        var endreStillingsbeskrivelse = new EndreStillingsbeskrivelse(stillingstittel, arbeidsoppgaver, stillingStyrk08, stillingKonseptId, stillingprosent, antallDagerPerUke, lonnstilskuddFormaal);
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(1);
         avtale.endreStillingsbeskrivelse(endreStillingsbeskrivelse, new NavIdent("Z123456"));
@@ -1239,6 +1240,7 @@ public class AvtaleTest {
         assertThat(avtale.getGjeldendeInnhold().getStillingKonseptId()).isEqualTo(stillingKonseptId);
         assertThat(avtale.getGjeldendeInnhold().getStillingprosent()).isEqualTo(stillingprosent);
         assertThat(avtale.getGjeldendeInnhold().getAntallDagerPerUke()).isEqualTo(antallDagerPerUke);
+        assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddFormaal()).isEqualTo(lonnstilskuddFormaal);
     }
 
     @Test

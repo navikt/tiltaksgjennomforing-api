@@ -42,6 +42,13 @@ public enum Tiltakstype {
         return this == Tiltakstype.VARIG_LONNSTILSKUDD;
     }
 
+    public boolean isLonnstilskudd() {
+        return this == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD ||
+            this == Tiltakstype.VARIG_LONNSTILSKUDD ||
+            this == Tiltakstype.FIREARIG_LONNSTILSKUDD ||
+            this == Tiltakstype.SOMMERJOBB;
+    }
+
     public boolean isSommerjobb() {
         return this == Tiltakstype.SOMMERJOBB;
     }
