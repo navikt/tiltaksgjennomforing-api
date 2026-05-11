@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy;
 
 
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -9,28 +10,19 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.time.LocalDate;
 
-public class MentorStartOgSluttDatoStrategy implements StartOgSluttDatoStrategy {
-    private final Kvalifiseringsgruppe kvalifiseringsgruppe;
-    private final Boolean erOpprettetEllerEndretAvArena;
-
-    public MentorStartOgSluttDatoStrategy(Kvalifiseringsgruppe kvalifiseringsgruppe, Boolean erOpprettetEllerEndretAvArena) {
-        this.kvalifiseringsgruppe = kvalifiseringsgruppe;
-        this.erOpprettetEllerEndretAvArena = erOpprettetEllerEndretAvArena;
+public class MentorStartOgSluttDatoStrategy extends StartOgSluttDatoStrategy {
+    public MentorStartOgSluttDatoStrategy(Avtale avtale) {
+        super(avtale);
     }
 
     @Override
-    public void sjekkStartOgSluttDato(
-        LocalDate startDato,
-        LocalDate sluttDato,
-        boolean erGodkjentForEtterregistrering,
-        boolean erAvtaleInngått,
-        Fnr deltakerFnr
-    ) {
-        StartOgSluttDatoStrategy.super.sjekkStartOgSluttDato(startDato, sluttDato, erGodkjentForEtterregistrering, erAvtaleInngått, deltakerFnr);
+    public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
+        super.sjekkStartOgSluttDato(startDato, sluttDato);
 
         if (sluttDato == null) {
             return;
         }
+        Fnr deltakerFnr = avtale.getDeltakerFnr();
         if (deltakerFnr != null && deltakerFnr.erOver72ÅrFraSluttDato(sluttDato)) {
             throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
         }
@@ -38,10 +30,12 @@ public class MentorStartOgSluttDatoStrategy implements StartOgSluttDatoStrategy 
             return;
         }
 
-        if(erOpprettetEllerEndretAvArena && sluttDato.isBefore(Now.localDate())){
+        boolean erOpprettetEllerEndretAvArena = avtale.erOpprettetEllerEndretAvArena();
+        if (erOpprettetEllerEndretAvArena && sluttDato.isBefore(Now.localDate())){
             return;
         }
 
+        Kvalifiseringsgruppe kvalifiseringsgruppe = avtale.getKvalifiseringsgruppe();
         boolean erSpesieltTilpasset = kvalifiseringsgruppe == Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS;
         boolean erVarigTilpasset = kvalifiseringsgruppe == Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS;
 
