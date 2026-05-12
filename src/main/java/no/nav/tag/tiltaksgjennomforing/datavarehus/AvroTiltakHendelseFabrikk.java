@@ -72,7 +72,7 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setMaster(erMaster(avtale));
         hendelse.setForkortetGrunn(Optional.ofNullable(forkortetGrunn).flatMap(ForkortetGrunn::utled).orElse(null));
         hendelse.setAvtaleNr(avtale.getAvtaleNr());
-        hendelse.setMaal(mapMaal(avtale));
+        hendelse.setArbeidstreningsMaal(mapMaal(avtale));
         hendelse.setMentorTimelonn(avtale.getGjeldendeInnhold().getMentorTimelonn());
         hendelse.setMentorAntallTimer(avtale.getGjeldendeInnhold().getMentorAntallTimer());
         hendelse.setLonnstilskuddFormaal(mapLonnstilskuddFormaal(avtale));

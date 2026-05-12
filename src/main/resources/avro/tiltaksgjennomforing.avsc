@@ -126,6 +126,13 @@
     },
     {
       "name": "maal",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "name": "arbeidstreningsMaal",
       "type": {
         "type": "array",
         "items": {
