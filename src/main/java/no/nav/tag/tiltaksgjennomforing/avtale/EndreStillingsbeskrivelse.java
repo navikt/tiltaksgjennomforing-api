@@ -14,4 +14,5 @@ public class EndreStillingsbeskrivelse {
     Integer stillingKonseptId;
     BigDecimal stillingprosent;
     BigDecimal antallDagerPerUke;
+    LonnstilskuddFormaal lonnstilskuddFormaal;
 }
