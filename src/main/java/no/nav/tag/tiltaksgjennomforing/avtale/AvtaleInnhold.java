@@ -249,6 +249,12 @@ public class AvtaleInnhold {
         setStillingKonseptId(endreStillingsbeskrivelse.getStillingKonseptId());
         setStillingprosent(endreStillingsbeskrivelse.getStillingprosent());
         setAntallDagerPerUke(endreStillingsbeskrivelse.getAntallDagerPerUke());
+
+        boolean erLtsUtenSommerjobb = avtale.getTiltakstype().isLonnstilskudd() && !avtale.getTiltakstype().isSommerjobb();
+        boolean formaalHarEnVerdi = endreStillingsbeskrivelse.getLonnstilskuddFormaal() != null;
+        if (erLtsUtenSommerjobb && formaalHarEnVerdi && !avtale.erAvtaleInngått()) {
+            setLonnstilskuddFormaal(endreStillingsbeskrivelse.getLonnstilskuddFormaal());
+        }
     }
 
     public void endreOppfølgingOgTilretteleggingInfo(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging) {
