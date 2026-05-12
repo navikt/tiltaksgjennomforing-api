@@ -139,11 +139,11 @@
           "type": "enum",
           "name": "MaalKategori",
           "symbols": [
-            "FÅ_JOBB_I_BEDRIFTEN",
+            "FAA_JOBB_I_BEDRIFTEN",
             "ARBEIDSERFARING",
-            "UTPRØVING",
-            "SPRÅKOPPLÆRING",
-            "OPPNÅ_FAGBREV_KOMPETANSEBEVIS",
+            "UTPROVING",
+            "SPRAAKOPPLAERING",
+            "OPPNAA_FAGBREV_KOMPETANSEBEVIS",
             "ANNET"
           ]
         }
@@ -432,7 +432,7 @@
                     "UTSTYR",
                     "PROGRAMVARE",
                     "ARBEIDSHJELPEMIDLER",
-                    "OPPLÆRING",
+                    "OPPLAERING",
                     "FORSIKRING_LISENS_SERTIFISERING"
                   ]
                 }

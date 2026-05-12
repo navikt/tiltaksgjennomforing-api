@@ -72,7 +72,7 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setMaster(erMaster(avtale));
         hendelse.setForkortetGrunn(Optional.ofNullable(forkortetGrunn).flatMap(ForkortetGrunn::utled).orElse(null));
         hendelse.setAvtaleNr(avtale.getAvtaleNr());
-        hendelse.setArbeidstreningsMaal(mapMaal(avtale));
+        hendelse.setArbeidstreningsMaal(mapArbeidstreningsMaal(avtale));
         hendelse.setMentorTimelonn(avtale.getGjeldendeInnhold().getMentorTimelonn());
         hendelse.setMentorAntallTimer(avtale.getGjeldendeInnhold().getMentorAntallTimer());
         hendelse.setLonnstilskuddFormaal(mapLonnstilskuddFormaal(avtale));
@@ -87,10 +87,16 @@ public class AvroTiltakHendelseFabrikk {
             : null;
     }
 
-    private List<MaalKategori> mapMaal(Avtale avtale) {
+    private List<MaalKategori> mapArbeidstreningsMaal(Avtale avtale) {
         return avtale.getGjeldendeInnhold().getMaal().stream()
                 .filter(maal -> maal.getKategori() != null)
-                .map(maal -> MaalKategori.valueOf(maal.getKategori().name()))
+                .map(maal -> switch (maal.getKategori()) {
+                    case FÅ_JOBB_I_BEDRIFTEN -> MaalKategori.FAA_JOBB_I_BEDRIFTEN;
+                    case UTPRØVING -> MaalKategori.UTPROVING;
+                    case SPRÅKOPPLÆRING -> MaalKategori.SPRAAKOPPLAERING;
+                    case OPPNÅ_FAGBREV_KOMPETANSEBEVIS -> MaalKategori.OPPNAA_FAGBREV_KOMPETANSEBEVIS;
+                    default -> MaalKategori.valueOf(maal.getKategori().name());
+                })
                 .collect(Collectors.toList());
     }
 
