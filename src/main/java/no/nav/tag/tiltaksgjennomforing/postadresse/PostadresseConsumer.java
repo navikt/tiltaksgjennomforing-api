@@ -67,6 +67,7 @@ public class PostadresseConsumer {
 			}
 			return response;
 		} catch (RestClientResponseException exception) {
+			log.info("hent-postadresse EXCEPTION: {}", exception);
 			throw mapRegoppslagException(exception);
 		}
 	}
