@@ -72,9 +72,15 @@ public class NotifikasjonParser {
             case VTAO -> new AltinnNotifikasjonsProperties(
                     altinnTilgangsstyringProperties.getVtaoServiceCode(),
                     altinnTilgangsstyringProperties.getVtaoServiceEdition());
-            case FIREARIG_LONNSTILSKUDD -> new AltinnNotifikasjonsProperties(
-                    altinnTilgangsstyringProperties.getLtsFirearigServiceCode(),
-                    altinnTilgangsstyringProperties.getLtsFirearigServiceEdition());
+            case FIREARIG_LONNSTILSKUDD -> {
+                if (altinnTilgangsstyringProperties.getLtsFirearigServiceCode() == null
+                        || altinnTilgangsstyringProperties.getLtsFirearigServiceEdition() == null) {
+                    throw new IllegalStateException("Notifikasjoner støttes ikke for tiltakstype FIREARIG_LONNSTILSKUDD");
+                }
+                yield new AltinnNotifikasjonsProperties(
+                        altinnTilgangsstyringProperties.getLtsFirearigServiceCode(),
+                        altinnTilgangsstyringProperties.getLtsFirearigServiceEdition());
+            }
         };
     }
 }

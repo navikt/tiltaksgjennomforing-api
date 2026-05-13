@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
@@ -38,7 +37,6 @@ import java.util.stream.Collectors;
 public class Arbeidsgiver extends Avtalepart<Fnr> {
     private final Map<BedriftNr, Collection<Tiltakstype>> tilganger;
     private final AltinnTilgangerDto altinnTilganger;
-    private final Set<AltinnReportee> altinnOrganisasjoner;
     private final List<BedriftNr> adressesperreTilgang;
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
@@ -47,7 +45,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     public Arbeidsgiver(
         Fnr identifikator,
-        Set<AltinnReportee> altinnOrganisasjoner,
         Map<BedriftNr, Collection<Tiltakstype>> tilganger,
         AltinnTilgangerDto altinnTilganger,
         List<BedriftNr> adressesperreTilgang,
@@ -57,7 +54,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         VeilarboppfolgingService veilarboppfolgingService
     ) {
         super(identifikator);
-        this.altinnOrganisasjoner = altinnOrganisasjoner;
         this.tilganger = tilganger;
         this.altinnTilganger = altinnTilganger;
         this.adressesperreTilgang = adressesperreTilgang;
@@ -107,7 +103,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     @Override
     public InnloggetBruker innloggetBruker() {
-        return new InnloggetArbeidsgiver(getIdentifikator(), altinnOrganisasjoner, tilganger, altinnTilganger);
+        return new InnloggetArbeidsgiver(getIdentifikator(), tilganger, altinnTilganger);
     }
 
     @Override
