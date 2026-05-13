@@ -50,14 +50,11 @@ public class PostadresseConsumer {
 
 	public PostadresseResponse hentPostadresse(PostadresseRequest postadresseRequest) {
 		try {
-			log.info("hent-postadresse baseUrl: {}", baseUrl);
-			log.info("hent-postadresse request: {}", postadresseRequest);
 			PostadresseResponse response = azureRestTemplate.postForObject(
 				baseUrl + "/postadresse",
 				lagRequest(postadresseRequest),
 				PostadresseResponse.class
 			);
-			log.info("hent-postadresse response: {}", response);
 			if (response == null) {
 				throw new RegoppslagTechnicalException("Kall mot Regoppslag returnerte tom respons.");
 			}
@@ -67,7 +64,6 @@ public class PostadresseConsumer {
 			}
 			return response;
 		} catch (RestClientResponseException exception) {
-			log.info("hent-postadresse EXCEPTION: {}", exception);
 			throw mapRegoppslagException(exception);
 		}
 	}
