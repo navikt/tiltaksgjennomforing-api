@@ -103,7 +103,6 @@ public class AdminController {
         return postadresseConsumer.hentPostadresse(
             PostadresseRequest.builder()
                 .ident(validertFnr.asString())
-                .filtrerAdressebeskyttelse(Set.of())
                 .build()
         );
     }

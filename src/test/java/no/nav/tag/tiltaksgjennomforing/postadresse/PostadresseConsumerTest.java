@@ -9,8 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.Set;
-
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
@@ -34,7 +32,6 @@ class PostadresseConsumerTest {
         PostadresseResponse response = postadresseConsumer.hentPostadresse(
             PostadresseRequest.builder()
                 .ident("09876543210")
-                .filtrerAdressebeskyttelse(Set.of())
                 .build()
         );
 
@@ -54,7 +51,6 @@ class PostadresseConsumerTest {
         Adresse adresse = postadresseConsumer.hentAdresse(
             PostadresseRequest.builder()
                 .ident("09876543210")
-                .filtrerAdressebeskyttelse(Set.of())
                 .build()
         );
 
@@ -78,7 +74,6 @@ class PostadresseConsumerTest {
         Adresse adresse = postadresseConsumer.hentAdresse(
             PostadresseRequest.builder()
                 .ident("20987654321")
-                .filtrerAdressebeskyttelse(Set.of())
                 .build()
         );
 
@@ -101,7 +96,6 @@ class PostadresseConsumerTest {
     void hentAdresse__skal_kaste_funksjonell_feil_ved_manglende_pdl_data() {
         PostadresseRequest postadresseRequest = PostadresseRequest.builder()
             .ident("10987654321")
-            .filtrerAdressebeskyttelse(Set.of())
             .build();
 
         assertThatThrownBy(() -> postadresseConsumer.hentAdresse(postadresseRequest))
