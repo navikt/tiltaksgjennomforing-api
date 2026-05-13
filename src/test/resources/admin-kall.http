@@ -64,3 +64,8 @@ POST http://localhost:12345/tiltaksgjennomforing-api/utvikler-admin/avtale-hende
 Content-Type: application/json
 Authorization: Bearer <TOKEN>
 
+### hent postadresse for en person
+GET http://localhost:12345/tiltaksgjennomforing-api/utvikler-admin/hent-postadresse/16120101181
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer <TOKEN>

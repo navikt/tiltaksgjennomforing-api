@@ -81,6 +81,11 @@ public class AdminController {
     private final VarselRepository varselRepository;
     private final PostadresseConsumer postadresseConsumer;
 
+    @GetMapping("/")
+    public String hjem(){
+        return "Hei fra Admin controller";
+    }
+
     @PostMapping("reberegn")
     public void reberegnLønnstilskudd(@RequestBody List<UUID> avtaleIder) {
         for (UUID avtaleId : avtaleIder) {
@@ -91,7 +96,7 @@ public class AdminController {
     }
 
     @GetMapping("/hent-postadresse/{fnr}")
-    public PostadresseResponse hentPostadresse(@PathVariable String fnr) {
+    public PostadresseResponse hentPostadresse(@PathVariable("fnr") String fnr) {
         Fnr validertFnr = new Fnr(fnr);
         return postadresseConsumer.hentPostadresse(
             PostadresseRequest.builder()
