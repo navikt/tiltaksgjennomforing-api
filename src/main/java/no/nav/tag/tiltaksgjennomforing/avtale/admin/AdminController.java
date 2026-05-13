@@ -90,8 +90,8 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/postadresse")
-    public PostadresseResponse hentPostadresse(@RequestParam String fnr) {
+    @GetMapping("/hent-postadresse/{fnr}")
+    public PostadresseResponse hentPostadresse(@PathVariable String fnr) {
         Fnr validertFnr = new Fnr(fnr);
         return postadresseConsumer.hentPostadresse(
             PostadresseRequest.builder()
