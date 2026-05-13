@@ -111,6 +111,14 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      regoppslag-q1:
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: api://dev-fss.teamdokumenthandtering.regoppslag-q1/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
 
 tiltaksgjennomforing:
   persondata:
@@ -156,6 +164,8 @@ tiltaksgjennomforing:
     ltsFirearigServiceEdition: 8
   ereg:
     uri: https://ereg-services.dev.intern.nav.no/api/v2/organisasjon
+  regoppslag:
+    uri: http://regoppslag-q1.teamdokumenthandtering.svc.nais.local/rest
   oppgave:
     oppgave-uri: https://oppgave.dev.intern.nav.no/api/v1/oppgaver
   unleash:

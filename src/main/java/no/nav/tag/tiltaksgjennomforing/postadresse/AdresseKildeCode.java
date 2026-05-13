@@ -1,0 +1,11 @@
+package no.nav.tag.tiltaksgjennomforing.postadresse;
+
+public enum AdresseKildeCode {
+	BOSTEDSADRESSE,
+	OPPHOLDSADRESSE,
+	KONTAKTADRESSE,
+	DELTBOSTED,
+	KONTAKTINFORMASJONFORDØDSBO,
+	ENHETPOSTADRESSE,
+	ENHETFORRETNINGSADRESSE
+}
