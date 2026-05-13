@@ -97,7 +97,9 @@ public class AdminController {
 
     @GetMapping("/hent-postadresse/{fnr}")
     public PostadresseResponse hentPostadresse(@PathVariable("fnr") String fnr) {
+        log.info("skal hent-postadresse for FNR...");
         Fnr validertFnr = new Fnr(fnr);
+        log.info("hent-postadresse FNR er validert, skal kalle postadresse consumer service...");
         return postadresseConsumer.hentPostadresse(
             PostadresseRequest.builder()
                 .ident(validertFnr.asString())
