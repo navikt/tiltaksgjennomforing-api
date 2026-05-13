@@ -5,10 +5,13 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.ForkortetGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.TilskuddstrinnDTO;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @UtilityClass
 public class AvroTiltakHendelseFabrikk {
@@ -68,7 +71,55 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setAnnullertGrunn(avtale.getAnnullertGrunn());
         hendelse.setMaster(erMaster(avtale));
         hendelse.setForkortetGrunn(Optional.ofNullable(forkortetGrunn).flatMap(ForkortetGrunn::utled).orElse(null));
+        hendelse.setAvtaleNr(avtale.getAvtaleNr());
+        hendelse.setArbeidstreningsMaal(mapArbeidstreningsMaal(avtale));
+        hendelse.setMentorTimelonn(avtale.getGjeldendeInnhold().getMentorTimelonn());
+        hendelse.setMentorAntallTimer(avtale.getGjeldendeInnhold().getMentorAntallTimer());
+        hendelse.setLonnstilskuddFormaal(mapLonnstilskuddFormaal(avtale));
+        hendelse.setInkluderingstilskuddsutgift(mapInkluderingstilskuddsutgift(avtale));
+        hendelse.setTilskuddstrinn(mapTilskuddstrinn(avtale));
         return hendelse;
+    }
+
+    private LonnstilskuddFormaal mapLonnstilskuddFormaal(Avtale avtale) {
+        return avtale.getGjeldendeInnhold().getLonnstilskuddFormaal() != null
+            ? LonnstilskuddFormaal.valueOf(avtale.getGjeldendeInnhold().getLonnstilskuddFormaal().name())
+            : null;
+    }
+
+    private List<MaalKategori> mapArbeidstreningsMaal(Avtale avtale) {
+        return avtale.getGjeldendeInnhold().getMaal().stream()
+                .filter(maal -> maal.getKategori() != null)
+                .map(maal -> switch (maal.getKategori()) {
+                    case FÅ_JOBB_I_BEDRIFTEN -> MaalKategori.FAA_JOBB_I_BEDRIFTEN;
+                    case UTPRØVING -> MaalKategori.UTPROVING;
+                    case SPRÅKOPPLÆRING -> MaalKategori.SPRAAKOPPLAERING;
+                    case OPPNÅ_FAGBREV_KOMPETANSEBEVIS -> MaalKategori.OPPNAA_FAGBREV_KOMPETANSEBEVIS;
+                    default -> MaalKategori.valueOf(maal.getKategori().name());
+                })
+                .collect(Collectors.toList());
+    }
+
+    private List<InkluderingstilskuddsutgiftRecord> mapInkluderingstilskuddsutgift(Avtale avtale) {
+        return avtale.getGjeldendeInnhold().getInkluderingstilskuddsutgift().stream()
+                .map(utgift -> InkluderingstilskuddsutgiftRecord.newBuilder()
+                    .setBelop(utgift.getBeløp())
+                    .setType(utgift.getType() != null ? InkluderingstilskuddsutgiftType.valueOf(utgift.getType().name()) : null)
+                    .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+    private List<TilskuddstrinnRecord> mapTilskuddstrinn(Avtale avtale) {
+        return TilskuddstrinnDTO.map(avtale.getGjeldendeInnhold()).stream()
+                .map(t -> TilskuddstrinnRecord.newBuilder()
+                    .setStart(t.start())
+                    .setSlutt(t.slutt())
+                    .setProsent(t.prosent())
+                    .setBelopPerMnd(t.belopPerMnd())
+                    .build()
+                )
+                .collect(Collectors.toList());
     }
 
     private Boolean erMaster(Avtale avtale) {
