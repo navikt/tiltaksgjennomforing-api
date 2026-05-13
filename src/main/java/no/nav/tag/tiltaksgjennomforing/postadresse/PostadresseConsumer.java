@@ -7,6 +7,9 @@ import no.nav.tag.tiltaksgjennomforing.postadresse.exception.RegoppslagFunctiona
 import no.nav.tag.tiltaksgjennomforing.postadresse.exception.RegoppslagSecurityException;
 import no.nav.tag.tiltaksgjennomforing.postadresse.exception.RegoppslagTechnicalException;
 import no.nav.tag.tiltaksgjennomforing.postadresse.exception.UkjentAdresseException;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientResponseException;
@@ -24,6 +27,9 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 @Slf4j
 @Component
 public class PostadresseConsumer {
+	private static final String BEHANDLINGSNUMMER_HEADER = "behandlingsnummer";
+	private static final String POSTADRESSE_BEHANDLINGSNUMMER = "B662";
+
 	private final RestTemplate azureRestTemplate;
 	private final String baseUrl;
 	private final ObjectMapper objectMapper;
@@ -46,7 +52,7 @@ public class PostadresseConsumer {
 		try {
 			PostadresseResponse response = azureRestTemplate.postForObject(
 				baseUrl + "/postadresse",
-				postadresseRequest,
+				lagRequest(postadresseRequest),
 				PostadresseResponse.class
 			);
 			if (response == null) {
@@ -60,6 +66,13 @@ public class PostadresseConsumer {
 		} catch (RestClientResponseException exception) {
 			throw mapRegoppslagException(exception);
 		}
+	}
+
+	private HttpEntity<PostadresseRequest> lagRequest(PostadresseRequest postadresseRequest) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.set(BEHANDLINGSNUMMER_HEADER, POSTADRESSE_BEHANDLINGSNUMMER);
+		return new HttpEntity<>(postadresseRequest, headers);
 	}
 
 	private RuntimeException mapRegoppslagException(RestClientResponseException exception) {
