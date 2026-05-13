@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -123,9 +124,13 @@ public class AvroTiltakHendelseFabrikk {
     }
 
     private Boolean erMaster(Avtale avtale) {
-        if (avtale.getTiltakstype() == Tiltakstype.SOMMERJOBB || avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || avtale.getTiltakstype() == Tiltakstype.VARIG_LONNSTILSKUDD) {
-            return Boolean.TRUE;
-        }
-        return Boolean.FALSE;
+        // Dette er tiltakstyper statistikk anser oss som master på, og må ikke skrus på før vi har fått GO fra statistikk.
+        Set<Tiltakstype> masterTiltakstyper = Set.of(
+            Tiltakstype.SOMMERJOBB,
+            Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
+            Tiltakstype.VARIG_LONNSTILSKUDD,
+            Tiltakstype.ARBEIDSTRENING
+        );
+        return masterTiltakstyper.contains(avtale.getTiltakstype());
     }
 }
