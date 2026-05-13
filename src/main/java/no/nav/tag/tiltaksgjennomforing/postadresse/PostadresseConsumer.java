@@ -23,7 +23,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
  * **/
 @Slf4j
 @Component
-class PostadresseConsumer {
+public class PostadresseConsumer {
 	private final RestTemplate azureRestTemplate;
 	private final String baseUrl;
 	private final ObjectMapper objectMapper;
@@ -39,6 +39,10 @@ class PostadresseConsumer {
 	}
 
 	public Adresse hentAdresse(PostadresseRequest postadresseRequest) {
+		return hentPostadresse(postadresseRequest).adresse();
+	}
+
+	public PostadresseResponse hentPostadresse(PostadresseRequest postadresseRequest) {
 		try {
 			PostadresseResponse response = azureRestTemplate.postForObject(
 				baseUrl + "/postadresse",
@@ -52,7 +56,7 @@ class PostadresseConsumer {
 			if (adresse == null) {
 				throw new RegoppslagTechnicalException("Kall mot Regoppslag returnerte tom adresse.");
 			}
-			return adresse;
+			return response;
 		} catch (RestClientResponseException exception) {
 			throw mapRegoppslagException(exception);
 		}

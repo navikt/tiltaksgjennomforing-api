@@ -30,6 +30,25 @@ class PostadresseConsumerTest {
     private IntegrasjonerMockServer integrasjonerMockServer;
 
     @Test
+    void hentPostadresse__skal_returnere_hele_responsen_fra_regoppslag() {
+        PostadresseResponse response = postadresseConsumer.hentPostadresse(
+            PostadresseRequest.builder()
+                .ident("09876543210")
+                .filtrerAdressebeskyttelse(Set.of())
+                .build()
+        );
+
+        assertThat(response.navn()).isEqualTo("Jan Neimansen");
+        assertThat(response.adresse()).isNotNull();
+        assertThat(response.adresse().adresselinje1()).isEqualTo("eksempelveien 23 A");
+
+        integrasjonerMockServer.getServer().verify(
+            postRequestedFor(urlPathEqualTo("/regoppslag/rest/postadresse"))
+                .withRequestBody(matchingJsonPath("$.ident", equalTo("09876543210")))
+        );
+    }
+
+    @Test
     void hentAdresse__skal_returnere_adresse_fra_regoppslag() {
         Adresse adresse = postadresseConsumer.hentAdresse(
             PostadresseRequest.builder()
