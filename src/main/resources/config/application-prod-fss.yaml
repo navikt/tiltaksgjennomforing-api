@@ -162,7 +162,7 @@ tiltaksgjennomforing:
   ereg:
     uri: https://ereg-services.intern.nav.no/api/v2/organisasjon
   regoppslag:
-    uri: http://regoppslag.teamdokumenthandtering.svc.nais.local/rest
+    uri:  https://regoppslag.intern.nav.no/rest
   oppgave:
     oppgave-uri: https://oppgave.intern.nav.no/api/v1/oppgaver
   unleash:
