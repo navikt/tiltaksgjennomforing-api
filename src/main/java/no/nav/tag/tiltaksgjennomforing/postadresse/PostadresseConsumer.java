@@ -27,9 +27,6 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 @Slf4j
 @Component
 public class PostadresseConsumer {
-	private static final String BEHANDLINGSNUMMER_HEADER = "behandlingsnummer";
-	private static final String POSTADRESSE_BEHANDLINGSNUMMER = "B662";
-
 	private final RestTemplate azureRestTemplate;
 	private final String baseUrl;
 	private final ObjectMapper objectMapper;
@@ -71,7 +68,7 @@ public class PostadresseConsumer {
 	private HttpEntity<PostadresseRequest> lagRequest(PostadresseRequest postadresseRequest) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set(BEHANDLINGSNUMMER_HEADER, POSTADRESSE_BEHANDLINGSNUMMER);
+		headers.set("behandlingsnummer", "B662");
 		return new HttpEntity<>(postadresseRequest, headers);
 	}
 
