@@ -1,0 +1,87 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/regoppslag/rest/postadresse",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"ident\":\"09876543210\"}",
+            "ignoreArrayOrder": true,
+            "ignoreExtraElements": true
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "identifikator": "09876543210",
+          "navn": "Jan Neimansen",
+          "adresse": {
+            "adresselinje1": "eksempelveien 23 A",
+            "adresselinje2": "eksempelveien 24 A",
+            "adresselinje3": "eksempelveien 25 A",
+            "postnummer": "1337",
+            "poststed": "poststed",
+            "landkode": "NO"
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/regoppslag/rest/postadresse",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"ident\":\"20987654321\"}",
+            "ignoreArrayOrder": true,
+            "ignoreExtraElements": true
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "identifikator": "20987654321",
+          "navn": "Jan Neimansen",
+          "adresse": {
+            "landkode": "NO"
+          }
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/regoppslag/rest/postadresse",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"ident\":\"10987654321\"}",
+            "ignoreArrayOrder": true,
+            "ignoreExtraElements": true
+          }
+        ]
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "timestamp": 1731631020258,
+          "status": 400,
+          "error": "Bad Request",
+          "message": "Validering av feltet postnummer feilet pga. manglende data i PDL",
+          "path": "/regoppslag/rest/postadresse"
+        }
+      }
+    }
+  ]
+}
