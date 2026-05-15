@@ -1,7 +1,6 @@
 {
   "mappings": [
     {
-      "priority": 1,
       "request": {
         "method": "POST",
         "urlPath": "/regoppslag/rest/postadresse",
@@ -33,7 +32,6 @@
       }
     },
     {
-      "priority": 1,
       "request": {
         "method": "POST",
         "urlPath": "/regoppslag/rest/postadresse",
@@ -60,7 +58,6 @@
       }
     },
     {
-      "priority": 1,
       "request": {
         "method": "POST",
         "urlPath": "/regoppslag/rest/postadresse",
