@@ -30,9 +30,6 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import no.nav.tag.tiltaksgjennomforing.postadresse.PostadresseConsumer;
-import no.nav.tag.tiltaksgjennomforing.postadresse.PostadresseRequest;
-import no.nav.tag.tiltaksgjennomforing.postadresse.PostadresseResponse;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 import no.nav.tag.tiltaksgjennomforing.varsel.Varsel;
@@ -79,12 +76,6 @@ public class AdminController {
     private final GjeldendeTilskuddsperiodeJobbService gjeldendeTilskuddsperiodeJobbService;
     private final Norg2Client norg2Client;
     private final VarselRepository varselRepository;
-    private final PostadresseConsumer postadresseConsumer;
-
-    @GetMapping("/")
-    public String hjem(){
-        return "Hei fra Admin controller";
-    }
 
     @PostMapping("reberegn")
     public void reberegnLønnstilskudd(@RequestBody List<UUID> avtaleIder) {
