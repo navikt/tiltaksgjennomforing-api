@@ -15,4 +15,5 @@ public class EndreStillingsbeskrivelse {
     BigDecimal stillingprosent;
     BigDecimal antallDagerPerUke;
     LonnstilskuddFormaal lonnstilskuddFormaal;
+    Stillingstype stillingstype;
 }
