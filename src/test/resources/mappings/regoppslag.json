@@ -51,7 +51,7 @@
           "Content-Type": "application/json"
         },
         "jsonBody": {
-          "identifikator": "09876543210",
+          "identifikator": "20987654321",
           "navn": "Jan Neimansen",
           "adresse": {
             "landkode": "NO"
@@ -82,7 +82,7 @@
           "status": 400,
           "error": "Bad Request",
           "message": "Validering av feltet postnummer feilet pga. manglende data i PDL",
-          "path": "/rest/hentMottakerOgAdresse"
+          "path": "/regoppslag/rest/postadresse"
         }
       }
     }
