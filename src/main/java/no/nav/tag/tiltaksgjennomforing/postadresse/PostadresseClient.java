@@ -45,7 +45,7 @@ public class PostadresseClient {
 		return hentPostadresse(postadresseRequest).adresse();
 	}
 
-	public PostadresseResponse hentPostadresse(PostadresseRequest postadresseRequest) {
+	protected PostadresseResponse hentPostadresse(PostadresseRequest postadresseRequest) {
 		try {
 			PostadresseResponse response = azureRestTemplate.postForObject(
 				baseUrl + "/postadresse",
