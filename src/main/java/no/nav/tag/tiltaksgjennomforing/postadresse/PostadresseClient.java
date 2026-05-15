@@ -26,12 +26,12 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
  * **/
 @Slf4j
 @Component
-public class PostadresseConsumer {
+public class PostadresseClient {
 	private final RestTemplate azureRestTemplate;
 	private final String baseUrl;
 	private final ObjectMapper objectMapper;
 
-	public PostadresseConsumer(
+	public PostadresseClient(
 		RestTemplate azureRestTemplate,
 		RegoppslagProperties regoppslagProperties,
 		ObjectMapper objectMapper

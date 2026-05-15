@@ -19,17 +19,17 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 @ActiveProfiles({ Miljø.TEST, Miljø.WIREMOCK })
 @DirtiesContext
-class PostadresseConsumerTest {
+class PostadresseClientTest {
 
     @Autowired
-    private PostadresseConsumer postadresseConsumer;
+    private PostadresseClient postadresseClient;
 
     @Autowired
     private IntegrasjonerMockServer integrasjonerMockServer;
 
     @Test
     void hentPostadresse__skal_returnere_hele_responsen_fra_regoppslag() {
-        PostadresseResponse response = postadresseConsumer.hentPostadresse(
+        PostadresseResponse response = postadresseClient.hentPostadresse(
             PostadresseRequest.builder()
                 .ident("09876543210")
                 .build()
@@ -48,7 +48,7 @@ class PostadresseConsumerTest {
 
     @Test
     void hentAdresse__skal_returnere_adresse_fra_regoppslag() {
-        Adresse adresse = postadresseConsumer.hentAdresse(
+        Adresse adresse = postadresseClient.hentAdresse(
             PostadresseRequest.builder()
                 .ident("09876543210")
                 .build()
@@ -71,7 +71,7 @@ class PostadresseConsumerTest {
 
     @Test
     void hentAdresse__skal_returnere_adresse_med_kun_landkode_fra_regoppslag() {
-        Adresse adresse = postadresseConsumer.hentAdresse(
+        Adresse adresse = postadresseClient.hentAdresse(
             PostadresseRequest.builder()
                 .ident("20987654321")
                 .build()
@@ -98,7 +98,7 @@ class PostadresseConsumerTest {
             .ident("10987654321")
             .build();
 
-        assertThatThrownBy(() -> postadresseConsumer.hentAdresse(postadresseRequest))
+        assertThatThrownBy(() -> postadresseClient.hentAdresse(postadresseRequest))
             .isInstanceOf(RegoppslagFunctionalException.class)
             .hasMessageContaining("status=400")
             .hasMessageContaining("manglende data i PDL");
