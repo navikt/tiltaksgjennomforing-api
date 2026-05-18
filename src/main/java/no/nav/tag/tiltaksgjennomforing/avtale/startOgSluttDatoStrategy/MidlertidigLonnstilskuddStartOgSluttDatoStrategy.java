@@ -33,8 +33,8 @@ public class MidlertidigLonnstilskuddStartOgSluttDatoStrategy extends StartOgSlu
 
         Kvalifiseringsgruppe kvalifiseringsgruppe = avtale.getKvalifiseringsgruppe();
         boolean erSpesieltTilpassetInnsats = kvalifiseringsgruppe == Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS;
-        boolean erVarigTilpassetInnsats = kvalifiseringsgruppe  == Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS;
-        boolean erSituasjonsbestemtInnsats = kvalifiseringsgruppe  == Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS;
+        boolean erVarigTilpassetInnsats = kvalifiseringsgruppe == Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS;
+        boolean erSituasjonsbestemtInnsats = kvalifiseringsgruppe == Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS;
 
         if (
             (erSpesieltTilpassetInnsats || erVarigTilpassetInnsats) &&
