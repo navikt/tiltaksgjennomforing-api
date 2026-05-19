@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.ForkortetGrunn;
+import no.nav.tag.tiltaksgjennomforing.avtale.Inkluderingstilskuddsutgift;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.TilskuddstrinnDTO;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -46,7 +47,7 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setFeriepengesats(avtale.getGjeldendeInnhold().getFeriepengesats() != null ? avtale.getGjeldendeInnhold().getFeriepengesats().floatValue() : null);
         hendelse.setFeriepengerBelop(avtale.getGjeldendeInnhold().getFeriepengerBelop());
         hendelse.setArbeidsgiveravgift(avtale.getGjeldendeInnhold().getArbeidsgiveravgift() != null ? avtale.getGjeldendeInnhold().getArbeidsgiveravgift().floatValue() : null);
-        hendelse.setArbeidsgiveravgiftBelop(avtale.getGjeldendeInnhold().getFeriepengerBelop());
+        hendelse.setArbeidsgiveravgiftBelop(avtale.getGjeldendeInnhold().getArbeidsgiveravgiftBelop());
         hendelse.setOtpSats(avtale.getGjeldendeInnhold().getOtpSats() != null ? avtale.getGjeldendeInnhold().getOtpSats().floatValue() : null);
         hendelse.setOtpBelop(avtale.getGjeldendeInnhold().getOtpBelop());
         hendelse.setSumLonnsutgifter(avtale.getGjeldendeInnhold().getSumLonnsutgifter());
@@ -102,12 +103,20 @@ public class AvroTiltakHendelseFabrikk {
 
     private List<InkluderingstilskuddsutgiftRecord> mapInkluderingstilskuddsutgift(Avtale avtale) {
         return avtale.getGjeldendeInnhold().getInkluderingstilskuddsutgift().stream()
-                .map(utgift -> InkluderingstilskuddsutgiftRecord.newBuilder()
-                    .setBelop(utgift.getBeløp())
-                    .setType(utgift.getType() != null ? InkluderingstilskuddsutgiftType.valueOf(utgift.getType().name()) : null)
-                    .build()
-                )
-                .collect(Collectors.toList());
+            .map(utgift -> InkluderingstilskuddsutgiftRecord.newBuilder()
+                .setBelop(utgift.getBeløp())
+                .setType(mapInkluderingstilskuddsutgiftType(utgift))
+                .build()
+            )
+            .collect(Collectors.toList());
+    }
+
+    private InkluderingstilskuddsutgiftType mapInkluderingstilskuddsutgiftType(Inkluderingstilskuddsutgift utgift) {
+        return switch (utgift.getType()) {
+            case OPPLÆRING -> InkluderingstilskuddsutgiftType.OPPLAERING;
+            case null -> null;
+            default -> InkluderingstilskuddsutgiftType.valueOf(utgift.getType().name());
+        };
     }
 
     private List<TilskuddstrinnRecord> mapTilskuddstrinn(Avtale avtale) {

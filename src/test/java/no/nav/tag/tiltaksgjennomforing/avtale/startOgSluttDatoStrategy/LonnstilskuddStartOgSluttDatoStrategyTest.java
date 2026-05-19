@@ -105,24 +105,21 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
 
     @Test
     public void Deltaker_er_for_gammel_for_å_gå_på_MidlertidigLønnstilskudd() {
-        Fnr deltakerFnr = Fnr.generer(1952,8,12);
         LocalDate avtaleStart = Now.localDate();
         LocalDate avtaleSlutt = avtaleStart.plusMonths(11).plusDays(1);
-        boolean erAvtaleInngått = true;
-        boolean erGodkjentForEtterregistrering = true;
-        Kvalifiseringsgruppe kvalifiseringsgruppe = Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS;
-        MidlertidigLonnstilskuddStartOgSluttDatoStrategy midlertidigLonnstilskuddStartOgSluttDatoStrategy = new MidlertidigLonnstilskuddStartOgSluttDatoStrategy(kvalifiseringsgruppe);
-        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> midlertidigLonnstilskuddStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt ,erGodkjentForEtterregistrering, erAvtaleInngått, deltakerFnr));
+        Avtale avtale = enMidlertidig();
+        avtale.setDeltakerFnr(Fnr.generer(1952,8,12));
+        MidlertidigLonnstilskuddStartOgSluttDatoStrategy midlertidigLonnstilskuddStartOgSluttDatoStrategy = new MidlertidigLonnstilskuddStartOgSluttDatoStrategy(avtale);
+        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> midlertidigLonnstilskuddStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt));
     }
 
     @Test
     public void Deltaker_er_for_gammel_for_å_gå_på_VarigLønnstilskudd() {
-        Fnr deltakerFnr = new Fnr("12085220754");
         LocalDate avtaleStart = Now.localDate();
         LocalDate avtaleSlutt = avtaleStart.plusMonths(11).plusDays(1);
-        boolean erAvtaleInngått = true;
-        boolean erGodkjentForEtterregistrering = true;
-        VarigLonnstilskuddStartOgSluttDatoStrategy varigLonnstilskuddStartOgSluttDatoStrategy = new VarigLonnstilskuddStartOgSluttDatoStrategy();
-        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> varigLonnstilskuddStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt ,erGodkjentForEtterregistrering, erAvtaleInngått, deltakerFnr));
+        Avtale avtale = enVarig();
+        avtale.setDeltakerFnr(Fnr.generer(1952,8,12));
+        VarigLonnstilskuddStartOgSluttDatoStrategy varigLonnstilskuddStartOgSluttDatoStrategy = new VarigLonnstilskuddStartOgSluttDatoStrategy(avtale);
+        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> varigLonnstilskuddStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt));
     }
 }

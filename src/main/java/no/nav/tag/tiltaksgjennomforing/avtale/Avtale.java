@@ -73,6 +73,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAvslått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
+import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.FirearigLonnstilskuddStartOgSluttDatoStrategy;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
@@ -84,6 +85,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.DeltakerHarGodkjentException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangFirearigLonnstilskuddException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditerbarEntitet;
@@ -1334,14 +1336,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
-        StartOgSluttDatoStrategyFactory.create(getTiltakstype(), getKvalifiseringsgruppe(), erOpprettetEllerEndretAvArena())
-            .sjekkStartOgSluttDato(
-                startDato,
-                sluttDato,
-                isGodkjentForEtterregistrering(),
-                erAvtaleInngått(),
-                deltakerFnr
-            );
+        StartOgSluttDatoStrategyFactory.create(this).sjekkStartOgSluttDato(startDato, sluttDato);
     }
 
     public void endreTilskuddsberegning(EndreTilskuddsberegning endreTilskuddsberegning, NavIdent utførtAv) {
@@ -1482,17 +1477,39 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STILLINGSBESKRIVELSE_GRUNN_IKKE_GODKJENT_AVTALE);
         }
-        if (Utils.erNoenTomme(
+
+        boolean påkrevdeFelterMangler = Utils.erNoenTomme(
             endreStillingsbeskrivelse.getStillingstittel(),
             endreStillingsbeskrivelse.getArbeidsoppgaver(),
             endreStillingsbeskrivelse.getStillingStyrk08(),
             endreStillingsbeskrivelse.getStillingKonseptId(),
             endreStillingsbeskrivelse.getStillingprosent(),
             endreStillingsbeskrivelse.getAntallDagerPerUke()
-        )
-        ) {
+        );
+        if (påkrevdeFelterMangler) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STILLINGSBESKRIVELSE_GRUNN_MANGLER);
         }
+
+        boolean erLtsUtenSommerjobb = tiltakstype.isLonnstilskudd() && !tiltakstype.isSommerjobb();
+        if (erLtsUtenSommerjobb && Utils.erNoenTomme(endreStillingsbeskrivelse.getLonnstilskuddFormaal())) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STILLINGSBESKRIVELSE_GRUNN_MANGLER);
+        }
+
+        boolean erLtsEllerVtaoUtenSommerjobb = erLtsUtenSommerjobb || tiltakstype.isVTAO();
+        if (erLtsEllerVtaoUtenSommerjobb && Utils.erNoenTomme(endreStillingsbeskrivelse.getStillingstype())) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STILLINGSBESKRIVELSE_GRUNN_MANGLER);
+        }
+
+        boolean erFirearigLts = tiltakstype.isFirearigLonnstilskudd();
+        boolean harForLangVarighet = FirearigLonnstilskuddStartOgSluttDatoStrategy.erForLangVarighet(
+            endreStillingsbeskrivelse.getStillingstype(),
+            gjeldendeInnhold.getStartDato(),
+            gjeldendeInnhold.getSluttDato()
+        );
+        if (erFirearigLts && harForLangVarighet) {
+            throw new VarighetForLangFirearigLonnstilskuddException(endreStillingsbeskrivelse.getStillingstype());
+        }
+
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_STILLING);
         getGjeldendeInnhold().endreStillingsInfo(endreStillingsbeskrivelse);
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
