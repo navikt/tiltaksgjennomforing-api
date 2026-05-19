@@ -14,9 +14,11 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
 import no.nav.tag.tiltaksgjennomforing.avtale.EndreStillingsbeskrivelse;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
+import no.nav.tag.tiltaksgjennomforing.avtale.LonnstilskuddFormaal;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.OpprettMentorAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
@@ -170,7 +172,8 @@ class LagVarselFraAvtaleHendelserTest {
         assertIngenHendelse(TILSKUDDSPERIODE_GODKJENT, Avtalerolle.ARBEIDSGIVER);
         assertIngenHendelse(TILSKUDDSPERIODE_GODKJENT, Avtalerolle.DELTAKER);
 
-        veileder.endreStillingbeskrivelse(EndreStillingsbeskrivelse.builder().stillingstittel("Tittel").arbeidsoppgaver("Oppgaver").stillingprosent(BigDecimal.valueOf(100.0)).stillingKonseptId(1).stillingStyrk08(1).antallDagerPerUke(BigDecimal.valueOf(5.0)).build(), avtale);
+        veileder.endreStillingbeskrivelse(EndreStillingsbeskrivelse.builder().stillingstittel("Tittel").arbeidsoppgaver("Oppgaver").stillingprosent(BigDecimal.valueOf(100.0)).stillingKonseptId(1).stillingStyrk08(1).antallDagerPerUke(BigDecimal.valueOf(5.0)).lonnstilskuddFormaal(
+            LonnstilskuddFormaal.SKAFFE_ARBEID).stillingstype(Stillingstype.FAST).build(), avtale);
         avtale = avtaleRepository.save(avtale);
         assertHendelse(STILLINGSBESKRIVELSE_ENDRET, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.VEILEDER, false);
         assertHendelse(STILLINGSBESKRIVELSE_ENDRET, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
