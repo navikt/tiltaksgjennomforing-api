@@ -47,7 +47,7 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setFeriepengesats(avtale.getGjeldendeInnhold().getFeriepengesats() != null ? avtale.getGjeldendeInnhold().getFeriepengesats().floatValue() : null);
         hendelse.setFeriepengerBelop(avtale.getGjeldendeInnhold().getFeriepengerBelop());
         hendelse.setArbeidsgiveravgift(avtale.getGjeldendeInnhold().getArbeidsgiveravgift() != null ? avtale.getGjeldendeInnhold().getArbeidsgiveravgift().floatValue() : null);
-        hendelse.setArbeidsgiveravgiftBelop(avtale.getGjeldendeInnhold().getFeriepengerBelop());
+        hendelse.setArbeidsgiveravgiftBelop(avtale.getGjeldendeInnhold().getArbeidsgiveravgiftBelop());
         hendelse.setOtpSats(avtale.getGjeldendeInnhold().getOtpSats() != null ? avtale.getGjeldendeInnhold().getOtpSats().floatValue() : null);
         hendelse.setOtpBelop(avtale.getGjeldendeInnhold().getOtpBelop());
         hendelse.setSumLonnsutgifter(avtale.getGjeldendeInnhold().getSumLonnsutgifter());
