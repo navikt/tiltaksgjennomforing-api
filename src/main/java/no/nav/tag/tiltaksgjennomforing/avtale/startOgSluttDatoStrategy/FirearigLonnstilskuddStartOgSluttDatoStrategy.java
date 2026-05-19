@@ -12,6 +12,7 @@ import java.time.LocalDate;
 public class FirearigLonnstilskuddStartOgSluttDatoStrategy extends StartOgSluttDatoStrategy {
     private static final int MAKS_VARIGHET_MIDLERTIDIG_STILLING_ANTALL_AAR = 2;
     private static final int MAKS_VARIGHET_FAST_STILLING_ANTALL_AAR = 4;
+    private static final LocalDate SLUTTDATO_FOR_FIREARIG_LTS_FORSOK = LocalDate.of(2032, 12, 31);
 
     private final LocalDate firearigOppstartsdato;
     public FirearigLonnstilskuddStartOgSluttDatoStrategy(Avtale avtale) {
@@ -36,7 +37,7 @@ public class FirearigLonnstilskuddStartOgSluttDatoStrategy extends StartOgSluttD
         if (sluttDato == null) {
             return;
         }
-        if (sluttDato.isAfter(LocalDate.of(2032, 12, 31))) {
+        if (sluttDato.isAfter(SLUTTDATO_FOR_FIREARIG_LTS_FORSOK)) {
             throw new FeilkodeException(Feilkode.FIREARIG_LONNSTILSKUDD_FOR_SEN_SLUTTDATO);
         }
         Stillingstype stillingstype = avtale.getGjeldendeInnhold().getStillingstype();
@@ -49,10 +50,9 @@ public class FirearigLonnstilskuddStartOgSluttDatoStrategy extends StartOgSluttD
         if (startDato == null || sluttDato == null) {
             return false;
         }
-        boolean erMidlertidigStilling = Stillingstype.MIDLERTIDIG.equals(stillingstype);
-        int maksVarighetAar = erMidlertidigStilling
-            ? MAKS_VARIGHET_MIDLERTIDIG_STILLING_ANTALL_AAR
-            : MAKS_VARIGHET_FAST_STILLING_ANTALL_AAR;
-        return !sluttDato.isBefore(startDato.plusYears(maksVarighetAar));
+        return switch (stillingstype) {
+            case MIDLERTIDIG -> !sluttDato.isBefore(startDato.plusYears(MAKS_VARIGHET_MIDLERTIDIG_STILLING_ANTALL_AAR));
+            case null, default -> !sluttDato.isBefore(startDato.plusYears(MAKS_VARIGHET_FAST_STILLING_ANTALL_AAR));
+        };
     }
 }

@@ -51,7 +51,7 @@ public class MidlertidigLonnstilskuddStartOgSluttDatoStrategy extends StartOgSlu
         }
 
         // Ikke funnet kvalifiseringsgruppe, default 12 mnd
-        if (avtale.getKvalifiseringsgruppe()  == null && startDato.plusMonths(TOLV_MND_MAKS_LENGDE)
+        if (avtale.getKvalifiseringsgruppe() == null && startDato.plusMonths(TOLV_MND_MAKS_LENGDE)
             .minusDays(1)
             .isBefore(sluttDato)) {
             throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_12_MND);
