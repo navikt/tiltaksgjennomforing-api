@@ -21,6 +21,14 @@ no.nav.security.jwt:
       accepted_audience: "https://management.core.windows.net/"
   client:
     registration:
+      krr:
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: api://dev-gcp.team-rocket.digdir-krr-proxy/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
       ag-notifikasjon-produsent-api:
         token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
         grant-type: client_credentials
@@ -115,6 +123,8 @@ no.nav.security.jwt:
 tiltaksgjennomforing:
   persondata:
     uri: https://pdl-api.dev.intern.nav.no/graphql
+  krr:
+    uri: https://digdir-krr-proxy.intern.dev.nav.no
   kontoregister:
     uri: https://sokos-kontoregister-q2.dev.adeo.no/kontoregister/api/v1/hent-kontonummer-for-organisasjon/
     consumerId: ${tiltaksgjennomforing.serviceuser.username}
