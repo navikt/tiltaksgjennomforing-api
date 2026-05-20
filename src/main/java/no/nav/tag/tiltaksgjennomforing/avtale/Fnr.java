@@ -27,6 +27,10 @@ public class Fnr extends Identifikator {
         return generer(LocalDate.of(aar, maned, dag));
     }
 
+    public static Fnr generer(int alder) {
+        return generer(Now.localDate().minusYears(alder).minusDays(1));
+    }
+
     public static Fnr generer(LocalDate dato) {
         if (!FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS) {
             throw new NotImplementedException("Generering av syntetiske fødselsnumre er ikke tillatt i produksjon.");

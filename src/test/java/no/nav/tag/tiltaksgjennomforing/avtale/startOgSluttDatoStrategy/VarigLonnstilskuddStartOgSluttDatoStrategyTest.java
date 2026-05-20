@@ -1,8 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy;
 
 import no.bekk.bekkopen.person.FodselsnummerValidator;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.AfterEach;
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
+import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.VARIG_LONNSTILSKUDD;
 
 class VarigLonnstilskuddStartOgSluttDatoStrategyTest {
 
@@ -26,14 +30,11 @@ class VarigLonnstilskuddStartOgSluttDatoStrategyTest {
     }
 
     @Test
-    public void Deltaker_er_for_gammel_for_å_gå_på_Inkluderingstilskudd() {
-        Fnr deltakerFnr = Fnr.generer(1952,8,12);
+    public void Deltaker_er_for_gammel_for_å_gå_på_varig_lts() {
         LocalDate avtaleStart = Now.localDate();
         LocalDate avtaleSlutt = avtaleStart.plusMonths(11).plusDays(1);
-        boolean erAvtaleInngått = true;
-        boolean erGodkjentForEtterregistrering = true;
-        Kvalifiseringsgruppe kvalifiseringsgruppe = Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS;
-        VarigLonnstilskuddStartOgSluttDatoStrategy varigLonnstilskuddStartOgSluttDatoStrategy = new VarigLonnstilskuddStartOgSluttDatoStrategy();
-        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> varigLonnstilskuddStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt ,erGodkjentForEtterregistrering, erAvtaleInngått, deltakerFnr));
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(Fnr.generer(1952,8,12), TestData.etBedriftNr(), VARIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
+        VarigLonnstilskuddStartOgSluttDatoStrategy varigLonnstilskuddStartOgSluttDatoStrategy = new VarigLonnstilskuddStartOgSluttDatoStrategy(avtale);
+        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> varigLonnstilskuddStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt));
     }
 }
