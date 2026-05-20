@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.postadresse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.postadresse.exception.PersonErDoedUkjentAdresseException;
 import no.nav.tag.tiltaksgjennomforing.postadresse.exception.RegoppslagFunctionalException;
 import no.nav.tag.tiltaksgjennomforing.postadresse.exception.RegoppslagSecurityException;
@@ -14,6 +15,8 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.GONE;
@@ -28,7 +31,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 @Component
 public class PostadresseClient {
 	private final RestTemplate azureRestTemplate;
-	private final String baseUrl;
+	private final String baseUrlForRegoppslagAPI;
 	private final ObjectMapper objectMapper;
 
 	public PostadresseClient(
@@ -37,19 +40,28 @@ public class PostadresseClient {
 		ObjectMapper objectMapper
 	) {
 		this.azureRestTemplate = azureRestTemplate;
-		this.baseUrl = regoppslagProperties.getUri().toString();
+		this.baseUrlForRegoppslagAPI = regoppslagProperties.getUri().toString();
 		this.objectMapper = objectMapper;
 	}
 
-	public Adresse hentAdresse(PostadresseRequest postadresseRequest) {
-		return hentPostadresse(postadresseRequest).adresse();
+	public boolean sjekkOmPersonErRegistrertMedRiktigAdresse(Fnr fnr) {
+		return hentPostadresseHvisTilgjengelig(fnr).isPresent();
 	}
 
-	PostadresseResponse hentPostadresse(PostadresseRequest postadresseRequest) {
+	private Optional<PostadresseResponse> hentPostadresseHvisTilgjengelig(Fnr fnr) {
+		try {
+			return Optional.of(hentPostadresse(fnr));
+		} catch (RegoppslagFunctionalException | RegoppslagTechnicalException exception) {
+			log.warn("Fant ikke gyldig adresse fra Regoppslag. Returnerer Optional.empty(). feiltype={}", exception.getClass().getSimpleName());
+			return Optional.empty();
+		}
+	}
+
+	PostadresseResponse hentPostadresse(Fnr fnr) {
 		try {
 			PostadresseResponse response = azureRestTemplate.postForObject(
-				baseUrl + "/postadresse",
-				lagRequest(postadresseRequest),
+				baseUrlForRegoppslagAPI + "/postadresse",
+				lagRequest(fnr),
 				PostadresseResponse.class
 			);
 			if (response == null) {
@@ -61,31 +73,29 @@ public class PostadresseClient {
 			}
 			return response;
 		} catch (RestClientResponseException exception) {
-			throw mapRegoppslagException(exception);
+			if (exception.getStatusCode().is5xxServerError()) {
+				throw new RegoppslagTechnicalException(format("Kall mot Regoppslag feilet teknisk. status=%s, problemDetail=%s", exception.getStatusCode(), lesProblemDetail(exception)));
+			}
+			if (exception.getStatusCode() == UNAUTHORIZED) {
+				throw new RegoppslagSecurityException(format("Kall mot Regoppslag feilet. Ingen tilgang. problemDetail=%s", lesProblemDetail(exception)));
+			}
+			if (exception.getStatusCode() == NOT_FOUND) {
+				throw new UkjentAdresseException("Fant ikke adresseinformasjon for mottaker i PDL. Mottaker har ukjent adresse.");
+			}
+			if (exception.getStatusCode() == GONE) {
+				throw new PersonErDoedUkjentAdresseException("Mottaker er død og har ukjent adresse.");
+			}
+			throw new RegoppslagFunctionalException(format("Henting av adresse for bruker feilet funksjonelt mot Regoppslag. status=%s, problemDetail=%s", exception.getStatusCode(), lesProblemDetail(exception)));
 		}
 	}
 
-	private HttpEntity<PostadresseRequest> lagRequest(PostadresseRequest postadresseRequest) {
+	private HttpEntity<PostadresseRequest> lagRequest(Fnr fnr) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.set("behandlingsnummer", "B662");
-		return new HttpEntity<>(postadresseRequest, headers);
-	}
-
-	private RuntimeException mapRegoppslagException(RestClientResponseException exception) {
-		if (exception.getStatusCode().is5xxServerError()) {
-			return new RegoppslagTechnicalException(format("Kall mot Regoppslag feilet teknisk. status=%s, problemDetail=%s", exception.getStatusCode(), lesProblemDetail(exception)));
-		}
-		if (exception.getStatusCode() == UNAUTHORIZED) {
-			return new RegoppslagSecurityException(format("Kall mot Regoppslag feilet. Ingen tilgang. problemDetail=%s", lesProblemDetail(exception)));
-		}
-		if (exception.getStatusCode() == NOT_FOUND) {
-			return new UkjentAdresseException("Fant ikke adresseinformasjon for mottaker i PDL. Mottaker har ukjent adresse.");
-		}
-		if (exception.getStatusCode() == GONE) {
-			return new PersonErDoedUkjentAdresseException("Mottaker er død og har ukjent adresse.");
-		}
-		return new RegoppslagFunctionalException(format("Henting av adresse for bruker feilet funksjonelt mot Regoppslag. status=%s, problemDetail=%s", exception.getStatusCode(), lesProblemDetail(exception)));
+		return new HttpEntity<>(PostadresseRequest.builder()
+			.ident(fnr.asString())
+			.build(), headers);
 	}
 
 	private ProblemDetail lesProblemDetail(RestClientResponseException exception) {
