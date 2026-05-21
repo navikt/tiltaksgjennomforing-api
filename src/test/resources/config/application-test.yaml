@@ -81,6 +81,8 @@ tiltaksgjennomforing:
     ltsFirearigServiceEdition: 8
   ereg:
     uri: http://localhost:8090/ereg
+  regoppslag:
+    uri: http://localhost:8090/regoppslag/rest
   persondata:
     uri: http://localhost:8090/persondata
   oppgave:
