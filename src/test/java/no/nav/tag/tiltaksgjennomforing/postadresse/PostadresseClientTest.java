@@ -105,11 +105,11 @@ class PostadresseClientTest {
     }
 
     @Test
-    void hentPostadresse__skal_kaste_funksjonell_feil_ved_manglende_pdl_data() {
+    void hentPostadresse__skal_kaste_funksjonell_feil_ved_manglende_data() {
         assertThatThrownBy(() -> postadresseClient.hentPostadresse(Fnr.fraDb("10987654321")))
             .isInstanceOf(RegoppslagFunctionalException.class)
             .hasMessageContaining("status=400")
-            .hasMessageContaining("manglende data i PDL");
+            .hasMessageContaining("manglende data");
 
         integrasjonerMockServer.getServer().verify(
             postRequestedFor(urlPathEqualTo("/regoppslag/rest/postadresse"))
