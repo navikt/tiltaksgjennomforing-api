@@ -4,13 +4,19 @@ import lombok.experimental.UtilityClass;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.ForkortetGrunn;
+import no.nav.tag.tiltaksgjennomforing.avtale.Inkluderingstilskuddsutgift;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.TilskuddstrinnDTO;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @UtilityClass
@@ -21,8 +27,6 @@ public class AvroTiltakHendelseFabrikk {
 
     public static AvroTiltakHendelse konstruer(Avtale avtale, DvhHendelseType hendelseType, String utførtAv, ForkortetGrunn forkortetGrunn) {
         AvroTiltakHendelse hendelse = new AvroTiltakHendelse();
-        hendelse.setMeldingId(UUID.randomUUID().toString());
-        hendelse.setTidspunkt(Now.instant());
         hendelse.setAvtaleId(avtale.getId().toString());
         hendelse.setAvtaleInnholdId(avtale.getGjeldendeInnhold().getId().toString());
         hendelse.setTiltakstype(TiltakType.valueOf(avtale.getTiltakstype().name()));
@@ -46,7 +50,7 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setFeriepengesats(avtale.getGjeldendeInnhold().getFeriepengesats() != null ? avtale.getGjeldendeInnhold().getFeriepengesats().floatValue() : null);
         hendelse.setFeriepengerBelop(avtale.getGjeldendeInnhold().getFeriepengerBelop());
         hendelse.setArbeidsgiveravgift(avtale.getGjeldendeInnhold().getArbeidsgiveravgift() != null ? avtale.getGjeldendeInnhold().getArbeidsgiveravgift().floatValue() : null);
-        hendelse.setArbeidsgiveravgiftBelop(avtale.getGjeldendeInnhold().getFeriepengerBelop());
+        hendelse.setArbeidsgiveravgiftBelop(avtale.getGjeldendeInnhold().getArbeidsgiveravgiftBelop());
         hendelse.setOtpSats(avtale.getGjeldendeInnhold().getOtpSats() != null ? avtale.getGjeldendeInnhold().getOtpSats().floatValue() : null);
         hendelse.setOtpBelop(avtale.getGjeldendeInnhold().getOtpBelop());
         hendelse.setSumLonnsutgifter(avtale.getGjeldendeInnhold().getSumLonnsutgifter());
@@ -78,6 +82,10 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setLonnstilskuddFormaal(mapLonnstilskuddFormaal(avtale));
         hendelse.setInkluderingstilskuddsutgift(mapInkluderingstilskuddsutgift(avtale));
         hendelse.setTilskuddstrinn(mapTilskuddstrinn(avtale));
+
+        hendelse.setMeldingId(beregnNokkel(hendelse));
+        hendelse.setTidspunkt(Now.instant());
+
         return hendelse;
     }
 
@@ -102,12 +110,20 @@ public class AvroTiltakHendelseFabrikk {
 
     private List<InkluderingstilskuddsutgiftRecord> mapInkluderingstilskuddsutgift(Avtale avtale) {
         return avtale.getGjeldendeInnhold().getInkluderingstilskuddsutgift().stream()
-                .map(utgift -> InkluderingstilskuddsutgiftRecord.newBuilder()
-                    .setBelop(utgift.getBeløp())
-                    .setType(utgift.getType() != null ? InkluderingstilskuddsutgiftType.valueOf(utgift.getType().name()) : null)
-                    .build()
-                )
-                .collect(Collectors.toList());
+            .map(utgift -> InkluderingstilskuddsutgiftRecord.newBuilder()
+                .setBelop(utgift.getBeløp())
+                .setType(mapInkluderingstilskuddsutgiftType(utgift))
+                .build()
+            )
+            .collect(Collectors.toList());
+    }
+
+    private InkluderingstilskuddsutgiftType mapInkluderingstilskuddsutgiftType(Inkluderingstilskuddsutgift utgift) {
+        return switch (utgift.getType()) {
+            case OPPLÆRING -> InkluderingstilskuddsutgiftType.OPPLAERING;
+            case null -> null;
+            default -> InkluderingstilskuddsutgiftType.valueOf(utgift.getType().name());
+        };
     }
 
     private List<TilskuddstrinnRecord> mapTilskuddstrinn(Avtale avtale) {
@@ -127,5 +143,23 @@ public class AvroTiltakHendelseFabrikk {
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
+    }
+
+    static String beregnNokkel(AvroTiltakHendelse hendelse) {
+        AvroTiltakHendelse kopi = AvroTiltakHendelse.newBuilder(hendelse)
+            .setMeldingId("")
+            .setTidspunkt(Instant.EPOCH)
+            .build();
+        try {
+            ByteBuffer buffer = kopi.toByteBuffer();
+            byte[] bytes = new byte[buffer.remaining()];
+            buffer.get(bytes);
+            byte[] hash = MessageDigest.getInstance("SHA-256").digest(bytes);
+            return HexFormat.of().formatHex(hash);
+        } catch (IOException e) {
+            throw new IllegalStateException("Kunne ikke serialisere Avro-melding for nøkkelberegning", e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 ikke tilgjengelig", e);
+        }
     }
 }

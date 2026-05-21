@@ -22,7 +22,7 @@ public class InternalDvhMeldingProdusentController {
     private final AvtaleRepository avtaleRepository;
     private final DvhMeldingEntitetRepository dvhMeldingRepository;
     private final TokenUtils tokenUtils;
-    private final DvhAvtalePatchService dvhAvtalePatchService;
+    private final AsyncDvhAvtalePatchService dvhAvtalePatchService;
 
     @PostMapping("/patch")
     public void patcheAvtale(@RequestBody PatchRequest request) {

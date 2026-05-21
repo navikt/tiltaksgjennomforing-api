@@ -99,6 +99,8 @@ tiltaksgjennomforing:
     apiGwApiKey: foo
   ereg:
     uri: http://localhost:8090/ereg
+  regoppslag:
+    uri: http://localhost:8090/regoppslag/rest
   consumer:
     system:
       id: testsystem
