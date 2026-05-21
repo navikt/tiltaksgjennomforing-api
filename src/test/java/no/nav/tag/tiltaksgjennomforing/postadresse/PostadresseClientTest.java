@@ -97,7 +97,7 @@ class PostadresseClientTest {
     }
 
     @Test
-    void sjekkOmPersonErRegistrertMedRiktigAdresse__skal_returnere_true_nar_regoppslag_returnerer_adresse_med_kun_landkode() {
+    void sjekkOmPersonErRegistrertMedAdresse__skal_returnere_true_nar_regoppslag_returnerer_adresse_med_kun_landkode() {
         boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedAdresse(Fnr.fraDb("20987654321"));
 
         assertThat(harAdresse).isTrue();
