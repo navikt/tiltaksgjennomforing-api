@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
@@ -50,7 +51,12 @@ public class PostadresseClient {
 
 	private Optional<PostadresseResponse> hentPostadresseHvisTilgjengelig(Fnr fnr) {
 		try {
-			return Optional.of(hentPostadresse(fnr));
+			PostadresseResponse response = hentPostadresse(fnr);
+			if (response == null || response.adresse() == null) {
+				log.warn("Fant ikke respons/adresse fra Regoppslag. Returnerer Optional.empty().");
+				return Optional.empty();
+			}
+			return Optional.of(response);
 		} catch (RegoppslagFunctionalException | RegoppslagTechnicalException exception) {
 			log.warn("Fant ikke gyldig adresse fra Regoppslag. Returnerer Optional.empty(). feiltype={}", exception.getClass().getSimpleName());
 			return Optional.empty();
@@ -59,19 +65,11 @@ public class PostadresseClient {
 
 	PostadresseResponse hentPostadresse(Fnr fnr) {
 		try {
-			PostadresseResponse response = azureRestTemplate.postForObject(
+			return azureRestTemplate.postForObject(
 				baseUrlForRegoppslagAPI + "/postadresse",
 				lagRequest(fnr),
 				PostadresseResponse.class
 			);
-			if (response == null) {
-				throw new RegoppslagTechnicalException("Kall mot Regoppslag returnerte tom respons.");
-			}
-			Adresse adresse = response.adresse();
-			if (adresse == null) {
-				throw new RegoppslagTechnicalException("Kall mot Regoppslag returnerte tom adresse.");
-			}
-			return response;
 		} catch (RestClientResponseException exception) {
 			if (exception.getStatusCode().is5xxServerError()) {
 				throw new RegoppslagTechnicalException(format("Kall mot Regoppslag feilet teknisk. status=%s, problemDetail=%s", exception.getStatusCode(), lesProblemDetail(exception)));
@@ -86,6 +84,8 @@ public class PostadresseClient {
 				throw new PersonErDoedUkjentAdresseException("Mottaker er død og har ukjent adresse.");
 			}
 			throw new RegoppslagFunctionalException(format("Henting av adresse for bruker feilet funksjonelt mot Regoppslag. status=%s, problemDetail=%s", exception.getStatusCode(), lesProblemDetail(exception)));
+		} catch (RestClientException exception) {
+			throw new RegoppslagTechnicalException(format("Kall mot Regoppslag feilet teknisk. feil=%s", exception.getMessage()), exception);
 		}
 	}
 
