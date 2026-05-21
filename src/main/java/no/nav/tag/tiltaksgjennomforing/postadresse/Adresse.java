@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.postadresse;
 
 import lombok.Builder;
 
-@Builder(toBuilder = true)
 public record Adresse(
 	AdresseKildeCode adresseKilde,
 	PostadresseType type,
