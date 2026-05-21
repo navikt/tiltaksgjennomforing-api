@@ -147,7 +147,7 @@ class PostadresseClientTest {
     }
 
     @Test
-    void sjekkOmPersonErRegistrertMedAdresse__skal_returnere_false_ved_manglende_pdl_data() {
+    void sjekkOmPersonErRegistrertMedAdresse__skal_returnere_false_ved_manglende_data() {
         boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedAdresse(Fnr.fraDb("10987654321"));
 
         assertThat(harAdresse).isFalse();
