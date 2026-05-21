@@ -1,5 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.datavarehus;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.bekk.bekkopen.person.FodselsnummerValidator;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -12,6 +17,57 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AvroTiltakHendelseFabrikkTest {
 
     private static final Instant FAST_TIDSPUNKT = Instant.parse("2024-01-01T10:00:00Z");
+
+    @BeforeEach
+    void setUp() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
+    }
+
+    @AfterEach
+    void tearDown() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
+    }
+
+    @Test
+    void konstruer_melding_id_er_hash_av_alt_innhold() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+
+        AvroTiltakHendelse hendelse = AvroTiltakHendelseFabrikk.konstruer(avtale, DvhHendelseType.ENDRET, "Z123456");
+
+        // meldingId must equal beregnNokkel() on the returned message.
+        // If any field is set after setMeldingId() in konstruer(), this assertion fails.
+        assertThat(hendelse.getMeldingId())
+                .isEqualTo(AvroTiltakHendelseFabrikk.beregnNokkel(hendelse));
+    }
+
+    @Test
+    void beregn_nokkel_gir_samme_nokkel_for_samme_innhold() {
+        AvroTiltakHendelse hendelse1 = enHendelse(DvhHendelseType.ENDRET.name());
+        AvroTiltakHendelse hendelse2 = enHendelse(DvhHendelseType.ENDRET.name());
+
+        assertThat(hendelse1.getMeldingId()).isNotEqualTo(hendelse2.getMeldingId());
+        assertThat(AvroTiltakHendelseFabrikk.beregnNokkel(hendelse1))
+                .isEqualTo(AvroTiltakHendelseFabrikk.beregnNokkel(hendelse2));
+    }
+
+    @Test
+    void beregn_nokkel_gir_ulik_nokkel_for_ulik_hendelse_type() {
+        AvroTiltakHendelse endret = enHendelse(DvhHendelseType.ENDRET.name());
+        AvroTiltakHendelse inngått = enHendelse(DvhHendelseType.INNGÅTT.name());
+
+        assertThat(AvroTiltakHendelseFabrikk.beregnNokkel(endret))
+                .isNotEqualTo(AvroTiltakHendelseFabrikk.beregnNokkel(inngått));
+    }
+
+    @Test
+    void beregn_nokkel_er_uavhengig_av_tidspunkt() {
+        AvroTiltakHendelse hendelse1 = enHendelse(DvhHendelseType.ENDRET.name());
+        AvroTiltakHendelse hendelse2 = enHendelse(DvhHendelseType.ENDRET.name());
+        hendelse2.setTidspunkt(Instant.parse("2099-12-31T23:59:59Z"));
+
+        assertThat(AvroTiltakHendelseFabrikk.beregnNokkel(hendelse1))
+                .isEqualTo(AvroTiltakHendelseFabrikk.beregnNokkel(hendelse2));
+    }
 
     private static AvroTiltakHendelse enHendelse(String hendelseType) {
         AvroTiltakHendelse hendelse = new AvroTiltakHendelse();
@@ -71,36 +127,5 @@ class AvroTiltakHendelseFabrikkTest {
         hendelse.setInkluderingstilskuddsutgift(List.of());
         hendelse.setTilskuddstrinn(List.of());
         return hendelse;
-    }
-
-    @Test
-    void beregnNøkkel_girSammeNøkkelForSammeInnhold() {
-        AvroTiltakHendelse hendelse1 = enHendelse(DvhHendelseType.ENDRET.name());
-        AvroTiltakHendelse hendelse2 = enHendelse(DvhHendelseType.ENDRET.name());
-
-        assertThat(hendelse1.getMeldingId()).isNotEqualTo(hendelse2.getMeldingId());
-        assertThat(AvroTiltakHendelseFabrikk.beregnNøkkel(hendelse1))
-                .isEqualTo(AvroTiltakHendelseFabrikk.beregnNøkkel(hendelse2));
-    }
-
-    @Test
-    void beregnNøkkel_girSammeNøkkelNårTidspunktErForskjellig() {
-        AvroTiltakHendelse hendelse1 = enHendelse(DvhHendelseType.ENDRET.name());
-        AvroTiltakHendelse hendelse2 = AvroTiltakHendelse.newBuilder(hendelse1)
-                .setTidspunkt(FAST_TIDSPUNKT.plusSeconds(60))
-                .build();
-
-        assertThat(hendelse1.getTidspunkt()).isNotEqualTo(hendelse2.getTidspunkt());
-        assertThat(AvroTiltakHendelseFabrikk.beregnNøkkel(hendelse1))
-                .isEqualTo(AvroTiltakHendelseFabrikk.beregnNøkkel(hendelse2));
-    }
-
-    @Test
-    void beregnNøkkel_girUlikNøkkelForUlikHendelseType() {
-        AvroTiltakHendelse endret = enHendelse(DvhHendelseType.ENDRET.name());
-        AvroTiltakHendelse inngått = enHendelse(DvhHendelseType.INNGÅTT.name());
-
-        assertThat(AvroTiltakHendelseFabrikk.beregnNøkkel(endret))
-                .isNotEqualTo(AvroTiltakHendelseFabrikk.beregnNøkkel(inngått));
     }
 }

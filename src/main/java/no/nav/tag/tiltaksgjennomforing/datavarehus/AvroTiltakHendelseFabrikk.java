@@ -83,7 +83,7 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setInkluderingstilskuddsutgift(mapInkluderingstilskuddsutgift(avtale));
         hendelse.setTilskuddstrinn(mapTilskuddstrinn(avtale));
 
-        hendelse.setMeldingId(beregnNøkkel(hendelse));
+        hendelse.setMeldingId(beregnNokkel(hendelse));
         hendelse.setTidspunkt(Now.instant());
 
         return hendelse;
@@ -145,7 +145,7 @@ public class AvroTiltakHendelseFabrikk {
         return Boolean.FALSE;
     }
 
-    static String beregnNøkkel(AvroTiltakHendelse hendelse) {
+    static String beregnNokkel(AvroTiltakHendelse hendelse) {
         AvroTiltakHendelse kopi = AvroTiltakHendelse.newBuilder(hendelse)
             .setMeldingId("")
             .setTidspunkt(Instant.EPOCH)
