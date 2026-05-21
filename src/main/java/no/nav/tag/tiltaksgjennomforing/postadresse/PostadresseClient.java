@@ -54,7 +54,7 @@ public class PostadresseClient {
 				PostadresseResponse.class
 			);
 			if (response == null || response.adresse() == null) {
-				log.warn("Fant ikke respons/adresse fra Regoppslag. Returnerer Optional.empty().");
+				log.info("Fant ikke respons/adresse fra Regoppslag. Returnerer Optional.empty().");
 				return Optional.empty();
 			}
 			return Optional.of(response);
