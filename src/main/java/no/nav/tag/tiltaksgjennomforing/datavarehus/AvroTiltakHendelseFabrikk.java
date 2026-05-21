@@ -36,7 +36,6 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setAvtaleInnholdId(avtale.getGjeldendeInnhold().getId().toString());
         hendelse.setAvtaleNr(avtale.getAvtaleNr());
         hendelse.setBedriftNr(avtale.getBedriftNr().asString());
-        hendelse.setDatoForRedusertProsent(null);
         hendelse.setDeltakerFnr(avtale.getDeltakerFnr().asString());
         hendelse.setEnhetGeografisk(avtale.getEnhetGeografisk());
         hendelse.setEnhetOppfolging(avtale.getEnhetOppfolging());
@@ -60,7 +59,6 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setStillingStyrk08(avtale.getGjeldendeInnhold().getStillingStyrk08());
         hendelse.setStillingstittel(avtale.getGjeldendeInnhold().getStillingstittel());
         hendelse.setSumLonnstilskudd(avtale.getGjeldendeInnhold().getSumLonnstilskudd());
-        hendelse.setSumLonnstilskuddRedusert(null);
         hendelse.setSumLonnsutgifter(avtale.getGjeldendeInnhold().getSumLonnsutgifter());
         hendelse.setTilskuddstrinn(mapTilskuddstrinn(avtale));
         hendelse.setTiltakStatus(avtale.getStatus().name());
