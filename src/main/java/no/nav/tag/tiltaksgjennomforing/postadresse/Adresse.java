@@ -1,7 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.postadresse;
 
-import lombok.Builder;
-
 public record Adresse(
 	AdresseKildeCode adresseKilde,
 	PostadresseType type,
