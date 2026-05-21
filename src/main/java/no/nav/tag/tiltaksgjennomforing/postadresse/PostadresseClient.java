@@ -60,10 +60,10 @@ public class PostadresseClient {
 			return Optional.of(response);
 		} catch (RestClientResponseException exception) {
 			if (exception.getStatusCode().is5xxServerError()) {
-				throw new RegoppslagTechnicalException(format("Kall mot Regoppslag feilet teknisk. status=%s, body=%s", exception.getStatusCode(), exception.getResponseBodyAsString()), exception);
+				throw new RegoppslagTechnicalException(format("Kall mot Regoppslag feilet teknisk. status=%s", exception.getStatusCode()), exception);
 			}
 			if (exception.getStatusCode() == UNAUTHORIZED) {
-				throw new RegoppslagSecurityException(format("Kall mot Regoppslag feilet. Ingen tilgang. body=%s", exception.getResponseBodyAsString()));
+				throw new RegoppslagSecurityException("Kall mot Regoppslag feilet. Ingen tilgang");
 			}
 			log.warn("Fant ikke gyldig adresse fra Regoppslag. Returnerer Optional.empty(). status={}", exception.getStatusCode());
 			return Optional.empty();
