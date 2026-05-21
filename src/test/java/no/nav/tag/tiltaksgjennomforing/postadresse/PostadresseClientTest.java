@@ -38,6 +38,7 @@ class PostadresseClientTest {
         assertThat(response).isPresent();
         assertThat(response.get().navn()).isEqualTo("Jan Neimansen");
         assertThat(response.get().adresse()).isNotNull();
+        assertThat(response.get().adresse().type()).isEqualTo(PostadresseType.NORSKPOSTADRESSE);
         assertThat(response.get().adresse().adresselinje1()).isEqualTo("eksempelveien 23 A");
 
         integrasjonerMockServer.getServer().verify(
