@@ -40,7 +40,6 @@ class PostadresseClientTest {
 
         integrasjonerMockServer.getServer().verify(
             postRequestedFor(urlPathEqualTo("/regoppslag/rest/postadresse"))
-                .withHeader("behandlingsnummer", equalTo("B662"))
                 .withRequestBody(matchingJsonPath("$.ident", equalTo("09876543210")))
         );
     }
@@ -53,7 +52,6 @@ class PostadresseClientTest {
 
         integrasjonerMockServer.getServer().verify(
             postRequestedFor(urlPathEqualTo("/regoppslag/rest/postadresse"))
-                .withHeader("behandlingsnummer", equalTo("B662"))
                 .withRequestBody(matchingJsonPath("$.ident", equalTo("09876543210")))
         );
     }
@@ -66,7 +64,6 @@ class PostadresseClientTest {
 
         integrasjonerMockServer.getServer().verify(
             postRequestedFor(urlPathEqualTo("/regoppslag/rest/postadresse"))
-                .withHeader("behandlingsnummer", equalTo("B662"))
                 .withRequestBody(matchingJsonPath("$.ident", equalTo("20987654321")))
         );
     }
@@ -79,7 +76,6 @@ class PostadresseClientTest {
 
         integrasjonerMockServer.getServer().verify(
             postRequestedFor(urlPathEqualTo("/regoppslag/rest/postadresse"))
-                .withHeader("behandlingsnummer", equalTo("B662"))
                 .withRequestBody(matchingJsonPath("$.ident", equalTo("10987654321")))
         );
     }
@@ -99,7 +95,6 @@ class PostadresseClientTest {
 
         integrasjonerMockServer.getServer().verify(
             postRequestedFor(urlPathEqualTo("/regoppslag/rest/postadresse"))
-                .withHeader("behandlingsnummer", equalTo("B662"))
                 .withRequestBody(matchingJsonPath("$.ident", equalTo("30987654321")))
         );
     }
@@ -113,7 +108,6 @@ class PostadresseClientTest {
 
         integrasjonerMockServer.getServer().verify(
             postRequestedFor(urlPathEqualTo("/regoppslag/rest/postadresse"))
-                .withHeader("behandlingsnummer", equalTo("B662"))
                 .withRequestBody(matchingJsonPath("$.ident", equalTo("10987654321")))
         );
     }

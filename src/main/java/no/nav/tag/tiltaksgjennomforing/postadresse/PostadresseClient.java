@@ -92,7 +92,7 @@ public class PostadresseClient {
 	private HttpEntity<PostadresseRequest> lagRequest(Fnr fnr) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.set("behandlingsnummer", "B662");
+		//headers.set("behandlingsnummer", "B662");
 		return new HttpEntity<>(PostadresseRequest.builder()
 			.ident(fnr.asString())
 			.build(), headers);
