@@ -65,7 +65,7 @@ public class PostadresseClient {
 			if (exception.getStatusCode() == UNAUTHORIZED) {
 				throw new RegoppslagSecurityException(format("Kall mot Regoppslag feilet. Ingen tilgang. body=%s", exception.getResponseBodyAsString()));
 			}
-			log.warn("Fant ikke gyldig adresse fra Regoppslag. Returnerer Optional.empty(). status={}, body={}", exception.getStatusCode(), exception.getResponseBodyAsString());
+			log.warn("Fant ikke gyldig adresse fra Regoppslag. Returnerer Optional.empty(). status={}", exception.getStatusCode());
 			return Optional.empty();
 		} catch (RestClientException exception) {
 			throw new RegoppslagTechnicalException(format("Kall mot Regoppslag feilet teknisk. feil=%s", exception.getMessage()), exception);
