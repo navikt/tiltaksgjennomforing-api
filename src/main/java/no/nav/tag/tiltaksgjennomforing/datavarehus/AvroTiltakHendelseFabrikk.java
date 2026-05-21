@@ -9,9 +9,14 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.TilskuddstrinnDTO;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @UtilityClass
@@ -22,8 +27,6 @@ public class AvroTiltakHendelseFabrikk {
 
     public static AvroTiltakHendelse konstruer(Avtale avtale, DvhHendelseType hendelseType, String utførtAv, ForkortetGrunn forkortetGrunn) {
         AvroTiltakHendelse hendelse = new AvroTiltakHendelse();
-        hendelse.setMeldingId(UUID.randomUUID().toString());
-        hendelse.setTidspunkt(Now.instant());
         hendelse.setAvtaleId(avtale.getId().toString());
         hendelse.setAvtaleInnholdId(avtale.getGjeldendeInnhold().getId().toString());
         hendelse.setTiltakstype(TiltakType.valueOf(avtale.getTiltakstype().name()));
@@ -79,6 +82,10 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setLonnstilskuddFormaal(mapLonnstilskuddFormaal(avtale));
         hendelse.setInkluderingstilskuddsutgift(mapInkluderingstilskuddsutgift(avtale));
         hendelse.setTilskuddstrinn(mapTilskuddstrinn(avtale));
+
+        hendelse.setMeldingId(beregnNøkkel(hendelse));
+        hendelse.setTidspunkt(Now.instant());
+
         return hendelse;
     }
 
@@ -136,5 +143,23 @@ public class AvroTiltakHendelseFabrikk {
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
+    }
+
+    static String beregnNøkkel(AvroTiltakHendelse hendelse) {
+        AvroTiltakHendelse kopi = AvroTiltakHendelse.newBuilder(hendelse)
+            .setMeldingId("")
+            .setTidspunkt(Instant.EPOCH)
+            .build();
+        try {
+            ByteBuffer buffer = kopi.toByteBuffer();
+            byte[] bytes = new byte[buffer.remaining()];
+            buffer.get(bytes);
+            byte[] hash = MessageDigest.getInstance("SHA-256").digest(bytes);
+            return HexFormat.of().formatHex(hash);
+        } catch (IOException e) {
+            throw new IllegalStateException("Kunne ikke serialisere Avro-melding for nøkkelberegning", e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 ikke tilgjengelig", e);
+        }
     }
 }

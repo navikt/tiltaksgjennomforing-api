@@ -22,6 +22,7 @@ public class DvhMeldingEntitet extends AbstractAggregateRoot<DvhMeldingEntitet> 
     @Id
     private UUID meldingId;
     private UUID avtaleId;
+    private String nokkel;
     private Instant tidspunkt;
     @Enumerated(EnumType.STRING)
     private Status tiltakStatus;
@@ -29,7 +30,8 @@ public class DvhMeldingEntitet extends AbstractAggregateRoot<DvhMeldingEntitet> 
     private boolean sendt;
 
     public DvhMeldingEntitet(Avtale avtale, AvroTiltakHendelse avroTiltakHendelse) {
-        this.meldingId = UUID.fromString(avroTiltakHendelse.getMeldingId());
+        this.meldingId = UUID.randomUUID();
+        this.nokkel = avroTiltakHendelse.getMeldingId();
         this.avtaleId = avtale.getId();
         this.tidspunkt = avroTiltakHendelse.getTidspunkt();
         this.tiltakStatus = avtale.getStatus();
