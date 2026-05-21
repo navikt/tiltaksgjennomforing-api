@@ -84,6 +84,18 @@ class AvroTiltakHendelseFabrikkTest {
     }
 
     @Test
+    void beregnNøkkel_girSammeNøkkelNårTidspunktErForskjellig() {
+        AvroTiltakHendelse hendelse1 = enHendelse(DvhHendelseType.ENDRET.name());
+        AvroTiltakHendelse hendelse2 = AvroTiltakHendelse.newBuilder(hendelse1)
+                .setTidspunkt(FAST_TIDSPUNKT.plusSeconds(60))
+                .build();
+
+        assertThat(hendelse1.getTidspunkt()).isNotEqualTo(hendelse2.getTidspunkt());
+        assertThat(AvroTiltakHendelseFabrikk.beregnNøkkel(hendelse1))
+                .isEqualTo(AvroTiltakHendelseFabrikk.beregnNøkkel(hendelse2));
+    }
+
+    @Test
     void beregnNøkkel_girUlikNøkkelForUlikHendelseType() {
         AvroTiltakHendelse endret = enHendelse(DvhHendelseType.ENDRET.name());
         AvroTiltakHendelse inngått = enHendelse(DvhHendelseType.INNGÅTT.name());
