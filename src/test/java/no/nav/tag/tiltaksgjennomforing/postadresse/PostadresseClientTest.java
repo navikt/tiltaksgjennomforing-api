@@ -4,7 +4,6 @@ import com.github.tomakehurst.wiremock.http.Fault;
 import no.nav.tag.tiltaksgjennomforing.IntegrasjonerMockServer;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.postadresse.exception.RegoppslagFunctionalException;
 import no.nav.tag.tiltaksgjennomforing.postadresse.exception.RegoppslagTechnicalException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +32,13 @@ class PostadresseClientTest {
     private IntegrasjonerMockServer integrasjonerMockServer;
 
     @Test
-    void hentPostadresse__skal_returnere_hele_responsen_fra_regoppslag() {
-        PostadresseResponse response = postadresseClient.hentPostadresse(Fnr.fraDb("09876543210"));
+    void hentPostadresseHvisTilgjengelig__skal_returnere_hele_responsen_fra_regoppslag() {
+        var response = postadresseClient.hentPostadresseHvisTilgjengelig(Fnr.fraDb("09876543210"));
 
-        assertThat(response.navn()).isEqualTo("Jan Neimansen");
-        assertThat(response.adresse()).isNotNull();
-        assertThat(response.adresse().adresselinje1()).isEqualTo("eksempelveien 23 A");
+        assertThat(response).isPresent();
+        assertThat(response.get().navn()).isEqualTo("Jan Neimansen");
+        assertThat(response.get().adresse()).isNotNull();
+        assertThat(response.get().adresse().adresselinje1()).isEqualTo("eksempelveien 23 A");
 
         integrasjonerMockServer.getServer().verify(
             postRequestedFor(urlPathEqualTo("/regoppslag/rest/postadresse"))
@@ -47,7 +47,7 @@ class PostadresseClientTest {
     }
 
     @Test
-    void hentPostadresse__skal_returnere_respons_uten_adresse_nar_regoppslag_returnerer_null_adresse() {
+    void hentPostadresseHvisTilgjengelig__skal_returnere_empty_nar_regoppslag_returnerer_null_adresse() {
         integrasjonerMockServer.getServer().stubFor(post(urlPathEqualTo("/regoppslag/rest/postadresse"))
             .withRequestBody(matchingJsonPath("$.ident", equalTo("50987654321")))
             .willReturn(aResponse()
@@ -55,10 +55,9 @@ class PostadresseClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody("{\"navn\":\"Jan Neimansen\",\"adresse\":null}")));
 
-        PostadresseResponse response = postadresseClient.hentPostadresse(Fnr.fraDb("50987654321"));
+        var response = postadresseClient.hentPostadresseHvisTilgjengelig(Fnr.fraDb("50987654321"));
 
-        assertThat(response.navn()).isEqualTo("Jan Neimansen");
-        assertThat(response.adresse()).isNull();
+        assertThat(response).isEmpty();
 
         integrasjonerMockServer.getServer().verify(
             postRequestedFor(urlPathEqualTo("/regoppslag/rest/postadresse"))
@@ -67,7 +66,7 @@ class PostadresseClientTest {
     }
 
     @Test
-    void hentPostadresse__skal_returnere_null_nar_regoppslag_returnerer_tom_respons() {
+    void hentPostadresseHvisTilgjengelig__skal_returnere_empty_nar_regoppslag_returnerer_tom_respons() {
         integrasjonerMockServer.getServer().stubFor(post(urlPathEqualTo("/regoppslag/rest/postadresse"))
             .withRequestBody(matchingJsonPath("$.ident", equalTo("60987654321")))
             .willReturn(aResponse()
@@ -75,9 +74,9 @@ class PostadresseClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody("")));
 
-        PostadresseResponse response = postadresseClient.hentPostadresse(Fnr.fraDb("60987654321"));
+        var response = postadresseClient.hentPostadresseHvisTilgjengelig(Fnr.fraDb("60987654321"));
 
-        assertThat(response).isNull();
+        assertThat(response).isEmpty();
 
         integrasjonerMockServer.getServer().verify(
             postRequestedFor(urlPathEqualTo("/regoppslag/rest/postadresse"))
@@ -160,7 +159,7 @@ class PostadresseClientTest {
     }
 
     @Test
-    void sjekkOmPersonErRegistrertMedRiktigAdresse__skal_returnere_false_ved_teknisk_feil_fra_regoppslag() {
+    void sjekkOmPersonErRegistrertMedRiktigAdresse__skal_kaste_teknisk_feil_ved_5xx_fra_regoppslag() {
         integrasjonerMockServer.getServer().stubFor(post(urlPathEqualTo("/regoppslag/rest/postadresse"))
             .withRequestBody(matchingJsonPath("$.ident", equalTo("30987654321")))
             .willReturn(aResponse()
@@ -168,9 +167,10 @@ class PostadresseClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody("{\"detail\":\"Intern feil\"}")));
 
-        boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedRiktigAdresse(Fnr.fraDb("30987654321"));
-
-        assertThat(harAdresse).isFalse();
+        assertThatThrownBy(() -> postadresseClient.sjekkOmPersonErRegistrertMedRiktigAdresse(Fnr.fraDb("30987654321")))
+            .isInstanceOf(RegoppslagTechnicalException.class)
+            .hasMessageContaining("status=500")
+            .hasCauseInstanceOf(Exception.class);
 
         integrasjonerMockServer.getServer().verify(
             postRequestedFor(urlPathEqualTo("/regoppslag/rest/postadresse"))
@@ -179,14 +179,15 @@ class PostadresseClientTest {
     }
 
     @Test
-    void sjekkOmPersonErRegistrertMedRiktigAdresse__skal_returnere_false_ved_resttemplate_feil_uten_http_status() {
+    void sjekkOmPersonErRegistrertMedRiktigAdresse__skal_kaste_teknisk_feil_ved_resttemplate_feil_uten_http_status() {
         integrasjonerMockServer.getServer().stubFor(post(urlPathEqualTo("/regoppslag/rest/postadresse"))
             .withRequestBody(matchingJsonPath("$.ident", equalTo("80987654321")))
             .willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)));
 
-        boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedRiktigAdresse(Fnr.fraDb("80987654321"));
-
-        assertThat(harAdresse).isFalse();
+        assertThatThrownBy(() -> postadresseClient.sjekkOmPersonErRegistrertMedRiktigAdresse(Fnr.fraDb("80987654321")))
+            .isInstanceOf(RegoppslagTechnicalException.class)
+            .hasMessageContaining("Kall mot Regoppslag feilet teknisk")
+            .hasCauseInstanceOf(Exception.class);
 
         integrasjonerMockServer.getServer().verify(
             postRequestedFor(urlPathEqualTo("/regoppslag/rest/postadresse"))
@@ -195,12 +196,12 @@ class PostadresseClientTest {
     }
 
     @Test
-    void hentPostadresse__skal_kaste_teknisk_feil_ved_resttemplate_feil_uten_http_status() {
+    void hentPostadresseHvisTilgjengelig__skal_kaste_teknisk_feil_ved_resttemplate_feil_uten_http_status() {
         integrasjonerMockServer.getServer().stubFor(post(urlPathEqualTo("/regoppslag/rest/postadresse"))
             .withRequestBody(matchingJsonPath("$.ident", equalTo("90987654321")))
             .willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)));
 
-        assertThatThrownBy(() -> postadresseClient.hentPostadresse(Fnr.fraDb("90987654321")))
+        assertThatThrownBy(() -> postadresseClient.hentPostadresseHvisTilgjengelig(Fnr.fraDb("90987654321")))
             .isInstanceOf(RegoppslagTechnicalException.class)
             .hasMessageContaining("Kall mot Regoppslag feilet teknisk")
             .hasCauseInstanceOf(Exception.class);
@@ -212,11 +213,10 @@ class PostadresseClientTest {
     }
 
     @Test
-    void hentPostadresse__skal_kaste_funksjonell_feil_ved_manglende_data() {
-        assertThatThrownBy(() -> postadresseClient.hentPostadresse(Fnr.fraDb("10987654321")))
-            .isInstanceOf(RegoppslagFunctionalException.class)
-            .hasMessageContaining("status=400")
-            .hasMessageContaining("manglende data");
+    void hentPostadresseHvisTilgjengelig__skal_returnere_empty_ved_manglende_data() {
+        var response = postadresseClient.hentPostadresseHvisTilgjengelig(Fnr.fraDb("10987654321"));
+
+        assertThat(response).isEmpty();
 
         integrasjonerMockServer.getServer().verify(
             postRequestedFor(urlPathEqualTo("/regoppslag/rest/postadresse"))
