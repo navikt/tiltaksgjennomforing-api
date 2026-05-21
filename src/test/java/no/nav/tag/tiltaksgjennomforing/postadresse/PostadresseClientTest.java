@@ -85,8 +85,8 @@ class PostadresseClientTest {
     }
 
     @Test
-    void sjekkOmPersonErRegistrertMedRiktigAdresse__skal_returnere_true_nar_regoppslag_returnerer_adresse() {
-        boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedRiktigAdresse(Fnr.fraDb("09876543210"));
+    void sjekkOmPersonErRegistrertMedAdresse__skal_returnere_true_nar_regoppslag_returnerer_adresse() {
+        boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedAdresse(Fnr.fraDb("09876543210"));
 
         assertThat(harAdresse).isTrue();
 
@@ -98,7 +98,7 @@ class PostadresseClientTest {
 
     @Test
     void sjekkOmPersonErRegistrertMedRiktigAdresse__skal_returnere_true_nar_regoppslag_returnerer_adresse_med_kun_landkode() {
-        boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedRiktigAdresse(Fnr.fraDb("20987654321"));
+        boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedAdresse(Fnr.fraDb("20987654321"));
 
         assertThat(harAdresse).isTrue();
 
@@ -109,7 +109,7 @@ class PostadresseClientTest {
     }
 
     @Test
-    void sjekkOmPersonErRegistrertMedRiktigAdresse__skal_returnere_false_nar_regoppslag_returnerer_null_adresse() {
+    void sjekkOmPersonErRegistrertMedAdresse__skal_returnere_false_nar_regoppslag_returnerer_null_adresse() {
         integrasjonerMockServer.getServer().stubFor(post(urlPathEqualTo("/regoppslag/rest/postadresse"))
             .withRequestBody(matchingJsonPath("$.ident", equalTo("40987654321")))
             .willReturn(aResponse()
@@ -117,7 +117,7 @@ class PostadresseClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody("{\"navn\":\"Jan Neimansen\",\"adresse\":null}")));
 
-        boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedRiktigAdresse(Fnr.fraDb("40987654321"));
+        boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedAdresse(Fnr.fraDb("40987654321"));
 
         assertThat(harAdresse).isFalse();
 
@@ -128,7 +128,7 @@ class PostadresseClientTest {
     }
 
     @Test
-    void sjekkOmPersonErRegistrertMedRiktigAdresse__skal_returnere_false_nar_regoppslag_returnerer_tom_respons() {
+    void sjekkOmPersonErRegistrertMedAdresse__skal_returnere_false_nar_regoppslag_returnerer_tom_respons() {
         integrasjonerMockServer.getServer().stubFor(post(urlPathEqualTo("/regoppslag/rest/postadresse"))
             .withRequestBody(matchingJsonPath("$.ident", equalTo("70987654321")))
             .willReturn(aResponse()
@@ -136,7 +136,7 @@ class PostadresseClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody("")));
 
-        boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedRiktigAdresse(Fnr.fraDb("70987654321"));
+        boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedAdresse(Fnr.fraDb("70987654321"));
 
         assertThat(harAdresse).isFalse();
 
@@ -147,8 +147,8 @@ class PostadresseClientTest {
     }
 
     @Test
-    void sjekkOmPersonErRegistrertMedRiktigAdresse__skal_returnere_false_ved_manglende_pdl_data() {
-        boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedRiktigAdresse(Fnr.fraDb("10987654321"));
+    void sjekkOmPersonErRegistrertMedAdresse__skal_returnere_false_ved_manglende_pdl_data() {
+        boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedAdresse(Fnr.fraDb("10987654321"));
 
         assertThat(harAdresse).isFalse();
 
@@ -159,7 +159,7 @@ class PostadresseClientTest {
     }
 
     @Test
-    void sjekkOmPersonErRegistrertMedRiktigAdresse__skal_kaste_teknisk_feil_ved_5xx_fra_regoppslag() {
+    void sjekkOmPersonErRegistrertMedAdresse__skal_kaste_teknisk_feil_ved_5Xx_fra_regoppslag() {
         integrasjonerMockServer.getServer().stubFor(post(urlPathEqualTo("/regoppslag/rest/postadresse"))
             .withRequestBody(matchingJsonPath("$.ident", equalTo("30987654321")))
             .willReturn(aResponse()
@@ -167,7 +167,7 @@ class PostadresseClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody("{\"detail\":\"Intern feil\"}")));
 
-        assertThatThrownBy(() -> postadresseClient.sjekkOmPersonErRegistrertMedRiktigAdresse(Fnr.fraDb("30987654321")))
+        assertThatThrownBy(() -> postadresseClient.sjekkOmPersonErRegistrertMedAdresse(Fnr.fraDb("30987654321")))
             .isInstanceOf(RegoppslagTechnicalException.class)
             .hasMessageContaining("status=500")
             .hasCauseInstanceOf(Exception.class);
@@ -179,12 +179,12 @@ class PostadresseClientTest {
     }
 
     @Test
-    void sjekkOmPersonErRegistrertMedRiktigAdresse__skal_kaste_teknisk_feil_ved_resttemplate_feil_uten_http_status() {
+    void sjekkOmPersonErRegistrertMedAdresse__skal_kaste_teknisk_feil_ved_resttemplate_feil_uten_http_status() {
         integrasjonerMockServer.getServer().stubFor(post(urlPathEqualTo("/regoppslag/rest/postadresse"))
             .withRequestBody(matchingJsonPath("$.ident", equalTo("80987654321")))
             .willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)));
 
-        assertThatThrownBy(() -> postadresseClient.sjekkOmPersonErRegistrertMedRiktigAdresse(Fnr.fraDb("80987654321")))
+        assertThatThrownBy(() -> postadresseClient.sjekkOmPersonErRegistrertMedAdresse(Fnr.fraDb("80987654321")))
             .isInstanceOf(RegoppslagTechnicalException.class)
             .hasMessageContaining("Kall mot Regoppslag feilet teknisk")
             .hasCauseInstanceOf(Exception.class);

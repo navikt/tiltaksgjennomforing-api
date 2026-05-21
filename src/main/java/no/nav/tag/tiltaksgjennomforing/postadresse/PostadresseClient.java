@@ -35,7 +35,7 @@ public class PostadresseClient {
 		this.baseUrlForRegoppslagAPI = regoppslagProperties.getUri().toString();
 	}
 
-	public boolean sjekkOmPersonErRegistrertMedRiktigAdresse(Fnr fnr) {
+	public boolean sjekkOmPersonErRegistrertMedAdresse(Fnr fnr) {
 		return hentPostadresseHvisTilgjengelig(fnr).isPresent();
 	}
 
