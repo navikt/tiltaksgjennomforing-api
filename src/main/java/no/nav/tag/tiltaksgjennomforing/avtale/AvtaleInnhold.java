@@ -249,10 +249,9 @@ public class AvtaleInnhold {
         setStillingKonseptId(endreStillingsbeskrivelse.getStillingKonseptId());
         setStillingprosent(endreStillingsbeskrivelse.getStillingprosent());
         setAntallDagerPerUke(endreStillingsbeskrivelse.getAntallDagerPerUke());
+        setStillingstype(endreStillingsbeskrivelse.getStillingstype());
 
-        boolean erLtsUtenSommerjobb = avtale.getTiltakstype().isLonnstilskudd() && !avtale.getTiltakstype().isSommerjobb();
-        boolean formaalHarEnVerdi = endreStillingsbeskrivelse.getLonnstilskuddFormaal() != null;
-        if (erLtsUtenSommerjobb && formaalHarEnVerdi && !avtale.erAvtaleInngått()) {
+        if (!avtale.erAvtaleInngått()) {
             setLonnstilskuddFormaal(endreStillingsbeskrivelse.getLonnstilskuddFormaal());
         }
     }
