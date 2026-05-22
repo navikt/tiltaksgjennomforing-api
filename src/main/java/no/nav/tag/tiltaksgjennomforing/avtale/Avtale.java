@@ -1482,7 +1482,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (endreInkluderingstilskudd.erTom()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_INKLUDERINGSTILSKUDD_TOM_LISTE);
         }
-        if (endreInkluderingstilskudd.overskriderMaksbelop()) {
+        if (endreInkluderingstilskudd.overskriderMaksbelop(this)) {
             throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_SUM_FOR_HØY);
         }
         if (endreInkluderingstilskudd.harMangler()) {

@@ -10,8 +10,6 @@ import java.util.List;
 @Value
 @NoArgsConstructor
 public class EndreInkluderingstilskudd {
-    private static final int MAKSBELOP_INKLUDERINGSTILSKUDD = 143900;
-
     List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift = new ArrayList<>();
 
     public boolean erTom() {
@@ -22,11 +20,11 @@ public class EndreInkluderingstilskudd {
         return inkluderingstilskuddsutgift.stream().anyMatch(i -> Utils.erNoenTomme(i.getBeløp(), i.getType()));
     }
 
-    public boolean overskriderMaksbelop() {
+    public boolean overskriderMaksbelop(Avtale avtale) {
         int belop = inkluderingstilskuddsutgift.stream()
             .map(Inkluderingstilskuddsutgift::getBeløp)
             .reduce(0, Integer::sum);
 
-        return belop > MAKSBELOP_INKLUDERINGSTILSKUDD;
+        return belop > InkluderingstilskuddStrategy.getInkluderingstilskuddSats(avtale.getGjeldendeInnhold().getSluttDato());
     }
 }
