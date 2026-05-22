@@ -9,6 +9,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import java.util.UUID;
+
 @Component
 @Slf4j
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
@@ -23,13 +25,14 @@ public class DvhMeldingKafkaProdusent {
 
     @TransactionalEventListener
     public void dvhMeldingOpprettet(DvhMeldingOpprettet event) {
-        String meldingId = event.getAvroTiltakHendelse().getMeldingId();
+        UUID meldingId = event.getEntitet().getMeldingId();
+        String nøkkel = event.getEntitet().getNokkel();
         String topic = Topics.DVH_MELDING;
-        dvhMeldingKafkaTemplate.send(topic, meldingId, event.getAvroTiltakHendelse()).whenComplete((result, ex) -> {
+        dvhMeldingKafkaTemplate.send(topic, nøkkel, event.getAvroTiltakHendelse()).whenComplete((result, ex) -> {
             if (ex != null) {
-                log.error("DvhMelding med id {} kunne ikke sendes til Kafka topic {}", meldingId, topic);
+                log.error("DvhMelding med id {} og nøkkel {} kunne ikke sendes til Kafka topic {}", meldingId, nøkkel, topic);
             } else {
-                log.info("DvhMelding med id {} sendt til Kafka topic {}", meldingId, topic);
+                log.info("DvhMelding med id {} og nøkkel {} sendt til Kafka topic {}", meldingId, nøkkel, topic);
                 DvhMeldingEntitet entitet = event.getEntitet();
                 entitet.setSendt(true);
                 repository.save(entitet);
