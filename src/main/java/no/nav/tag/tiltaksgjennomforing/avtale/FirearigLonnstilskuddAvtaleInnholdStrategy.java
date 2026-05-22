@@ -1,5 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.FirearigLonnstilskuddBeregningStrategy;
 
 import java.util.Map;
@@ -18,6 +20,10 @@ public class FirearigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvt
 
     @Override
     public void endre(EndreAvtale endreAvtale) {
+        if (LonnstilskuddFormaal.BEHOLDE_ARBEID.equals(endreAvtale.getLonnstilskuddFormaal())) {
+            throw new FeilkodeException(Feilkode.FIREARIG_LONNSTILSKUDD_KAN_IKKE_BRUKES_TIL_A_BEHOLDE_ARBEID);
+        }
+
         Integer lonnstilskuddprosentVedStart = beregningStrategy.getProsentForForstePeriode();
         avtaleInnhold.setLonnstilskuddProsent(lonnstilskuddprosentVedStart);
         avtaleInnhold.setLonnstilskuddFormaal(endreAvtale.getLonnstilskuddFormaal());
