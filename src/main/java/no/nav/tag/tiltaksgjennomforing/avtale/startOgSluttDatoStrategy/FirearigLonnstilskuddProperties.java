@@ -13,7 +13,7 @@ import java.time.LocalDate;
  * slik at dato-sjekken ikke blokkerer testing).
  *
  * <p>{@code @PostConstruct}/{@code getInstance()}-mønsteret brukes fordi denne verdien trengs i
- * {@link FirearigLonnstilskuddStartOgSluttDatoStrategy}, som opprettes fra en statisk fabrikk
+ * {@link FirearigLonnstilskuddStartOgSluttdatoStrategy}, som opprettes fra en statisk fabrikk
  * kalt inne i JPA-entiteten {@code Avtale} — der vanlig Spring-injeksjon ikke er tilgjengelig.</p>
  */
 @Data

@@ -97,8 +97,8 @@ public class MentorStartOgSluttDatoStrategyTest {
         LocalDate sluttDato = startDato.plusMonths(32);
         avtale.setDeltakerFnr(deltakerFnr);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        MentorStartOgSluttDatoStrategy mentorStartOgSluttDatoStrategy = new MentorStartOgSluttDatoStrategy(avtale);
-        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> mentorStartOgSluttDatoStrategy.sjekkStartOgSluttDato(startDato, sluttDato));
+        MentorStartOgSluttdatoStrategy mentorStartOgSluttDatoStrategy = new MentorStartOgSluttdatoStrategy(avtale);
+        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> mentorStartOgSluttDatoStrategy.sjekkStartOgSluttdato(startDato, sluttDato));
     }
 
     @Test

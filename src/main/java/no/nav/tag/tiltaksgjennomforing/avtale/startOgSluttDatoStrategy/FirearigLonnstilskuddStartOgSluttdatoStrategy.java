@@ -9,20 +9,21 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangFirearigLonnsti
 
 import java.time.LocalDate;
 
-public class FirearigLonnstilskuddStartOgSluttDatoStrategy extends StartOgSluttDatoStrategy {
+public class FirearigLonnstilskuddStartOgSluttdatoStrategy extends StartOgSluttdatoStrategy {
     private static final int MAKS_VARIGHET_MIDLERTIDIG_STILLING_ANTALL_AAR = 2;
     private static final int MAKS_VARIGHET_FAST_STILLING_ANTALL_AAR = 4;
     private static final LocalDate SLUTTDATO_FOR_FIREARIG_LTS_FORSOK = LocalDate.of(2032, 12, 31);
 
     private final LocalDate firearigOppstartsdato;
-    public FirearigLonnstilskuddStartOgSluttDatoStrategy(Avtale avtale) {
+
+    public FirearigLonnstilskuddStartOgSluttdatoStrategy(Avtale avtale) {
         super(avtale);
         this.firearigOppstartsdato = FirearigLonnstilskuddProperties.getInstance().getDato();
     }
 
     @Override
-    public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
-        super.sjekkStartOgSluttDato(startDato, sluttDato);
+    public void sjekkStartOgSluttdato(Stillingstype stillingstype, LocalDate startDato, LocalDate sluttDato) {
+        super.sjekkStartOgSluttdato(stillingstype, startDato, sluttDato);
 
         if (startDato == null) {
             return;
@@ -40,13 +41,12 @@ public class FirearigLonnstilskuddStartOgSluttDatoStrategy extends StartOgSluttD
         if (sluttDato.isAfter(SLUTTDATO_FOR_FIREARIG_LTS_FORSOK)) {
             throw new FeilkodeException(Feilkode.FIREARIG_LONNSTILSKUDD_FOR_SEN_SLUTTDATO);
         }
-        Stillingstype stillingstype = avtale.getGjeldendeInnhold().getStillingstype();
         if (erForLangVarighet(stillingstype, startDato, sluttDato)) {
             throw new VarighetForLangFirearigLonnstilskuddException(stillingstype);
         }
     }
 
-    public static boolean erForLangVarighet(Stillingstype stillingstype, LocalDate startDato, LocalDate sluttDato) {
+    static boolean erForLangVarighet(Stillingstype stillingstype, LocalDate startDato, LocalDate sluttDato) {
         if (startDato == null || sluttDato == null) {
             return false;
         }
