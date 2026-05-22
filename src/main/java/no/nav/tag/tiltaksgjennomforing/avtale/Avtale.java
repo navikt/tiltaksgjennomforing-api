@@ -1539,7 +1539,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (endreKidOgKontonummer.harMangler()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KID_OG_KONTONUMMER_GRUNN_MANGLER);
         }
-        if (endreKidOgKontonummer.harGyldigKid()) {
+        if (!endreKidOgKontonummer.harGyldigKid()) {
             throw new FeilkodeException(Feilkode.FEIL_KID_NUMMER);
         }
 
