@@ -30,4 +30,13 @@ public class FirearigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvt
 
         super.endre(endreAvtale);
     }
+
+    @Override
+    public void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse) {
+        if (LonnstilskuddFormaal.BEHOLDE_ARBEID.equals(endreStillingsbeskrivelse.getLonnstilskuddFormaal())) {
+            throw new FeilkodeException(Feilkode.FIREARIG_LONNSTILSKUDD_KAN_IKKE_BRUKES_TIL_A_BEHOLDE_ARBEID);
+        }
+
+        super.endreStillingsbeskrivelse(endreStillingsbeskrivelse);
+    }
 }
