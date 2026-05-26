@@ -32,7 +32,7 @@ public class EndreStillingsbeskrivelse {
                 harMangler || Utils.erNoenTomme(stillingstype, lonnstilskuddFormaal);
             case VTAO ->
                 harMangler || Utils.erNoenTomme(stillingstype);
-            default ->
+            case ARBEIDSTRENING, INKLUDERINGSTILSKUDD, MENTOR, SOMMERJOBB  ->
                 harMangler;
         };
     }

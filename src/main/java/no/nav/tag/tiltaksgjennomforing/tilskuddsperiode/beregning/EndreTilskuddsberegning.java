@@ -46,12 +46,13 @@ public class EndreTilskuddsberegning {
                     .map(lonnstype -> lonnstype.erTimelonn() ? BigDecimal.ZERO : stillingprosent)
                     .orElse(null)
             );
-            default -> Utils.erNoenTomme(
+            case MIDLERTIDIG_LONNSTILSKUDD, FIREARIG_LONNSTILSKUDD, SOMMERJOBB -> Utils.erNoenTomme(
                 arbeidsgiveravgift,
                 feriepengesats,
                 otpSats,
                 manedslonn
             );
+            case ARBEIDSTRENING, INKLUDERINGSTILSKUDD, VTAO -> false;
         };
     }
 }
