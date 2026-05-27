@@ -2,14 +2,15 @@ package no.nav.tag.tiltaksgjennomforing.digitalkommunikasjon;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -24,6 +25,7 @@ import java.util.Optional;
  *
  * Klient for Digdir KRR-proxy.
  *
+ * @see <a href="https://docs.digdir.no/docs/Kontaktregisteret/krr_attributter#kodeverk-for-varslingsstatus">KRR kodeverk for varslingsstatus</a>
  * @see <a href="https://digdir-krr-proxy.intern.dev.nav.no/swagger-ui/index.html">Swagger</a>
  * @see <a href="https://github.com/navikt/digdir-krr">digdir-krr</a>
  */
@@ -36,8 +38,7 @@ public class KrrClient {
     private final RestTemplate azureRestTemplate;
     private final URI baseUri;
 
-    public KrrClient(
-        @Qualifier("azureRestTemplate") RestTemplate azureRestTemplate,
+    public KrrClient(RestTemplate azureRestTemplate,
         KrrProperties krrProperties
     ) {
         this.azureRestTemplate = azureRestTemplate;
@@ -45,39 +46,45 @@ public class KrrClient {
     }
 
     public Optional<Boolean> hentPersonReservertForDigitalKontakt(Fnr fnr) {
-        String personident = Objects.requireNonNull(fnr, "fnr kan ikke være null").asString();
-
         try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<KrrPersonKontaktinformasjonRequest> request = new HttpEntity<>(
+                new KrrPersonKontaktinformasjonRequest(List.of(fnr.asString())),
+                headers
+            );
+
             ResponseEntity<KrrPersonKontaktinformasjonRespons> respons = azureRestTemplate.exchange(
                 baseUri + KRR_PERSON_ENDEPUNKT,
                 HttpMethod.POST,
-                lagRequest(personident),
+                request,
                 KrrPersonKontaktinformasjonRespons.class
             );
 
             if (!respons.getStatusCode().is2xxSuccessful()) {
-                log.warn("KRR svarte med uventet status {}", respons.getStatusCode());
-                return Optional.empty();
+                if (respons.getStatusCode().isSameCodeAs(HttpStatus.NOT_FOUND)) {
+                    log.warn("Fant ikke person i KRR. Returnerer Optional.empty(). status={}", respons.getStatusCode());
+                    return Optional.empty();
+                }
+                throw new RestClientException("KRR svarte med uventet status " + respons.getStatusCode());
             }
 
-            return hentKontaktinfo(respons.getBody(), personident)
+            return Optional.ofNullable(respons.getBody())
+                .map(KrrPersonKontaktinformasjonRespons::getPersoner)
+                .map(personer -> personer.get(fnr.asString()))
                 .map(Kontaktinfo::getReservert);
+        } catch (RestClientResponseException e) {
+            if (e.getStatusCode().isSameCodeAs(HttpStatus.NOT_FOUND)) {
+                log.warn("Fant ikke person i KRR. Returnerer Optional.empty(). status={}", e.getStatusCode());
+                return Optional.empty();
+            }
+            log.warn("HTTP-feil ved henting av digital kontaktreservasjon fra KRR. status={}, body={}",
+                e.getStatusCode(), e.getResponseBodyAsString());
+            throw e;
         } catch (RestClientException e) {
             log.warn("Feil ved henting av digital kontaktreservasjon fra KRR", e);
             throw e;
         }
-    }
-
-    private HttpEntity<KrrPersonKontaktinformasjonRequest> lagRequest(String personident) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new HttpEntity<>(new KrrPersonKontaktinformasjonRequest(List.of(personident)), headers);
-    }
-
-    private Optional<Kontaktinfo> hentKontaktinfo(KrrPersonKontaktinformasjonRespons respons, String personident) {
-        return Optional.ofNullable(respons)
-            .map(KrrPersonKontaktinformasjonRespons::getPersoner)
-            .map(personer -> personer.get(personident));
     }
 }
