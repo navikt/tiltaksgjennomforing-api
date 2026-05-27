@@ -20,7 +20,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
-import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -221,10 +220,6 @@ public class AvtaleInnhold {
         return AvtaleInnholdStrategyFactory.create(this, avtale.getTiltakstype());
     }
 
-    public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning) {
-        innholdStrategi().endreTilskuddsberegning(tilskuddsberegning);
-    }
-
     public void reberegnLønnstilskudd() {
         avtale.hentBeregningStrategi().reberegnTotal(avtale);
     }
@@ -242,18 +237,8 @@ public class AvtaleInnhold {
         setRefusjonKontaktperson(endreKontaktInformasjon.getRefusjonKontaktperson());
     }
 
-    public void endreStillingsInfo(EndreStillingsbeskrivelse endreStillingsbeskrivelse) {
-        setStillingstittel(endreStillingsbeskrivelse.getStillingstittel());
-        setArbeidsoppgaver(endreStillingsbeskrivelse.getArbeidsoppgaver());
-        setStillingStyrk08(endreStillingsbeskrivelse.getStillingStyrk08());
-        setStillingKonseptId(endreStillingsbeskrivelse.getStillingKonseptId());
-        setStillingprosent(endreStillingsbeskrivelse.getStillingprosent());
-        setAntallDagerPerUke(endreStillingsbeskrivelse.getAntallDagerPerUke());
-        setStillingstype(endreStillingsbeskrivelse.getStillingstype());
-
-        if (!avtale.erAvtaleInngått()) {
-            setLonnstilskuddFormaal(endreStillingsbeskrivelse.getLonnstilskuddFormaal());
-        }
+    public void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse) {
+        innholdStrategi().endreStillingsbeskrivelse(endreStillingsbeskrivelse);
     }
 
     public void endreOppfølgingOgTilretteleggingInfo(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging) {

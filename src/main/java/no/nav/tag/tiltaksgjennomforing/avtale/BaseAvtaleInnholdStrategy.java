@@ -87,4 +87,16 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
         avtaleInnhold.setSluttDato(nySluttDato);
         avtaleInnhold.setIkrafttredelsestidspunkt(Now.instant());
     }
+
+    @Override
+    public void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse) {
+        avtaleInnhold.setStillingstittel(endreStillingsbeskrivelse.getStillingstittel());
+        avtaleInnhold.setArbeidsoppgaver(endreStillingsbeskrivelse.getArbeidsoppgaver());
+        avtaleInnhold.setStillingStyrk08(endreStillingsbeskrivelse.getStillingStyrk08());
+        avtaleInnhold.setStillingKonseptId(endreStillingsbeskrivelse.getStillingKonseptId());
+        avtaleInnhold.setStillingprosent(endreStillingsbeskrivelse.getStillingprosent());
+        avtaleInnhold.setAntallDagerPerUke(endreStillingsbeskrivelse.getAntallDagerPerUke());
+        avtaleInnhold.setStillingstype(endreStillingsbeskrivelse.getStillingstype());
+        avtaleInnhold.setLonnstilskuddFormaal(endreStillingsbeskrivelse.getLonnstilskuddFormaal());
+    }
 }
