@@ -18,13 +18,17 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.convertBigDecimalToInt
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.toBigDecimal;
 
-public class MentorBeregningStrategy implements BeregningStrategy {
+public class MentorBeregningStrategy extends BeregningStrategy {
     private final LocalDate MIGRERINGSDATO_FOR_TILSKUDD = ArenaTiltakskode.MENTOR.getMigreringsdatoForTilskudd();
 
+    public MentorBeregningStrategy(Avtale avtale) {
+        super(avtale);
+    }
+
     @Override
-    public void reberegnTotal(Avtale avtale) {
+    public void reberegnTotal() {
         AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
-        if (!nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(avtale)) {
+        if (!nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp()) {
             innhold.setFeriepengerBelop(null);
             innhold.setOtpBelop(null);
             innhold.setArbeidsgiveravgiftBelop(null);
@@ -62,7 +66,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
     }
 
     @Override
-    public boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(Avtale avtale) {
+    public boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp() {
         AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
 
         return Utils.erIkkeTomme(
@@ -75,14 +79,13 @@ public class MentorBeregningStrategy implements BeregningStrategy {
     }
 
     @Override
-    public boolean nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder(Avtale avtale) {
+    public boolean nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder() {
         AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
         return Utils.erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnsutgifter());
     }
 
     @Override
     public List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(
-        Avtale avtale,
         LocalDate startDato,
         LocalDate sluttDato
     ) {
@@ -106,11 +109,11 @@ public class MentorBeregningStrategy implements BeregningStrategy {
 
 
     @Override
-    public List<TilskuddPeriode> genererNyeTilskuddsperioder(Avtale avtale) {
+    public List<TilskuddPeriode> genererNyeTilskuddsperioder() {
         if (avtale.erAvtaleInngått()) {
             return Collections.emptyList();
         }
-        if (!nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder(avtale)) {
+        if (!nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder()) {
             return Collections.emptyList();
         }
         AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
@@ -118,7 +121,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
         LocalDate start = innhold.getStartDato();
         LocalDate slutt = innhold.getSluttDato();
 
-        List<TilskuddPeriode> perioder = beregnTilskuddsperioderForAvtale(avtale, start, slutt);
+        List<TilskuddPeriode> perioder = beregnTilskuddsperioderForAvtale(start, slutt);
         // Etterregistreringer skal håndteres i vårt system, så vi skal kun sette behandlet i arena på avtaler hvor
         // avtalen har opphav=ARENA eller om det eksisterer en avtaleversjon med innholdstype = ENDRET_AV_ARENA
         if (avtale.harArenaOpphavEllerHistoriskEndretAvArena()) {
@@ -131,7 +134,7 @@ public class MentorBeregningStrategy implements BeregningStrategy {
 
     /** Metode som kalles ifbm endring av tilskuddsbergning-felter etter at en avtale er inngått. */
     @Override
-    public void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {
+    public void endreBeregning(EndreTilskuddsberegning endreTilskuddsberegning) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         avtaleInnhold.setArbeidsgiveravgift(endreTilskuddsberegning.getArbeidsgiveravgift());
         avtaleInnhold.setOtpSats(endreTilskuddsberegning.getOtpSats());
@@ -146,12 +149,12 @@ public class MentorBeregningStrategy implements BeregningStrategy {
             endreTilskuddsberegning.getStillingprosent()
         ));
 
-        reberegnTotal(avtale);
+        reberegnTotal();
     }
 
     @Override
-    public Integer getBeløpForPeriode(Avtale avtale, AvtaleInnhold avtaleInnhold, Periode periode) {
-        if (!nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(avtale)) {
+    public Integer getBeløpForPeriode(AvtaleInnhold avtaleInnhold, Periode periode) {
+        if (!nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp()) {
             return null;
         }
 

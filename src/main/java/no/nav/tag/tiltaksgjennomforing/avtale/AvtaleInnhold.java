@@ -220,10 +220,6 @@ public class AvtaleInnhold {
         return AvtaleInnholdStrategyFactory.create(this, avtale.getTiltakstype());
     }
 
-    public void reberegnLønnstilskudd() {
-        avtale.hentBeregningStrategi().reberegnTotal(avtale);
-    }
-
     public void endreKontaktInfo(EndreKontaktInformasjon endreKontaktInformasjon) {
         setDeltakerFornavn(endreKontaktInformasjon.getDeltakerFornavn());
         setDeltakerEtternavn(endreKontaktInformasjon.getDeltakerEtternavn());

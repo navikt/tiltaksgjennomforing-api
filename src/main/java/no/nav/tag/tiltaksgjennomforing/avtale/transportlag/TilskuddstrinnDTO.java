@@ -27,9 +27,9 @@ public record TilskuddstrinnDTO(
 
     public static List<TilskuddstrinnDTO> map(AvtaleInnhold db) {
         Avtale avtale = db.getAvtale();
-        BeregningStrategy strategy = avtale.hentBeregningStrategi();
+        BeregningStrategy strategy = BeregningStrategy.create(avtale);
         if (strategy instanceof GenerellLonnstilskuddAvtaleBeregningStrategy ltsStrategy) {
-            return ltsStrategy.getTilskuddstrinn(avtale, db).stream().map(TilskuddstrinnDTO::new).toList();
+            return ltsStrategy.getTilskuddstrinn(db).stream().map(TilskuddstrinnDTO::new).toList();
         }
         return Collections.emptyList();
     }

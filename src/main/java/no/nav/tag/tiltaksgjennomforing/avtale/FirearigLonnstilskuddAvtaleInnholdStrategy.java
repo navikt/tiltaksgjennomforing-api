@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class FirearigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy<FirearigLonnstilskuddBeregningStrategy> {
     public FirearigLonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
-        super(avtaleInnhold, new FirearigLonnstilskuddBeregningStrategy());
+        super(avtaleInnhold, new FirearigLonnstilskuddBeregningStrategy(avtaleInnhold.getAvtale()));
     }
 
     @Override

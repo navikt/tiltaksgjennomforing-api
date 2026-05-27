@@ -44,7 +44,7 @@ public class LonnstilskuddAvtaleInnholdStrategy<T extends GenerellLonnstilskuddA
         avtaleInnhold.setOtpSats(nyAvtale.getOtpSats());
         avtaleInnhold.setRefusjonKontaktperson(nyAvtale.getRefusjonKontaktperson());
         super.endre(nyAvtale);
-        regnUtTotalLonnstilskudd();
+        beregningStrategy.reberegnTotal();
     }
 
     @Override
@@ -53,11 +53,7 @@ public class LonnstilskuddAvtaleInnholdStrategy<T extends GenerellLonnstilskuddA
         avtaleInnhold.setOtpSats(endreTilskuddsberegning.getOtpSats());
         avtaleInnhold.setManedslonn(endreTilskuddsberegning.getManedslonn());
         avtaleInnhold.setFeriepengesats(endreTilskuddsberegning.getFeriepengesats());
-        regnUtTotalLonnstilskudd();
-    }
-
-    public void regnUtTotalLonnstilskudd() {
-        beregningStrategy.reberegnTotal(avtaleInnhold.getAvtale());
+        beregningStrategy.reberegnTotal();
     }
 
     @Override
@@ -84,6 +80,6 @@ public class LonnstilskuddAvtaleInnholdStrategy<T extends GenerellLonnstilskuddA
     @Override
     public void endreSluttDato(LocalDate nySluttDato) {
         super.endreSluttDato(nySluttDato);
-        regnUtTotalLonnstilskudd();
+        beregningStrategy.reberegnTotal();
     }
 }

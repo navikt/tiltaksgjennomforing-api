@@ -14,12 +14,16 @@ public class FirearigLonnstilskuddBeregningStrategy extends GenerellLonnstilskud
     private static final int TILSKUDDSPROSENT_TREDJE_AAR = 50;
     private static final int TILSKUDDSPROSENT_FJERDE_AAR = 35;
 
+    public FirearigLonnstilskuddBeregningStrategy(Avtale avtale) {
+        super(avtale);
+    }
+
     public Integer getProsentForForstePeriode() {
         return TILSKUDDSPROSENT_FORSTE_AAR;
     }
 
     @Override
-    public Integer getProsentForPeriode(Avtale avtale, AvtaleInnhold avtaleInnhold, Periode periode) {
+    public Integer getProsentForPeriode(AvtaleInnhold avtaleInnhold, Periode periode) {
         LocalDate avtaleStart = avtaleInnhold.getStartDato();
         LocalDate tilskuddSlutt = periode.getSlutt();
 
@@ -40,7 +44,7 @@ public class FirearigLonnstilskuddBeregningStrategy extends GenerellLonnstilskud
     }
 
     @Override
-    public List<LocalDate> getDatoerForReduksjon(Avtale avtale, AvtaleInnhold avtaleInnhold) {
+    public List<LocalDate> getDatoerForReduksjon(AvtaleInnhold avtaleInnhold) {
         LocalDate startDato = avtaleInnhold.getStartDato();
         LocalDate sluttDato = avtaleInnhold.getSluttDato();
 

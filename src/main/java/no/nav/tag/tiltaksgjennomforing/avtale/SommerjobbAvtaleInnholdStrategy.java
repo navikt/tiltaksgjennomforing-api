@@ -11,7 +11,7 @@ import static no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.Sommerj
 
 public class SommerjobbAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy<SommerjobbLonnstilskuddAvtaleBeregningStrategy> {
     public SommerjobbAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
-        super(avtaleInnhold, new SommerjobbLonnstilskuddAvtaleBeregningStrategy());
+        super(avtaleInnhold, new SommerjobbLonnstilskuddAvtaleBeregningStrategy(avtaleInnhold.getAvtale()));
     }
 
     @Override

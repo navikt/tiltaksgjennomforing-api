@@ -13,9 +13,13 @@ public class VarigLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstils
     public static final int TILSKUDDSPROSENT_MAKS = 75;
     public static final int TILSKUDDSPROSENT_REDUSERT_MAKS = 67;
 
+    public VarigLonnstilskuddAvtaleBeregningStrategy(Avtale avtale) {
+        super(avtale);
+    }
+
     @Override
-    public Integer getProsentForPeriode(Avtale avtale, AvtaleInnhold avtaleInnhold, Periode periode) {
-        Optional<LocalDate> datoForRedusertProsent = getDatoerForReduksjon(avtale, avtaleInnhold).stream().findFirst();
+    public Integer getProsentForPeriode(AvtaleInnhold avtaleInnhold, Periode periode) {
+        Optional<LocalDate> datoForRedusertProsent = getDatoerForReduksjon(avtaleInnhold).stream().findFirst();
 
         boolean erRedusert = datoForRedusertProsent
             .map(dato -> !periode.getSlutt().isBefore(dato))
@@ -27,7 +31,7 @@ public class VarigLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstils
     }
 
     @Override
-    public List<LocalDate> getDatoerForReduksjon(Avtale avtale, AvtaleInnhold avtaleInnhold) {
+    public List<LocalDate> getDatoerForReduksjon(AvtaleInnhold avtaleInnhold) {
         LocalDate startDato = avtaleInnhold.getStartDato();
         LocalDate sluttDato = avtaleInnhold.getSluttDato();
         if (startDato == null || sluttDato == null) {
@@ -48,10 +52,10 @@ public class VarigLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstils
     }
 
     @Override
-    public void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {
+    public void endreBeregning(EndreTilskuddsberegning endreTilskuddsberegning) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         avtaleInnhold.setLonnstilskuddProsent(endreTilskuddsberegning.getLonnstilskuddProsent());
-        super.endreBeregning(avtale, endreTilskuddsberegning);
+        super.endreBeregning(endreTilskuddsberegning);
     }
 
 }

@@ -26,8 +26,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
     private static final int PROSENT_AAR_3 = 50;
     private static final int PROSENT_AAR_4 = 35;
 
-    private final FirearigLonnstilskuddBeregningStrategy strategy =
-            new FirearigLonnstilskuddBeregningStrategy();
+    private FirearigLonnstilskuddBeregningStrategy strategy;
 
     @BeforeAll
     static void setupFirearigProperties() throws Exception {
@@ -48,6 +47,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
     @BeforeEach
     void setup() {
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
+        strategy = new FirearigLonnstilskuddBeregningStrategy(TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.FIREARIG_LONNSTILSKUDD));
     }
 
     @AfterEach
@@ -73,7 +73,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
     void getDatoerForReduksjon__returnerer_tom_liste_naar_startdato_er_null() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.FIREARIG_LONNSTILSKUDD);
 
-        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale, innholdMedDatoer(null, LocalDate.of(2028, 1, 1)));
+        List<LocalDate> result = strategy.getDatoerForReduksjon(innholdMedDatoer(null, LocalDate.of(2028, 1, 1)));
 
         assertThat(result).isEmpty();
     }
@@ -82,7 +82,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
     void getDatoerForReduksjon__returnerer_tom_liste_naar_sluttdato_er_null() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.FIREARIG_LONNSTILSKUDD);
 
-        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale, innholdMedDatoer(LocalDate.of(2027, 1, 1), null));
+        List<LocalDate> result = strategy.getDatoerForReduksjon(innholdMedDatoer(LocalDate.of(2027, 1, 1), null));
 
         assertThat(result).isEmpty();
     }
@@ -93,7 +93,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
         LocalDate sluttDato = LocalDate.of(2031, 12, 31);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.FIREARIG_LONNSTILSKUDD);
 
-        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale, innholdMedDatoer(startDato, sluttDato));
+        List<LocalDate> result = strategy.getDatoerForReduksjon(innholdMedDatoer(startDato, sluttDato));
 
         assertThat(result).containsExactly(
                 startDato.plusYears(1),
@@ -109,7 +109,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
         LocalDate sluttDato = LocalDate.of(2028, 6, 30);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.FIREARIG_LONNSTILSKUDD);
 
-        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale, innholdMedDatoer(startDato, sluttDato));
+        List<LocalDate> result = strategy.getDatoerForReduksjon(innholdMedDatoer(startDato, sluttDato));
 
         assertThat(result).containsExactly(startDato.plusYears(1));
     }
@@ -121,7 +121,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
         LocalDate sluttDato = LocalDate.of(2027, 12, 31);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.FIREARIG_LONNSTILSKUDD);
 
-        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale, innholdMedDatoer(startDato, sluttDato));
+        List<LocalDate> result = strategy.getDatoerForReduksjon(innholdMedDatoer(startDato, sluttDato));
 
         assertThat(result).isEmpty();
     }
@@ -133,7 +133,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
         LocalDate sluttDato = startDato.plusYears(1);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.FIREARIG_LONNSTILSKUDD);
 
-        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale, innholdMedDatoer(startDato, sluttDato));
+        List<LocalDate> result = strategy.getDatoerForReduksjon(innholdMedDatoer(startDato, sluttDato));
 
         // !dato.isAfter(sluttDato) → includes the date when it equals sluttDato
         assertThat(result).containsExactly(startDato.plusYears(1));
@@ -145,7 +145,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
         LocalDate sluttDato = LocalDate.of(2030, 6, 30);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.FIREARIG_LONNSTILSKUDD);
 
-        List<LocalDate> result = strategy.getDatoerForReduksjon(avtale, innholdMedDatoer(startDato, sluttDato));
+        List<LocalDate> result = strategy.getDatoerForReduksjon(innholdMedDatoer(startDato, sluttDato));
 
         assertThat(result).containsExactly(
                 startDato.plusYears(1),
@@ -157,7 +157,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
     void getDatoerForReduksjon_handterer_skuddaar() {
         LocalDate startDato = LocalDate.of(2028, 2, 29);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.FIREARIG_LONNSTILSKUDD);
-        List<LocalDate> reduksjon = strategy.getDatoerForReduksjon(avtale, innholdMedDatoer(startDato, LocalDate.of(2032, 2, 27)));
+        List<LocalDate> reduksjon = strategy.getDatoerForReduksjon(innholdMedDatoer(startDato, LocalDate.of(2032, 2, 27)));
 
         assertThat(reduksjon).containsExactly(
             LocalDate.of(2029, 2, 28),
@@ -171,7 +171,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
         // Start 28.02 året før skuddår
         LocalDate startDato = LocalDate.of(2027, 2, 28);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.FIREARIG_LONNSTILSKUDD);
-        List<LocalDate> reduksjon = strategy.getDatoerForReduksjon(avtale, innholdMedDatoer(startDato, LocalDate.of(2031, 2, 27)));
+        List<LocalDate> reduksjon = strategy.getDatoerForReduksjon(innholdMedDatoer(startDato, LocalDate.of(2031, 2, 27)));
 
         assertThat(reduksjon).containsExactly(
             LocalDate.of(2028, 2, 28), // 2028 = skuddaar
@@ -182,7 +182,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
         // Start 01.03 året før skuddår
         startDato = LocalDate.of(2027, 3, 1);
         avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.FIREARIG_LONNSTILSKUDD);
-        reduksjon = strategy.getDatoerForReduksjon(avtale, innholdMedDatoer(startDato, LocalDate.of(2031, 2, 27)));
+        reduksjon = strategy.getDatoerForReduksjon(innholdMedDatoer(startDato, LocalDate.of(2031, 2, 27)));
 
         assertThat(reduksjon).containsExactly(
             LocalDate.of(2028, 3, 1), // 2028 = skuddaar
@@ -198,7 +198,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
         // Perioden slutter innenfor første år
         Periode periode = new Periode(LocalDate.of(2028, 6, 1), LocalDate.of(2028, 6, 30));
 
-        Integer prosent = strategy.getProsentForPeriode(avtale, avtale.getGjeldendeInnhold(), periode);
+        Integer prosent = strategy.getProsentForPeriode(avtale.getGjeldendeInnhold(), periode);
 
         assertThat(prosent).isEqualTo(PROSENT_AAR_1);
     }
@@ -210,7 +210,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
         // Perioden slutter i andre år (1 år etter start)
         Periode periode = new Periode(LocalDate.of(2028, 1, 1), LocalDate.of(2028, 1, 31));
 
-        Integer prosent = strategy.getProsentForPeriode(avtale, avtale.getGjeldendeInnhold(), periode);
+        Integer prosent = strategy.getProsentForPeriode(avtale.getGjeldendeInnhold(), periode);
 
         assertThat(prosent).isEqualTo(PROSENT_AAR_2);
     }
@@ -222,7 +222,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
         // Perioden slutter i tredje år (2 år etter start)
         Periode periode = new Periode(LocalDate.of(2030, 1, 1), LocalDate.of(2030, 1, 31));
 
-        Integer prosent = strategy.getProsentForPeriode(avtale, avtale.getGjeldendeInnhold(), periode);
+        Integer prosent = strategy.getProsentForPeriode(avtale.getGjeldendeInnhold(), periode);
 
         assertThat(prosent).isEqualTo(PROSENT_AAR_3);
     }
@@ -234,7 +234,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
         // Perioden slutter i fjerde år (3 år etter start)
         Periode periode = new Periode(LocalDate.of(2031, 1, 1), LocalDate.of(2031, 1, 31));
 
-        Integer prosent = strategy.getProsentForPeriode(avtale, avtale.getGjeldendeInnhold(), periode);
+        Integer prosent = strategy.getProsentForPeriode(avtale.getGjeldendeInnhold(), periode);
 
         assertThat(prosent).isEqualTo(PROSENT_AAR_4);
     }
@@ -246,7 +246,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
         // Perioden slutter eksakt på 1-årsmerket → Period.between gir getYears() == 1 → år 2
         Periode periode = new Periode(LocalDate.of(2028, 12, 1), LocalDate.of(2029, 1, 1));
 
-        Integer prosent = strategy.getProsentForPeriode(avtale, avtale.getGjeldendeInnhold(), periode);
+        Integer prosent = strategy.getProsentForPeriode(avtale.getGjeldendeInnhold(), periode);
 
         assertThat(prosent).isEqualTo(PROSENT_AAR_2);
     }
@@ -258,7 +258,7 @@ class FirearigLonnstilskuddBeregningStrategyTest {
         // Perioden slutter mer enn 4 år etter startdato
         Periode periode = new Periode(LocalDate.of(2031, 6, 1), LocalDate.of(2032, 6, 30));
 
-        assertThatThrownBy(() -> strategy.getProsentForPeriode(avtale, avtale.getGjeldendeInnhold(), periode))
+        assertThatThrownBy(() -> strategy.getProsentForPeriode(avtale.getGjeldendeInnhold(), periode))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("Tilskuddsperiode avsluttes mer enn 4 år etter startdato");
     }
@@ -269,28 +269,24 @@ class FirearigLonnstilskuddBeregningStrategyTest {
         Avtale avtale = lagAvtaleMedDatoer(startDato, LocalDate.of(2032, 2, 28));
 
         Integer forstePeriode = strategy.getProsentForPeriode(
-            avtale,
             avtale.getGjeldendeInnhold(),
             Periode.av(LocalDate.of(2028, 2, 29), LocalDate.of(2029, 2, 27))
         );
         assertThat(forstePeriode).isEqualTo(PROSENT_AAR_1);
 
         Integer andrePeriode = strategy.getProsentForPeriode(
-            avtale,
             avtale.getGjeldendeInnhold(),
             Periode.av(LocalDate.of(2029, 2, 28), LocalDate.of(2030, 2, 27))
         );
         assertThat(andrePeriode).isEqualTo(PROSENT_AAR_2);
 
         Integer tredjePeriode = strategy.getProsentForPeriode(
-            avtale,
             avtale.getGjeldendeInnhold(),
             Periode.av(LocalDate.of(2030, 2, 28), LocalDate.of(2031, 2, 27))
         );
         assertThat(tredjePeriode).isEqualTo(PROSENT_AAR_3);
 
         Integer fjerdePeriode = strategy.getProsentForPeriode(
-            avtale,
             avtale.getGjeldendeInnhold(),
             Periode.av(LocalDate.of(2031, 2, 28), LocalDate.of(2032, 2, 28))
         );
@@ -304,28 +300,24 @@ class FirearigLonnstilskuddBeregningStrategyTest {
         Avtale avtale = lagAvtaleMedDatoer(startDato, LocalDate.of(2031, 2, 27));
 
         Integer forstePeriode = strategy.getProsentForPeriode(
-            avtale,
             avtale.getGjeldendeInnhold(),
             Periode.av(LocalDate.of(2027, 2, 28), LocalDate.of(2028, 2, 27))
         );
         assertThat(forstePeriode).isEqualTo(PROSENT_AAR_1);
 
         Integer andrePeriode = strategy.getProsentForPeriode(
-            avtale,
             avtale.getGjeldendeInnhold(),
             Periode.av(LocalDate.of(2028, 2, 28), LocalDate.of(2029, 2, 27)) // 2028 = skuddaar
         );
         assertThat(andrePeriode).isEqualTo(PROSENT_AAR_2);
 
         Integer tredjePeriode = strategy.getProsentForPeriode(
-            avtale,
             avtale.getGjeldendeInnhold(),
             Periode.av(LocalDate.of(2029, 2, 28), LocalDate.of(2030, 2, 27))
         );
         assertThat(tredjePeriode).isEqualTo(PROSENT_AAR_3);
 
         Integer fjerdePeriode = strategy.getProsentForPeriode(
-            avtale,
             avtale.getGjeldendeInnhold(),
             Periode.av(LocalDate.of(2030, 2, 28), LocalDate.of(2031, 2, 27))
         );
@@ -336,28 +328,24 @@ class FirearigLonnstilskuddBeregningStrategyTest {
         avtale = lagAvtaleMedDatoer(startDato, LocalDate.of(2031, 2, 28));
 
         forstePeriode = strategy.getProsentForPeriode(
-            avtale,
             avtale.getGjeldendeInnhold(),
             Periode.av(LocalDate.of(2027, 3, 1), LocalDate.of(2028, 2, 29))
         );
         assertThat(forstePeriode).isEqualTo(PROSENT_AAR_1);
 
         andrePeriode = strategy.getProsentForPeriode(
-            avtale,
             avtale.getGjeldendeInnhold(),
             Periode.av(LocalDate.of(2028, 3, 1), LocalDate.of(2029, 2, 28)) // 2028 = skuddaar
         );
         assertThat(andrePeriode).isEqualTo(PROSENT_AAR_2);
 
         tredjePeriode = strategy.getProsentForPeriode(
-            avtale,
             avtale.getGjeldendeInnhold(),
             Periode.av(LocalDate.of(2029, 3, 1), LocalDate.of(2030, 2, 28))
         );
         assertThat(tredjePeriode).isEqualTo(PROSENT_AAR_3);
 
         fjerdePeriode = strategy.getProsentForPeriode(
-            avtale,
             avtale.getGjeldendeInnhold(),
             Periode.av(LocalDate.of(2030, 3, 1), LocalDate.of(2031, 2, 28))
         );
