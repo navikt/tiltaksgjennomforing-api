@@ -45,7 +45,11 @@ public class KrrClient {
         this.baseUri = Objects.requireNonNull(krrProperties.getUri(), "KRR URI må være konfigurert");
     }
 
-    public Optional<Boolean> hentErPersonReservertForDigitalKontakt(Fnr fnr) {
+    public boolean erPersonReservertForDigitalKontakt(Fnr fnr) {
+        return hentErPersonReservertForDigitalKontakt(fnr).orElse(false);
+    }
+
+    Optional<Boolean> hentErPersonReservertForDigitalKontakt(Fnr fnr) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setAccept(List.of(MediaType.APPLICATION_JSON));
