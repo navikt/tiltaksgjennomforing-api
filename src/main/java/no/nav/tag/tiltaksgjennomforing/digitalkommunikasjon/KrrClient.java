@@ -81,8 +81,7 @@ public class KrrClient {
                 log.warn("Fant ikke person i KRR. Returnerer Optional.empty(). status={}", e.getStatusCode());
                 return Optional.empty();
             }
-            log.warn("HTTP-feil ved henting av digital kontaktreservasjon fra KRR. status={}, body={}",
-                e.getStatusCode(), e.getResponseBodyAsString());
+            log.warn("HTTP-feil ved henting av digital kontaktreservasjon fra KRR. status={}", e.getStatusCode());
             throw e;
         } catch (RestClientException e) {
             log.warn("Feil ved henting av digital kontaktreservasjon fra KRR", e);
