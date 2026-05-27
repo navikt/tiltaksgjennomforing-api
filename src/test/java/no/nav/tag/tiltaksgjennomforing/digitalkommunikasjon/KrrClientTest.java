@@ -60,7 +60,7 @@ class KrrClientTest {
                 }
                 """, MediaType.APPLICATION_JSON));
 
-        assertThat(krrClient.hentPersonReservertForDigitalKontakt(fnr)).contains(true);
+        assertThat(krrClient.hentErPersonReservertForDigitalKontakt(fnr)).contains(true);
         server.verify();
     }
 
@@ -80,7 +80,7 @@ class KrrClientTest {
                 }
                 """, MediaType.APPLICATION_JSON));
 
-        assertThat(krrClient.hentPersonReservertForDigitalKontakt(fnr)).contains(false);
+        assertThat(krrClient.hentErPersonReservertForDigitalKontakt(fnr)).contains(false);
         server.verify();
     }
 
@@ -96,7 +96,7 @@ class KrrClientTest {
                 }
                 """, MediaType.APPLICATION_JSON));
 
-        assertThat(krrClient.hentPersonReservertForDigitalKontakt(fnr)).isEmpty();
+        assertThat(krrClient.hentErPersonReservertForDigitalKontakt(fnr)).isEmpty();
         server.verify();
     }
 
@@ -108,7 +108,7 @@ class KrrClientTest {
             .andExpect(method(HttpMethod.POST))
             .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        assertThat(krrClient.hentPersonReservertForDigitalKontakt(fnr)).isEmpty();
+        assertThat(krrClient.hentErPersonReservertForDigitalKontakt(fnr)).isEmpty();
         server.verify();
     }
 
@@ -120,7 +120,7 @@ class KrrClientTest {
             .andExpect(method(HttpMethod.POST))
             .andRespond(withStatus(HttpStatus.BAD_REQUEST));
 
-        assertThatThrownBy(() -> krrClient.hentPersonReservertForDigitalKontakt(fnr))
+        assertThatThrownBy(() -> krrClient.hentErPersonReservertForDigitalKontakt(fnr))
             .isInstanceOf(RestClientResponseException.class);
         server.verify();
     }
@@ -133,7 +133,7 @@ class KrrClientTest {
             .andExpect(method(HttpMethod.POST))
             .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        assertThatThrownBy(() -> krrClient.hentPersonReservertForDigitalKontakt(fnr))
+        assertThatThrownBy(() -> krrClient.hentErPersonReservertForDigitalKontakt(fnr))
             .isInstanceOf(RestClientResponseException.class);
         server.verify();
     }

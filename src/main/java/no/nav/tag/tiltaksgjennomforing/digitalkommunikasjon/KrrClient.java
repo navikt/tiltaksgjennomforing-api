@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static java.lang.Boolean.TRUE;
+
 /**
  * Digdir sitt Kontakt- og reservasjonsregister (KRR) inneholder informasjon
  * om hvordan innbyggere ønsker å bli kontaktet av det offentlige, og
@@ -45,7 +47,7 @@ public class KrrClient {
         this.baseUri = Objects.requireNonNull(krrProperties.getUri(), "KRR URI må være konfigurert");
     }
 
-    public Optional<Boolean> hentPersonReservertForDigitalKontakt(Fnr fnr) {
+    public Optional<Boolean> hentErPersonReservertForDigitalKontakt(Fnr fnr) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setAccept(List.of(MediaType.APPLICATION_JSON));
@@ -73,7 +75,7 @@ public class KrrClient {
             return Optional.ofNullable(respons.getBody())
                 .map(KrrPersonKontaktinformasjonRespons::personer)
                 .map(personer -> personer.get(fnr.asString()))
-                .map(kontaktinfo -> Boolean.TRUE.equals(kontaktinfo.kanVarsles()) ? false : kontaktinfo.reservert());
+                .map(kontaktinfo -> TRUE.equals(kontaktinfo.kanVarsles()) ? false : kontaktinfo.reservert());
         } catch (RestClientResponseException e) {
             if (e.getStatusCode().isSameCodeAs(HttpStatus.NOT_FOUND)) {
                 log.warn("Fant ikke person i KRR. Returnerer Optional.empty(). status={}", e.getStatusCode());
