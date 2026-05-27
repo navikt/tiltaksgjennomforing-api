@@ -65,7 +65,7 @@ import static no.nav.tag.tiltaksgjennomforing.satser.Sats.VTAO_SATS;
 
 @ProtectedWithClaims(issuer = "azure-access-token", claimMap = { "groups=fb516b74-0f2e-4b62-bad8-d70b82c3ae0b" })
 @RestController
-@RequestMapping("/utvikler-admin/")
+@RequestMapping("/utvikler-admin")
 @Slf4j
 @RequiredArgsConstructor
 public class AdminController {
@@ -81,8 +81,8 @@ public class AdminController {
     private final PostadresseClient postadresseClient;
     private final KrrClient krrClient;
 
-    @GetMapping("/")
-    public String hjem(){
+    @GetMapping({ "", "/" })
+    public String hjem() {
         return "Hei fra Admin controller";
     }
 
