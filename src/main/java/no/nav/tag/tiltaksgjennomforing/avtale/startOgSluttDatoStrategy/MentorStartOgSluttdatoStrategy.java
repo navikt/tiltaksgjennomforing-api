@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
@@ -10,14 +11,14 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.time.LocalDate;
 
-public class MentorStartOgSluttDatoStrategy extends StartOgSluttDatoStrategy {
-    public MentorStartOgSluttDatoStrategy(Avtale avtale) {
+public class MentorStartOgSluttdatoStrategy extends StartOgSluttdatoStrategy {
+    public MentorStartOgSluttdatoStrategy(Avtale avtale) {
         super(avtale);
     }
 
     @Override
-    public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
-        super.sjekkStartOgSluttDato(startDato, sluttDato);
+    public void sjekkStartOgSluttdato(Stillingstype stillingstype, LocalDate startDato, LocalDate sluttDato) {
+        super.sjekkStartOgSluttdato(stillingstype, startDato, sluttDato);
 
         if (sluttDato == null) {
             return;

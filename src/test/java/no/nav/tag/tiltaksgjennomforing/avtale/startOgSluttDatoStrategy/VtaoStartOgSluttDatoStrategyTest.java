@@ -34,7 +34,7 @@ class VtaoStartOgSluttDatoStrategyTest {
         LocalDate avtaleStart = Now.localDate();
         LocalDate avtaleSlutt = avtaleStart.plusMonths(11).plusDays(1);
         Avtale avtale = Avtale.opprett(new OpprettAvtale(Fnr.generer(1952,8,12), TestData.etBedriftNr(), VTAO), Avtaleopphav.VEILEDER, TestData.enNavIdent());
-        VtaoStartOgSluttDatoStrategy vtaoStartOgSluttDatoStrategy = new VtaoStartOgSluttDatoStrategy(avtale);
-        assertFeilkode(Feilkode.DELTAKER_67_AAR, () -> vtaoStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt));
+        VtaoStartOgSluttdatoStrategy vtaoStartOgSluttDatoStrategy = new VtaoStartOgSluttdatoStrategy(avtale);
+        assertFeilkode(Feilkode.DELTAKER_67_AAR, () -> vtaoStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt));
     }
 }
