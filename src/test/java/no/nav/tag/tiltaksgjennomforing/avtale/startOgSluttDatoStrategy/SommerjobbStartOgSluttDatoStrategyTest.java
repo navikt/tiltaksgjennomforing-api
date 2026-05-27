@@ -38,8 +38,8 @@ public class SommerjobbStartOgSluttDatoStrategyTest {
         LocalDate avtaleStart = LocalDate.of(Now.localDate().minusYears(2).getYear(),5,2);
         LocalDate avtaleSlutt = LocalDate.of(Now.localDate().minusYears(2).getYear(),7,28);
 
-        SommerjobbStartOgSluttDatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttDatoStrategy(avtale);
-        assertFeilkode(Feilkode.SOMMERJOBB_FOR_TIDLIG, () -> sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt));
+        SommerjobbStartOgSluttdatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttdatoStrategy(avtale);
+        assertFeilkode(Feilkode.SOMMERJOBB_FOR_TIDLIG, () -> sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt));
     }
 
     @Test
@@ -47,8 +47,8 @@ public class SommerjobbStartOgSluttDatoStrategyTest {
         LocalDate avtaleStart = LocalDate.of(Now.localDate().minusYears(2).getYear(),9,1);
         LocalDate avtaleSlutt = LocalDate.of(Now.localDate().minusYears(2).getYear(),9,28);
 
-        SommerjobbStartOgSluttDatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttDatoStrategy(avtale);
-        assertFeilkode(Feilkode.SOMMERJOBB_FOR_SENT, () -> sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt));
+        SommerjobbStartOgSluttdatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttdatoStrategy(avtale);
+        assertFeilkode(Feilkode.SOMMERJOBB_FOR_SENT, () -> sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt));
 
     }
 
@@ -57,8 +57,8 @@ public class SommerjobbStartOgSluttDatoStrategyTest {
         LocalDate avtaleStart = LocalDate.of(Now.localDate().minusYears(2).getYear(), 6,28);
         LocalDate avtaleSlutt = LocalDate.of(Now.localDate().minusYears(2).getYear(),8,1);
 
-        SommerjobbStartOgSluttDatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttDatoStrategy(avtale);
-        assertFeilkode(Feilkode.SOMMERJOBB_FOR_LANG_VARIGHET, () -> sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt));
+        SommerjobbStartOgSluttdatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttdatoStrategy(avtale);
+        assertFeilkode(Feilkode.SOMMERJOBB_FOR_LANG_VARIGHET, () -> sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt));
 
     }
 
@@ -67,8 +67,8 @@ public class SommerjobbStartOgSluttDatoStrategyTest {
         LocalDate avtaleStart = LocalDate.of(Now.localDate().getYear(), 6,1);
         LocalDate avtaleSlutt = LocalDate.of(Now.localDate().getYear(),6,20);
 
-        SommerjobbStartOgSluttDatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttDatoStrategy(avtale);
-        sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt);
+        SommerjobbStartOgSluttdatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttdatoStrategy(avtale);
+        sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt);
     }
 
     @Test
@@ -76,8 +76,8 @@ public class SommerjobbStartOgSluttDatoStrategyTest {
         LocalDate avtaleStart = LocalDate.of(Now.localDate().getYear(),8,31);
         LocalDate avtaleSlutt = LocalDate.of(Now.localDate().getYear(),9,29);
 
-        SommerjobbStartOgSluttDatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttDatoStrategy(avtale);
-        assertFeilkode(Feilkode.SOMMERJOBB_FOR_LANG_VARIGHET, () -> sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt));
+        SommerjobbStartOgSluttdatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttdatoStrategy(avtale);
+        assertFeilkode(Feilkode.SOMMERJOBB_FOR_LANG_VARIGHET, () -> sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt));
     }
 
     @Test
@@ -85,8 +85,8 @@ public class SommerjobbStartOgSluttDatoStrategyTest {
         LocalDate avtaleStart = LocalDate.of(Now.localDate().plusYears(10).getYear(),8,5);
         LocalDate avtaleSlutt = LocalDate.of(Now.localDate().plusYears(10).getYear(),8,29);
 
-        SommerjobbStartOgSluttDatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttDatoStrategy(avtale);
-        assertFeilkode(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO, () -> sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt));
+        SommerjobbStartOgSluttdatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttdatoStrategy(avtale);
+        assertFeilkode(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO, () -> sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt));
     }
 
     @Test
@@ -94,8 +94,8 @@ public class SommerjobbStartOgSluttDatoStrategyTest {
         LocalDate avtaleStart = LocalDate.of(Now.localDate().plusYears(1).getYear(),6,1);
         LocalDate avtaleSlutt = LocalDate.of(Now.localDate().plusYears(1).getYear(),6,29);
 
-        SommerjobbStartOgSluttDatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttDatoStrategy(avtale);
-        assertFeilkode(Feilkode.SOMMERJOBB_FOR_LANG_VARIGHET, () -> sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt));
+        SommerjobbStartOgSluttdatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttdatoStrategy(avtale);
+        assertFeilkode(Feilkode.SOMMERJOBB_FOR_LANG_VARIGHET, () -> sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt));
     }
 
     @Test
@@ -103,8 +103,8 @@ public class SommerjobbStartOgSluttDatoStrategyTest {
         LocalDate avtaleStart = LocalDate.of(Now.localDate().plusYears(1).getYear(),6,1);
         LocalDate avtaleSlutt = LocalDate.of(Now.localDate().plusYears(1).getYear(),6,28);
 
-        SommerjobbStartOgSluttDatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttDatoStrategy(avtale);
-        sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt);
+        SommerjobbStartOgSluttdatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttdatoStrategy(avtale);
+        sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt);
     }
 
     @Test
@@ -112,8 +112,8 @@ public class SommerjobbStartOgSluttDatoStrategyTest {
         LocalDate avtaleStart = LocalDate.of(Now.localDate().getYear(),5,31);
         LocalDate avtaleSlutt = LocalDate.of(Now.localDate().getYear(),7,14);
 
-        SommerjobbStartOgSluttDatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttDatoStrategy(avtale);
-        assertFeilkode(Feilkode.SOMMERJOBB_FOR_TIDLIG, () -> sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt));
+        SommerjobbStartOgSluttdatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttdatoStrategy(avtale);
+        assertFeilkode(Feilkode.SOMMERJOBB_FOR_TIDLIG, () -> sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt));
 
     }
 }

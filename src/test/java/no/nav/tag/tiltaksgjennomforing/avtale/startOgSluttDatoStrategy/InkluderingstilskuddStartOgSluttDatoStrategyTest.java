@@ -34,7 +34,7 @@ class InkluderingstilskuddStartOgSluttDatoStrategyTest {
         LocalDate avtaleStart = Now.localDate();
         LocalDate avtaleSlutt = avtaleStart.plusMonths(11).plusDays(1);
         Avtale avtale = Avtale.opprett(new OpprettAvtale(Fnr.generer(1952,8,12), TestData.etBedriftNr(), INKLUDERINGSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
-        InkluderingstilskuddStartOgSluttDatoStrategy inkluderingstilskuddStartOgSluttDatoStrategy = new InkluderingstilskuddStartOgSluttDatoStrategy(avtale);
-        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> inkluderingstilskuddStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt));
+        InkluderingstilskuddStartOgSluttdatoStrategy inkluderingstilskuddStartOgSluttDatoStrategy = new InkluderingstilskuddStartOgSluttdatoStrategy(avtale);
+        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> inkluderingstilskuddStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt));
     }
 }

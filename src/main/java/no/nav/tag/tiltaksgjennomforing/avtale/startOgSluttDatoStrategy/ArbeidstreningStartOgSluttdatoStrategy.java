@@ -1,21 +1,21 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningException;
 
 import java.time.LocalDate;
 
-public class ArbeidstreningStartOgSluttDatoStrategy extends StartOgSluttDatoStrategy {
-    public ArbeidstreningStartOgSluttDatoStrategy(Avtale avtale) {
+public class ArbeidstreningStartOgSluttdatoStrategy extends StartOgSluttdatoStrategy {
+    public ArbeidstreningStartOgSluttdatoStrategy(Avtale avtale) {
         super(avtale);
     }
 
     @Override
-    public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
-        super.sjekkStartOgSluttDato(startDato, sluttDato);
+    public void sjekkStartOgSluttdato(Stillingstype stillingstype, LocalDate startDato, LocalDate sluttDato) {
+        super.sjekkStartOgSluttdato(stillingstype, startDato, sluttDato);
 
         if (sluttDato == null) {
             return;
