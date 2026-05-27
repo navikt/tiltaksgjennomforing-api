@@ -71,7 +71,7 @@ public class KrrClient {
             }
 
             return Optional.ofNullable(respons.getBody())
-                .map(KrrPersonKontaktinformasjonRespons::getPersoner)
+                .map(KrrPersonKontaktinformasjonRespons::personer)
                 .map(personer -> personer.get(fnr.asString()))
                 .map(Kontaktinfo::getReservert);
         } catch (RestClientResponseException e) {
