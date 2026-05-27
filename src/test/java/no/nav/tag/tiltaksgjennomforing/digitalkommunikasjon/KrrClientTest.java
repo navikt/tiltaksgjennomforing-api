@@ -54,6 +54,7 @@ class KrrClientTest {
                 {
                   "personer": {
                     "12345678910": {
+                      "kanVarsles": false,
                       "reservert": true
                     }
                   }
@@ -75,6 +76,26 @@ class KrrClientTest {
                   "personer": {
                     "12345678910": {
                       "kanVarsles": true
+                    }
+                  }
+                }
+                """, MediaType.APPLICATION_JSON));
+
+        assertThat(krrClient.hentErPersonReservertForDigitalKontakt(fnr)).contains(false);
+        server.verify();
+    }
+
+    @Test
+    void returnererIkkeReservertNarKanVarslesManglerIResponsen() {
+        Fnr fnr = Fnr.fraDb("12345678910");
+
+        server.expect(requestTo("https://krr.example/rest/v1/personer"))
+            .andExpect(method(HttpMethod.POST))
+            .andRespond(withSuccess("""
+                {
+                  "personer": {
+                    "12345678910": {
+                      "reservert": true
                     }
                   }
                 }

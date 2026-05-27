@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static java.lang.Boolean.TRUE;
-
 /**
  * Digdir sitt Kontakt- og reservasjonsregister (KRR) inneholder informasjon
  * om hvordan innbyggere ønsker å bli kontaktet av det offentlige, og
@@ -75,7 +73,7 @@ public class KrrClient {
             return Optional.ofNullable(respons.getBody())
                 .map(KrrPersonKontaktinformasjonRespons::personer)
                 .map(personer -> personer.get(fnr.asString()))
-                .map(kontaktinfo -> TRUE.equals(kontaktinfo.kanVarsles()) ? false : kontaktinfo.reservert()); // kanVarsles er true betyr at Person har ikke utgått kontaktinformasjon og er ikke reservert. Hvis kanVarsles er false betyr det at Person har utgått kontaktinformasjon, er reservert, er slettet eller finnes ikke i registeret. @see https://docs.digdir.no/docs/Kontaktregisteret/krr_attributter#kodeverk-for-varslingsstatus
+                .map(Kontaktinfo::erReservertForDigitalKontakt);
         } catch (RestClientResponseException e) {
             if (e.getStatusCode().isSameCodeAs(HttpStatus.NOT_FOUND)) {
                 log.warn("Fant ikke person i KRR. Returnerer Optional.empty(). status={}", e.getStatusCode());
