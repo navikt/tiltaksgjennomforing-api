@@ -65,7 +65,7 @@ Content-Type: application/json
 Authorization: Bearer <TOKEN>
 
 ### sjekk om bruker kan faa brev og har adresse
-GET http://localhost:8080/tiltaksgjennomforing-api/utvikler-admin/sjekk-om-bruker-kan-faa-brev-og-har-adresse/<FNR>
+GET http://localhost:12345/tiltaksgjennomforing-api/utvikler-admin/sjekk-om-bruker-kan-faa-brev-og-har-adresse/<FNR>
 Content-Type: application/json
 Accept: application/json
 Authorization:  Bearer <TOKEN>
