@@ -73,7 +73,7 @@ public class KrrClient {
             return Optional.ofNullable(respons.getBody())
                 .map(KrrPersonKontaktinformasjonRespons::personer)
                 .map(personer -> personer.get(fnr.asString()))
-                .map(Kontaktinfo::getReservert);
+                .map(kontaktinfo -> Boolean.TRUE.equals(kontaktinfo.kanVarsles()) ? false : kontaktinfo.reservert());
         } catch (RestClientResponseException e) {
             if (e.getStatusCode().isSameCodeAs(HttpStatus.NOT_FOUND)) {
                 log.warn("Fant ikke person i KRR. Returnerer Optional.empty(). status={}", e.getStatusCode());

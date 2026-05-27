@@ -1,14 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.digitalkommunikasjon;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+/*
+* @see <a href="https://docs.digdir.no/docs/Kontaktregisteret/krr_attributter#kodeverk-for-varslingsstatus">Attributter i KRR</a>
+* */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Kontaktinfo {
-    private Boolean reservert;
-}
+public record Kontaktinfo(Boolean reservert, Boolean kanVarsles) {}
