@@ -17,7 +17,7 @@ import java.time.LocalDate;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.FIREARIG_LONNSTILSKUDD;
-import static no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.FirearigLonnstilskuddStartOgSluttDatoStrategy.erForLangVarighet;
+import static no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.FirearigLonnstilskuddStartOgSluttdatoStrategy.erForLangVarighet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
@@ -48,25 +48,25 @@ class FirearigLonnstilskuddStartOgSluttDatoStrategyTest {
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
     }
 
-    private FirearigLonnstilskuddStartOgSluttDatoStrategy strategy() {
-        return new FirearigLonnstilskuddStartOgSluttDatoStrategy(avtale);
+    private FirearigLonnstilskuddStartOgSluttdatoStrategy strategy() {
+        return new FirearigLonnstilskuddStartOgSluttdatoStrategy(avtale);
     }
 
     @Test
     void null_startDato_kaster_ikke_exception() {
-        assertThatNoException().isThrownBy(() -> strategy().sjekkStartOgSluttDato(null, GYLDIG_SLUTT));
+        assertThatNoException().isThrownBy(() -> strategy().sjekkStartOgSluttdato(null, GYLDIG_SLUTT));
     }
 
     @Test
     void startDato_før_oppstartsdato_kaster_feilkode() {
         LocalDate forTidlig = OPPSTARTSDATO.minusDays(1);
         assertFeilkode(Feilkode.FIREARIG_LONNSTILSKUDD_FOR_TIDLIG_OPPSTART,
-                () -> strategy().sjekkStartOgSluttDato(forTidlig, GYLDIG_SLUTT));
+                () -> strategy().sjekkStartOgSluttdato(forTidlig, GYLDIG_SLUTT));
     }
 
     @Test
     void startDato_lik_oppstartsdato_kaster_ikke_exception() {
-        assertThatNoException().isThrownBy(() -> strategy().sjekkStartOgSluttDato(OPPSTARTSDATO, null));
+        assertThatNoException().isThrownBy(() -> strategy().sjekkStartOgSluttdato(OPPSTARTSDATO, null));
     }
 
     @Test
@@ -79,7 +79,7 @@ class FirearigLonnstilskuddStartOgSluttDatoStrategyTest {
         );
         avtale.setGodkjentForEtterregistrering(true);
         assertFeilkode(Feilkode.FIREARIG_LONNSTILSKUDD_FOR_GAMMEL_FRA_OPPSTARTDATO,
-                () -> strategy().sjekkStartOgSluttDato(GYLDIG_START, GYLDIG_SLUTT));
+                () -> strategy().sjekkStartOgSluttdato(GYLDIG_START, GYLDIG_SLUTT));
     }
 
     @Test
@@ -91,19 +91,19 @@ class FirearigLonnstilskuddStartOgSluttDatoStrategyTest {
                 TestData.enNavIdent()
         );
         avtale.setGodkjentForEtterregistrering(true);
-        assertThatNoException().isThrownBy(() -> strategy().sjekkStartOgSluttDato(GYLDIG_START, GYLDIG_SLUTT));
+        assertThatNoException().isThrownBy(() -> strategy().sjekkStartOgSluttdato(GYLDIG_START, GYLDIG_SLUTT));
     }
 
     @Test
     void null_sluttDato_kaster_ikke_exception() {
-        assertThatNoException().isThrownBy(() -> strategy().sjekkStartOgSluttDato(GYLDIG_START, null));
+        assertThatNoException().isThrownBy(() -> strategy().sjekkStartOgSluttdato(GYLDIG_START, null));
     }
 
     @Test
     void sluttDato_etter_2032_kaster_feilkode() {
         LocalDate forSen = LocalDate.of(2033, 1, 1);
         assertFeilkode(Feilkode.FIREARIG_LONNSTILSKUDD_FOR_SEN_SLUTTDATO,
-                () -> strategy().sjekkStartOgSluttDato(GYLDIG_START, forSen));
+                () -> strategy().sjekkStartOgSluttdato(GYLDIG_START, forSen));
     }
 
     @Test
@@ -111,7 +111,7 @@ class FirearigLonnstilskuddStartOgSluttDatoStrategyTest {
         // Start within 4 years of 2032-12-31 to avoid duration-check interference
         LocalDate start = LocalDate.of(2030, 1, 1);
         LocalDate sluttdatoGrenseverdi = LocalDate.of(2032, 12, 31);
-        assertThatNoException().isThrownBy(() -> strategy().sjekkStartOgSluttDato(start, sluttdatoGrenseverdi));
+        assertThatNoException().isThrownBy(() -> strategy().sjekkStartOgSluttdato(start, sluttdatoGrenseverdi));
     }
 
     @Test
@@ -119,14 +119,14 @@ class FirearigLonnstilskuddStartOgSluttDatoStrategyTest {
         avtale.getGjeldendeInnhold().setStillingstype(Stillingstype.MIDLERTIDIG);
         LocalDate slutt = GYLDIG_START.plusYears(2);
         assertFeilkode(Feilkode.VARIGHET_FOR_LANG_FIREARIG_LONNSTILSKUDD_2_AAR,
-                () -> strategy().sjekkStartOgSluttDato(GYLDIG_START, slutt));
+                () -> strategy().sjekkStartOgSluttdato(GYLDIG_START, slutt));
     }
 
     @Test
     void midlertidig_stilling_varighet_under_2_år_kaster_ikke_exception() {
         avtale.getGjeldendeInnhold().setStillingstype(Stillingstype.MIDLERTIDIG);
         LocalDate slutt = GYLDIG_START.plusYears(2).minusDays(1);
-        assertThatNoException().isThrownBy(() -> strategy().sjekkStartOgSluttDato(GYLDIG_START, slutt));
+        assertThatNoException().isThrownBy(() -> strategy().sjekkStartOgSluttdato(GYLDIG_START, slutt));
     }
 
     @Test
@@ -134,20 +134,20 @@ class FirearigLonnstilskuddStartOgSluttDatoStrategyTest {
         avtale.getGjeldendeInnhold().setStillingstype(Stillingstype.FAST);
         LocalDate slutt = GYLDIG_START.plusYears(4);
         assertFeilkode(Feilkode.VARIGHET_FOR_LANG_FIREARIG_LONNSTILSKUDD_4_AAR,
-                () -> strategy().sjekkStartOgSluttDato(GYLDIG_START, slutt));
+                () -> strategy().sjekkStartOgSluttdato(GYLDIG_START, slutt));
     }
 
     @Test
     void fast_stilling_varighet_under_4_år_kaster_ikke_exception() {
         avtale.getGjeldendeInnhold().setStillingstype(Stillingstype.FAST);
         LocalDate slutt = GYLDIG_START.plusYears(4).minusDays(1);
-        assertThatNoException().isThrownBy(() -> strategy().sjekkStartOgSluttDato(GYLDIG_START, slutt));
+        assertThatNoException().isThrownBy(() -> strategy().sjekkStartOgSluttdato(GYLDIG_START, slutt));
     }
 
     @Test
     void start_etter_slutt_kaster_feilkode() {
         assertFeilkode(Feilkode.START_ETTER_SLUTT,
-                () -> strategy().sjekkStartOgSluttDato(GYLDIG_SLUTT, GYLDIG_START));
+                () -> strategy().sjekkStartOgSluttdato(GYLDIG_SLUTT, GYLDIG_START));
     }
 
     @Nested

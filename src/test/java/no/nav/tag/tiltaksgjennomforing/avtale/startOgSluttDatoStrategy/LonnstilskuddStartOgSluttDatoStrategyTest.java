@@ -109,8 +109,8 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
         LocalDate avtaleSlutt = avtaleStart.plusMonths(11).plusDays(1);
         Avtale avtale = enMidlertidig();
         avtale.setDeltakerFnr(Fnr.generer(1952,8,12));
-        MidlertidigLonnstilskuddStartOgSluttDatoStrategy midlertidigLonnstilskuddStartOgSluttDatoStrategy = new MidlertidigLonnstilskuddStartOgSluttDatoStrategy(avtale);
-        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> midlertidigLonnstilskuddStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt));
+        MidlertidigLonnstilskuddStartOgSluttdatoStrategy midlertidigLonnstilskuddStartOgSluttDatoStrategy = new MidlertidigLonnstilskuddStartOgSluttdatoStrategy(avtale);
+        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> midlertidigLonnstilskuddStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt));
     }
 
     @Test
@@ -119,7 +119,7 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
         LocalDate avtaleSlutt = avtaleStart.plusMonths(11).plusDays(1);
         Avtale avtale = enVarig();
         avtale.setDeltakerFnr(Fnr.generer(1952,8,12));
-        VarigLonnstilskuddStartOgSluttDatoStrategy varigLonnstilskuddStartOgSluttDatoStrategy = new VarigLonnstilskuddStartOgSluttDatoStrategy(avtale);
-        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> varigLonnstilskuddStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt));
+        VarigLonnstilskuddStartOgSluttdatoStrategy varigLonnstilskuddStartOgSluttDatoStrategy = new VarigLonnstilskuddStartOgSluttdatoStrategy(avtale);
+        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> varigLonnstilskuddStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt));
     }
 }

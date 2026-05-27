@@ -34,7 +34,7 @@ class ArbeidstreningStartOgSluttDatoStrategyTest {
         LocalDate avtaleStart = Now.localDate();
         LocalDate avtaleSlutt = avtaleStart.plusMonths(11).plusDays(1);
         Avtale avtale = Avtale.opprett(new OpprettAvtale(Fnr.generer(1952,8,12), TestData.etBedriftNr(), ARBEIDSTRENING), Avtaleopphav.VEILEDER, TestData.enNavIdent());
-        ArbeidstreningStartOgSluttDatoStrategy arbeidstreningStartOgSluttDatoStrategy = new ArbeidstreningStartOgSluttDatoStrategy(avtale);
-        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> arbeidstreningStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt));
+        ArbeidstreningStartOgSluttdatoStrategy arbeidstreningStartOgSluttDatoStrategy = new ArbeidstreningStartOgSluttdatoStrategy(avtale);
+        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> arbeidstreningStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt));
     }
 }
