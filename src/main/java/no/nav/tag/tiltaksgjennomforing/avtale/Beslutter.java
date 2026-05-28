@@ -81,6 +81,9 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
                 avtale.getDeltakerFnr(),
                 avtale.getTiltakstype()
             );
+            if (status.getOppfolgingsenhet() == null) {
+                throw new FeilkodeException(Feilkode.ENHET_MANGLER);
+            }
             boolean harOppfolgingsenhetTilgangPaTiltak = featureToggleService.harEnhetTilgangPaTiltak(
                 tiltakstype,
                 status.getOppfolgingsenhet()
