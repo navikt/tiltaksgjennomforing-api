@@ -46,7 +46,7 @@ public class DigitalKontaktinformasjonClient {
     }
 
     public boolean erPersonReservertForDigitalKontakt(Fnr fnr) {
-        return hentErPersonReservertForDigitalKontakt(fnr).orElse(false);
+        return hentErPersonReservertForDigitalKontakt(fnr).isPresent();
     }
 
     Optional<Boolean> hentErPersonReservertForDigitalKontakt(Fnr fnr) {

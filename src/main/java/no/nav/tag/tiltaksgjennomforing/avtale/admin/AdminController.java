@@ -101,10 +101,10 @@ public class AdminController {
         Fnr validertFnr = new Fnr(fnr);
         log.info("hent-postadresse FNR er validert, skal kalle postadresse consumer service...");
         boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedAdresse(validertFnr);
-        boolean erReservertMotDigitalKommunikasjon = digitalKontaktinformasjonClient.erPersonReservertForDigitalKontakt(validertFnr);
+        boolean erReservertForDigitalKommunikasjon = digitalKontaktinformasjonClient.erPersonReservertForDigitalKontakt(validertFnr);
         return Map.of(
-            "postadresseClient.sjekkOmPersonErRegistrertMedAdresse", String.valueOf(harAdresse),
-            "krrClient.erPersonReservertForDigitalKontakt", String.valueOf(erReservertMotDigitalKommunikasjon)
+            "har adresse", String.valueOf(harAdresse),
+            "er reservert for digital kommunikasjon", String.valueOf(erReservertForDigitalKommunikasjon)
         );
     }
 
