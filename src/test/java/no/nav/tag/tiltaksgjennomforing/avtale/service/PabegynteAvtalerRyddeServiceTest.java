@@ -255,7 +255,7 @@ class PabegynteAvtalerRyddeServiceTest {
         clearInvocations(mentorAvtaleEndretAvArena, avtaleRepositoryMock);
         when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleEndretAvArena));
 
-        Now.fixedDate(LocalDate.of(2026, 5, 26));
+        Now.fixedDate(LocalDate.of(2026, 6, 9));
         pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
 
         verify(mentorAvtaleEndretAvArena, times(1)).utlop(AvtaleUtlopHandling.VARSEL_EN_UKE);
@@ -264,7 +264,7 @@ class PabegynteAvtalerRyddeServiceTest {
         clearInvocations(mentorAvtaleEndretAvArena, avtaleRepositoryMock);
         when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleEndretAvArena));
 
-        Now.fixedDate(LocalDate.of(2026, 6, 1));
+        Now.fixedDate(LocalDate.of(2026, 6, 15));
         pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
 
         verify(mentorAvtaleEndretAvArena, times(1)).utlop(AvtaleUtlopHandling.VARSEL_24_TIMER);
@@ -273,7 +273,7 @@ class PabegynteAvtalerRyddeServiceTest {
         clearInvocations(mentorAvtaleEndretAvArena, avtaleRepositoryMock);
         when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleEndretAvArena));
 
-        Now.fixedDate(LocalDate.of(2026, 6, 2));
+        Now.fixedDate(LocalDate.of(2026, 6, 16));
         pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
 
         verify(mentorAvtaleEndretAvArena, times(1)).utlop(AvtaleUtlopHandling.UTLOP);
@@ -301,7 +301,7 @@ class PabegynteAvtalerRyddeServiceTest {
         clearInvocations(mentorAvtaleFraArena, avtaleRepositoryMock);
         when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleFraArena));
 
-        Now.fixedDate(LocalDate.of(2026, 6, 1));
+        Now.fixedDate(LocalDate.of(2026, 6, 15));
         pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
 
         verify(mentorAvtaleFraArena, times(1)).utlop(AvtaleUtlopHandling.VARSEL_24_TIMER);
@@ -310,7 +310,7 @@ class PabegynteAvtalerRyddeServiceTest {
         clearInvocations(mentorAvtaleFraArena, avtaleRepositoryMock);
         when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleFraArena));
 
-        Now.fixedDate(LocalDate.of(2026, 6, 2));
+        Now.fixedDate(LocalDate.of(2026, 6, 16));
         pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
 
         verify(mentorAvtaleFraArena, times(1)).utlop(AvtaleUtlopHandling.UTLOP);
