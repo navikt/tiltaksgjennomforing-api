@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.digitalkommunikasjon;
+package no.nav.tag.tiltaksgjennomforing.digitalkontaktinformasjon;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -9,6 +9,6 @@ import java.net.URI;
 @Data
 @Component
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.krr")
-public class KrrProperties {
+public class DigitalkontaktInfoProperties {
     private URI uri;
 }

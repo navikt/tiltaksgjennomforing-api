@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.digitalkommunikasjon;
+package no.nav.tag.tiltaksgjennomforing.digitalkontaktinformasjon;
 
 import no.nav.tag.tiltaksgjennomforing.IntegrasjonerMockServer;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
@@ -19,12 +19,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @ActiveProfiles({ Miljø.TEST, Miljø.WIREMOCK })
 @DirtiesContext
-class KrrClientIntegrasjonTest {
+class DigitalKontaktinformasjonClientIntegrasjonTest {
 
     private static final String KRR_PERSON_ENDEPUNKT = "/digdir-krr-proxy/rest/v1/personer";
 
     @Autowired
-    private KrrClient krrClient;
+    private DigitalKontaktinformasjonClient digitalKontaktinformasjonClient;
 
     @Autowired
     private IntegrasjonerMockServer integrasjonerMockServer;
@@ -38,7 +38,7 @@ class KrrClientIntegrasjonTest {
     void hentErPersonReservertForDigitalKontakt_returnererTrueFraKrrRespons() {
         Fnr fnr = Fnr.fraDb("12345678910");
 
-        assertThat(krrClient.hentErPersonReservertForDigitalKontakt(fnr)).contains(true);
+        assertThat(digitalKontaktinformasjonClient.hentErPersonReservertForDigitalKontakt(fnr)).contains(true);
 
         integrasjonerMockServer.getServer().verify(postRequestedFor(urlPathEqualTo(KRR_PERSON_ENDEPUNKT))
             .withHeader("Accept", containing("application/json"))
@@ -54,7 +54,7 @@ class KrrClientIntegrasjonTest {
     void hentErPersonReservertForDigitalKontakt_returnererFalseFraKrrRespons() {
         Fnr fnr = Fnr.fraDb("11111111111");
 
-        assertThat(krrClient.hentErPersonReservertForDigitalKontakt(fnr)).contains(false);
+        assertThat(digitalKontaktinformasjonClient.hentErPersonReservertForDigitalKontakt(fnr)).contains(false);
 
         integrasjonerMockServer.getServer().verify(postRequestedFor(urlPathEqualTo(KRR_PERSON_ENDEPUNKT))
             .withRequestBody(equalToJson("""

@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.digitalkommunikasjon;
+package no.nav.tag.tiltaksgjennomforing.digitalkontaktinformasjon;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
@@ -31,18 +31,18 @@ import java.util.Optional;
  */
 @Slf4j
 @Component
-public class KrrClient {
+public class DigitalKontaktinformasjonClient {
 
     private static final String KRR_PERSON_ENDEPUNKT = "/rest/v1/personer";
 
     private final RestTemplate azureRestTemplate;
     private final URI baseUri;
 
-    public KrrClient(RestTemplate azureRestTemplate,
-        KrrProperties krrProperties
+    public DigitalKontaktinformasjonClient(RestTemplate azureRestTemplate,
+                                           DigitalkontaktInfoProperties digitalkontaktInfoProperties
     ) {
         this.azureRestTemplate = azureRestTemplate;
-        this.baseUri = Objects.requireNonNull(krrProperties.getUri(), "KRR URI må være konfigurert");
+        this.baseUri = Objects.requireNonNull(digitalkontaktInfoProperties.getUri(), "KRR URI må være konfigurert");
     }
 
     public boolean erPersonReservertForDigitalKontakt(Fnr fnr) {
@@ -54,16 +54,16 @@ public class KrrClient {
             HttpHeaders headers = new HttpHeaders();
             headers.setAccept(List.of(MediaType.APPLICATION_JSON));
             headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<KrrPersonKontaktinformasjonRequest> request = new HttpEntity<>(
-                new KrrPersonKontaktinformasjonRequest(List.of(fnr.asString())),
+            HttpEntity<PersonKontaktinformasjonRequest> request = new HttpEntity<>(
+                new PersonKontaktinformasjonRequest(List.of(fnr.asString())),
                 headers
             );
 
-            ResponseEntity<KrrPersonKontaktinformasjonRespons> respons = azureRestTemplate.exchange(
+            ResponseEntity<PersonKontaktinformasjonRespons> respons = azureRestTemplate.exchange(
                 baseUri + KRR_PERSON_ENDEPUNKT,
                 HttpMethod.POST,
                 request,
-                KrrPersonKontaktinformasjonRespons.class
+                PersonKontaktinformasjonRespons.class
             );
 
             if (!respons.getStatusCode().is2xxSuccessful()) {
@@ -75,7 +75,7 @@ public class KrrClient {
             }
 
             return Optional.ofNullable(respons.getBody())
-                .map(KrrPersonKontaktinformasjonRespons::personer)
+                .map(PersonKontaktinformasjonRespons::personer)
                 .map(personer -> personer.get(fnr.asString()))
                 .map(Kontaktinfo::erReservertForDigitalKontakt);
         } catch (RestClientResponseException e) {

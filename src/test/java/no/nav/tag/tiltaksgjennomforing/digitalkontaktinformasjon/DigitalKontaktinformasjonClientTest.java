@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.digitalkommunikasjon;
+package no.nav.tag.tiltaksgjennomforing.digitalkontaktinformasjon;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,20 +22,22 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-class KrrClientTest {
+class DigitalKontaktinformasjonClientTest {
 
     private MockRestServiceServer server;
-    private KrrClient krrClient;
+    private DigitalKontaktinformasjonClient digitalKontaktinformasjonClient;
 
     @BeforeEach
     void setUp() {
         RestTemplate restTemplate = new RestTemplate();
         server = MockRestServiceServer.createServer(restTemplate);
 
-        KrrProperties krrProperties = new KrrProperties();
-        krrProperties.setUri(URI.create("https://krr.example"));
+        DigitalkontaktInfoProperties digitalkontaktInfoProperties = new DigitalkontaktInfoProperties();
+        digitalkontaktInfoProperties.setUri(URI.create("https://krr.example"));
 
-        krrClient = new KrrClient(restTemplate, krrProperties);
+        digitalKontaktinformasjonClient = new DigitalKontaktinformasjonClient(restTemplate,
+            digitalkontaktInfoProperties
+        );
     }
 
     @Test
@@ -61,7 +63,7 @@ class KrrClientTest {
                 }
                 """, MediaType.APPLICATION_JSON));
 
-        assertThat(krrClient.hentErPersonReservertForDigitalKontakt(fnr)).contains(true);
+        assertThat(digitalKontaktinformasjonClient.hentErPersonReservertForDigitalKontakt(fnr)).contains(true);
         server.verify();
     }
 
@@ -81,7 +83,7 @@ class KrrClientTest {
                 }
                 """, MediaType.APPLICATION_JSON));
 
-        assertThat(krrClient.hentErPersonReservertForDigitalKontakt(fnr)).contains(false);
+        assertThat(digitalKontaktinformasjonClient.hentErPersonReservertForDigitalKontakt(fnr)).contains(false);
         server.verify();
     }
 
@@ -97,7 +99,7 @@ class KrrClientTest {
                 }
                 """, MediaType.APPLICATION_JSON));
 
-        assertThat(krrClient.erPersonReservertForDigitalKontakt(fnr)).isFalse();
+        assertThat(digitalKontaktinformasjonClient.erPersonReservertForDigitalKontakt(fnr)).isFalse();
         server.verify();
     }
 
@@ -118,7 +120,7 @@ class KrrClientTest {
                 }
                 """, MediaType.APPLICATION_JSON));
 
-        assertThat(krrClient.erPersonReservertForDigitalKontakt(fnr)).isTrue();
+        assertThat(digitalKontaktinformasjonClient.erPersonReservertForDigitalKontakt(fnr)).isTrue();
         server.verify();
     }
 
@@ -134,7 +136,7 @@ class KrrClientTest {
                 }
                 """, MediaType.APPLICATION_JSON));
 
-        assertThat(krrClient.hentErPersonReservertForDigitalKontakt(fnr)).isEmpty();
+        assertThat(digitalKontaktinformasjonClient.hentErPersonReservertForDigitalKontakt(fnr)).isEmpty();
         server.verify();
     }
 
@@ -146,7 +148,7 @@ class KrrClientTest {
             .andExpect(method(HttpMethod.POST))
             .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        assertThat(krrClient.hentErPersonReservertForDigitalKontakt(fnr)).isEmpty();
+        assertThat(digitalKontaktinformasjonClient.hentErPersonReservertForDigitalKontakt(fnr)).isEmpty();
         server.verify();
     }
 
@@ -158,7 +160,7 @@ class KrrClientTest {
             .andExpect(method(HttpMethod.POST))
             .andRespond(withStatus(HttpStatus.BAD_REQUEST));
 
-        assertThatThrownBy(() -> krrClient.hentErPersonReservertForDigitalKontakt(fnr))
+        assertThatThrownBy(() -> digitalKontaktinformasjonClient.hentErPersonReservertForDigitalKontakt(fnr))
             .isInstanceOf(RestClientResponseException.class);
         server.verify();
     }
@@ -171,7 +173,7 @@ class KrrClientTest {
             .andExpect(method(HttpMethod.POST))
             .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        assertThatThrownBy(() -> krrClient.hentErPersonReservertForDigitalKontakt(fnr))
+        assertThatThrownBy(() -> digitalKontaktinformasjonClient.hentErPersonReservertForDigitalKontakt(fnr))
             .isInstanceOf(RestClientResponseException.class);
         server.verify();
     }

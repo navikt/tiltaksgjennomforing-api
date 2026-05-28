@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.digitalkommunikasjon;
+package no.nav.tag.tiltaksgjennomforing.digitalkontaktinformasjon;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

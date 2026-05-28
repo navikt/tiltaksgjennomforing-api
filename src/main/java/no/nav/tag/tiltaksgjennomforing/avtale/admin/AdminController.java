@@ -24,7 +24,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.service.gjeldendetilskuddsperiode.GjeldendeTilskuddsperiodeJobbService;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
-import no.nav.tag.tiltaksgjennomforing.digitalkommunikasjon.KrrClient;
+import no.nav.tag.tiltaksgjennomforing.digitalkontaktinformasjon.DigitalKontaktinformasjonClient;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
@@ -79,7 +79,7 @@ public class AdminController {
     private final Norg2Client norg2Client;
     private final VarselRepository varselRepository;
     private final PostadresseClient postadresseClient;
-    private final KrrClient krrClient;
+    private final DigitalKontaktinformasjonClient digitalKontaktinformasjonClient;
 
     @GetMapping({ "", "/" })
     public String hjem() {
@@ -101,7 +101,7 @@ public class AdminController {
         Fnr validertFnr = new Fnr(fnr);
         log.info("hent-postadresse FNR er validert, skal kalle postadresse consumer service...");
         boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedAdresse(validertFnr);
-        boolean erReservertMotDigitalKommunikasjon = krrClient.erPersonReservertForDigitalKontakt(validertFnr);
+        boolean erReservertMotDigitalKommunikasjon = digitalKontaktinformasjonClient.erPersonReservertForDigitalKontakt(validertFnr);
         return Map.of(
             "postadresseClient.sjekkOmPersonErRegistrertMedAdresse", String.valueOf(harAdresse),
             "krrClient.erPersonReservertForDigitalKontakt", String.valueOf(erReservertMotDigitalKommunikasjon)
