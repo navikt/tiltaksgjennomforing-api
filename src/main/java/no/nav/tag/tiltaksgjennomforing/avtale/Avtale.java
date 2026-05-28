@@ -1417,7 +1417,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         startOgSluttdatoStrategy().sjekkGjeldendeStartogSluttdato(endreStillingsbeskrivelse.getStillingstype());
 
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_STILLING);
-        getGjeldendeInnhold().endreStillingsInfo(endreStillingsbeskrivelse);
+        getGjeldendeInnhold().endreStillingsbeskrivelse(endreStillingsbeskrivelse);
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
         getGjeldendeInnhold().reberegnLønnstilskudd();
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
