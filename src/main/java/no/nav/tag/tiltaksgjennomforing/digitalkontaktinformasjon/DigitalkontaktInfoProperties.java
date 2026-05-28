@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.net.URI;
 
 /**
- * Konfigurasjon for Digital Kontaktinformasjon (KRR).
+ * Konfigurasjon for Kontakt- og reservasjonsregister (KRR).
  */
 @Data
 @Component
