@@ -20,7 +20,7 @@ public enum PostadresseType {
 	@JsonCreator
 	public static PostadresseType fraNavn(String navn) {
 		return Arrays.stream(values())
-			.filter(type -> type.navn.equals(navn))
+			.filter(type -> type.navn.equals(navn) || type.name().equals(navn))
 			.findFirst()
 			.orElseThrow(() -> new IllegalArgumentException("Ukjent postadressetype: " + navn));
 	}
