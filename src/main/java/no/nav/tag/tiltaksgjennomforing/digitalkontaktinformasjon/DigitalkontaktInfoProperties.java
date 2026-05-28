@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 
 import java.net.URI;
 
+/**
+ * Konfigurasjon for Digital Kontaktinformasjon (KRR).
+ */
 @Data
 @Component
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.krr")
