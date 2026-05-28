@@ -63,7 +63,7 @@ class DigitalKontaktinformasjonClientTest {
                 }
                 """, MediaType.APPLICATION_JSON));
 
-        assertThat(digitalKontaktinformasjonClient.hentErPersonReservertForDigitalKontakt(fnr)).contains(true);
+        assertThat(digitalKontaktinformasjonClient.hentErPersonReservertMotDigitalKontakt(fnr)).contains(true);
         server.verify();
     }
 
@@ -83,7 +83,7 @@ class DigitalKontaktinformasjonClientTest {
                 }
                 """, MediaType.APPLICATION_JSON));
 
-        assertThat(digitalKontaktinformasjonClient.hentErPersonReservertForDigitalKontakt(fnr)).contains(false);
+        assertThat(digitalKontaktinformasjonClient.hentErPersonReservertMotDigitalKontakt(fnr)).contains(false);
         server.verify();
     }
 
@@ -99,7 +99,7 @@ class DigitalKontaktinformasjonClientTest {
                 }
                 """, MediaType.APPLICATION_JSON));
 
-        assertThat(digitalKontaktinformasjonClient.erPersonReservertForDigitalKontakt(fnr)).isFalse();
+        assertThat(digitalKontaktinformasjonClient.erPersonReservertMotDigitalKontakt(fnr)).isFalse();
         server.verify();
     }
 
@@ -120,7 +120,28 @@ class DigitalKontaktinformasjonClientTest {
                 }
                 """, MediaType.APPLICATION_JSON));
 
-        assertThat(digitalKontaktinformasjonClient.erPersonReservertForDigitalKontakt(fnr)).isTrue();
+        assertThat(digitalKontaktinformasjonClient.erPersonReservertMotDigitalKontakt(fnr)).isTrue();
+        server.verify();
+    }
+
+    @Test
+    void returnererFalseFraPublicMetodeNarPersonIkkeErReservertForDigitalKontakt() {
+        Fnr fnr = Fnr.fraDb("12345678910");
+
+        server.expect(requestTo("https://krr.example/rest/v1/personer"))
+            .andExpect(method(HttpMethod.POST))
+            .andRespond(withSuccess("""
+                {
+                  "personer": {
+                    "12345678910": {
+                      "kanVarsles": true,
+                      "reservert": false
+                    }
+                  }
+                }
+                """, MediaType.APPLICATION_JSON));
+
+        assertThat(digitalKontaktinformasjonClient.erPersonReservertMotDigitalKontakt(fnr)).isFalse();
         server.verify();
     }
 
@@ -136,7 +157,7 @@ class DigitalKontaktinformasjonClientTest {
                 }
                 """, MediaType.APPLICATION_JSON));
 
-        assertThat(digitalKontaktinformasjonClient.hentErPersonReservertForDigitalKontakt(fnr)).isEmpty();
+        assertThat(digitalKontaktinformasjonClient.hentErPersonReservertMotDigitalKontakt(fnr)).isEmpty();
         server.verify();
     }
 
@@ -148,7 +169,7 @@ class DigitalKontaktinformasjonClientTest {
             .andExpect(method(HttpMethod.POST))
             .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        assertThat(digitalKontaktinformasjonClient.hentErPersonReservertForDigitalKontakt(fnr)).isEmpty();
+        assertThat(digitalKontaktinformasjonClient.hentErPersonReservertMotDigitalKontakt(fnr)).isEmpty();
         server.verify();
     }
 
@@ -160,7 +181,7 @@ class DigitalKontaktinformasjonClientTest {
             .andExpect(method(HttpMethod.POST))
             .andRespond(withStatus(HttpStatus.BAD_REQUEST));
 
-        assertThatThrownBy(() -> digitalKontaktinformasjonClient.hentErPersonReservertForDigitalKontakt(fnr))
+        assertThatThrownBy(() -> digitalKontaktinformasjonClient.hentErPersonReservertMotDigitalKontakt(fnr))
             .isInstanceOf(RestClientResponseException.class);
         server.verify();
     }
@@ -173,7 +194,7 @@ class DigitalKontaktinformasjonClientTest {
             .andExpect(method(HttpMethod.POST))
             .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        assertThatThrownBy(() -> digitalKontaktinformasjonClient.hentErPersonReservertForDigitalKontakt(fnr))
+        assertThatThrownBy(() -> digitalKontaktinformasjonClient.hentErPersonReservertMotDigitalKontakt(fnr))
             .isInstanceOf(RestClientResponseException.class);
         server.verify();
     }

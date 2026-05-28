@@ -35,10 +35,10 @@ class DigitalKontaktinformasjonClientIntegrasjonTest {
     }
 
     @Test
-    void hentErPersonReservertForDigitalKontakt_returnererTrueFraKrrRespons() {
+    void hentErPersonReservertMotDigitalKontakt_returnererTrueFraKrrRespons() {
         Fnr fnr = Fnr.fraDb("12345678910");
 
-        assertThat(digitalKontaktinformasjonClient.hentErPersonReservertForDigitalKontakt(fnr)).contains(true);
+        assertThat(digitalKontaktinformasjonClient.hentErPersonReservertMotDigitalKontakt(fnr)).contains(true);
 
         integrasjonerMockServer.getServer().verify(postRequestedFor(urlPathEqualTo(KRR_PERSON_ENDEPUNKT))
             .withHeader("Accept", containing("application/json"))
@@ -51,10 +51,10 @@ class DigitalKontaktinformasjonClientIntegrasjonTest {
     }
 
     @Test
-    void hentErPersonReservertForDigitalKontakt_returnererFalseFraKrrRespons() {
+    void hentErPersonReservertMotDigitalKontakt_returnererFalseFraKrrRespons() {
         Fnr fnr = Fnr.fraDb("11111111111");
 
-        assertThat(digitalKontaktinformasjonClient.hentErPersonReservertForDigitalKontakt(fnr)).contains(false);
+        assertThat(digitalKontaktinformasjonClient.hentErPersonReservertMotDigitalKontakt(fnr)).contains(false);
 
         integrasjonerMockServer.getServer().verify(postRequestedFor(urlPathEqualTo(KRR_PERSON_ENDEPUNKT))
             .withRequestBody(equalToJson("""

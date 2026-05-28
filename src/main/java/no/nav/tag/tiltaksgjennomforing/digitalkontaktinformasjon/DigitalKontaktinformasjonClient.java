@@ -45,11 +45,11 @@ public class DigitalKontaktinformasjonClient {
         this.baseUri = Objects.requireNonNull(digitalkontaktInfoProperties.getUri(), "KRR URI må være konfigurert");
     }
 
-    public boolean erPersonReservertForDigitalKontakt(Fnr fnr) {
-        return hentErPersonReservertForDigitalKontakt(fnr).isPresent();
+    public boolean erPersonReservertMotDigitalKontakt(Fnr fnr) {
+        return hentErPersonReservertMotDigitalKontakt(fnr).orElse(false);
     }
 
-    Optional<Boolean> hentErPersonReservertForDigitalKontakt(Fnr fnr) {
+    Optional<Boolean> hentErPersonReservertMotDigitalKontakt(Fnr fnr) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setAccept(List.of(MediaType.APPLICATION_JSON));
