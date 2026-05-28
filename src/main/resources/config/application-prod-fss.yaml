@@ -18,7 +18,7 @@ no.nav.security.jwt:
       accepted_audience: "https://management.core.windows.net/"
   client:
     registration:
-      krr:
+      digdir-krr-proxy:
         token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
         grant-type: client_credentials
         scope: api://prod-gcp.team-rocket.digdir-krr-proxy/.default
