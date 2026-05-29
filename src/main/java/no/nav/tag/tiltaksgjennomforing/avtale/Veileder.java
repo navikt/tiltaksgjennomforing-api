@@ -235,7 +235,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void overtaAvtale(Avtale avtale) {
         super.sjekkTilgang(avtale);
-        this.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
+        this.hentOppfølging(avtale, veilarboppfolgingService);
         if (this.getIdentifikator().equals(avtale.getVeilederNavIdent())) {
             throw new ErAlleredeVeilederException();
         }
@@ -309,7 +309,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     private void leggTilEnheter(Avtale avtale) {
         super.hentGeoEnhetFraNorg2(avtale, norg2Client, persondataService);
-        this.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
+        this.hentOppfølging(avtale, veilarboppfolgingService);
         this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
     }
 
@@ -321,7 +321,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.setEnhetsnavnOppfolging(response.getNavn());
     }
 
-    void hentOppfølgingFraArena(
+    void hentOppfølging(
         Avtale avtale,
         VeilarboppfolgingService veilarboppfolgingService
     ) {
@@ -329,7 +329,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             return;
         }
         Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
-        if (oppfølgingsstatus == null) {
+        if (oppfølgingsstatus == null || oppfølgingsstatus.getOppfolgingsenhet() == null) {
             return;
         }
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
@@ -344,7 +344,10 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
         Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         if (oppfølgingsstatus == null) {
-            return;
+            throw new FeilkodeException(Feilkode.FANT_IKKE_INNSATSBEHOV);
+        }
+        if (oppfølgingsstatus.getOppfolgingsenhet() == null) {
+            throw new FeilkodeException(Feilkode.ENHET_MANGLER);
         }
 
         Kvalifiseringsgruppe gammelKvalifiseringsgruppe = avtale.getKvalifiseringsgruppe();
