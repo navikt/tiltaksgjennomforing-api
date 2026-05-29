@@ -28,7 +28,7 @@ public class EndreKontaktInformasjon {
             arbeidsgiverEtternavn,
             arbeidsgiverTlf
         );
-        if (refusjonKontaktperson == null) {
+        if (refusjonKontaktperson == null || refusjonKontaktperson.erTom()) {
             return harMangler;
         }
         return harMangler || refusjonKontaktperson.harMangler();
