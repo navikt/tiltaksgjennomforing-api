@@ -890,23 +890,6 @@ public class AvtaleController {
         return new AvtaleDTO(avtaleRepository.save(avtale));
     }
 
-    @AuditLogging(value = "Oppdater avtale om arbeidsmarkedstiltak", type = EventType.UPDATE)
-    @PostMapping("/{avtaleId}/endre-kostnadssted")
-    @Transactional
-    public AvtaleDTO endreKostnadssted(
-            @PathVariable("avtaleId") UUID avtaleId,
-            @RequestBody EndreKostnadsstedRequest endreKostnadsstedRequest,
-            @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret
-    ) {
-        Veileder veileder = innloggingService.hentVeileder();
-        Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(this::sjekkSkrivebeskyttelse)
-            .map(sjekkeSistEndret(sistEndret))
-            .orElseThrow(RessursFinnesIkkeException::new);
-        veileder.oppdatereKostnadssted(avtale, norg2Client, endreKostnadsstedRequest.getEnhet());
-        return new AvtaleDTO(avtaleRepository.save(avtale));
-    }
-
     @PostMapping("/{avtaleId}/avslag-tilskuddsperiode")
     @Transactional
     public void avslåTilskuddsperiode(

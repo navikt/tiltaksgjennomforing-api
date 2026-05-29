@@ -179,7 +179,7 @@ public class BeregningStrategyTest {
             avtale.getGjeldendeInnhold().getSluttDato()
         );
 
-        avtale.oppdatereKostnadsstedForTilskuddsperioder(new NyttKostnadssted(ENHETS_NR, ENHETS_NAVN));
+        avtale.oppdatereKostnadsstedForTilskuddsperioder(ENHETS_NR, ENHETS_NAVN);
         assertThat(avtale.tilskuddsperiode(0).getEnhet()).isEqualTo(ENHETS_NR);
         assertThat(avtale.tilskuddsperiode(0).getEnhetsnavn()).isEqualTo(ENHETS_NAVN);
         assertThat(avtale.tilskuddsperiode(1).getEnhet()).isEqualTo(ENHETS_NR);

@@ -210,12 +210,11 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         return startDato.minusMonths(3);
     }
 
-    void godkjenn(NavIdent beslutter, String enhet) {
+    void godkjenn(NavIdent beslutter) {
         sjekkOmKanBehandles();
 
         setGodkjentTidspunkt(Now.instant());
         setGodkjentAvNavIdent(beslutter);
-        setEnhet(enhet);
         setStatus(TilskuddPeriodeStatus.GODKJENT);
     }
 
