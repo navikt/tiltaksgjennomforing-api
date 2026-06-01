@@ -21,20 +21,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_OPPFØLGING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class InnloggingServiceTest {
-
     @InjectMocks
     private InnloggingService innloggingService;
 
@@ -52,7 +48,6 @@ public class InnloggingServiceTest {
 
     @Mock
     private AdGruppeProperties beslutterAdGruppeProperties;
-
 
     @BeforeEach
     public void setup() {
@@ -80,8 +75,9 @@ public class InnloggingServiceTest {
 
     @Test
     public void hentInnloggetBruker__selvbetjeningbruker_type_arbeidsgiver_skal_hente_organisasjoner() {
-        InnloggetArbeidsgiver selvbetjeningBruker = new InnloggetArbeidsgiver(new Fnr("11111111111"), new AltinnTilgangerDto(List.of(), Map.of(), List.of()));
-        when(altinnTilgangsstyringService.hentAltinnTilganger()).thenReturn(new AltinnTilgangerDto(List.of(), Map.of(), List.of()));
+        Fnr fnr = Fnr.generer(25);
+        InnloggetArbeidsgiver selvbetjeningBruker = new InnloggetArbeidsgiver(fnr, new AltinnTilgangerDto(List.of(), Map.of(), List.of()));
+        when(altinnTilgangsstyringService.hentAltinnTilganger(fnr)).thenReturn(new AltinnTilgangerDto(List.of(), Map.of(), List.of()));
         værInnloggetArbeidsgiver(selvbetjeningBruker);
 
 

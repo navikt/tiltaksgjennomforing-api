@@ -108,3 +108,6 @@ caches:
     - name: entraproxy_cache
       expiryInMinutes: 60
       maximumSize: 1000
+    - name: altinn_cache
+      expiryInMinutes: 60
+      maximumSize: 1000

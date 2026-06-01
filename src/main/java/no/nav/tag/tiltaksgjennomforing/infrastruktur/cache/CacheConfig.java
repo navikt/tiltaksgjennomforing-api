@@ -14,12 +14,10 @@ import java.time.Duration;
 public class CacheConfig {
 
     public static final String ENTRAPROXY_CACHE = "entraproxy_cache";
-
     public static final String NORGNAVN_CACHE = "norgnavn_cache";
-
     public static final String NORG_GEO_ENHET = "norggeoenhet_cache";
-
     public static final String VEILARBOPPFOLGING_CACHE = "veilarboppfolging_cache";
+    public static final String ALTINN_CACHE = "altinn_cache";
 
     @Bean
     public CacheManager cacheManager(CacheDto cacheDto) {

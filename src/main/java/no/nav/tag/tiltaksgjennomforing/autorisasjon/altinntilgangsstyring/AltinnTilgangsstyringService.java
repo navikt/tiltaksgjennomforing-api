@@ -2,14 +2,11 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AltinnFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestClientResponseException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,31 +18,34 @@ import java.util.Set;
 @Slf4j
 public class AltinnTilgangsstyringService {
     private final AltinnTilgangsstyringProperties altinnTilgangsstyringProperties;
-    private final RestTemplate azureRestTemplate;
+    private final AltinnTilgangsstyringKlient klient;
 
     public AltinnTilgangsstyringService(
-            AltinnTilgangsstyringProperties altinnTilgangsstyringProperties,
-            RestTemplate azureRestTemplate) {
+        AltinnTilgangsstyringProperties altinnTilgangsstyringProperties,
+        AltinnTilgangsstyringKlient klient
+    ) {
 
-        if (Utils.erNoenTomme(altinnTilgangsstyringProperties.getArbtreningServiceCode(),
-                altinnTilgangsstyringProperties.getArbtreningServiceEdition(),
-                altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(),
-                altinnTilgangsstyringProperties.getLtsMidlertidigServiceEdition(),
-                altinnTilgangsstyringProperties.getLtsVarigServiceCode(),
-                altinnTilgangsstyringProperties.getLtsVarigServiceEdition(),
-                altinnTilgangsstyringProperties.getSommerjobbServiceCode(),
-                altinnTilgangsstyringProperties.getSommerjobbServiceEdition(),
-                altinnTilgangsstyringProperties.getVtaoServiceCode(),
-                altinnTilgangsstyringProperties.getVtaoServiceEdition(),
-                altinnTilgangsstyringProperties.getArbeidsgiverAltinnTilgangerUri())) {
+        if (Utils.erNoenTomme(
+            altinnTilgangsstyringProperties.getArbtreningServiceCode(),
+            altinnTilgangsstyringProperties.getArbtreningServiceEdition(),
+            altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(),
+            altinnTilgangsstyringProperties.getLtsMidlertidigServiceEdition(),
+            altinnTilgangsstyringProperties.getLtsVarigServiceCode(),
+            altinnTilgangsstyringProperties.getLtsVarigServiceEdition(),
+            altinnTilgangsstyringProperties.getSommerjobbServiceCode(),
+            altinnTilgangsstyringProperties.getSommerjobbServiceEdition(),
+            altinnTilgangsstyringProperties.getVtaoServiceCode(),
+            altinnTilgangsstyringProperties.getVtaoServiceEdition(),
+            altinnTilgangsstyringProperties.getArbeidsgiverAltinnTilgangerUri()
+        )) {
             throw new TiltaksgjennomforingException("Altinn konfigurasjon ikke komplett");
         }
         this.altinnTilgangsstyringProperties = altinnTilgangsstyringProperties;
-        this.azureRestTemplate = azureRestTemplate;
+        this.klient = klient;
     }
 
-    public AltinnTilgangerDto hentAltinnTilganger() {
-        AltinnTilgangerResponse response = kallAltinn3();
+    public AltinnTilgangerDto hentAltinnTilganger(Fnr fnr) {
+        AltinnTilgangerResponse response = klient.kallAltinn3(fnr);
 
         return new AltinnTilgangerDto(
             response.hierarki(),
@@ -92,29 +92,5 @@ public class AltinnTilgangsstyringService {
         }
 
         return tilganger;
-    }
-
-    private AltinnTilgangerResponse kallAltinn3() {
-        AltinnTilgangerResponse response;
-        try {
-            response = azureRestTemplate.postForObject(
-                    altinnTilgangsstyringProperties.getArbeidsgiverAltinnTilgangerUri(),
-                    null,
-                    AltinnTilgangerResponse.class
-            );
-        } catch (RestClientResponseException e) {
-            log.error("HTTP-feil fra arbeidsgiver-altinn-tilganger: status={}, body={}", e.getStatusCode(), e.getResponseBodyAsString(), e);
-            throw new AltinnFeilException();
-        } catch (ResourceAccessException e) {
-            log.error("Nettverksfeil ved kall til arbeidsgiver-altinn-tilganger", e);
-            throw new AltinnFeilException();
-        }
-
-        if (response == null || response.isError() || response.orgNrTilTilganger() == null) {
-            log.warn("Ugyldig respons fra arbeidsgiver-altinn-tilganger, isError: {}", response != null ? response.isError() : "null");
-            throw new AltinnFeilException();
-        }
-
-        return response;
     }
 }
