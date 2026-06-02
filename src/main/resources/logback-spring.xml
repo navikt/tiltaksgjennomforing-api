@@ -26,6 +26,7 @@
             <OnMismatch>DENY</OnMismatch>
         </filter>
     </appender>
+    <logger name="org.springframework.kafka.support.LoggingProducerListener" level="off" />
     <logger name="no.nav.vault.jdbc.hikaricp.VaultUtil" level="WARN"/>
     <root level="INFO">
         <appender-ref ref="consoleAppender"/>
