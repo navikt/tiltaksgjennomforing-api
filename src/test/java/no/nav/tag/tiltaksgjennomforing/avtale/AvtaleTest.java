@@ -1395,10 +1395,10 @@ public class AvtaleTest {
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
         when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
 
-        veileder.endreAvtale(
-                TestData.endringPåAlleArbeidstreningFelter(),
-                avtale
-        );
+        EndreAvtale endreAvtale = TestData.endringPåAlleArbeidstreningFelter();
+        endreAvtale.setHarFamilietilknytning(null);
+        endreAvtale.setFamilietilknytningForklaring(null);
+        veileder.endreAvtale(endreAvtale, avtale);
         arbeidsgiver.godkjennAvtale(avtale);
         deltaker.godkjennAvtale(avtale);
 
@@ -1471,6 +1471,8 @@ public class AvtaleTest {
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
+        endreAvtale.setHarFamilietilknytning(null);
+        endreAvtale.setFamilietilknytningForklaring(null);
         veileder.endreAvtale(endreAvtale, avtale);
         assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
     }

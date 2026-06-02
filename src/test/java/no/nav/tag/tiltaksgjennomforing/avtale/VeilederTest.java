@@ -888,4 +888,18 @@ public class VeilederTest {
         veileder.forlengAvtale(nySluttDato, avtale);
         assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(nySluttDato);
     }
+
+    @Test
+    public void endreAvtale__veileder_kan_ikke_sette_familietilknytning() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        Veileder veileder = TestData.enVeileder(avtale);
+
+        EndreAvtale endreAvtale = EndreAvtale.fraAvtale(avtale);
+        endreAvtale.setHarFamilietilknytning(true);
+
+        assertFeilkode(
+            Feilkode.VEILEDER_KAN_IKKE_ENDRE_FAMILIETILKNYTNING,
+            () -> veileder.endreAvtale(endreAvtale, avtale)
+        );
+    }
 }

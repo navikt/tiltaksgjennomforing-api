@@ -247,6 +247,9 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         EndreAvtale endreAvtale,
         Avtale avtale
     ) {
+        if (endreAvtale.getHarFamilietilknytning() != null) {
+            throw new FeilkodeException(Feilkode.VEILEDER_KAN_IKKE_ENDRE_FAMILIETILKNYTNING);
+        }
         super.endreAvtale(
             endreAvtale,
             avtale,
