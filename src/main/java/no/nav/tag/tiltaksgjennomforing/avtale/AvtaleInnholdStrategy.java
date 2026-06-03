@@ -7,6 +7,7 @@ import java.util.Map;
 
 public interface AvtaleInnholdStrategy {
     void endre(EndreAvtale endreAvtale);
+
     default void endreTilskuddsberegning(EndreTilskuddsberegning endreTilskuddsberegning) {
         throw new RuntimeException("Ikke implementert");
     }
@@ -14,4 +15,6 @@ public interface AvtaleInnholdStrategy {
     Map<String, Object> alleFelterSomMåFyllesUt();
 
     void endreSluttDato(LocalDate nySluttDato);
+
+    void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse);
 }

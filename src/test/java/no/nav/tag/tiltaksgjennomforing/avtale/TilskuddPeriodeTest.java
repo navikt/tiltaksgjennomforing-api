@@ -29,8 +29,8 @@ class TilskuddPeriodeTest {
     @Test
     void behandle_flere_ganger__etter_godkjenning() {
         TilskuddPeriode tilskuddPeriode = TestData.enTilskuddPeriode();
-        tilskuddPeriode.godkjenn(TestData.enNavIdent(), TestData.ENHET_GEOGRAFISK.getVerdi());
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET, () -> tilskuddPeriode.godkjenn(TestData.enNavIdent(), TestData.ENHET_GEOGRAFISK.getVerdi()));
+        tilskuddPeriode.godkjenn(TestData.enNavIdent());
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET, () -> tilskuddPeriode.godkjenn(TestData.enNavIdent()));
         assertFeilkode(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET, () -> tilskuddPeriode.avslå(TestData.enNavIdent(), EnumSet.of(Avslagsårsak.FEIL_I_FAKTA), "Faktafeil"));
     }
 
@@ -38,7 +38,7 @@ class TilskuddPeriodeTest {
     void behandle_flere_ganger__etter_avslag() {
         TilskuddPeriode tilskuddPeriode = TestData.enTilskuddPeriode();
         tilskuddPeriode.avslå(TestData.enNavIdent(), EnumSet.of(Avslagsårsak.FEIL_I_FAKTA), "Faktafeil");
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET, () -> tilskuddPeriode.godkjenn(TestData.enNavIdent(), TestData.ENHET_GEOGRAFISK.getVerdi()));
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET, () -> tilskuddPeriode.godkjenn(TestData.enNavIdent()));
         assertFeilkode(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET, () -> tilskuddPeriode.avslå(TestData.enNavIdent(), EnumSet.of(Avslagsårsak.FEIL_I_FAKTA), "Faktafeil"));
     }
 
@@ -46,7 +46,7 @@ class TilskuddPeriodeTest {
     void godkjenn_setter_riktige_felter() {
         TilskuddPeriode tilskuddPeriode = TestData.enTilskuddPeriode();
         NavIdent beslutter = TestData.enNavIdent();
-        tilskuddPeriode.godkjenn(beslutter, TestData.ENHET_GEOGRAFISK.getVerdi());
+        tilskuddPeriode.godkjenn(beslutter);
         assertThat(tilskuddPeriode.getGodkjentAvNavIdent()).isEqualTo(beslutter);
         assertThat(tilskuddPeriode.getGodkjentTidspunkt()).isNotNull();
         assertThat(tilskuddPeriode.getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
@@ -154,13 +154,13 @@ class TilskuddPeriodeTest {
         tilskuddPeriode.setStartDato(LocalDate.of(2023, 1, 1));
         tilskuddPeriode.setSluttDato(LocalDate.of(2023, 1, 31));
 
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_BEHANDLE_FOR_TIDLIG, () -> tilskuddPeriode.godkjenn(TestData.enNavIdent(), TestData.ENHET_GEOGRAFISK.getVerdi()));
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_BEHANDLE_FOR_TIDLIG, () -> tilskuddPeriode.godkjenn(TestData.enNavIdent()));
 
         Now.fixedDate(LocalDate.of(2022, 12, 15));
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_BEHANDLE_FOR_TIDLIG, () -> tilskuddPeriode.godkjenn(TestData.enNavIdent(), TestData.ENHET_GEOGRAFISK.getVerdi()));
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_BEHANDLE_FOR_TIDLIG, () -> tilskuddPeriode.godkjenn(TestData.enNavIdent()));
 
         Now.fixedDate(LocalDate.of(2023, 1, 1));
-        tilskuddPeriode.godkjenn(TestData.enNavIdent(), TestData.ENHET_GEOGRAFISK.getVerdi());
+        tilskuddPeriode.godkjenn(TestData.enNavIdent());
 
         Now.resetClock();
     }
@@ -304,7 +304,7 @@ class TilskuddPeriodeTest {
         periode2.setLøpenummer(1);
 
         // Periode1 godkjent, periode2 avslått
-        periode1.godkjenn(navIdent, TestData.ENHET_GEOGRAFISK.getVerdi());
+        periode1.godkjenn(navIdent);
         periode2.avslå(navIdent, EnumSet.of(Avslagsårsak.FEIL_I_FAKTA), "Forklaring");
 
         // Skal sammenligne basert på status, ikke avslagsårsaker
@@ -332,8 +332,8 @@ class TilskuddPeriodeTest {
         periode1.setLøpenummer(1);
         periode2.setLøpenummer(1);
 
-        periode1.godkjenn(navIdent, TestData.ENHET_GEOGRAFISK.getVerdi());
-        periode2.godkjenn(navIdent, TestData.ENHET_GEOGRAFISK.getVerdi());
+        periode1.godkjenn(navIdent);
+        periode2.godkjenn(navIdent);
         periode2.setGodkjentTidspunkt(periode1.getGodkjentTidspunkt());
 
         // Skal være like

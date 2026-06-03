@@ -11,7 +11,6 @@ import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 @AllArgsConstructor
 @FieldNameConstants
 public class RefusjonKontaktperson {
-
      String refusjonKontaktpersonFornavn;
      String refusjonKontaktpersonEtternavn;
      String refusjonKontaktpersonTlf;
@@ -22,6 +21,13 @@ public class RefusjonKontaktperson {
           this.refusjonKontaktpersonEtternavn = "";
           this.refusjonKontaktpersonTlf = "";
           this.ønskerVarslingOmRefusjon = true;
+     }
+
+     public boolean erTom() {
+          return refusjonKontaktpersonEtternavn == null &&
+              refusjonKontaktpersonFornavn == null &&
+              refusjonKontaktpersonTlf == null &&
+              ønskerVarslingOmRefusjon == null;
      }
 
      public boolean harMangler() {

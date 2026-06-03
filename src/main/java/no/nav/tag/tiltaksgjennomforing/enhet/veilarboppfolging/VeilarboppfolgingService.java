@@ -53,11 +53,18 @@ public class VeilarboppfolgingService {
             fnr
         );
 
+        Optional<String> enhet = Optional.ofNullable(respons.oppfolgingsenhet()).
+            map(HentOppfolgingsstatusRespons.Oppfolgingsenhet::enhetId);
+
+        if (enhet.isEmpty()) {
+            log.info("Fant ingen enhet. Deltaker er sannsynligvis ikke under oppfølging.");
+        }
+
         try {
             return new Oppfølgingsstatus(
                 Formidlingsgruppe.parse(respons.formidlingsgruppe()),
                 Kvalifiseringsgruppe.parse(respons.servicegruppe()),
-                respons.oppfolgingsenhet().enhetId()
+                enhet.orElse(null)
             );
         } catch (Exception e) {
             log.error("Feil ved parsing av oppfølgingsstatus", e);

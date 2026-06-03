@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy<MidlertidigLonnstilskuddAvtaleBeregningStrategy> {
     public MidlertidigLonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
-        super(avtaleInnhold, new MidlertidigLonnstilskuddAvtaleBeregningStrategy());
+        super(avtaleInnhold, new MidlertidigLonnstilskuddAvtaleBeregningStrategy(avtaleInnhold.getAvtale()));
     }
 
     @Override
@@ -19,7 +19,7 @@ public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends Lonnstilskudd
     @Override
     public void endre(EndreAvtale endreAvtale) {
         Avtale avtale = avtaleInnhold.getAvtale();
-        Integer lonnstilskuddprosentVedStart = beregningStrategy.getProsentForForstePeriode(avtale);
+        Integer lonnstilskuddprosentVedStart = beregningStrategy.getProsentForForstePeriode();
         avtaleInnhold.setLonnstilskuddProsent(lonnstilskuddprosentVedStart);
         avtaleInnhold.setLonnstilskuddFormaal(endreAvtale.getLonnstilskuddFormaal());
         super.endre(endreAvtale);

@@ -9,7 +9,7 @@ import static no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.VarigLo
 
 public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy<VarigLonnstilskuddAvtaleBeregningStrategy> {
     public VarigLonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
-        super(avtaleInnhold, new VarigLonnstilskuddAvtaleBeregningStrategy());
+        super(avtaleInnhold, new VarigLonnstilskuddAvtaleBeregningStrategy(avtaleInnhold.getAvtale()));
     }
 
     @Override

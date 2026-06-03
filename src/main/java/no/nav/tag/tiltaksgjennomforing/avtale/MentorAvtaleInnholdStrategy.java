@@ -16,7 +16,7 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
 
     public MentorAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
-        mentorBeregningStrategy = new MentorBeregningStrategy();
+        mentorBeregningStrategy = new MentorBeregningStrategy(avtaleInnhold.getAvtale());
     }
 
     @Override
@@ -51,7 +51,7 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
                 nyAvtale.getStillingprosent()
             ));
         }
-        mentorBeregningStrategy.reberegnTotal(avtaleInnhold.getAvtale());
+        mentorBeregningStrategy.reberegnTotal();
 
         super.endre(nyAvtale);
     }

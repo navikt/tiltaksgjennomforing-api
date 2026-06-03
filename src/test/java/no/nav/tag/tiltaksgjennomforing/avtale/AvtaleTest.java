@@ -4,8 +4,10 @@ import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
+import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -1333,7 +1335,7 @@ public class AvtaleTest {
         Avtale avtale = TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(startDato, sluttDato);
         // Alle perioder er godkjent
         avtale.getTilskuddPeriode().forEach(t ->
-                t.godkjenn(TestData.enNavIdent2(), "1234"));
+                t.godkjenn(TestData.enNavIdent2()));
         LocalDate nySluttDato = sluttDato.plusMonths(6);
         avtale.forlengAvtale(nySluttDato, TestData.enNavIdent());
         assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(nySluttDato);
@@ -1357,7 +1359,7 @@ public class AvtaleTest {
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
         assertThat(avtale.getStatus()).isEqualTo(Status.MANGLER_GODKJENNING);
         assertThat(avtale.getGjeldendeInnhold().getAvtaleInngått()).isNull();
-        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING.getVerdi());
+        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"));
         assertThat(avtale.getStatus()).isEqualTo(Status.GJENNOMFØRES);
         assertThat(avtale.getGjeldendeInnhold().getAvtaleInngått()).isNotNull();
     }
@@ -1372,6 +1374,7 @@ public class AvtaleTest {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
         EregService eregService  = mock(EregService.class);
+        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
@@ -1381,7 +1384,7 @@ public class AvtaleTest {
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 TestData.INGEN_AD_GRUPPER,
-                mock(VeilarboppfolgingService.class),
+                veilarboppfolgingService,
                 mock(FeatureToggleService.class),
                 eregService
         );
@@ -1390,6 +1393,7 @@ public class AvtaleTest {
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
+        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
 
         veileder.endreAvtale(
                 TestData.endringPåAlleArbeidstreningFelter(),
@@ -1412,6 +1416,7 @@ public class AvtaleTest {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
         EregService eregService  = mock(EregService.class);
+        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
@@ -1421,7 +1426,7 @@ public class AvtaleTest {
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 TestData.INGEN_AD_GRUPPER,
-                mock(VeilarboppfolgingService.class),
+                veilarboppfolgingService,
                 mock(FeatureToggleService.class),
                 eregService
         );
@@ -1430,13 +1435,14 @@ public class AvtaleTest {
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
+        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
 
         deltaker.godkjennAvtale(avtale);
         arbeidsgiver.godkjennAvtale(avtale);
         veileder.godkjennAvtale(avtale);
 
         assertThat(avtale.getGjeldendeInnhold().getAvtaleInngått()).isNull();
-        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING.getVerdi());
+        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"));
         assertThat(avtale.getGjeldendeInnhold().getAvtaleInngått()).isNotNull();
     }
 
@@ -1470,29 +1476,16 @@ public class AvtaleTest {
     }
 
     @Test
-    public void godkjenn_tilskuddsperiode_feil_enhet() {
-        Now.fixedDate(LocalDate.of(2021, 6, 1));
-        Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
-        NavIdent beslutter = new NavIdent("B999999");
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(beslutter, " 4444"));
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(beslutter, "444"));
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(beslutter, "44455"));
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(beslutter, ""));
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(beslutter, null));
-        avtale.godkjennTilskuddsperiode(beslutter, "4444");
-    }
-
-    @Test
     public void godkjenn_tilskuddsperiode_samme_veileder_og_beslutter() {
         Now.fixedDate(LocalDate.of(2021, 6, 1));
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
 
         // Kan ikke godkjenne når avtalen er tildelt seg selv
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE, () -> avtale.godkjennTilskuddsperiode(avtale.getGjeldendeInnhold().getGodkjentAvNavIdent(), "4444"));
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE, () -> avtale.godkjennTilskuddsperiode(avtale.getGjeldendeInnhold().getGodkjentAvNavIdent()));
 
         // Kan heller ikke godkjenne når avtalen er tildelt en annen
         avtale.overtaAvtale(new NavIdent("P887766"));
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE, () -> avtale.godkjennTilskuddsperiode(avtale.getGjeldendeInnhold().getGodkjentAvNavIdent(), "4444"));
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE, () -> avtale.godkjennTilskuddsperiode(avtale.getGjeldendeInnhold().getGodkjentAvNavIdent()));
     }
 
     @Test
@@ -1505,6 +1498,7 @@ public class AvtaleTest {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
         EregService eregService  = mock(EregService.class);
+        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
 
         Veileder veileder = new Veileder(
             avtale.getVeilederNavIdent(),
@@ -1514,13 +1508,14 @@ public class AvtaleTest {
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
             TestData.INGEN_AD_GRUPPER,
-            mock(VeilarboppfolgingService.class),
+            veilarboppfolgingService,
             mock(FeatureToggleService.class),
             eregService
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
+        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
 
         deltaker.godkjennAvtale(avtale);
         arbeidsgiver.godkjennAvtale(avtale);
@@ -1539,6 +1534,7 @@ public class AvtaleTest {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
         EregService eregService  = mock(EregService.class);
+        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
@@ -1548,7 +1544,7 @@ public class AvtaleTest {
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 TestData.INGEN_AD_GRUPPER,
-                mock(VeilarboppfolgingService.class),
+                veilarboppfolgingService,
                 mock(FeatureToggleService.class),
                 eregService
         );
@@ -1557,13 +1553,14 @@ public class AvtaleTest {
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
+        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
 
         deltaker.godkjennAvtale(avtale);
         arbeidsgiver.godkjennAvtale(avtale);
         veileder.godkjennAvtale(avtale);
 
-        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING.getVerdi());
-        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING.getVerdi());
+        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"));
+        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"));
         avtale.tilskuddsperiode(0).setRefusjonStatus(RefusjonStatus.UTBETALT);
         avtale.tilskuddsperiode(1).setRefusjonStatus(RefusjonStatus.UTBETALT);
 
@@ -1585,6 +1582,7 @@ public class AvtaleTest {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
         EregService eregService = mock(EregService.class);
+        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
@@ -1594,7 +1592,7 @@ public class AvtaleTest {
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 TestData.INGEN_AD_GRUPPER,
-                mock(VeilarboppfolgingService.class),
+                veilarboppfolgingService,
                 mock(FeatureToggleService.class),
                 eregService
         );
@@ -1602,6 +1600,7 @@ public class AvtaleTest {
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
+        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
 
         deltaker.godkjennAvtale(avtale);
         arbeidsgiver.godkjennAvtale(avtale);
@@ -1614,7 +1613,7 @@ public class AvtaleTest {
         avtale.tilskuddsperiode(4).setRefusjonStatus(RefusjonStatus.UTBETALT);
         avtale.tilskuddsperiode(5).setRefusjonStatus(RefusjonStatus.UTBETALT);
         avtale.tilskuddsperiode(6).setRefusjonStatus(RefusjonStatus.UTBETALT);
-        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING.getVerdi());
+        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"));
         avtale.getTilskuddPeriode().forEach(tilskuddPeriode -> {
             System.out.print(tilskuddPeriode.getRefusjonStatus() + " ");
             System.out.println(tilskuddPeriode.getStartDato());
@@ -1742,7 +1741,7 @@ public class AvtaleTest {
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         avtale.godkjennForDeltaker(TestData.enIdentifikator());
         avtale.godkjennForVeileder(TestData.enNavIdent());
-        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), TestData.ENHET_OPPFØLGING.getVerdi());
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2());
 
         assertThat(avtale.erAvtaleInngått()).isTrue();
     }

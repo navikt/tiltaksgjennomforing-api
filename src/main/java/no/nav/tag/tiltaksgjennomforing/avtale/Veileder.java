@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -235,7 +234,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void overtaAvtale(Avtale avtale) {
         super.sjekkTilgang(avtale);
-        this.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
+        this.hentOppfølging(avtale, veilarboppfolgingService);
         if (this.getIdentifikator().equals(avtale.getVeilederNavIdent())) {
             throw new ErAlleredeVeilederException();
         }
@@ -309,7 +308,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     private void leggTilEnheter(Avtale avtale) {
         super.hentGeoEnhetFraNorg2(avtale, norg2Client, persondataService);
-        this.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
+        this.hentOppfølging(avtale, veilarboppfolgingService);
         this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
     }
 
@@ -321,7 +320,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.setEnhetsnavnOppfolging(response.getNavn());
     }
 
-    void hentOppfølgingFraArena(
+    void hentOppfølging(
         Avtale avtale,
         VeilarboppfolgingService veilarboppfolgingService
     ) {
@@ -329,7 +328,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             return;
         }
         Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
-        if (oppfølgingsstatus == null) {
+        if (oppfølgingsstatus == null || oppfølgingsstatus.getOppfolgingsenhet() == null) {
             return;
         }
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
@@ -344,7 +343,10 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
         Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         if (oppfølgingsstatus == null) {
-            return;
+            throw new FeilkodeException(Feilkode.FANT_IKKE_INNSATSBEHOV);
+        }
+        if (oppfølgingsstatus.getOppfolgingsenhet() == null) {
+            throw new FeilkodeException(Feilkode.ENHET_MANGLER);
         }
 
         Kvalifiseringsgruppe gammelKvalifiseringsgruppe = avtale.getKvalifiseringsgruppe();
@@ -461,22 +463,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     public void reaktiverTilskuddsperiodeOgsendTilbakeTilBeslutter(Avtale avtale) {
         super.sjekkTilgang(avtale);
         avtale.reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
-    }
-
-    protected void oppdatereKostnadssted(Avtale avtale, Norg2Client norg2Client, String enhet) {
-        sjekkTilgang(avtale);
-        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhet(enhet);
-
-        if (response == null) {
-            throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);
-        }
-        NyttKostnadssted nyttKostnadssted = new NyttKostnadssted(enhet, response.getNavn());
-        TreeSet<TilskuddPeriode> tilskuddPerioder = avtale.finnTilskuddsperioderIkkeLukketForEndring();
-
-        if (tilskuddPerioder == null) {
-            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_IKKE_SATT);
-        }
-        avtale.oppdatereKostnadsstedForTilskuddsperioder(nyttKostnadssted);
     }
 
     private LocalDate settStartDato(LocalDate startdato) {

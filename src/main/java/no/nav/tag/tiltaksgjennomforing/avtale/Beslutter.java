@@ -68,19 +68,20 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
 
     public void godkjennTilskuddsperiode(Avtale avtale, String enhet) {
         sjekkTilgang(avtale);
-        Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhet(enhet);
 
-        if (response == null) {
-            throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);
+        if (enhet == null || !enhet.matches("^\\d{4}$")) {
+            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER);
         }
 
         Tiltakstype tiltakstype = avtale.getTiltakstype();
-
         try {
             Oppfølgingsstatus status = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(
                 avtale.getDeltakerFnr(),
                 avtale.getTiltakstype()
             );
+            if (status.getOppfolgingsenhet() == null) {
+                throw new FeilkodeException(Feilkode.ENHET_MANGLER);
+            }
             boolean harOppfolgingsenhetTilgangPaTiltak = featureToggleService.harEnhetTilgangPaTiltak(
                 tiltakstype,
                 status.getOppfolgingsenhet()
@@ -94,7 +95,13 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
             }
         }
 
-        avtale.godkjennTilskuddsperiode(getIdentifikator(), enhet);
+        Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhet(enhet);
+        if (response == null) {
+            throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);
+        }
+
+        avtale.oppdatereKostnadsstedForTilskuddsperioder(response.getEnhetNr(), response.getNavn());
+        avtale.godkjennTilskuddsperiode(getIdentifikator());
     }
 
     public void avslåTilskuddsperiode(Avtale avtale, EnumSet<Avslagsårsak> avslagsårsaker, String avslagsforklaring) {

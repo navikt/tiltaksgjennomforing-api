@@ -61,10 +61,10 @@ public class TilskuddsperiodeResendingTest {
         LocalDate avtaleSlutt = LocalDate.of(2024, 3, 2);
         Avtale avtale = TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
         // Godkjenner første gang. Denne skal ikke ha noen resendingsnummer
-        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), "4321");
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2());
         avtale.nyeTilskuddsperioderEtterMigreringFraArena(LocalDate.of(2022, 10, 20));
         // Nå er perioden annullert en gang, godkjenner igjen. Da den nå har den samme løpenr må den få resendingsnummer = 1
-        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), "1234");
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2());
         avtale.getTilskuddPeriode().forEach(periode -> System.out.println(periode.getStartDato() + " " + periode.getLøpenummer() + " " + periode.getStatus()));
         avtaleRepository.save(avtale);
 
