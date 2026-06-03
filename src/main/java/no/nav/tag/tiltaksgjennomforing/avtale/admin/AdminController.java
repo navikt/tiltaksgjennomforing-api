@@ -86,7 +86,7 @@ public class AdminController {
         return "Hei fra Admin controller";
     }
 
-    @PostMapping("reberegn")
+    @PostMapping("/reberegn")
     public void reberegnLønnstilskudd(@RequestBody List<UUID> avtaleIder) {
         for (UUID avtaleId : avtaleIder) {
             Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow();
@@ -95,7 +95,7 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/sjekk-om-bruker-kan-faa-brev-og-har-adresse/{fnr}")
+    @GetMapping("/sjekk-om-bruker-kan-faa-digital-brev-og-har-adresse/{fnr}")
     public Map<String, String> hentPostadresse(@PathVariable("fnr") String fnr) {
         log.info("skal hent-postadresse for FNR...");
         Fnr validertFnr = new Fnr(fnr);
