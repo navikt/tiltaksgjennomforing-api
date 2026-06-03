@@ -87,6 +87,8 @@ tiltaksgjennomforing:
     uri: http://localhost:8090/regoppslag/rest
   persondata:
     uri: http://localhost:8090/persondata
+  krr:
+    uri: http://localhost:8090/digdir-krr-proxy
   oppgave:
     oppgave-uri: http://localhost:8090/api/v1/oppgave
   veilarboppfolging:

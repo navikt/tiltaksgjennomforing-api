@@ -48,6 +48,37 @@ class PostadresseClientTest {
     }
 
     @Test
+    void hentPostadresseHvisTilgjengelig__skal_godta_enum_navn_for_adressetype_fra_regoppslag() {
+        integrasjonerMockServer.getServer().stubFor(post(urlPathEqualTo("/regoppslag/rest/postadresse"))
+            .withRequestBody(matchingJsonPath("$.ident", equalTo("01987654321")))
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody("""
+                    {
+                      "navn": "Jan Neimansen",
+                      "adresse": {
+                        "type": "NORSKPOSTADRESSE",
+                        "adresselinje1": "eksempelveien 23 A",
+                        "postnummer": "1337",
+                        "poststed": "poststed",
+                        "landkode": "NO"
+                      }
+                    }
+                    """)));
+
+        var response = postadresseClient.hentPostadresseHvisTilgjengelig(Fnr.fraDb("01987654321"));
+
+        assertThat(response).isPresent();
+        assertThat(response.get().adresse().type()).isEqualTo(PostadresseType.NORSKPOSTADRESSE);
+
+        integrasjonerMockServer.getServer().verify(
+            postRequestedFor(urlPathEqualTo("/regoppslag/rest/postadresse"))
+                .withRequestBody(matchingJsonPath("$.ident", equalTo("01987654321")))
+        );
+    }
+
+    @Test
     void hentPostadresseHvisTilgjengelig__skal_returnere_empty_nar_regoppslag_returnerer_null_adresse() {
         integrasjonerMockServer.getServer().stubFor(post(urlPathEqualTo("/regoppslag/rest/postadresse"))
             .withRequestBody(matchingJsonPath("$.ident", equalTo("50987654321")))

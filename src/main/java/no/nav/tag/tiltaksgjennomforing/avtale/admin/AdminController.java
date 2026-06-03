@@ -24,12 +24,14 @@ import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.service.gjeldendetilskuddsperiode.GjeldendeTilskuddsperiodeJobbService;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
+import no.nav.tag.tiltaksgjennomforing.digitalkontaktinformasjon.DigitalKontaktinformasjonClient;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.postadresse.PostadresseClient;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 import no.nav.tag.tiltaksgjennomforing.varsel.Varsel;
@@ -63,7 +65,7 @@ import static no.nav.tag.tiltaksgjennomforing.satser.Sats.VTAO_SATS;
 
 @ProtectedWithClaims(issuer = "azure-access-token", claimMap = { "groups=fb516b74-0f2e-4b62-bad8-d70b82c3ae0b" })
 @RestController
-@RequestMapping("/utvikler-admin/")
+@RequestMapping("/utvikler-admin")
 @Slf4j
 @RequiredArgsConstructor
 public class AdminController {
@@ -76,14 +78,34 @@ public class AdminController {
     private final GjeldendeTilskuddsperiodeJobbService gjeldendeTilskuddsperiodeJobbService;
     private final Norg2Client norg2Client;
     private final VarselRepository varselRepository;
+    private final PostadresseClient postadresseClient;
+    private final DigitalKontaktinformasjonClient digitalKontaktinformasjonClient;
 
-    @PostMapping("reberegn")
+    @GetMapping({ "", "/" })
+    public String hjem() {
+        return "Hei fra Admin controller";
+    }
+
+    @PostMapping("/reberegn")
     public void reberegnLønnstilskudd(@RequestBody List<UUID> avtaleIder) {
         for (UUID avtaleId : avtaleIder) {
             Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow();
             avtale.reberegnLønnstilskudd();
             avtaleRepository.save(avtale);
         }
+    }
+
+    @GetMapping("/sjekk-om-bruker-kan-faa-digital-brev-og-har-adresse/{fnr}")
+    public Map<String, String> hentPostadresse(@PathVariable("fnr") String fnr) {
+        log.info("skal hent-postadresse for FNR...");
+        Fnr validertFnr = new Fnr(fnr);
+        log.info("hent-postadresse FNR er validert, skal kalle postadresse consumer service...");
+        boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedAdresse(validertFnr);
+        boolean erReservertMotDigitalKommunikasjon = digitalKontaktinformasjonClient.erPersonReservertMotDigitalKontakt(validertFnr);
+        return Map.of(
+            "har adresse", String.valueOf(harAdresse),
+            "er reservert mot digital kommunikasjon", String.valueOf(erReservertMotDigitalKommunikasjon)
+        );
     }
 
     @PostMapping("/annuller-tilskuddsperiode/{tilskuddsperiodeId}")
