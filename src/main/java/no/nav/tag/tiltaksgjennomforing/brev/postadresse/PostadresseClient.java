@@ -1,9 +1,9 @@
-package no.nav.tag.tiltaksgjennomforing.postadresse;
+package no.nav.tag.tiltaksgjennomforing.brev.postadresse;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.postadresse.exception.RegoppslagSecurityException;
-import no.nav.tag.tiltaksgjennomforing.postadresse.exception.RegoppslagTechnicalException;
+import no.nav.tag.tiltaksgjennomforing.brev.postadresse.exception.RegoppslagSecurityException;
+import no.nav.tag.tiltaksgjennomforing.brev.postadresse.exception.RegoppslagTechnicalException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

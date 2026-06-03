@@ -3,10 +3,10 @@ package no.nav.tag.tiltaksgjennomforing.brev;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.digitalkontaktinformasjon.DigitalKontaktinformasjonClient;
+import no.nav.tag.tiltaksgjennomforing.brev.digitalkontaktinformasjon.DigitalKontaktinformasjonClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.postadresse.PostadresseClient;
+import no.nav.tag.tiltaksgjennomforing.brev.postadresse.PostadresseClient;
 import org.springframework.stereotype.Service;
 
 @Slf4j

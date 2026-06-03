@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.postadresse.exception;
+package no.nav.tag.tiltaksgjennomforing.brev.postadresse.exception;
 
 
 public class RegoppslagTechnicalException extends RuntimeException {

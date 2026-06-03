@@ -1,9 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.brev;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.digitalkontaktinformasjon.DigitalKontaktinformasjonClient;
+import no.nav.tag.tiltaksgjennomforing.brev.digitalkontaktinformasjon.DigitalKontaktinformasjonClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.postadresse.PostadresseClient;
+import no.nav.tag.tiltaksgjennomforing.brev.postadresse.PostadresseClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

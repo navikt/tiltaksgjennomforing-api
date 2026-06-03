@@ -1,10 +1,10 @@
-package no.nav.tag.tiltaksgjennomforing.postadresse;
+package no.nav.tag.tiltaksgjennomforing.brev.postadresse;
 
 import com.github.tomakehurst.wiremock.http.Fault;
 import no.nav.tag.tiltaksgjennomforing.IntegrasjonerMockServer;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.postadresse.exception.RegoppslagTechnicalException;
+import no.nav.tag.tiltaksgjennomforing.brev.postadresse.exception.RegoppslagTechnicalException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

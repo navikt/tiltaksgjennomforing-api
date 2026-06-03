@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.postadresse;
+package no.nav.tag.tiltaksgjennomforing.brev.postadresse;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

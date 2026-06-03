@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.postadresse;
+package no.nav.tag.tiltaksgjennomforing.brev.postadresse;
 
 import lombok.Builder;
 import org.jetbrains.annotations.Nullable;

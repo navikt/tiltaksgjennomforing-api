@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.digitalkontaktinformasjon;
+package no.nav.tag.tiltaksgjennomforing.brev.digitalkontaktinformasjon;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;

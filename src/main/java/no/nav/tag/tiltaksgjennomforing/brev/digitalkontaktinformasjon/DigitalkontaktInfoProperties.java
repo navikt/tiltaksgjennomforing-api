@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.digitalkontaktinformasjon;
+package no.nav.tag.tiltaksgjennomforing.brev.digitalkontaktinformasjon;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

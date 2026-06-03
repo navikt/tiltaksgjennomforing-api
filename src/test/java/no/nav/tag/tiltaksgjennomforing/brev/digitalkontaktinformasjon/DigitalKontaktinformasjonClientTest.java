@@ -1,6 +1,8 @@
-package no.nav.tag.tiltaksgjennomforing.digitalkontaktinformasjon;
+package no.nav.tag.tiltaksgjennomforing.brev.digitalkontaktinformasjon;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.brev.digitalkontaktinformasjon.DigitalKontaktinformasjonClient;
+import no.nav.tag.tiltaksgjennomforing.brev.digitalkontaktinformasjon.DigitalkontaktInfoProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
