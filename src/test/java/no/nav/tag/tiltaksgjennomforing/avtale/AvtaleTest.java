@@ -1335,7 +1335,7 @@ public class AvtaleTest {
         Avtale avtale = TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(startDato, sluttDato);
         // Alle perioder er godkjent
         avtale.getTilskuddPeriode().forEach(t ->
-                t.godkjenn(TestData.enNavIdent2(), "1234"));
+                t.godkjenn(TestData.enNavIdent2()));
         LocalDate nySluttDato = sluttDato.plusMonths(6);
         avtale.forlengAvtale(nySluttDato, TestData.enNavIdent());
         assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(nySluttDato);
@@ -1359,7 +1359,7 @@ public class AvtaleTest {
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
         assertThat(avtale.getStatus()).isEqualTo(Status.MANGLER_GODKJENNING);
         assertThat(avtale.getGjeldendeInnhold().getAvtaleInngått()).isNull();
-        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING.getVerdi());
+        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"));
         assertThat(avtale.getStatus()).isEqualTo(Status.GJENNOMFØRES);
         assertThat(avtale.getGjeldendeInnhold().getAvtaleInngått()).isNotNull();
     }
@@ -1442,7 +1442,7 @@ public class AvtaleTest {
         veileder.godkjennAvtale(avtale);
 
         assertThat(avtale.getGjeldendeInnhold().getAvtaleInngått()).isNull();
-        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING.getVerdi());
+        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"));
         assertThat(avtale.getGjeldendeInnhold().getAvtaleInngått()).isNotNull();
     }
 
@@ -1476,29 +1476,16 @@ public class AvtaleTest {
     }
 
     @Test
-    public void godkjenn_tilskuddsperiode_feil_enhet() {
-        Now.fixedDate(LocalDate.of(2021, 6, 1));
-        Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
-        NavIdent beslutter = new NavIdent("B999999");
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(beslutter, " 4444"));
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(beslutter, "444"));
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(beslutter, "44455"));
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(beslutter, ""));
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(beslutter, null));
-        avtale.godkjennTilskuddsperiode(beslutter, "4444");
-    }
-
-    @Test
     public void godkjenn_tilskuddsperiode_samme_veileder_og_beslutter() {
         Now.fixedDate(LocalDate.of(2021, 6, 1));
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
 
         // Kan ikke godkjenne når avtalen er tildelt seg selv
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE, () -> avtale.godkjennTilskuddsperiode(avtale.getGjeldendeInnhold().getGodkjentAvNavIdent(), "4444"));
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE, () -> avtale.godkjennTilskuddsperiode(avtale.getGjeldendeInnhold().getGodkjentAvNavIdent()));
 
         // Kan heller ikke godkjenne når avtalen er tildelt en annen
         avtale.overtaAvtale(new NavIdent("P887766"));
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE, () -> avtale.godkjennTilskuddsperiode(avtale.getGjeldendeInnhold().getGodkjentAvNavIdent(), "4444"));
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE, () -> avtale.godkjennTilskuddsperiode(avtale.getGjeldendeInnhold().getGodkjentAvNavIdent()));
     }
 
     @Test
@@ -1572,8 +1559,8 @@ public class AvtaleTest {
         arbeidsgiver.godkjennAvtale(avtale);
         veileder.godkjennAvtale(avtale);
 
-        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING.getVerdi());
-        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING.getVerdi());
+        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"));
+        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"));
         avtale.tilskuddsperiode(0).setRefusjonStatus(RefusjonStatus.UTBETALT);
         avtale.tilskuddsperiode(1).setRefusjonStatus(RefusjonStatus.UTBETALT);
 
@@ -1626,7 +1613,7 @@ public class AvtaleTest {
         avtale.tilskuddsperiode(4).setRefusjonStatus(RefusjonStatus.UTBETALT);
         avtale.tilskuddsperiode(5).setRefusjonStatus(RefusjonStatus.UTBETALT);
         avtale.tilskuddsperiode(6).setRefusjonStatus(RefusjonStatus.UTBETALT);
-        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING.getVerdi());
+        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"));
         avtale.getTilskuddPeriode().forEach(tilskuddPeriode -> {
             System.out.print(tilskuddPeriode.getRefusjonStatus() + " ");
             System.out.println(tilskuddPeriode.getStartDato());
@@ -1754,7 +1741,7 @@ public class AvtaleTest {
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         avtale.godkjennForDeltaker(TestData.enIdentifikator());
         avtale.godkjennForVeileder(TestData.enNavIdent());
-        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), TestData.ENHET_OPPFØLGING.getVerdi());
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2());
 
         assertThat(avtale.erAvtaleInngått()).isTrue();
     }

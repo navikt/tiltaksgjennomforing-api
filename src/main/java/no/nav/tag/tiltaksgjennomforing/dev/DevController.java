@@ -67,7 +67,7 @@ public class DevController {
             avtale.godkjennForVeileder(avtale.getVeilederNavIdent());
         }
         if (!avtale.erAvtaleInngått() && godkjennAvtaleRequest.beslutterIdent() != null) {
-            avtale.godkjennTilskuddsperiode(godkjennAvtaleRequest.beslutterIdent(), godkjennAvtaleRequest.kostnadssted());
+            avtale.godkjennTilskuddsperiode(godkjennAvtaleRequest.beslutterIdent());
         }
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();

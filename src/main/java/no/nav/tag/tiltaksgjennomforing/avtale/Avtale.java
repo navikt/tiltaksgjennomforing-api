@@ -914,14 +914,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         return this.getVeilederNavIdent() == null;
     }
 
-    public void godkjennTilskuddsperiode(NavIdent beslutter, String enhet) {
+    public void godkjennTilskuddsperiode(NavIdent beslutter) {
         sjekkAtIkkeAvtaleErAnnullert();
 
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_KAN_KUN_BEHANDLES_VED_INNGAATT_AVTALE);
-        }
-        if (enhet == null || !enhet.matches("^\\d{4}$")) {
-            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER);
         }
         if (beslutter.equals(gjeldendeInnhold.getGodkjentAvNavIdent())) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE);
@@ -930,7 +927,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
         // Sjekk om samme løpenummer allerede er godkjent og annullert. Trenger da en "ekstra" resendingsnummer
         Integer resendingsnummer = finnResendingsNummer(gjeldendePeriode);
-        gjeldendePeriode.godkjenn(beslutter, enhet);
+        gjeldendePeriode.godkjenn(beslutter);
         if (!erAvtaleInngått()) {
             Instant tidspunkt = Now.instant();
             godkjennForBeslutter(tidspunkt, beslutter);
@@ -996,25 +993,23 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         this.gjeldendeTilskuddsperiode = tilskuddPeriode;
     }
 
-    public TreeSet<TilskuddPeriode> finnTilskuddsperioderIkkeLukketForEndring() {
-        TreeSet<TilskuddPeriode> tilskuddsperioder = tilskuddPeriode.stream()
-            .filter(t -> t.isAktiv() && (t.getStatus().equals(TilskuddPeriodeStatus.UBEHANDLET) ||
-                t.getStatus().equals(TilskuddPeriodeStatus.AVSLÅTT)))
-            .collect(Collectors.toCollection(TreeSet::new));
-        if (tilskuddsperioder.isEmpty()) {
-            return null;
+    public void oppdatereKostnadsstedForTilskuddsperioder(String enhet, String enhetsnavn) {
+        if (enhet.equals(gjeldendeInnhold.getEnhetKostnadssted())) {
+            return;
         }
-        return tilskuddsperioder;
-    }
 
-    public void oppdatereKostnadsstedForTilskuddsperioder(NyttKostnadssted nyttKostnadssted) {
         sjekkAtIkkeAvtaleErAnnullert();
-        if (erAvtaleInngått()) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_OPPDATERE_KOSTNADSSTED_INGAATT_AVTALE);
-        }
-        gjeldendeInnhold.setEnhetKostnadssted(nyttKostnadssted.getEnhet());
-        gjeldendeInnhold.setEnhetsnavnKostnadssted(nyttKostnadssted.getEnhetsnavn());
-        nyeTilskuddsperioder();
+
+        gjeldendeInnhold.setEnhetKostnadssted(enhet);
+        gjeldendeInnhold.setEnhetsnavnKostnadssted(enhetsnavn);
+
+        tilskuddPeriode.stream()
+            .filter(periode -> TilskuddPeriodeStatus.UBEHANDLET.equals(periode.getStatus()))
+            .forEach(periode -> {
+                periode.setEnhet(enhet);
+                periode.setEnhetsnavn(enhetsnavn);
+            });
+
         utforEndring();
     }
 

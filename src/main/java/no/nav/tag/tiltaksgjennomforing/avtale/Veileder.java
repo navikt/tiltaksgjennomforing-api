@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -464,22 +463,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     public void reaktiverTilskuddsperiodeOgsendTilbakeTilBeslutter(Avtale avtale) {
         super.sjekkTilgang(avtale);
         avtale.reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
-    }
-
-    protected void oppdatereKostnadssted(Avtale avtale, Norg2Client norg2Client, String enhet) {
-        sjekkTilgang(avtale);
-        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhet(enhet);
-
-        if (response == null) {
-            throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);
-        }
-        NyttKostnadssted nyttKostnadssted = new NyttKostnadssted(enhet, response.getNavn());
-        TreeSet<TilskuddPeriode> tilskuddPerioder = avtale.finnTilskuddsperioderIkkeLukketForEndring();
-
-        if (tilskuddPerioder == null) {
-            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_IKKE_SATT);
-        }
-        avtale.oppdatereKostnadsstedForTilskuddsperioder(nyttKostnadssted);
     }
 
     private LocalDate settStartDato(LocalDate startdato) {
