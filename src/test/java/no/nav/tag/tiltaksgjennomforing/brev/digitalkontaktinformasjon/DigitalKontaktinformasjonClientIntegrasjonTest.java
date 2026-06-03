@@ -1,8 +1,9 @@
-package no.nav.tag.tiltaksgjennomforing.digitalkontaktinformasjon;
+package no.nav.tag.tiltaksgjennomforing.brev.digitalkontaktinformasjon;
 
 import no.nav.tag.tiltaksgjennomforing.IntegrasjonerMockServer;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.brev.digitalkontaktinformasjon.DigitalKontaktinformasjonClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

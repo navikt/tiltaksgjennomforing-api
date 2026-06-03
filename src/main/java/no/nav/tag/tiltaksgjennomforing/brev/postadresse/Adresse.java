@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.postadresse;
+package no.nav.tag.tiltaksgjennomforing.brev.postadresse;
 
 public record Adresse(
     AdresseKildeCode adresseKilde,

@@ -1,3 +1,3 @@
-package no.nav.tag.tiltaksgjennomforing.postadresse;
+package no.nav.tag.tiltaksgjennomforing.brev.postadresse;
 
 record PostadresseResponse(String navn, Adresse adresse) {}
