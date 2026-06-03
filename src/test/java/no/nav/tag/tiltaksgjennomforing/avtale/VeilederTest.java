@@ -888,4 +888,36 @@ public class VeilederTest {
         veileder.forlengAvtale(nySluttDato, avtale);
         assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(nySluttDato);
     }
+
+    @Test
+    public void endreAvtale__veileder_kan_ikke_sette_familietilknytning() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        Veileder veileder = TestData.enVeileder(avtale);
+
+        EndreAvtale endreAvtale = EndreAvtale.fraAvtale(avtale);
+        endreAvtale.setHarFamilietilknytning(!Boolean.TRUE.equals(avtale.getGjeldendeInnhold().getHarFamilietilknytning()));
+
+        assertFeilkode(
+            Feilkode.VEILEDER_KAN_IKKE_ENDRE_FAMILIETILKNYTNING,
+            () -> veileder.endreAvtale(endreAvtale, avtale)
+        );
+    }
+
+    @Test
+    public void endreAvtale__veileder_kan_ikke_endre_familietilknytning_forklaring() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        Veileder veileder = TestData.enVeileder(avtale);
+
+        EndreAvtale endreAvtale = EndreAvtale.fraAvtale(avtale);
+        endreAvtale.setFamilietilknytningForklaring(
+            avtale.getGjeldendeInnhold().getFamilietilknytningForklaring() == null
+                ? "Ny forklaring"
+                : avtale.getGjeldendeInnhold().getFamilietilknytningForklaring() + " endret"
+        );
+
+        assertFeilkode(
+            Feilkode.VEILEDER_KAN_IKKE_ENDRE_FAMILIETILKNYTNING,
+            () -> veileder.endreAvtale(endreAvtale, avtale)
+        );
+    }
 }

@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
@@ -171,12 +172,12 @@ public class CachingConfigTest {
         )).thenReturn(true, true, true);
 
         veileder.endreAvtale(
-                TestData.endringPåAlleLønnstilskuddFelter(),
+                endringUtenFamilietilknytning(TestData.endringPåAlleLønnstilskuddFelter()),
                 avtale
         );
 
         veileder.endreAvtale(
-                TestData.endringPåAlleLønnstilskuddFelter(),
+                endringUtenFamilietilknytning(TestData.endringPåAlleLønnstilskuddFelter()),
                 avtale
         );
 
@@ -203,5 +204,11 @@ public class CachingConfigTest {
         Assertions.assertEquals("1000", norgnavnCacheForEnhet.getEnhetNr());
 
         Assertions.assertEquals("0906", arenaCache.oppfolgingsenhet().enhetId());
+    }
+
+    private static EndreAvtale endringUtenFamilietilknytning(EndreAvtale endreAvtale) {
+        endreAvtale.setHarFamilietilknytning(null);
+        endreAvtale.setFamilietilknytningForklaring(null);
+        return endreAvtale;
     }
 }

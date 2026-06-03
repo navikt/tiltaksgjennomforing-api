@@ -38,6 +38,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -246,6 +247,14 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         EndreAvtale endreAvtale,
         Avtale avtale
     ) {
+        var innhold = avtale.getGjeldendeInnhold();
+
+        if (
+            !Objects.equals(endreAvtale.getHarFamilietilknytning(), innhold.getHarFamilietilknytning()) ||
+                !Objects.equals(endreAvtale.getFamilietilknytningForklaring(), innhold.getFamilietilknytningForklaring())
+        ) {
+            throw new FeilkodeException(Feilkode.VEILEDER_KAN_IKKE_ENDRE_FAMILIETILKNYTNING);
+        }
         super.endreAvtale(
             endreAvtale,
             avtale,
