@@ -70,6 +70,11 @@ Content-Type: application/json
 Accept: application/json
 Authorization: Bearer <TOKEN>
 
+### Resend tilskuddsperiode som godkjent
+POST https://tiltaksgjennomforing-api.intern.nav.no/tiltaksgjennomforing-api/utvikler-admin/annuller-og-resend-tilskuddsperiode-som-godkjent/<TILSKUDDSPERIODE_ID>
+Content-Type: application/json
+Authorization: Bearer <TOKEN>
+
 ### ADMIN HJEM!
 GET http://localhost:8080/tiltaksgjennomforing-api/utvikler-admin
 Authorization: Bearer <TOKEN>

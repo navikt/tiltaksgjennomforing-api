@@ -112,25 +112,39 @@ public class AdminController {
         avtaleRepository.save(avtale);
     }
 
-    @PostMapping("/annuller-og-resend-tilskuddsperiode/{tilskuddsperiodeId}")
+    @PostMapping("/annuller-og-resend-tilskuddsperiode-som-godkjent/{tilskuddsperiodeId}")
     @Transactional
-    public void annullerOgResendTilskuddsperiode(@PathVariable("tilskuddsperiodeId") UUID id) {
+    public ResponseEntity<String> annullerOgResendTilskuddsperiodeSomGodkjent(
+        @RequestParam(value = "tillat-allerede-annullert", required = false, defaultValue = "false") boolean tillatAlleredeAnnullert,
+        @PathVariable("tilskuddsperiodeId") UUID id
+    ) {
         log.info("Annullerer tilskuddsperiode {} og resender som godkjent", id);
-        TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
+        TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(id)
+            .orElseThrow(RessursFinnesIkkeException::new);
         if (tilskuddPeriode.getRefusjonStatus() != null && List.of(
             RefusjonStatus.UTBETALT,
             RefusjonStatus.SENDT_KRAV,
-            RefusjonStatus.ANNULLERT
+            RefusjonStatus.UTBETALING_FEILET
         ).contains(tilskuddPeriode.getRefusjonStatus())) {
-            throw new IllegalStateException("Kan ikke annullere en periode som er sendt til utbetaling eller allerede er annullert.");
+            var feilmelding = "Kan ikke annullere en periode som er sendt til Oebs for utbetaling.";
+            log.error(feilmelding);
+            return ResponseEntity.badRequest().body(feilmelding);
         }
-        if (tilskuddPeriode.getStatus() != TilskuddPeriodeStatus.GODKJENT) {
-            throw new IllegalStateException("Kan kun annullere og resende en periode som er godkjent. Denne perioden har status: " + tilskuddPeriode.getStatus());
+        var erAnnullertTilskuddsperiodeSomSkalSlippeIgjennom = tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.ANNULLERT && tillatAlleredeAnnullert;
+        if (tilskuddPeriode.getStatus() != TilskuddPeriodeStatus.GODKJENT && !erAnnullertTilskuddsperiodeSomSkalSlippeIgjennom) {
+            var feilmelding = "Kan kun annullere og resende en periode som er godkjent. Denne perioden har status: %s".formatted(
+                tilskuddPeriode.getStatus()
+            );
+            log.error(feilmelding);
+            return ResponseEntity.badRequest().body(feilmelding);
         }
         Avtale avtale = tilskuddPeriode.getAvtale();
-        avtale.annullerTilskuddsperiode(tilskuddPeriode);
-        avtale.lagNyGodkjentTilskuddsperiodeFraAnnullertPeriode(tilskuddPeriode);
+        if (tilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
+            avtale.annullerTilskuddsperiode(tilskuddPeriode);
+        }
+        var nyTilskuddsperiode = avtale.lagNyGodkjentTilskuddsperiodeFraAnnullertPeriode(tilskuddPeriode);
         avtaleRepository.save(avtale);
+        return ResponseEntity.ok("Tilskuddsperiode har blitt resendt! Ny id: %s".formatted(nyTilskuddsperiode.getId()));
     }
 
     @PostMapping("/annuller-og-generer-tilskuddsperiode/{tilskuddsperiodeId}")
