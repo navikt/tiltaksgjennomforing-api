@@ -17,17 +17,21 @@ import java.util.List;
 import static no.nav.tag.tiltaksgjennomforing.satser.Sats.VTAO_SATS;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
-public class VTAOAvtaleBeregningStrategy implements BeregningStrategy {
+public class VTAOAvtaleBeregningStrategy extends BeregningStrategy {
     private final LocalDate STANDARD_MIGRERINGSDATO = ArenaTiltakskode.VTAO.getMigreringsdatoForTilskudd();
 
-    @Override
-    public void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {}
+    public VTAOAvtaleBeregningStrategy(Avtale avtale) {
+        super(avtale);
+    }
 
     @Override
-    public void reberegnTotal(Avtale avtale) {}
+    public void endreBeregning(EndreTilskuddsberegning endreTilskuddsberegning) {}
 
     @Override
-    public boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(Avtale avtale) {
+    public void reberegnTotal() {}
+
+    @Override
+    public boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp() {
         var gjeldendeInnhold = avtale.getGjeldendeInnhold();
         return Utils.erIkkeTomme(
             gjeldendeInnhold.getStartDato(),
@@ -36,7 +40,7 @@ public class VTAOAvtaleBeregningStrategy implements BeregningStrategy {
     }
 
     @Override
-    public boolean nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder(Avtale avtale) {
+    public boolean nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder() {
         var gjeldendeInnhold = avtale.getGjeldendeInnhold();
         return Utils.erIkkeTomme(
             gjeldendeInnhold.getStartDato(),
@@ -45,15 +49,14 @@ public class VTAOAvtaleBeregningStrategy implements BeregningStrategy {
     }
 
     @Override
-    public List<TilskuddPeriode> genererNyeTilskuddsperioder(Avtale avtale) {
+    public List<TilskuddPeriode> genererNyeTilskuddsperioder() {
         if (avtale.erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
         }
-        if (!nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder(avtale)) {
+        if (!nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder()) {
             return Collections.emptyList();
         }
         List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioderForAvtale(
-            avtale,
             avtale.getGjeldendeInnhold().getStartDato(),
             avtale.getGjeldendeInnhold().getSluttDato()
         );
@@ -73,7 +76,6 @@ public class VTAOAvtaleBeregningStrategy implements BeregningStrategy {
 
     @Override
     public List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(
-        Avtale avtale,
         LocalDate startDato,
         LocalDate sluttDato
     ) {
@@ -89,7 +91,7 @@ public class VTAOAvtaleBeregningStrategy implements BeregningStrategy {
     }
 
     @Override
-    public Integer getBeløpForPeriode(Avtale avtale, AvtaleInnhold avtaleInnhold, Periode periode) {
+    public Integer getBeløpForPeriode(AvtaleInnhold avtaleInnhold, Periode periode) {
         var vtaoSats = VTAO_SATS.hentGjeldendeSats(periode.getStart());
         if (vtaoSats == null) {
             return null;

@@ -13,13 +13,17 @@ public class SommerjobbLonnstilskuddAvtaleBeregningStrategy extends GenerellLonn
     public static int TILSKUDDSPROSENT_MAKS = 75;
     public static int TILSKUDDSPROSENT_MIN = 50;
 
+    public SommerjobbLonnstilskuddAvtaleBeregningStrategy(Avtale avtale) {
+        super(avtale);
+    }
+
     @Override
-    public Integer getProsentForPeriode(Avtale avtale, AvtaleInnhold avtaleInnhold, Periode periode) {
+    public Integer getProsentForPeriode(AvtaleInnhold avtaleInnhold, Periode periode) {
         return avtaleInnhold.getLonnstilskuddProsent();
     }
 
     @Override
-    public List<LocalDate> getDatoerForReduksjon(Avtale avtale, AvtaleInnhold avtaleInnhold) {
+    public List<LocalDate> getDatoerForReduksjon(AvtaleInnhold avtaleInnhold) {
         return Collections.emptyList();
     }
 

@@ -3,8 +3,10 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,9 +53,9 @@ public class BeregningStrategyTest {
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(fra, til);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
-        assertThat(avtale.beregnTilskuddsbeløpForPeriode(fra,til)).isEqualTo(forventetBeløpForPeriode);
+        assertThat(BeregningStrategy.create(avtale).getBeløpForPeriode(avtale.getGjeldendeInnhold(), Periode.av(fra, til))).isEqualTo(forventetBeløpForPeriode);
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(3);
-        assertThat(avtale.beregnTilskuddsbeløpForPeriode(fra,til)).isEqualTo(forventetBeløpForPeriode);
+        assertThat(BeregningStrategy.create(avtale).getBeløpForPeriode(avtale.getGjeldendeInnhold(), Periode.av(fra, til))).isEqualTo(forventetBeløpForPeriode);
         assertThat(avtale.getTilskuddPeriode().first().getBeløp()).isEqualTo(avtale.getGjeldendeInnhold().getSumLonnstilskudd());
         harRiktigeEgenskaper(avtale);
         Now.resetClock();
@@ -73,19 +75,22 @@ public class BeregningStrategyTest {
 
 
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(0);
-        assertThat(avtale.beregnTilskuddsbeløpForPeriode(fra,til)).isEqualTo(forventetBeløpForPeriode);
+        assertThat(BeregningStrategy.create(avtale).getBeløpForPeriode(avtale.getGjeldendeInnhold(), Periode.av(fra, til))).isEqualTo(forventetBeløpForPeriode);
         assertThat(avtale.getTilskuddPeriode()).isEmpty();
         Now.resetClock();
     }
 
     @Test
     public void beregn_mentor_tilskuddsbeløp_for_periode_samsvarer_med_sum_genererte_perioder() {
-        LocalDate start = LocalDate.of(2025,1,5);
-        LocalDate slutt = LocalDate.of(2025,3,17);
-        Avtale avtale = TestData.enMentorAvtaleMedMedAltUtfylt();
-        int direkte = avtale.beregnTilskuddsbeløpForPeriode(start, slutt);
+        Now.fixedDate(LocalDate.of(2025, 1, 5));
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
+        LocalDate start = avtale.getGjeldendeInnhold().getStartDato();
+        LocalDate slutt = avtale.getGjeldendeInnhold().getSluttDato();
+        int direkte = BeregningStrategy.create(avtale).beregnTilskuddsperioderForAvtale(start, slutt)
+                .stream().mapToInt(TilskuddPeriode::getBeløp).sum();
         int sum = avtale.getTilskuddPeriode().stream().mapToInt(TilskuddPeriode::getBeløp).sum();
         assertThat(direkte).isEqualTo(sum);
+        Now.resetClock();
     }
 
     @Test

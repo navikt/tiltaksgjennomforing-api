@@ -14,7 +14,11 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy extends GenerellLon
     public static final int TILSKUDDSPROSENT_TILPASSET = 60;
     public static final int TILSKUDDSPROSENT_REDUKSJONSFAKTOR = 10;
 
-    public Integer getProsentForForstePeriode(Avtale avtale) {
+    public MidlertidigLonnstilskuddAvtaleBeregningStrategy(Avtale avtale) {
+        super(avtale);
+    }
+
+    public Integer getProsentForForstePeriode() {
         return switch (avtale.getKvalifiseringsgruppe()) {
             case SPESIELT_TILPASSET_INNSATS, VARIG_TILPASSET_INNSATS -> TILSKUDDSPROSENT_TILPASSET;
             case SITUASJONSBESTEMT_INNSATS -> TILSKUDDSPROSENT;
@@ -23,10 +27,10 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy extends GenerellLon
     }
 
     @Override
-    public Integer getProsentForPeriode(Avtale avtale, AvtaleInnhold avtaleInnhold, Periode periode) {
-        Optional<LocalDate> datoForRedusertProsent = getDatoerForReduksjon(avtale, avtaleInnhold).stream().findFirst();
+    public Integer getProsentForPeriode(AvtaleInnhold avtaleInnhold, Periode periode) {
+        Optional<LocalDate> datoForRedusertProsent = getDatoerForReduksjon(avtaleInnhold).stream().findFirst();
 
-        Integer tilskuddsprosent = getProsentForForstePeriode(avtale);
+        Integer tilskuddsprosent = getProsentForForstePeriode();
         if (tilskuddsprosent == null) {
             return null;
         }
@@ -39,7 +43,7 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy extends GenerellLon
     }
 
     @Override
-    public List<LocalDate> getDatoerForReduksjon(Avtale avtale, AvtaleInnhold avtaleInnhold) {
+    public List<LocalDate> getDatoerForReduksjon(AvtaleInnhold avtaleInnhold) {
         LocalDate startDato = avtaleInnhold.getStartDato();
         LocalDate sluttDato = avtaleInnhold.getSluttDato();
 

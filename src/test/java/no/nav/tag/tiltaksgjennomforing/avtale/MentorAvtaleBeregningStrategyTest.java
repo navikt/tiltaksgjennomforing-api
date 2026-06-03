@@ -3,9 +3,11 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentorBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 })
 @ActiveProfiles(Miljø.TEST)
 public class MentorAvtaleBeregningStrategyTest {
-    private final MentorBeregningStrategy mentorBeregningStrategy = new MentorBeregningStrategy();
 
     @BeforeEach
     public void setup() {
@@ -57,10 +58,12 @@ public class MentorAvtaleBeregningStrategyTest {
         endreAvtale.setMentorAntallTimer(8.0);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
 
+        BeregningStrategy strategy = BeregningStrategy.create(avtale);
+
         assertThat(avtale.getGjeldendeInnhold().getFeriepengerBelop()).isEqualTo(feriepengerBelop);
         assertThat(avtale.getGjeldendeInnhold().getOtpBelop()).isEqualTo(forventetOptBelop);
         assertThat(avtale.getGjeldendeInnhold().getArbeidsgiveravgiftBelop()).isEqualTo(arbeidsgiverAvgiftBelop);
-        assertThat(avtale.beregnTilskuddsbeløpForPeriode(fra, til)).isEqualTo(forventetBeløpForPeriode);
+        assertThat(strategy.getBeløpForPeriode(avtale.getGjeldendeInnhold(), Periode.av(fra, til))).isEqualTo(forventetBeløpForPeriode);
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(1);
         assertThat(avtale.getGjeldendeInnhold().getSumLonnsutgifter()).isEqualTo(forventetBeløpForPeriode);
     }
@@ -208,7 +211,7 @@ public class MentorAvtaleBeregningStrategyTest {
         endreAvtale.setOtpSats(null);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
 
-        assertThat(mentorBeregningStrategy.nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(avtale)).isFalse();
+        assertThat(new MentorBeregningStrategy(avtale).nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp()).isFalse();
     }
 
     @Test
@@ -217,7 +220,7 @@ public class MentorAvtaleBeregningStrategyTest {
         EndreAvtale endreAvtale = TestData.endrePåAlleMentorFelter();
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
 
-        assertThat(mentorBeregningStrategy.nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(avtale)).isTrue();
+        assertThat(new MentorBeregningStrategy(avtale).nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp()).isTrue();
     }
 
     @Test
@@ -235,7 +238,7 @@ public class MentorAvtaleBeregningStrategyTest {
             .stillingprosent(BigDecimal.valueOf(100))
             .build();
 
-        mentorBeregningStrategy.endreBeregning(avtale, endring);
+        new MentorBeregningStrategy(avtale).endreBeregning(endring);
 
         assertThat(avtale.getGjeldendeInnhold().getOtpSats()).isEqualTo(endring.getOtpSats());
         assertThat(avtale.getGjeldendeInnhold().getFeriepengesats()).isEqualTo(endring.getFeriepengesats());

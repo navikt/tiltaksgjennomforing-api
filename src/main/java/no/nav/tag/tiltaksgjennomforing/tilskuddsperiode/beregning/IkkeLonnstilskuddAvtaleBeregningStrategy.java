@@ -11,23 +11,25 @@ import java.util.Collections;
 import java.util.List;
 
 @Slf4j
-public class IkkeLonnstilskuddAvtaleBeregningStrategy implements BeregningStrategy {
+public class IkkeLonnstilskuddAvtaleBeregningStrategy extends BeregningStrategy {
+    public IkkeLonnstilskuddAvtaleBeregningStrategy(Avtale avtale) {
+        super(avtale);
+    }
 
     @Override
-    public List<TilskuddPeriode> genererNyeTilskuddsperioder(Avtale avtale) { return Collections.emptyList(); }
+    public List<TilskuddPeriode> genererNyeTilskuddsperioder() { return Collections.emptyList(); }
 
     @Override
-    public void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {}
+    public void endreBeregning(EndreTilskuddsberegning endreTilskuddsberegning) {}
 
     @Override
-    public void reberegnTotal(Avtale avtale) {}
+    public void reberegnTotal() {}
 
     @Override
-    public void forleng(Avtale avtale, LocalDate gammelSluttDato, LocalDate nySluttDato){}
+    public void forleng(LocalDate gammelSluttDato, LocalDate nySluttDato){}
 
     @Override
     public List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(
-        Avtale avtale,
         LocalDate startDato,
         LocalDate sluttDato
     ) {
@@ -36,12 +38,12 @@ public class IkkeLonnstilskuddAvtaleBeregningStrategy implements BeregningStrate
     }
 
     @Override
-    public boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp(Avtale avtale) {
+    public boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp() {
         return true;
     }
 
     @Override
-    public boolean nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder(Avtale avtale) {
+    public boolean nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder() {
         return false;
     }
 
