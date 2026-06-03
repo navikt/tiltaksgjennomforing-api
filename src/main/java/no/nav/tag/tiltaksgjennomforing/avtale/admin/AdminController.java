@@ -23,15 +23,14 @@ import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.service.gjeldendetilskuddsperiode.GjeldendeTilskuddsperiodeJobbService;
+import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
-import no.nav.tag.tiltaksgjennomforing.digitalkontaktinformasjon.DigitalKontaktinformasjonClient;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import no.nav.tag.tiltaksgjennomforing.postadresse.PostadresseClient;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 import no.nav.tag.tiltaksgjennomforing.varsel.Varsel;
@@ -78,8 +77,7 @@ public class AdminController {
     private final GjeldendeTilskuddsperiodeJobbService gjeldendeTilskuddsperiodeJobbService;
     private final Norg2Client norg2Client;
     private final VarselRepository varselRepository;
-    private final PostadresseClient postadresseClient;
-    private final DigitalKontaktinformasjonClient digitalKontaktinformasjonClient;
+    private final PostutsendelseService postutsendelseService;
 
     @GetMapping({ "", "/" })
     public String hjem() {
@@ -96,16 +94,11 @@ public class AdminController {
     }
 
     @GetMapping("/sjekk-om-bruker-kan-faa-digital-brev-og-har-adresse/{fnr}")
-    public Map<String, String> hentPostadresse(@PathVariable("fnr") String fnr) {
+    public boolean hentPostadresse(@PathVariable("fnr") String fnr) {
         log.info("skal hent-postadresse for FNR...");
         Fnr validertFnr = new Fnr(fnr);
-        log.info("hent-postadresse FNR er validert, skal kalle postadresse consumer service...");
-        boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedAdresse(validertFnr);
-        boolean erReservertMotDigitalKommunikasjon = digitalKontaktinformasjonClient.erPersonReservertMotDigitalKontakt(validertFnr);
-        return Map.of(
-            "har adresse", String.valueOf(harAdresse),
-            "er reservert mot digital kommunikasjon", String.valueOf(erReservertMotDigitalKommunikasjon)
-        );
+        log.info("hent-postadresse FNR er validert, skal sjekke om person kan få post...");
+        return postutsendelseService.sjekkOmBrukerKanFaaPost(validertFnr);
     }
 
     @PostMapping("/annuller-tilskuddsperiode/{tilskuddsperiodeId}")
