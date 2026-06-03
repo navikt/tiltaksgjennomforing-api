@@ -1161,13 +1161,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void lagNyGodkjentTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
-        krevEnAvTiltakstyper(
-            Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
-            Tiltakstype.VARIG_LONNSTILSKUDD,
-            Tiltakstype.SOMMERJOBB,
-            Tiltakstype.VTAO,
-            Tiltakstype.MENTOR
-        );
+        if (!this.tiltakstype.skalBesluttes()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_FEIL_TILTAKSTYPE);
+        }
         if (annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
         }
