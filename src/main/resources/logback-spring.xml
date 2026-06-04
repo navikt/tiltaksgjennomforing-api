@@ -26,6 +26,8 @@
             <OnMismatch>DENY</OnMismatch>
         </filter>
     </appender>
+    <!-- Feil fra denne loggeren resulterer i at kafka-payloads ender opp rett i loggene. Litt guffent -->
+    <logger name="org.springframework.kafka.support.LoggingProducerListener" level="OFF"/>
     <logger name="no.nav.vault.jdbc.hikaricp.VaultUtil" level="WARN"/>
     <root level="INFO">
         <appender-ref ref="consoleAppender"/>
