@@ -1160,24 +1160,17 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
     }
 
-    public void lagNyGodkjentTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
-        krevEnAvTiltakstyper(
-            Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
-            Tiltakstype.VARIG_LONNSTILSKUDD,
-            Tiltakstype.SOMMERJOBB,
-            Tiltakstype.VTAO,
-            Tiltakstype.MENTOR
-        );
-        if (annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
-            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
+    public void lagNyGodkjentTilskuddsperiodeFra(TilskuddPeriode gammelTilskuddPeriode) {
+        if (!this.tiltakstype.skalBesluttes()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_FEIL_TILTAKSTYPE);
         }
-        TilskuddPeriode nyTilskuddsperiode = annullertTilskuddPeriode.deaktiverOgLagNyUbehandlet();
-        annullertTilskuddPeriode.setAktiv(true);
+        TilskuddPeriode nyTilskuddsperiode = gammelTilskuddPeriode.deaktiverOgLagNyUbehandlet();
+        gammelTilskuddPeriode.setAktiv(true);
         nyTilskuddsperiode.setStatus(TilskuddPeriodeStatus.GODKJENT);
-        nyTilskuddsperiode.setGodkjentAvNavIdent(annullertTilskuddPeriode.getGodkjentAvNavIdent());
-        nyTilskuddsperiode.setGodkjentTidspunkt(annullertTilskuddPeriode.getGodkjentTidspunkt());
-        nyTilskuddsperiode.setEnhet(annullertTilskuddPeriode.getEnhet());
-        Integer resendingsnummer = finnResendingsNummer(annullertTilskuddPeriode);
+        nyTilskuddsperiode.setGodkjentAvNavIdent(gammelTilskuddPeriode.getGodkjentAvNavIdent());
+        nyTilskuddsperiode.setGodkjentTidspunkt(gammelTilskuddPeriode.getGodkjentTidspunkt());
+        nyTilskuddsperiode.setEnhet(gammelTilskuddPeriode.getEnhet());
+        Integer resendingsnummer = finnResendingsNummer(gammelTilskuddPeriode);
         registerEvent(new TilskuddsperiodeGodkjent(
             this,
             nyTilskuddsperiode,
@@ -1203,12 +1196,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void lagNyTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
-        krevEnAvTiltakstyper(
-            Tiltakstype.VTAO,
-            Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
-            Tiltakstype.VARIG_LONNSTILSKUDD,
-            Tiltakstype.SOMMERJOBB
-        );
+        if (!tiltakstype.skalBesluttes()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_FEIL_TILTAKSTYPE);
+        }
         if (annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
         }

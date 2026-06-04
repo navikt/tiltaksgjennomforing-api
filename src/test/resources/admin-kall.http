@@ -70,6 +70,13 @@ Content-Type: application/json
 Accept: application/json
 Authorization: Bearer <TOKEN>
 
+### Resend tilskuddsperiode
+# Brukes når en tilskuddsperiode har feilet av ulike årsaker, og vi skal opprette ny tilskuddsperiode som vi også
+# godkjenner på beslutters vegne
+POST https://tiltaksgjennomforing-api.intern.nav.no/tiltaksgjennomforing-api/utvikler-admin/resend-tilskuddsperiode/<TILSKUDDSPERIODE_ID>?dryRun=true
+Content-Type: application/json
+Authorization: Bearer <TOKEN>
+
 ### ADMIN HJEM!
 GET http://localhost:8080/tiltaksgjennomforing-api/utvikler-admin
 Authorization: Bearer <TOKEN>

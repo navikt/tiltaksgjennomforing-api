@@ -29,6 +29,8 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
@@ -94,11 +96,19 @@ public class AdminController {
     }
 
     @GetMapping("/sjekk-om-bruker-kan-faa-digital-brev-og-har-adresse/{fnr}")
-    public boolean hentPostadresse(@PathVariable("fnr") String fnr) {
+    public boolean validerPostutsendelse(@PathVariable("fnr") String fnr) {
         log.info("skal hent-postadresse for FNR...");
         Fnr validertFnr = new Fnr(fnr);
         log.info("hent-postadresse FNR er validert, skal sjekke om person kan få post...");
-        return postutsendelseService.sjekkOmBrukerKanFaaPost(validertFnr);
+        try {
+            postutsendelseService.validerAtPersonKanMottaPost(validertFnr);
+            return true;
+        } catch (FeilkodeException e) {
+            if (e.getFeilkode() == Feilkode.KAN_IKKE_SENDE_POST_MANGLER_ADRESSE_OG_RESERVERT) {
+                return false;
+            }
+            throw e;
+        }
     }
 
     @PostMapping("/annuller-tilskuddsperiode/{tilskuddsperiodeId}")
@@ -109,27 +119,6 @@ public class AdminController {
         Avtale avtale = tilskuddPeriode.getAvtale();
         avtale.annullerTilskuddsperiode(tilskuddPeriode);
         tilskuddPeriodeRepository.save(tilskuddPeriode);
-        avtaleRepository.save(avtale);
-    }
-
-    @PostMapping("/annuller-og-resend-tilskuddsperiode/{tilskuddsperiodeId}")
-    @Transactional
-    public void annullerOgResendTilskuddsperiode(@PathVariable("tilskuddsperiodeId") UUID id) {
-        log.info("Annullerer tilskuddsperiode {} og resender som godkjent", id);
-        TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
-        if (tilskuddPeriode.getRefusjonStatus() != null && List.of(
-            RefusjonStatus.UTBETALT,
-            RefusjonStatus.SENDT_KRAV,
-            RefusjonStatus.ANNULLERT
-        ).contains(tilskuddPeriode.getRefusjonStatus())) {
-            throw new IllegalStateException("Kan ikke annullere en periode som er sendt til utbetaling eller allerede er annullert.");
-        }
-        if (tilskuddPeriode.getStatus() != TilskuddPeriodeStatus.GODKJENT) {
-            throw new IllegalStateException("Kan kun annullere og resende en periode som er godkjent. Denne perioden har status: " + tilskuddPeriode.getStatus());
-        }
-        Avtale avtale = tilskuddPeriode.getAvtale();
-        avtale.annullerTilskuddsperiode(tilskuddPeriode);
-        avtale.lagNyGodkjentTilskuddsperiodeFraAnnullertPeriode(tilskuddPeriode);
         avtaleRepository.save(avtale);
     }
 
@@ -449,6 +438,86 @@ public class AdminController {
 
         avtaleRepository.save(nyAvtale);
         return ResponseEntity.ok(nyAvtale.getId());
+    }
+
+    /**
+     * Brukes for å resende tilskuddsperioder som enten har blitt annullert ved en feil, eller som har feil i data og må resendes.
+     * Noen eksempler på når dette er nødvendig:
+     * <ul>
+     *   <li>En automatisk utbetaling ble annullert fordi vi ikke fikk hentet kontonummer i tide.</li>
+     *   <li>Oebs ber oss resende i enkelte tilfeller hvor juridisk enhet har endret seg (overtakelser eller organisatoriske endringer)</li>
+     *   <li>Automatisk utbetaling har feil kid-nummer (eller burde ikke hatt kid-nummer). Resend etter dette har blitt rettet i avtalen</li>
+     * </ul>
+     * Resending anses som en teknisk detalj, og <b>vi tar derfor med beslutters godkjenning fra den gamle tilskuddsperioden
+     * til den nye</b>.
+     *
+     * @param dryRun Vi defaulter til å ikke utføre endringer for ekstra sikkerhet
+     */
+    @PostMapping("/resend-tilskuddsperiode/{tilskuddsperiodeId}")
+    @Transactional
+    public ResponseEntity<?> resendTilskuddsperiode(
+        @PathVariable("tilskuddsperiodeId") UUID id,
+        @RequestParam(required = false, defaultValue = "true") boolean dryRun
+    ) {
+        log.info("Oppretter ny tilskuddsperiode fra annullert periode {}", id);
+        TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(id)
+            .orElseThrow(RessursFinnesIkkeException::new);
+
+        // Sjekk refusjonstatus
+        if (tilskuddPeriode.getRefusjonStatus() != null && List.of(
+            RefusjonStatus.SENDT_KRAV,
+            RefusjonStatus.UTBETALT,
+            RefusjonStatus.UTBETALING_FEILET
+        ).contains(tilskuddPeriode.getRefusjonStatus())) {
+            var feilmelding = "Kan ikke opprette ny tilskuddsperiode fra en periode som er sendt til Oebs eller utbetalt.";
+            log.error(feilmelding);
+            return ResponseEntity.badRequest().body(feilmelding);
+        }
+
+        // Kan kun resende tilskuddsperioder som har vært godkjent
+        if (!List.of(TilskuddPeriodeStatus.GODKJENT, TilskuddPeriodeStatus.ANNULLERT).contains(tilskuddPeriode.getStatus())) {
+            var feilmelding = "Kan kun opprette ny tilskuddsperiode fra perioder med status GODKJENT eller ANNULLERT. Denne perioden har status: %s"
+                .formatted(tilskuddPeriode.getStatus());
+            log.error(feilmelding);
+            return ResponseEntity.badRequest().body(feilmelding);
+        }
+
+        Avtale avtale = tilskuddPeriode.getAvtale();
+        Integer løpenummer = tilskuddPeriode.getLøpenummer();
+
+        // Annuller perioden hvis den ikke allerede er annullert
+        if (tilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
+            if (!dryRun) {
+                avtale.annullerTilskuddsperiode(tilskuddPeriode);
+            }
+        }
+
+        // Sjekk om det finnes en annen aktiv og ikke-annullert tilskuddsperiode med samme løpenummer
+        boolean finnesAnnenAktiv = avtale.getTilskuddPeriode().stream()
+            .anyMatch(tp -> {
+                var sammeLøpenummer = tp.getLøpenummer().equals(løpenummer);
+                var ikkeSammeTilskuddsperiode = !tp.getId().equals(id);
+                var erAktivOgIkkeAnnullert = tp.isAktiv() && tp.getStatus() != TilskuddPeriodeStatus.ANNULLERT;
+
+                return sammeLøpenummer && ikkeSammeTilskuddsperiode && erAktivOgIkkeAnnullert;
+            });
+
+        if (finnesAnnenAktiv) {
+            var feilmelding = "Kan ikke opprette ny tilskuddsperiode. Det finnes allerede en annen aktiv tilskuddsperiode med løpenummer " + løpenummer;
+            log.error(feilmelding);
+            return ResponseEntity.badRequest().body(feilmelding);
+        }
+
+        // Opprett ny tilskuddsperiode
+        if (!dryRun) {
+            avtale.lagNyGodkjentTilskuddsperiodeFra(tilskuddPeriode);
+            avtaleRepository.save(avtale);
+        }
+
+        return ResponseEntity.ok(Map.of(
+            "message", dryRun ? "Dry run: ingen endringer ble utført" : "Ny tilskuddsperiode har blitt opprettet",
+            "dryRun", dryRun
+        ));
     }
 
     /**
