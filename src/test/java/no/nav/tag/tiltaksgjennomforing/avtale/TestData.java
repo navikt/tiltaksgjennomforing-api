@@ -897,7 +897,7 @@ public class TestData {
     }
 
     public static InnloggetArbeidsgiver enInnloggetArbeidsgiver() {
-        return new InnloggetArbeidsgiver(new Fnr("99999999999"), null);
+        return new InnloggetArbeidsgiver(new Fnr("99999999999"), enAltinnTilgangerDto(Map.of()));
     }
 
     public static InnloggetVeileder enInnloggetVeileder() {
