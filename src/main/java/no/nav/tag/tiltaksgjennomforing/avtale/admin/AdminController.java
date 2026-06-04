@@ -482,15 +482,15 @@ public class AdminController {
             }
         }
 
-        // Finn alle tilskuddsperioder med samme løpenummer
-        List<TilskuddPeriode> perioderMedSammeLøpenummer = avtale.getTilskuddPeriode().stream()
-            .filter(tp -> tp.getLøpenummer().equals(løpenummer))
-            .toList();
-
         // Sjekk om det finnes en annen aktiv og ikke-annullert tilskuddsperiode med samme løpenummer
-        boolean finnesAnnenAktiv = perioderMedSammeLøpenummer.stream()
-            .filter(tp -> !tp.getId().equals(id)) // Ekskluder den nåværende perioden
-            .anyMatch(tp -> tp.isAktiv() && tp.getStatus() != TilskuddPeriodeStatus.ANNULLERT);
+        boolean finnesAnnenAktiv = avtale.getTilskuddPeriode().stream()
+            .anyMatch(tp -> {
+                var sammeLøpenummer = tp.getLøpenummer().equals(løpenummer);
+                var ikkeSammeTilskuddsperiode = !tp.getId().equals(id);
+                var erAktivOgIkkeAnnullert = tp.isAktiv() && tp.getStatus() != TilskuddPeriodeStatus.ANNULLERT;
+
+                return sammeLøpenummer && ikkeSammeTilskuddsperiode && erAktivOgIkkeAnnullert;
+            });
 
         if (finnesAnnenAktiv) {
             var feilmelding = "Kan ikke opprette ny tilskuddsperiode. Det finnes allerede en annen aktiv tilskuddsperiode med løpenummer " + løpenummer;
