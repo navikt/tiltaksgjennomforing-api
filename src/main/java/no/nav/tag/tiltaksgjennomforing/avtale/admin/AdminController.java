@@ -510,7 +510,7 @@ public class AdminController {
 
         // Opprett ny tilskuddsperiode
         if (!dryRun) {
-            avtale.lagNyGodkjentTilskuddsperiodeFraAnnullertPeriode(tilskuddPeriode);
+            avtale.lagNyGodkjentTilskuddsperiodeFra(tilskuddPeriode);
             avtaleRepository.save(avtale);
         }
 
