@@ -464,6 +464,7 @@ public class AdminController {
             return ResponseEntity.badRequest().body(feilmelding);
         }
 
+        // Kan kun resende tilskuddsperioder som har vært godkjent
         if (!List.of(TilskuddPeriodeStatus.GODKJENT, TilskuddPeriodeStatus.ANNULLERT).contains(tilskuddPeriode.getStatus())) {
             var feilmelding = "Kan kun opprette ny tilskuddsperiode fra perioder med status GODKJENT eller ANNULLERT. Denne perioden har status: %s"
                 .formatted(tilskuddPeriode.getStatus());
