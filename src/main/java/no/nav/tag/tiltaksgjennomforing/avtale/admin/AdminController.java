@@ -470,7 +470,7 @@ public class AdminController {
             RefusjonStatus.UTBETALING_FEILET
         ).contains(tilskuddPeriode.getRefusjonStatus())) {
             var feilmelding = "Kan ikke opprette ny tilskuddsperiode fra en periode som er sendt til Oebs eller utbetalt.";
-            log.error(feilmelding);
+            log.warn(feilmelding);
             return ResponseEntity.badRequest().body(feilmelding);
         }
 
@@ -478,7 +478,7 @@ public class AdminController {
         if (!List.of(TilskuddPeriodeStatus.GODKJENT, TilskuddPeriodeStatus.ANNULLERT).contains(tilskuddPeriode.getStatus())) {
             var feilmelding = "Kan kun opprette ny tilskuddsperiode fra perioder med status GODKJENT eller ANNULLERT. Denne perioden har status: %s"
                 .formatted(tilskuddPeriode.getStatus());
-            log.error(feilmelding);
+            log.warn(feilmelding);
             return ResponseEntity.badRequest().body(feilmelding);
         }
 
@@ -504,7 +504,7 @@ public class AdminController {
 
         if (finnesAnnenAktiv) {
             var feilmelding = "Kan ikke opprette ny tilskuddsperiode. Det finnes allerede en annen aktiv tilskuddsperiode med løpenummer " + løpenummer;
-            log.error(feilmelding);
+            log.warn(feilmelding);
             return ResponseEntity.badRequest().body(feilmelding);
         }
 
