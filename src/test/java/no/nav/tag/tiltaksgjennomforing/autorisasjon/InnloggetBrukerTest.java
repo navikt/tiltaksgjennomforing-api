@@ -175,8 +175,6 @@ public class InnloggetBrukerTest {
         assertThat(
             new Arbeidsgiver(
                 TestData.etFodselsnummer(),
-                Set.of(),
-                Map.of(),
                 altinn3Organisasjoner,
                 List.of(),
                 persondataService,
@@ -233,9 +231,8 @@ public class InnloggetBrukerTest {
         assertThat(
             new Arbeidsgiver(
                 Fnr.generer(1956, 7, 8),
-                Set.of(),
-                Map.of(),
-                altinn3Organisasjoner, List.of(),
+                altinn3Organisasjoner,
+                List.of(),
                 persondataService,
                 null,
                 null,
@@ -250,9 +247,8 @@ public class InnloggetBrukerTest {
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(this.bedriftNr, Set.of(Tiltakstype.values()));
         Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(
                 Fnr.generer(1956, 7, 8),
-                Set.of(),
-                tilganger,
-            TestData.enAltinnTilgangerDto(tilganger), List.of(),
+                TestData.enAltinnTilgangerDto(tilganger),
+                List.of(),
                 persondataService,
                 null,
                 null,
@@ -268,13 +264,12 @@ public class InnloggetBrukerTest {
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
         Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(
             Fnr.generer(1956, 7, 8),
-                Set.of(),
-                tilganger,
-            TestData.enAltinnTilgangerDto(tilganger), List.of(),
-                persondataService,
-                null,
-                null,
-                null
+            TestData.enAltinnTilgangerDto(tilganger),
+            List.of(),
+            persondataService,
+            null,
+            null,
+            null
         );
         assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isFalse();
     }
@@ -305,9 +300,8 @@ public class InnloggetBrukerTest {
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 Fnr.generer(1956, 7, 8),
-                Set.of(),
-                tilganger,
-            TestData.enAltinnTilgangerDto(tilganger), List.of(),
+                TestData.enAltinnTilgangerDto(tilganger),
+                List.of(),
                 persondataService,
                 null,
                 null,
@@ -323,9 +317,8 @@ public class InnloggetBrukerTest {
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 Fnr.generer(1956, 7, 8),
-                Set.of(),
-                tilganger,
-            TestData.enAltinnTilgangerDto(tilganger), List.of(),
+                TestData.enAltinnTilgangerDto(tilganger),
+                List.of(),
                 persondataService,
                 null,
                 null,

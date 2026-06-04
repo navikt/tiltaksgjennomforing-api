@@ -15,8 +15,6 @@ import java.util.Set;
 @Value
 public class InnloggetArbeidsgiver implements InnloggetBruker {
     Fnr identifikator;
-    Set<AltinnReportee> altinnOrganisasjoner;
-    Map<BedriftNr, Collection<Tiltakstype>> tilganger;
     AltinnTilgangerDto altinnTilganger;
     Avtalerolle rolle = Avtalerolle.ARBEIDSGIVER;
     boolean erNavAnsatt = false;

@@ -3,9 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 import io.getunleash.UnleashContext;
 import io.getunleash.strategy.Strategy;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
-import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import org.springframework.stereotype.Component;
 
@@ -46,9 +45,10 @@ public class ByOrgnummerStrategy implements Strategy {
             return List.of();
         }
         try {
-            //TODO: Fungerer pt. ikke. bruker kun dummy hentArbeidsgivrtoken.
-            Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(new Fnr(currentUserId), () -> "");
-            return altinnOrganisasjoner.stream().map(AltinnReportee::getOrganizationNumber).toList();
+            // Gir kun organisasjoner bruker har en tiltakstilgang på, ikke alle organisasjoner brukeren har tilgang til i Altinn. Tror det er ok 🥶
+            return altinnTilgangsstyringService.hentAltinnTilganger().tilganger().keySet().stream()
+                    .map(BedriftNr::asString)
+                    .toList();
         } catch (Exception e) {
             log.error("Feil ved oppslag på brukers organisasjoner i Altinn: {}", e.getMessage());
             return List.of();

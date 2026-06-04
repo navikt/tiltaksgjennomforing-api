@@ -288,8 +288,6 @@ public class AvtaleControllerTest {
         værInnloggetSom(
             new Arbeidsgiver(
                 Fnr.generer(1956, 7, 8),
-                Set.of(),
-                Map.of(),
                 altinn3Organisasjoner,
                 List.of(),
                 persondataService,
@@ -562,8 +560,6 @@ public class AvtaleControllerTest {
 
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
             TestData.etFodselsnummer(),
-            Set.of(),
-            Map.of(),
             altinn3Organisasjoner,
             null,
             null,

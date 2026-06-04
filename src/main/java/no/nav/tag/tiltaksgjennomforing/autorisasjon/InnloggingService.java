@@ -68,24 +68,10 @@ public class InnloggingService {
             return new Mentor(new Fnr(brukerOgIssuer.getBrukerIdent()));
         }
         if (issuer == Issuer.ISSUER_TOKENX && avtalerolle == Avtalerolle.ARBEIDSGIVER) {
-            HentArbeidsgiverToken hentArbeidsgiverToken = arbeidsgiverTokenStrategyFactory.create(issuer);
-            Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService
-                .hentAltinnOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
-            Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(
-                new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
             AltinnTilgangerDto altinnTilganger = altinnTilgangsstyringService.hentAltinnTilganger();
             List<BedriftNr> adressesperreTilganger = altinnTilganger.adressesperreTilganger();
-            log.info(
-                "InnloggetArbeidsgiver - bedrifter: altinn2TilgangerBedrifter={}, altinn3TilgangerBedrifter={}, tilganger: altinn2TotaltTilganger={}, altinn3TotaltTilganger={}",
-                tilganger.size(),
-                altinnTilganger.tilganger().size(),
-                tilganger.values().stream().mapToInt(Collection::size).sum(),
-                altinnTilganger.tilganger().values().stream().mapToInt(Set::size).sum()
-            );
             return new Arbeidsgiver(
                 new Fnr(brukerOgIssuer.getBrukerIdent()),
-                altinnOrganisasjoner,
-                tilganger,
                 altinnTilganger,
                 adressesperreTilganger,
                 persondataService,
