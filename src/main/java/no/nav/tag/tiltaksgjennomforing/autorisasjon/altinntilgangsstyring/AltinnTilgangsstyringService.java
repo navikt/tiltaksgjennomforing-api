@@ -1,31 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnConfig;
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxyKlient;
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxyKlientConfig;
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.ProxyConfig;
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.error.exceptions.AltinnrettigheterProxyKlientFallbackException;
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.SelvbetjeningToken;
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.ServiceCode;
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.ServiceEdition;
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.Subject;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
-import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AltinnFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
-import no.nav.tag.tiltaksgjennomforing.utils.MultiValueMap;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,14 +21,11 @@ import java.util.Set;
 @Slf4j
 public class AltinnTilgangsstyringService {
     private final AltinnTilgangsstyringProperties altinnTilgangsstyringProperties;
-    private final AltinnrettigheterProxyKlient klient;
     private final RestTemplate azureRestTemplate;
 
     public AltinnTilgangsstyringService(
             AltinnTilgangsstyringProperties altinnTilgangsstyringProperties,
-            TokenUtils tokenUtils,
-            RestTemplate azureRestTemplate,
-            @Value("${spring.application.name}") String applicationName) {
+            RestTemplate azureRestTemplate) {
 
         if (Utils.erNoenTomme(altinnTilgangsstyringProperties.getArbtreningServiceCode(),
                 altinnTilgangsstyringProperties.getArbtreningServiceEdition(),
@@ -60,19 +42,6 @@ public class AltinnTilgangsstyringService {
         }
         this.altinnTilgangsstyringProperties = altinnTilgangsstyringProperties;
         this.azureRestTemplate = azureRestTemplate;
-
-        String altinnProxyUrl = altinnTilgangsstyringProperties.getProxyUri().toString();
-        String altinnProxyFallbackUrl = altinnTilgangsstyringProperties.getUri().toString();
-
-        AltinnrettigheterProxyKlientConfig proxyKlientConfig = new AltinnrettigheterProxyKlientConfig(
-                new ProxyConfig(applicationName, altinnProxyUrl),
-                new AltinnConfig(
-                        altinnProxyFallbackUrl,
-                        altinnTilgangsstyringProperties.getAltinnApiKey(),
-                        altinnTilgangsstyringProperties.getApiGwApiKey()
-                )
-        );
-        this.klient = new AltinnrettigheterProxyKlient(proxyKlientConfig);
     }
 
     public AltinnTilgangerDto hentAltinnTilganger() {
