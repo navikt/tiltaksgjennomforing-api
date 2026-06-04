@@ -895,16 +895,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void annullerTilskuddsperiode(TilskuddPeriode tilskuddsperiode) {
+        tilskuddsperiode.setStatus(TilskuddPeriodeStatus.ANNULLERT);
         // Sjekk på refusjonens status
         if (tilskuddsperiode.getRefusjonStatus() == RefusjonStatus.UTGÅTT) {
             log.atWarn()
                 .addKeyValue("avtaleId", getId().toString())
                 .log(
-                    "Sender ikke annuleringsmelding for tilskuddsperiode {} med utgått refusjon.",
+                    "Sender ikke annulleringsmelding for tilskuddsperiode {} med utgått refusjon.",
                     tilskuddsperiode.getId()
                 );
         } else {
-            tilskuddsperiode.setStatus(TilskuddPeriodeStatus.ANNULLERT);
             registerEvent(new TilskuddsperiodeAnnullert(this, tilskuddsperiode));
         }
     }
