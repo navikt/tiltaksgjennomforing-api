@@ -1160,17 +1160,20 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
     }
 
-    public void lagNyGodkjentTilskuddsperiodeFra(TilskuddPeriode gammelTilskuddPeriode) {
+    public void lagNyGodkjentTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
         if (!this.tiltakstype.skalBesluttes()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_FEIL_TILTAKSTYPE);
         }
-        TilskuddPeriode nyTilskuddsperiode = gammelTilskuddPeriode.deaktiverOgLagNyUbehandlet();
-        gammelTilskuddPeriode.setAktiv(true);
+        if (annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
+            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
+        }
+        TilskuddPeriode nyTilskuddsperiode = annullertTilskuddPeriode.deaktiverOgLagNyUbehandlet();
+        annullertTilskuddPeriode.setAktiv(true);
         nyTilskuddsperiode.setStatus(TilskuddPeriodeStatus.GODKJENT);
-        nyTilskuddsperiode.setGodkjentAvNavIdent(gammelTilskuddPeriode.getGodkjentAvNavIdent());
-        nyTilskuddsperiode.setGodkjentTidspunkt(gammelTilskuddPeriode.getGodkjentTidspunkt());
-        nyTilskuddsperiode.setEnhet(gammelTilskuddPeriode.getEnhet());
-        Integer resendingsnummer = finnResendingsNummer(gammelTilskuddPeriode);
+        nyTilskuddsperiode.setGodkjentAvNavIdent(annullertTilskuddPeriode.getGodkjentAvNavIdent());
+        nyTilskuddsperiode.setGodkjentTidspunkt(annullertTilskuddPeriode.getGodkjentTidspunkt());
+        nyTilskuddsperiode.setEnhet(annullertTilskuddPeriode.getEnhet());
+        Integer resendingsnummer = finnResendingsNummer(annullertTilskuddPeriode);
         registerEvent(new TilskuddsperiodeGodkjent(
             this,
             nyTilskuddsperiode,
