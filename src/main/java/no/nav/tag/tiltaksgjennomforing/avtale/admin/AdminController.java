@@ -94,11 +94,11 @@ public class AdminController {
     }
 
     @GetMapping("/sjekk-om-bruker-kan-faa-digital-brev-og-har-adresse/{fnr}")
-    public boolean hentPostadresse(@PathVariable("fnr") String fnr) {
+    public void validerPostutsendelse(@PathVariable("fnr") String fnr) {
         log.info("skal hent-postadresse for FNR...");
         Fnr validertFnr = new Fnr(fnr);
         log.info("hent-postadresse FNR er validert, skal sjekke om person kan få post...");
-        return postutsendelseService.sjekkOmBrukerKanFaaPost(validertFnr);
+        postutsendelseService.validerAtPersonKanMottaPost(validertFnr);
     }
 
     @PostMapping("/annuller-tilskuddsperiode/{tilskuddsperiodeId}")

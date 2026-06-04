@@ -16,7 +16,7 @@ public class PostutsendelseService {
     private final PostadresseClient postadresseClient;
     private final DigitalKontaktinformasjonClient digitalKontaktinformasjonClient;
 
-    public boolean sjekkOmBrukerKanFaaPost(Fnr fnr) {
+    public void validerAtPersonKanMottaPost(Fnr fnr) {
         boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedAdresse(fnr);
         boolean erReservertMotDigitalKommunikasjon = digitalKontaktinformasjonClient.erPersonReservertMotDigitalKontakt(fnr);
 
@@ -24,8 +24,6 @@ public class PostutsendelseService {
             log.info("Person kan ikke få post: mangler adresse og er reservert mot digital kommunikasjon");
             throw new FeilkodeException(Feilkode.KAN_IKKE_SENDE_POST_MANGLER_ADRESSE_OG_RESERVERT);
         }
-
-        return harAdresse || !erReservertMotDigitalKommunikasjon;
     }
 }
 
