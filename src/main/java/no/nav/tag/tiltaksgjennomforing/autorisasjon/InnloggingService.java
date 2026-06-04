@@ -7,7 +7,6 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.ArbeidsgiverTokenStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
@@ -48,7 +47,6 @@ public class InnloggingService {
     private final Norg2Client norg2Client;
     private final EntraproxyService entraproxyService;
     private final VeilarboppfolgingService veilarboppfolgingService;
-    private final ArbeidsgiverTokenStrategyFactory arbeidsgiverTokenStrategyFactory;
     private final FeatureToggleService featureToggleService;
     private final EregService eregService;
 

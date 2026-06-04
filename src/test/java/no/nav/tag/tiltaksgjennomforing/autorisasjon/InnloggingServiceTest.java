@@ -4,7 +4,6 @@ import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.ArbeidsgiverTokenStrategyFactoryImpl;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
@@ -54,8 +53,6 @@ public class InnloggingServiceTest {
     @Mock
     private AdGruppeProperties beslutterAdGruppeProperties;
 
-    @Mock
-    private ArbeidsgiverTokenStrategyFactoryImpl arbeidsgiverTokenStrategyFactory;
 
     @BeforeEach
     public void setup() {
