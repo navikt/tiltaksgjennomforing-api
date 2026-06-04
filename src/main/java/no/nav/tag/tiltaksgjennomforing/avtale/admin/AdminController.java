@@ -451,6 +451,13 @@ public class AdminController {
             return ResponseEntity.badRequest().body(feilmelding);
         }
 
+        if (!List.of(TilskuddPeriodeStatus.GODKJENT, TilskuddPeriodeStatus.ANNULLERT).contains(tilskuddPeriode.getStatus())) {
+            var feilmelding = "Kan kun opprette ny tilskuddsperiode fra perioder med status GODKJENT eller ANNULLERT. Denne perioden har status: %s"
+                .formatted(tilskuddPeriode.getStatus());
+            log.error(feilmelding);
+            return ResponseEntity.badRequest().body(feilmelding);
+        }
+
         Avtale avtale = tilskuddPeriode.getAvtale();
         Integer løpenummer = tilskuddPeriode.getLøpenummer();
 

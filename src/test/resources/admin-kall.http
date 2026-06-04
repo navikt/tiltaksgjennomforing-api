@@ -71,7 +71,7 @@ Accept: application/json
 Authorization: Bearer <TOKEN>
 
 ### Resend tilskuddsperiode som godkjent
-POST https://tiltaksgjennomforing-api.intern.nav.no/tiltaksgjennomforing-api/utvikler-admin/opprett-ny-godkjent-tilskuddsperiode-fra-annullert/<TILSKUDDSPERIODE_ID>
+POST https://tiltaksgjennomforing-api.intern.nav.no/tiltaksgjennomforing-api/utvikler-admin/opprett-ny-godkjent-tilskuddsperiode-fra-annullert/<TILSKUDDSPERIODE_ID>?dryRun=true
 Content-Type: application/json
 Authorization: Bearer <TOKEN>
 
