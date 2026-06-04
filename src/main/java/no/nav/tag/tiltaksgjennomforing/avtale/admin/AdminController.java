@@ -465,6 +465,65 @@ public class AdminController {
         return ResponseEntity.ok(nyAvtale.getId());
     }
 
+    @PostMapping("/opprett-ny-godkjent-tilskuddsperiode-fra-annullert/{tilskuddsperiodeId}")
+    @Transactional
+    public ResponseEntity<?> opprettNyGodkjentTilskuddsperiodeFraAnnullert(
+        @PathVariable("tilskuddsperiodeId") UUID id,
+        @RequestParam(required = false, defaultValue = "true") boolean dryRun
+    ) {
+        log.info("Oppretter ny tilskuddsperiode fra annullert periode {}", id);
+        TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(id)
+            .orElseThrow(RessursFinnesIkkeException::new);
+
+        // Sjekk refusjonstatus
+        if (tilskuddPeriode.getRefusjonStatus() != null && List.of(
+            RefusjonStatus.SENDT_KRAV,
+            RefusjonStatus.UTBETALT,
+            RefusjonStatus.UTBETALING_FEILET
+        ).contains(tilskuddPeriode.getRefusjonStatus())) {
+            var feilmelding = "Kan ikke opprette ny tilskuddsperiode fra en periode som er sendt til Oebs eller utbetalt.";
+            log.error(feilmelding);
+            return ResponseEntity.badRequest().body(feilmelding);
+        }
+
+        Avtale avtale = tilskuddPeriode.getAvtale();
+        Integer løpenummer = tilskuddPeriode.getLøpenummer();
+
+        // Annuller perioden hvis den ikke allerede er annullert
+        if (tilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
+            if (!dryRun) {
+                avtale.annullerTilskuddsperiode(tilskuddPeriode);
+            }
+        }
+
+        // Finn alle tilskuddsperioder med samme løpenummer
+        List<TilskuddPeriode> perioderMedSammeLøpenummer = avtale.getTilskuddPeriode().stream()
+            .filter(tp -> tp.getLøpenummer().equals(løpenummer))
+            .toList();
+
+        // Sjekk om det finnes en annen aktiv og ikke-annullert tilskuddsperiode med samme løpenummer
+        boolean finnesAnnenAktiv = perioderMedSammeLøpenummer.stream()
+            .filter(tp -> !tp.getId().equals(id)) // Ekskluder den nåværende perioden
+            .anyMatch(tp -> tp.isAktiv() && tp.getStatus() != TilskuddPeriodeStatus.ANNULLERT);
+
+        if (finnesAnnenAktiv) {
+            var feilmelding = "Kan ikke opprette ny tilskuddsperiode. Det finnes allerede en annen aktiv tilskuddsperiode med løpenummer " + løpenummer;
+            log.error(feilmelding);
+            return ResponseEntity.badRequest().body(feilmelding);
+        }
+
+        // Opprett ny tilskuddsperiode
+        if (!dryRun) {
+            avtale.lagNyGodkjentTilskuddsperiodeFraAnnullertPeriode(tilskuddPeriode);
+            avtaleRepository.save(avtale);
+        }
+
+        return ResponseEntity.ok(Map.of(
+            "message", dryRun ? "Dry run: ingen endringer ble utført" : "Ny tilskuddsperiode har blitt opprettet",
+            "dryRun", dryRun
+        ));
+    }
+
     /**
      * En feil har ført til at mange VTAO-avtaler mangler kreverOppfolgingFom, som igjen fører til at veileder ikke
      * får ny oppfølgingsperiode. Dette endepunktet fikser opp i feilen ved å sette kreverOppfolgingFom til tidligst
