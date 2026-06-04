@@ -1160,7 +1160,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
     }
 
-    public TilskuddPeriode lagNyGodkjentTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
+    public void lagNyGodkjentTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
         if (!this.tiltakstype.skalBesluttes()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_FEIL_TILTAKSTYPE);
         }
@@ -1182,7 +1182,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         ));
         tilskuddPeriode.add(nyTilskuddsperiode);
         setGjeldendeTilskuddsperiode(TilskuddPeriode.utledGjeldendeTilskuddsperiode(this).tilskuddPeriode());
-        return nyTilskuddsperiode;
     }
 
     private Integer finnResendingsNummer(TilskuddPeriode gjeldendePeriode) {
