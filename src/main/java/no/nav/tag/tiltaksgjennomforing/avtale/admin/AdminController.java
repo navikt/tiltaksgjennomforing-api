@@ -430,9 +430,22 @@ public class AdminController {
         return ResponseEntity.ok(nyAvtale.getId());
     }
 
-    @PostMapping("/opprett-ny-godkjent-tilskuddsperiode-fra-annullert/{tilskuddsperiodeId}")
+    /**
+     * Brukes for å resende tilskuddsperioder som enten har blitt annullert ved en feil, eller som har feil i data og må resendes.
+     * Noen eksempler på når dette er nødvendig:
+     * <ul>
+     *   <li>En automatisk utbetaling ble annullert fordi vi ikke fikk hentet kontonummer i tide.</li>
+     *   <li>Oebs ber oss resende i enkelte tilfeller hvor juridisk enhet har endret seg (overtakelser eller organisatoriske endringer)</li>
+     *   <li>Automatisk utbetaling har feil kid-nummer (eller burde ikke hatt kid-nummer). Resend etter dette har blitt rettet i avtalen</li>
+     * </ul>
+     * Resending anses som en teknisk detalj, og <b>vi tar derfor med beslutters godkjenning fra den gamle tilskuddsperioden
+     * til den nye</b>.
+     *
+     * @param dryRun Vi defaulter til å ikke utføre endringer for ekstra sikkerhet
+     */
+    @PostMapping("/resend-tilskuddsperiode/{tilskuddsperiodeId}")
     @Transactional
-    public ResponseEntity<?> opprettNyGodkjentTilskuddsperiodeFraAnnullert(
+    public ResponseEntity<?> resendTilskuddsperiode(
         @PathVariable("tilskuddsperiodeId") UUID id,
         @RequestParam(required = false, defaultValue = "true") boolean dryRun
     ) {
