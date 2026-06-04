@@ -62,8 +62,6 @@ tiltaksgjennomforing:
     enabled: false
     fake-url: http://localhost:8081/fake-kafka
   altinn-tilgangsstyring:
-    uri: http://localhost:8090/altinn-tilgangsstyring
-    proxyUri: http://heh:9090/
     arbeidsgiverAltinnTilgangerUri: http://localhost:8090/altinn-tilganger
     ltsMidlertidigServiceCode: 5516
     ltsMidlertidigServiceEdition: 1
@@ -79,8 +77,8 @@ tiltaksgjennomforing:
     arbtreningServiceEdition: 1
     vtaoServiceCode: 5516
     vtaoServiceEdition: 6
-    altinnApiKey: foo
-    apiGwApiKey: foo
+    ltsFirearigServiceCode: 5516
+    ltsFirearigServiceEdition: 8
   ereg:
     uri: http://localhost:8090/ereg
   regoppslag:

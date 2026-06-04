@@ -173,9 +173,7 @@ public class InnloggetBrukerTest {
     @Test
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avtale() {
         assertThat(
-            new Arbeidsgiver(
-                TestData.etFodselsnummer(),
-                Set.of(),
+            new Arbeidsgiver(TestData.etFodselsnummer(),
                 Map.of(),
                 altinn3Organisasjoner,
                 List.of(),
@@ -231,9 +229,7 @@ public class InnloggetBrukerTest {
     public void harTilgang__ikkepart_selvbetjeningsbruker_skal_ikke_ha_tilgang() {
         when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
         assertThat(
-            new Arbeidsgiver(
-                Fnr.generer(1956, 7, 8),
-                Set.of(),
+            new Arbeidsgiver(Fnr.generer(1956, 7, 8),
                 Map.of(),
                 altinn3Organisasjoner, List.of(),
                 persondataService,
@@ -248,9 +244,7 @@ public class InnloggetBrukerTest {
     public void harTilgang__arbeidsgiver_skal_kunne_representere_bedrift_uten_Fnr() {
         when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(this.bedriftNr, Set.of(Tiltakstype.values()));
-        Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(
-                Fnr.generer(1956, 7, 8),
-                Set.of(),
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(Fnr.generer(1956, 7, 8),
                 tilganger,
             TestData.enAltinnTilgangerDto(tilganger), List.of(),
                 persondataService,
@@ -258,7 +252,7 @@ public class InnloggetBrukerTest {
                 null,
                 null
         );
-        assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isTrue();
+        assertThat(arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isTrue();
     }
 
     @Test
@@ -266,9 +260,7 @@ public class InnloggetBrukerTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
-        Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(
-            Fnr.generer(1956, 7, 8),
-                Set.of(),
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(Fnr.generer(1956, 7, 8),
                 tilganger,
             TestData.enAltinnTilgangerDto(tilganger), List.of(),
                 persondataService,
@@ -276,7 +268,7 @@ public class InnloggetBrukerTest {
                 null,
                 null
         );
-        assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isFalse();
+        assertThat(arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isFalse();
     }
 
     @Test
@@ -303,9 +295,7 @@ public class InnloggetBrukerTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
-        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-                Fnr.generer(1956, 7, 8),
-                Set.of(),
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(Fnr.generer(1956, 7, 8),
                 tilganger,
             TestData.enAltinnTilgangerDto(tilganger), List.of(),
                 persondataService,
@@ -321,9 +311,7 @@ public class InnloggetBrukerTest {
     public void harTilgang__arbeidsgiver_med_arbeidsgivertilgang_skal_ikke_ha_lonnstilskuddtilgang() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
-        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-                Fnr.generer(1956, 7, 8),
-                Set.of(),
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(Fnr.generer(1956, 7, 8),
                 tilganger,
             TestData.enAltinnTilgangerDto(tilganger), List.of(),
                 persondataService,
