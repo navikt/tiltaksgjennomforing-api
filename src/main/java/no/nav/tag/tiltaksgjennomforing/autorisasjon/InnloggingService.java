@@ -61,10 +61,11 @@ public class InnloggingService {
             return new Mentor(new Fnr(brukerOgIssuer.getBrukerIdent()));
         }
         if (issuer == Issuer.ISSUER_TOKENX && avtalerolle == Avtalerolle.ARBEIDSGIVER) {
-            AltinnTilgangerDto altinnTilganger = altinnTilgangsstyringService.hentAltinnTilganger();
+            Fnr arbeidsgiverFnr = new Fnr(brukerOgIssuer.getBrukerIdent());
+            AltinnTilgangerDto altinnTilganger = altinnTilgangsstyringService.hentAltinnTilganger(arbeidsgiverFnr);
             List<BedriftNr> adressesperreTilganger = altinnTilganger.adressesperreTilganger();
             return new Arbeidsgiver(
-                new Fnr(brukerOgIssuer.getBrukerIdent()),
+                arbeidsgiverFnr,
                 altinnTilganger,
                 adressesperreTilganger,
                 persondataService,

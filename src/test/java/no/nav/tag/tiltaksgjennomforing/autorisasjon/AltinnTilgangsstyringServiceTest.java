@@ -1,14 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
+import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AltinnFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,8 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles({ Miljø.TEST, Miljø.WIREMOCK })
 @DirtiesContext
 public class AltinnTilgangsstyringServiceTest {
+    private Fnr fnr;
+
     @Autowired
     private AltinnTilgangsstyringService altinnTilgangsstyringService;
 
@@ -40,12 +44,19 @@ public class AltinnTilgangsstyringServiceTest {
 
     @BeforeEach
     public void setup() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
         when(featureToggleService.isEnabled(anyString())).thenReturn(false);
+        fnr = Fnr.generer(25);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
     }
 
     @Test
     public void hentOrganisasjoner__gyldig_fnr_en_bedrift_på_hvert_tiltak() {
-        AltinnTilgangerDto dto = altinnTilgangsstyringService.hentAltinnTilganger();
+        AltinnTilgangerDto dto = altinnTilgangsstyringService.hentAltinnTilganger(fnr);
         Map<BedriftNr, Set<Tiltakstype>> tilganger = dto.tilganger();
 
         // Parents skal ikke være i tilgang-map
@@ -62,7 +73,7 @@ public class AltinnTilgangsstyringServiceTest {
 
     @Test
     public void hentOrganisasjoner__tilgang_bare_for_arbeidstrening() {
-        AltinnTilgangerDto dto = altinnTilgangsstyringService.hentAltinnTilganger();
+        AltinnTilgangerDto dto = altinnTilgangsstyringService.hentAltinnTilganger(fnr);
         Map<BedriftNr, Set<Tiltakstype>> tilganger = dto.tilganger();
 
         // Parents skal ikke være i tilgang-map
@@ -82,7 +93,7 @@ public class AltinnTilgangsstyringServiceTest {
 
     @Test
     public void hentAltinn3__Organisasjoner__returnerer_hierarki_og_tilgangsmappinger() {
-        AltinnTilgangerDto dto = altinnTilgangsstyringService.hentAltinnTilganger();
+        AltinnTilgangerDto dto = altinnTilgangsstyringService.hentAltinnTilganger(fnr);
 
         assertThat(dto).isNotNull();
 
@@ -105,7 +116,7 @@ public class AltinnTilgangsstyringServiceTest {
 
     @Test
     public void mapTilgangerFraAltinn3__returnerer_tilganger_per_bedrift() {
-        AltinnTilgangerDto dto = altinnTilgangsstyringService.hentAltinnTilganger();
+        AltinnTilgangerDto dto = altinnTilgangsstyringService.hentAltinnTilganger(fnr);
         Map<BedriftNr, Set<Tiltakstype>> tilganger = dto.tilganger();
 
         assertThat(tilganger).isNotEmpty();

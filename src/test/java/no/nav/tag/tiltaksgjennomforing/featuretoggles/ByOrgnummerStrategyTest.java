@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ByOrgnummerStrategyTest {
-
+    private Fnr fnr;
     private UnleashContext unleashContext;
 
     @Mock
@@ -35,7 +35,7 @@ public class ByOrgnummerStrategyTest {
     public void setup() {
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
 
-        Fnr fnr = Fnr.generer(2001, 11, 12);
+        fnr = Fnr.generer(2001, 11, 12);
         unleashContext = UnleashContext.builder().userId(fnr.asString()).build();
     }
 
@@ -46,13 +46,13 @@ public class ByOrgnummerStrategyTest {
 
     @Test
     public void skal_være_enablet_hvis_bruker_tilhører_organisasjon() {
-        when(altinnTilgangsstyringService.hentAltinnTilganger()).thenReturn(altinnTilganger("999999999"));
+        when(altinnTilgangsstyringService.hentAltinnTilganger(fnr)).thenReturn(altinnTilganger("999999999"));
         assertThat(new ByOrgnummerStrategy(altinnTilgangsstyringService).isEnabled(Map.of(ByOrgnummerStrategy.UNLEASH_PARAMETER_ORGNUMRE, "999999999"), unleashContext)).isTrue();
     }
 
     @Test
     public void skal_være_disablet_hvis_bruker_ikke_tilhører_organisasjon() {
-        when(altinnTilgangsstyringService.hentAltinnTilganger()).thenReturn(altinnTilganger("999999998"));
+        when(altinnTilgangsstyringService.hentAltinnTilganger(fnr)).thenReturn(altinnTilganger("999999998"));
         assertThat(new ByOrgnummerStrategy(altinnTilgangsstyringService).isEnabled(Map.of(ByOrgnummerStrategy.UNLEASH_PARAMETER_ORGNUMRE, "999999999"), unleashContext)).isFalse();
     }
 
@@ -60,18 +60,18 @@ public class ByOrgnummerStrategyTest {
     public void navIdent_skal_returnere_false() {
         UnleashContext unleashContext = UnleashContext.builder().userId("J154200").build();
         assertThat(new ByOrgnummerStrategy(altinnTilgangsstyringService).isEnabled(Map.of(ByOrgnummerStrategy.UNLEASH_PARAMETER_ORGNUMRE, "999999999"), unleashContext)).isFalse();
-        verify(altinnTilgangsstyringService, never()).hentAltinnTilganger();
+        verify(altinnTilgangsstyringService, never()).hentAltinnTilganger(fnr);
     }
 
     @Test
     public void byOrgnummmer_strategy_håndterer_flere_orgnummer() {
-        when(altinnTilgangsstyringService.hentAltinnTilganger()).thenReturn(altinnTilganger("999999999"));
+        when(altinnTilgangsstyringService.hentAltinnTilganger(fnr)).thenReturn(altinnTilganger("999999999"));
         assertThat(new ByOrgnummerStrategy(altinnTilgangsstyringService).isEnabled(Map.of(ByOrgnummerStrategy.UNLEASH_PARAMETER_ORGNUMRE, "910825526,999999999"), unleashContext)).isTrue();
     }
 
     @Test
     public void skal_være_disablet_hvis_feil_ved_oppslag_i_altinn() {
-        when(altinnTilgangsstyringService.hentAltinnTilganger()).thenThrow(RuntimeException.class);
+        when(altinnTilgangsstyringService.hentAltinnTilganger(fnr)).thenThrow(RuntimeException.class);
         assertThat(new ByOrgnummerStrategy(altinnTilgangsstyringService).isEnabled(Map.of(ByOrgnummerStrategy.UNLEASH_PARAMETER_ORGNUMRE, "999999999"), unleashContext)).isFalse();
     }
 

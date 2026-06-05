@@ -5,6 +5,7 @@ import io.getunleash.strategy.Strategy;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import org.springframework.stereotype.Component;
 
@@ -46,7 +47,7 @@ public class ByOrgnummerStrategy implements Strategy {
         }
         try {
             // Gir kun organisasjoner bruker har en tiltakstilgang på, ikke alle organisasjoner brukeren har tilgang til i Altinn. Tror det er ok 🥶
-            return altinnTilgangsstyringService.hentAltinnTilganger().tilganger().keySet().stream()
+            return altinnTilgangsstyringService.hentAltinnTilganger(new Fnr(currentUserId)).tilganger().keySet().stream()
                     .map(BedriftNr::asString)
                     .toList();
         } catch (Exception e) {
