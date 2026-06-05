@@ -285,6 +285,7 @@ public class AvtaleController {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LASTE_NED_PDF);
         }
         byte[] avtalePdf = dokgenService.avtalePdf(avtale, innloggetPart);
+        meterRegistry.counter("tiltaksgjennomforing.pdf.nedlastet", "avtalerolle", innloggetPart.name()).increment();
         HttpHeaders header = new HttpHeaders();
         header.setContentType(MediaType.APPLICATION_PDF);
         header.set(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=Avtale om " + avtale.tiltakstype().getBeskrivelse() + ".pdf");
