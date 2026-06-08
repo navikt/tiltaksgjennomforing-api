@@ -81,12 +81,3 @@ services:
 #      - ./dbdata:/var/lib/postgresql/data
     ports:
       - 6432:5432
-  tiltak-dokgen:
-    build:
-      context: ../tiltak-dokgen
-    ports:
-      - 5913:8080
-    volumes:
-      - ../tiltak-dokgen/content:/app/content
-    environment:
-      SPRING_PROFILES_ACTIVE: dev

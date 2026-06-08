@@ -18,8 +18,6 @@ import static no.nav.tag.tiltaksgjennomforing.satser.Sats.VTAO_SATS;
 public class AvtaleTilJournalfoeringMapper {
 
     public static AvtaleTilJournalfoering tilJournalfoering(AvtaleInnholdDTO avtaleInnhold, AvtaleDTO avtale, Avtalerolle avtalerolle) {
-        //AvtaleInnholdDTO avtaleInnhold = avtale.gjeldendeInnhold();
-
         AvtaleTilJournalfoering avtaleTilJournalfoering = new AvtaleTilJournalfoering();
         avtaleTilJournalfoering.setTiltakstype(avtale.tiltakstype());
         avtaleTilJournalfoering.setArbeidsgiverKontonummer(avtale.gjeldendeInnhold().arbeidsgiverKontonummer());
@@ -82,6 +80,7 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setRefusjonKontaktperson(avtaleInnhold.refusjonKontaktperson());
         avtaleTilJournalfoering.setInkluderingstilskuddsutgift(avtaleInnhold.inkluderingstilskuddsutgift());
         avtaleTilJournalfoering.setInkluderingstilskuddBegrunnelse(avtaleInnhold.inkluderingstilskuddBegrunnelse());
+        avtaleTilJournalfoering.setTilskuddsPerioder(avtale.tilskuddPeriode().stream().toList());
 
         if (avtalerolle != null) {
             avtaleTilJournalfoering.setAvtalerolle(avtalerolle);
