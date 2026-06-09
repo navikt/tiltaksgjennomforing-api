@@ -2,14 +2,11 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.BrukerOgIssuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.ArbeidsgiverTokenStrategyFactory;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.HentArbeidsgiverToken;
 import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
@@ -19,7 +16,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Mentor;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -35,10 +31,8 @@ import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @Component
@@ -54,7 +48,6 @@ public class InnloggingService {
     private final Norg2Client norg2Client;
     private final EntraproxyService entraproxyService;
     private final VeilarboppfolgingService veilarboppfolgingService;
-    private final ArbeidsgiverTokenStrategyFactory arbeidsgiverTokenStrategyFactory;
     private final FeatureToggleService featureToggleService;
     private final EregService eregService;
     private final PostutsendelseService postutsendelseService;
@@ -70,24 +63,11 @@ public class InnloggingService {
             return new Mentor(new Fnr(brukerOgIssuer.getBrukerIdent()));
         }
         if (issuer == Issuer.ISSUER_TOKENX && avtalerolle == Avtalerolle.ARBEIDSGIVER) {
-            HentArbeidsgiverToken hentArbeidsgiverToken = arbeidsgiverTokenStrategyFactory.create(issuer);
-            Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService
-                .hentAltinnOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
-            Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(
-                new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
-            AltinnTilgangerDto altinnTilganger = altinnTilgangsstyringService.hentAltinnTilganger();
+            Fnr arbeidsgiverFnr = new Fnr(brukerOgIssuer.getBrukerIdent());
+            AltinnTilgangerDto altinnTilganger = altinnTilgangsstyringService.hentAltinnTilganger(arbeidsgiverFnr);
             List<BedriftNr> adressesperreTilganger = altinnTilganger.adressesperreTilganger();
-            log.info(
-                "InnloggetArbeidsgiver - bedrifter: altinn2TilgangerBedrifter={}, altinn3TilgangerBedrifter={}, tilganger: altinn2TotaltTilganger={}, altinn3TotaltTilganger={}",
-                tilganger.size(),
-                altinnTilganger.tilganger().size(),
-                tilganger.values().stream().mapToInt(Collection::size).sum(),
-                altinnTilganger.tilganger().values().stream().mapToInt(Set::size).sum()
-            );
             return new Arbeidsgiver(
-                new Fnr(brukerOgIssuer.getBrukerIdent()),
-                altinnOrganisasjoner,
-                tilganger,
+                arbeidsgiverFnr,
                 altinnTilganger,
                 adressesperreTilganger,
                 persondataService,
