@@ -476,11 +476,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         return gjeldendeInnhold.getGodkjentAvVeileder() != null;
     }
 
-    public boolean harAlleAvtalepartGodkjentUnntattVeileder() {
-        return erGodkjentAvDeltaker()
-            && erGodkjentAvArbeidsgiver()
-            && !erGodkjentAvVeileder();
-    }
 
     @JsonProperty
     public boolean erAvtaleInngått() {

@@ -603,7 +603,7 @@ public class AvtaleControllerTest {
         VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
         EregService eregService = mock(EregService.class);
         Veileder veileder = new Veileder(
-            avtale.getVeilederNavIdent(),
+            Optional.ofNullable(avtale.getVeilederNavIdent()).orElse(new NavIdent("Z123456")),
             null,
             tilgangskontrollService,
             persondataService,
@@ -776,6 +776,27 @@ public class AvtaleControllerTest {
 
         verify(postutsendelseService, never()).validerAtPersonKanMottaPost(any(Fnr.class));
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
+    }
+
+    @Test
+    public void godkjennForAvtalepart__skal_ikke_validere_postutsendelse_nar_avtale_er_ufordelt() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setVeilederNavIdent(null);
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        skruPåPostutsendelseValidering();
+        værInnloggetSom(enVeilederMedPostutsendelseService(avtale));
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+
+        assertThatThrownBy(() -> avtaleController.godkjenn(
+            avtale.getId(),
+            Avtalerolle.VEILEDER,
+            avtale.getSistEndret()
+        )).isInstanceOf(FeilkodeException.class);
+
+        verify(postutsendelseService, never()).validerAtPersonKanMottaPost(any(Fnr.class));
+        verify(avtaleRepository, never()).save(any(Avtale.class));
+        assertThat(avtale.erGodkjentAvVeileder()).isFalse();
     }
 
     @Test
