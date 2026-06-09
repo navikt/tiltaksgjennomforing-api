@@ -1,7 +1,6 @@
 {
   "mappings": [
     {
-      "priority": 1,
       "request": {
         "method": "POST",
         "urlPath": "/digdir-krr-proxy/rest/v1/personer",
@@ -56,7 +55,6 @@
       }
     },
     {
-      "priority": 1,
       "request": {
         "method": "POST",
         "urlPath": "/digdir-krr-proxy/rest/v1/personer",
@@ -90,6 +88,48 @@
               "mobiltelefonnummerVerifisert": "2026-05-20T11:13:59.895Z",
               "sikkerDigitalPostkasse": {
                 "adresse": "11111111111",
+                "leverandoerAdresse": "digital-postkasse",
+                "leverandoerSertifikat": "sertifikat"
+              }
+            }
+          },
+          "feil": {}
+        }
+      }
+    },{
+      "request": {
+        "method": "POST",
+        "urlPath": "/digdir-krr-proxy/rest/v1/personer",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"personidenter\":[\"00000000000\"]}",
+            "ignoreArrayOrder": true
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "personer": {
+            "00000000000": {
+              "personident": "00000000000",
+              "aktiv": true,
+              "kanVarsles": false,
+              "reservasjonOppdatert": "2026-05-20T11:13:59.895Z",
+              "reservert": true,
+              "spraak": "nb",
+              "spraakOppdatert": "2026-05-20T11:13:59.895Z",
+              "epostadresse": "test@example.com",
+              "epostadresseOppdatert": "2026-05-20T11:13:59.895Z",
+              "epostadresseVerifisert": "2026-05-20T11:13:59.895Z",
+              "mobiltelefonnummer": "40000000",
+              "mobiltelefonnummerOppdatert": "2026-05-20T11:13:59.895Z",
+              "mobiltelefonnummerVerifisert": "2026-05-20T11:13:59.895Z",
+              "sikkerDigitalPostkasse": {
+                "adresse": "00000000000",
                 "leverandoerAdresse": "digital-postkasse",
                 "leverandoerSertifikat": "sertifikat"
               }

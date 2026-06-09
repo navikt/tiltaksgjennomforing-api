@@ -21,6 +21,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Mentor;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
+import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.entra.EntraproxyService;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
@@ -56,6 +57,7 @@ public class InnloggingService {
     private final ArbeidsgiverTokenStrategyFactory arbeidsgiverTokenStrategyFactory;
     private final FeatureToggleService featureToggleService;
     private final EregService eregService;
+    private final PostutsendelseService postutsendelseService;
 
     public Avtalepart hentAvtalepart(Avtalerolle avtalerolle) {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
@@ -108,7 +110,8 @@ public class InnloggingService {
                 adGruppeTilganger,
                 veilarboppfolgingService,
                 featureToggleService,
-                eregService
+                eregService,
+                postutsendelseService
             );
         }
         if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.BESLUTTER) {
