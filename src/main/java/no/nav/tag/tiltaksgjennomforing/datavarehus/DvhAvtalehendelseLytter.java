@@ -108,7 +108,7 @@ public class DvhAvtalehendelseLytter {
     }
 
     private void lagHendelse(Avtale avtale, DvhHendelseType hendelseType, Identifikator utførtAv, ForkortetGrunn forkortetGrunn) {
-        if (!avtale.erAvtaleInngått()) {
+        if (!avtale.erAvtaleInngått() && !avtale.harArenaOpphavEllerHistoriskEndretAvArena()) {
             return;
         }
         var melding = AvroTiltakHendelseFabrikk.konstruer(avtale, hendelseType, utførtAv.asString(), forkortetGrunn);

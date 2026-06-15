@@ -85,6 +85,8 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Override
     List<Avtale> findAll();
 
+    Slice<Avtale> findAllByTiltakstype(Tiltakstype tiltakstype, Pageable pageable);
+
     Slice<Avtale> findAllByGjeldendeInnhold_AvtaleInngåttNotNull(Pageable pageable);
 
     @Query(value = """
