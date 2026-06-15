@@ -108,11 +108,10 @@ public class DvhAvtalehendelseLytter {
     }
 
     private void lagHendelse(Avtale avtale, DvhHendelseType hendelseType, Identifikator utførtAv, ForkortetGrunn forkortetGrunn) {
-        if (!avtale.erAvtaleInngått() && !avtale.harArenaOpphavEllerHistoriskEndretAvArena()) {
-            return;
+        if (avtale.erAvtaleInngått() || avtale.harArenaOpphavEllerHistoriskEndretAvArena()) {
+            var melding = AvroTiltakHendelseFabrikk.konstruer(avtale, hendelseType, utførtAv.asString(), forkortetGrunn);
+            DvhMeldingEntitet entitet = new DvhMeldingEntitet(avtale, melding);
+            repository.save(entitet);
         }
-        var melding = AvroTiltakHendelseFabrikk.konstruer(avtale, hendelseType, utførtAv.asString(), forkortetGrunn);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(avtale, melding);
-        repository.save(entitet);
     }
 }
