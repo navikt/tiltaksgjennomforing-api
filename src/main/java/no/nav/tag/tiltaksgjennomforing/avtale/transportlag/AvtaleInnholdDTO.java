@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale.transportlag;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnholdType;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneAvArbeidsgiverGrunn;
@@ -26,7 +25,7 @@ import java.util.UUID;
 public record AvtaleInnholdDTO(
     UUID id,
     Integer versjon,
-    boolean erMigrertVersjon,
+    VersjonInnhold versjonInnhold,
 
     String deltakerFornavn,
     String deltakerEtternavn,
@@ -115,7 +114,7 @@ public record AvtaleInnholdDTO(
         this(
             dbEntitet.getId(),
             dbEntitet.getVersjon(),
-            AvtaleInnholdDTO.mapMigrertVersjon(dbEntitet),
+            VersjonInnhold.parse(dbEntitet),
             dbEntitet.getDeltakerFornavn(),
             dbEntitet.getDeltakerEtternavn(),
             dbEntitet.getDeltakerTlf(),
@@ -196,14 +195,5 @@ public record AvtaleInnholdDTO(
     @JsonProperty
     public Integer inkluderingstilskuddSats() {
         return InkluderingstilskuddStrategy.getInkluderingstilskuddSats(this.sluttDato);
-    }
-
-    private static boolean mapMigrertVersjon(AvtaleInnhold dbEntitet) {
-        Avtale avtale = dbEntitet.getAvtale();
-        return switch (avtale.getTiltakstype()) {
-            case ARBEIDSTRENING, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, INKLUDERINGSTILSKUDD, SOMMERJOBB,
-                 VTAO, FIREARIG_LONNSTILSKUDD -> false;
-            case MENTOR -> !avtale.erAvtaleInngått() || dbEntitet.getMentorValgtLonnstype() != null;
-        };
     }
 }
