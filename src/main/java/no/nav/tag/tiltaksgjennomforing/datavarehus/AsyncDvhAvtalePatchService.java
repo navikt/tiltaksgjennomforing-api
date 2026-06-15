@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.datavarehus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -23,6 +24,11 @@ public class AsyncDvhAvtalePatchService {
 
     @Async
     public CompletableFuture<Void> lagDvhPatchMeldingForAlleAvtaler() {
+        return lagDvhPatchMeldingForAlleAvtaler(null);
+    }
+
+    @Async
+    public CompletableFuture<Void> lagDvhPatchMeldingForAlleAvtaler(Tiltakstype tiltakstype) {
         log.info("Jobb for å patche meldinger til DVH startet...");
 
         Slice<Avtale> slice = null;
@@ -30,6 +36,7 @@ public class AsyncDvhAvtalePatchService {
 
         do {
             DvhAvtalePatcherRespons respons = dvhAvtalePatcher.patch(
+                tiltakstype,
                 Optional.ofNullable(slice).map(Slice::nextPageable).orElse(DEFAULT_PAGE)
             );
             slice = respons.slice();

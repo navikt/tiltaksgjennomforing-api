@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,24 +27,27 @@ public class InternalDvhMeldingProdusentController {
     private final AsyncDvhAvtalePatchService dvhAvtalePatchService;
 
     @PostMapping("/patch")
-    public void patcheAvtale(@RequestBody PatchRequest request) {
+    public void patchAlleAvtaler() {
+        log.info("Patcher alle avtaler til dvh");
+        dvhAvtalePatchService.lagDvhPatchMeldingForAlleAvtaler();
+    }
+
+    @PostMapping("/patch/{tiltakstype}")
+    public void patchTiltakstype(@PathVariable("tiltakstype") Tiltakstype tiltakstype) {
+log.info("Patcher alle avtaler for tiltakstype {} til dvh", tiltakstype);
+        dvhAvtalePatchService.lagDvhPatchMeldingForAlleAvtaler(tiltakstype);
+    }
+
+    @PostMapping("/patch/liste")
+    public void patcheAvtale(@RequestBody List<UUID> avtaleIder) {
         log.info("Patcher avtaler til dvh");
-        avtaleRepository.findAllById(request.avtaleIder()).forEach(avtale -> {
+        avtaleRepository.findAllById(avtaleIder).forEach(avtale -> {
             UUID meldingId = UUID.randomUUID();
             String utførtAv = tokenUtils.hentBrukerOgIssuer().map(TokenUtils.BrukerOgIssuer::getBrukerIdent).orElse("patch");
             AvroTiltakHendelse avroTiltakHendelse = AvroTiltakHendelseFabrikk.konstruer(avtale, DvhHendelseType.PATCHING, utførtAv);
             dvhMeldingRepository.save(new DvhMeldingEntitet(avtale, avroTiltakHendelse));
             log.info("Patchet avtale {}, sendt melding med id {} til datavarehus", avtale.getId(), meldingId);
         });
-    }
-
-    @PostMapping("patchalleavtaler")
-    public void patchAlleAvtaler() {
-        log.info("Patcher alle avtaler til dvh");
-        dvhAvtalePatchService.lagDvhPatchMeldingForAlleAvtaler();
-    }
-
-    private record PatchRequest(List<UUID> avtaleIder) {
     }
 
 }
