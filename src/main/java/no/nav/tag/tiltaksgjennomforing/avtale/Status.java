@@ -12,16 +12,16 @@ public enum Status {
 
     private final String beskrivelse;
 
-    boolean erAvsluttetEllerAnnullert() {
-        return this.equals(ANNULLERT) || this.equals(AVSLUTTET);
-    }
-
     Status(String beskrivelse) {
         this.beskrivelse = beskrivelse;
     }
 
     public String getBeskrivelse() {
         return beskrivelse;
+    }
+
+    public boolean erAvsluttetEllerAnnullert() {
+        return this.equals(ANNULLERT) || this.equals(AVSLUTTET);
     }
 
     public static Status fra(Avtale avtale) {

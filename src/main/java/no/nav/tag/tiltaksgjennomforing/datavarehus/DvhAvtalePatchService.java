@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -19,14 +20,16 @@ public class DvhAvtalePatchService {
     private final AvtaleRepository avtaleRepository;
     private final DvhMeldingEntitetRepository dvhRepository;
 
-    private Slice<Avtale> hentAvtaler(Pageable page) {
-        return avtaleRepository.findAllByGjeldendeInnhold_AvtaleInngåttNotNull(page);
+    private Slice<Avtale> hentAvtaler(Tiltakstype tiltakstype, Pageable page) {
+        return tiltakstype == null ?
+            avtaleRepository.findAllByGjeldendeInnhold_AvtaleInngåttNotNull(page) :
+            avtaleRepository.findAllByTiltakstype(tiltakstype, page);
     }
 
     @Transactional
-    public DvhAvtalePatcherRespons patch(Pageable pageable) {
+    public DvhAvtalePatcherRespons patch(Tiltakstype tiltakstype, Pageable pageable) {
         AtomicInteger antallOppdatert = new AtomicInteger();
-        Slice<Avtale> slice = hentAvtaler(pageable);
+        Slice<Avtale> slice = hentAvtaler(tiltakstype, pageable);
         List<Avtale> avtaler = slice.getContent();
 
         if (avtaler.isEmpty()) {
@@ -36,7 +39,7 @@ public class DvhAvtalePatchService {
 
         log.info("Patcher {} avtaler...", avtaler.size());
         avtaler.forEach(avtale -> {
-            if (skalPatches(avtale)) {
+            if (DvhAvtalehendelseLytter.skalTilDvh(avtale)) {
                 lagDvhPatchMelding(avtale);
                 antallOppdatert.getAndIncrement();
             } else {
@@ -51,17 +54,5 @@ public class DvhAvtalePatchService {
         var melding = AvroTiltakHendelseFabrikk.konstruer(avtale, DvhHendelseType.PATCHING, "system");
         DvhMeldingEntitet entitet = new DvhMeldingEntitet(avtale, melding);
         dvhRepository.save(entitet);
-    }
-
-    private boolean skalPatches(Avtale avtale) {
-        if (avtale.erAvtaleInngått()) {
-            if (!avtale.erGodkjentAvVeileder()) {
-                log.warn("Avtale {} er inngått men ikke godkjent av veileder", avtale.getId());
-                return false;
-            }
-            return true;
-        } else {
-            return false;
-        }
     }
 }
