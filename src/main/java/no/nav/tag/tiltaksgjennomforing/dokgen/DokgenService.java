@@ -7,7 +7,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.journalfoering.AvtaleTilJournalfoeringMapper;
@@ -34,11 +33,11 @@ public class DokgenService {
         fjernGodkjentPåVegneAv(avtaleTilJournalfoering);
         try {
             byte[] bytes = restOperations().postForObject(dokgenProperties.getUri(), avtaleTilJournalfoering, byte[].class);
-            meterRegistry.counter("tiltaksgjennomforing.pdf.ok").increment();
+            meterRegistry.counter("tiltaksgjennomforing.pdf.ok", "avtalerolle", avtalerolle.name()).increment();
             return bytes;
         } catch (RestClientException e) {
             log.error("Feil ved kall til dokgen for henting av PDF", e);
-            meterRegistry.counter("tiltaksgjennomforing.pdf.feil").increment();
+            meterRegistry.counter("tiltaksgjennomforing.pdf.feil", "avtalerolle", avtalerolle.name()).increment();
             throw e;
         }
     }
