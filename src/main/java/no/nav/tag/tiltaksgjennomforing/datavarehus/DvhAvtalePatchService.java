@@ -39,7 +39,7 @@ public class DvhAvtalePatchService {
 
         log.info("Patcher {} avtaler...", avtaler.size());
         avtaler.forEach(avtale -> {
-            if (skalPatches(avtale)) {
+            if (DvhAvtalehendelseLytter.skalTilDvh(avtale)) {
                 lagDvhPatchMelding(avtale);
                 antallOppdatert.getAndIncrement();
             } else {
@@ -54,9 +54,5 @@ public class DvhAvtalePatchService {
         var melding = AvroTiltakHendelseFabrikk.konstruer(avtale, DvhHendelseType.PATCHING, "system");
         DvhMeldingEntitet entitet = new DvhMeldingEntitet(avtale, melding);
         dvhRepository.save(entitet);
-    }
-
-    private boolean skalPatches(Avtale avtale) {
-        return avtale.erAvtaleInngått() || avtale.harArenaOpphavEllerHistoriskEndretAvArena();
     }
 }

@@ -34,7 +34,7 @@ public class InternalDvhMeldingProdusentController {
 
     @PostMapping("/patch/{tiltakstype}")
     public void patchTiltakstype(@PathVariable("tiltakstype") Tiltakstype tiltakstype) {
-log.info("Patcher alle avtaler for tiltakstype {} til dvh", tiltakstype);
+        log.info("Patcher alle avtaler for tiltakstype {} til dvh", tiltakstype);
         dvhAvtalePatchService.lagDvhPatchMeldingForAlleAvtaler(tiltakstype);
     }
 
