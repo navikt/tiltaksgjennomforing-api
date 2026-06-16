@@ -108,10 +108,17 @@ public class DvhAvtalehendelseLytter {
     }
 
     private void lagHendelse(Avtale avtale, DvhHendelseType hendelseType, Identifikator utførtAv, ForkortetGrunn forkortetGrunn) {
-        if (avtale.erAvtaleInngått() || avtale.harArenaOpphavEllerHistoriskEndretAvArena()) {
+        if (DvhAvtalehendelseLytter.skalTilDvh(avtale)) {
             var melding = AvroTiltakHendelseFabrikk.konstruer(avtale, hendelseType, utførtAv.asString(), forkortetGrunn);
             DvhMeldingEntitet entitet = new DvhMeldingEntitet(avtale, melding);
             repository.save(entitet);
         }
+    }
+
+    public static boolean skalTilDvh(Avtale avtale) {
+        if (avtale.erAvtaleInngått()) {
+            return true;
+        }
+        return avtale.harArenaOpphavEllerHistoriskEndretAvArena() && avtale.getStatus().erAvsluttetEllerAnnullert();
     }
 }
