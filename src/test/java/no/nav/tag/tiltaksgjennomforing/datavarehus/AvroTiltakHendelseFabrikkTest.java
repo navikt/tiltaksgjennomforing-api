@@ -69,6 +69,25 @@ class AvroTiltakHendelseFabrikkTest {
                 .isEqualTo(AvroTiltakHendelseFabrikk.beregnNokkel(hendelse2));
     }
 
+    @Test
+    void konstruer_handterer_nullable_godkjenningstidspunkt_og_avtaleinngaatt() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(null);
+        avtale.getGjeldendeInnhold().setGodkjentAvBeslutter(null);
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(null);
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(null);
+        avtale.getGjeldendeInnhold().setAvtaleInngått(null);
+
+        AvroTiltakHendelse hendelse = AvroTiltakHendelseFabrikk.konstruer(avtale, DvhHendelseType.PATCHING, "system");
+
+        assertThat(hendelse.getGodkjentAvArbeidsgiver()).isNull();
+        assertThat(hendelse.getGodkjentAvBeslutter()).isNull();
+        assertThat(hendelse.getGodkjentAvDeltaker()).isNull();
+        assertThat(hendelse.getGodkjentAvVeileder()).isNull();
+        assertThat(hendelse.getAvtaleInngaatt()).isNull();
+        assertThat(hendelse.getMeldingId()).isNotBlank();
+    }
+
     private static AvroTiltakHendelse enHendelse(String hendelseType) {
         AvroTiltakHendelse hendelse = new AvroTiltakHendelse();
         hendelse.setMeldingId(UUID.randomUUID().toString());

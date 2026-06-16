@@ -295,24 +295,36 @@
     },
     {
       "name": "godkjentAvDeltaker",
-      "type": {
-        "type": "long",
-        "logicalType": "timestamp-millis"
-      }
+      "type": [
+        "null",
+        {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      ],
+      "default": null
     },
     {
       "name": "godkjentAvArbeidsgiver",
-      "type": {
-        "type": "long",
-        "logicalType": "timestamp-millis"
-      }
+      "type": [
+        "null",
+        {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      ],
+      "default": null
     },
     {
       "name": "godkjentAvVeileder",
-      "type": {
-        "type": "long",
-        "logicalType": "timestamp-millis"
-      }
+      "type": [
+        "null",
+        {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      ],
+      "default": null
     },
     {
       "name": "godkjentAvBeslutter",
@@ -322,14 +334,19 @@
           "type": "long",
           "logicalType": "timestamp-millis"
         }
-      ]
+      ],
+      "default": null
     },
     {
       "name": "avtaleInngaatt",
-      "type": {
-        "type": "long",
-        "logicalType": "timestamp-millis"
-      }
+      "type": [
+        "null",
+        {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      ],
+      "default": null
     },
     {
       "name": "enhetOppfolging",
