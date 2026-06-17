@@ -8,10 +8,10 @@ import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneAvArbeidsgiverGrunn
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.InkluderingstilskuddStrategy;
 import no.nav.tag.tiltaksgjennomforing.avtale.Inkluderingstilskuddsutgift;
+import no.nav.tag.tiltaksgjennomforing.avtale.LonnstilskuddFormaal;
 import no.nav.tag.tiltaksgjennomforing.avtale.MentorValgtLonnstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
-import no.nav.tag.tiltaksgjennomforing.avtale.LonnstilskuddFormaal;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 
 import java.math.BigDecimal;
@@ -25,6 +25,7 @@ import java.util.UUID;
 public record AvtaleInnholdDTO(
     UUID id,
     Integer versjon,
+    VersjonInnhold versjonInnhold,
 
     String deltakerFornavn,
     String deltakerEtternavn,
@@ -113,6 +114,7 @@ public record AvtaleInnholdDTO(
         this(
             dbEntitet.getId(),
             dbEntitet.getVersjon(),
+            VersjonInnhold.parse(dbEntitet),
             dbEntitet.getDeltakerFornavn(),
             dbEntitet.getDeltakerEtternavn(),
             dbEntitet.getDeltakerTlf(),

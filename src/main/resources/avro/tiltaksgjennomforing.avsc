@@ -31,13 +31,6 @@
       "type": "string"
     },
     {
-      "name": "journalpostId",
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    {
       "name": "tiltakstype",
       "type": {
         "type": "enum",
@@ -122,13 +115,6 @@
       "type": [
         "null",
         "float"
-      ]
-    },
-    {
-      "name": "maal",
-      "type": [
-        "null",
-        "string"
       ]
     },
     {
@@ -256,23 +242,6 @@
       ]
     },
     {
-      "name": "sumLonnstilskuddRedusert",
-      "type": [
-        "null",
-        "int"
-      ]
-    },
-    {
-      "name": "datoForRedusertProsent",
-      "type": [
-        "null",
-        {
-          "type": "int",
-          "logicalType": "date"
-        }
-      ]
-    },
-    {
       "name": "godkjentPaVegneAv",
       "type": "boolean"
     },
@@ -295,24 +264,36 @@
     },
     {
       "name": "godkjentAvDeltaker",
-      "type": {
-        "type": "long",
-        "logicalType": "timestamp-millis"
-      }
+      "type": [
+        "null",
+        {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      ],
+      "default": null
     },
     {
       "name": "godkjentAvArbeidsgiver",
-      "type": {
-        "type": "long",
-        "logicalType": "timestamp-millis"
-      }
+      "type": [
+        "null",
+        {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      ],
+      "default": null
     },
     {
       "name": "godkjentAvVeileder",
-      "type": {
-        "type": "long",
-        "logicalType": "timestamp-millis"
-      }
+      "type": [
+        "null",
+        {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      ],
+      "default": null
     },
     {
       "name": "godkjentAvBeslutter",
@@ -322,14 +303,19 @@
           "type": "long",
           "logicalType": "timestamp-millis"
         }
-      ]
+      ],
+      "default": null
     },
     {
       "name": "avtaleInngaatt",
-      "type": {
-        "type": "long",
-        "logicalType": "timestamp-millis"
-      }
+      "type": [
+        "null",
+        {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      ],
+      "default": null
     },
     {
       "name": "enhetOppfolging",
