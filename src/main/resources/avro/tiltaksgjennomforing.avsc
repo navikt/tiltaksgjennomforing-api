@@ -31,13 +31,6 @@
       "type": "string"
     },
     {
-      "name": "journalpostId",
-      "type": [
-        "null",
-        "string"
-      ]
-    },
-    {
       "name": "tiltakstype",
       "type": {
         "type": "enum",
@@ -122,13 +115,6 @@
       "type": [
         "null",
         "float"
-      ]
-    },
-    {
-      "name": "maal",
-      "type": [
-        "null",
-        "string"
       ]
     },
     {
@@ -253,23 +239,6 @@
       "type": [
         "null",
         "int"
-      ]
-    },
-    {
-      "name": "sumLonnstilskuddRedusert",
-      "type": [
-        "null",
-        "int"
-      ]
-    },
-    {
-      "name": "datoForRedusertProsent",
-      "type": [
-        "null",
-        {
-          "type": "int",
-          "logicalType": "date"
-        }
       ]
     },
     {
