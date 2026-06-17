@@ -627,7 +627,7 @@ public class AvtaleControllerTest {
     }
 
     private void skruPåPostutsendelseValidering() {
-        when(featureToggleServiceMock.isEnabled(FeatureToggle.VALIDER_AT_DELTAKER_KAN_MOTTA_POST)).thenReturn(true);
+        when(featureToggleServiceMock.isEnabled(FeatureToggle.SJEKK_AT_DELTAKER_KAN_MOTTA_POST)).thenReturn(true);
     }
 
     @Test
@@ -756,12 +756,12 @@ public class AvtaleControllerTest {
             avtale.getSistEndret()
         );
 
-        verify(postutsendelseService).validerAtPersonKanMottaPost(avtale.getDeltakerFnr());
+        verify(postutsendelseService).sjekkAtPersonKanMottaPost(avtale.getDeltakerFnr());
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
     }
 
     @Test
-    public void godkjennForAvtalepart__skal_ikke_validere_postutsendelse_nar_toggle_er_av() {
+    public void godkjennForAvtalepart__skal_godkjenne_nar_postutsendelse_toggle_er_av() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
@@ -774,7 +774,6 @@ public class AvtaleControllerTest {
             avtale.getSistEndret()
         );
 
-        verify(postutsendelseService, never()).validerAtPersonKanMottaPost(any(Fnr.class));
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
     }
 
@@ -794,7 +793,7 @@ public class AvtaleControllerTest {
             avtale.getSistEndret()
         )).isInstanceOf(FeilkodeException.class);
 
-        verify(postutsendelseService, never()).validerAtPersonKanMottaPost(any(Fnr.class));
+        verify(postutsendelseService, never()).sjekkAtPersonKanMottaPost(any(Fnr.class));
         verify(avtaleRepository, never()).save(any(Avtale.class));
         assertThat(avtale.erGodkjentAvVeileder()).isFalse();
     }
@@ -812,7 +811,7 @@ public class AvtaleControllerTest {
             avtale.getSistEndret()
         );
 
-        verify(postutsendelseService, never()).validerAtPersonKanMottaPost(any(Fnr.class));
+        verify(postutsendelseService, never()).sjekkAtPersonKanMottaPost(any(Fnr.class));
     }
 
     @Test
@@ -847,7 +846,7 @@ public class AvtaleControllerTest {
             avtale.getSistEndret()
         )).isInstanceOf(IkkeTilgangTilAvtaleException.class);
 
-        verify(postutsendelseService, never()).validerAtPersonKanMottaPost(any(Fnr.class));
+        verify(postutsendelseService, never()).sjekkAtPersonKanMottaPost(any(Fnr.class));
     }
 
     @Test
@@ -860,7 +859,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         doThrow(new FeilkodeException(Feilkode.KAN_IKKE_SENDE_POST_MANGLER_ADRESSE_OG_RESERVERT))
             .when(postutsendelseService)
-            .validerAtPersonKanMottaPost(avtale.getDeltakerFnr());
+            .sjekkAtPersonKanMottaPost(avtale.getDeltakerFnr());
 
         assertThatThrownBy(() -> avtaleController.godkjenn(
             avtale.getId(),
