@@ -211,7 +211,9 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     private void sjekkAtDeltakerKanMottaPostHvisVeilederGodkjennerSist(Avtale avtale) {
         if (!avtale.erUfordelt()
-            && !avtale.erGodkjentAvVeileder()) {
+            && !avtale.erGodkjentAvVeileder()
+            && avtale.erGodkjentAvArbeidsgiver()
+            && avtale.erGodkjentAvDeltaker()) {
             postutsendelseService.sjekkAtPersonKanMottaPost(avtale.getDeltakerFnr());
         }
     }

@@ -44,6 +44,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -126,6 +127,48 @@ public class VeilederTest {
 
         // SÅ
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
+    }
+
+    @Test
+    public void godkjennAvtale__sjekker_postutsendelse_nar_arbeidsgiver_og_deltaker_har_godkjent() {
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
+        PostutsendelseService postutsendelseService = mock(PostutsendelseService.class);
+        Veileder veileder = lagVeilederForGodkjenning(avtale, postutsendelseService);
+
+        veileder.godkjennAvtale(avtale);
+
+        verify(postutsendelseService).sjekkAtPersonKanMottaPost(avtale.getDeltakerFnr());
+    }
+
+    @Test
+    public void godkjennAvtale__sjekker_ikke_postutsendelse_nar_arbeidsgiver_ikke_har_godkjent() {
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        PostutsendelseService postutsendelseService = mock(PostutsendelseService.class);
+        Veileder veileder = lagVeilederForGodkjenning(avtale, postutsendelseService);
+
+        assertThatThrownBy(() -> veileder.godkjennAvtale(avtale))
+            .isExactlyInstanceOf(VeilederSkalGodkjenneSistException.class);
+
+        verify(postutsendelseService, never()).sjekkAtPersonKanMottaPost(avtale.getDeltakerFnr());
+    }
+
+    @Test
+    public void godkjennAvtale__sjekker_ikke_postutsendelse_nar_deltaker_ikke_har_godkjent() {
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
+        PostutsendelseService postutsendelseService = mock(PostutsendelseService.class);
+        Veileder veileder = lagVeilederForGodkjenning(avtale, postutsendelseService);
+
+        assertThatThrownBy(() -> veileder.godkjennAvtale(avtale))
+            .isExactlyInstanceOf(VeilederSkalGodkjenneSistException.class);
+
+        verify(postutsendelseService, never()).sjekkAtPersonKanMottaPost(avtale.getDeltakerFnr());
     }
 
     @Test
@@ -903,5 +946,31 @@ public class VeilederTest {
 
         veileder.forlengAvtale(nySluttDato, avtale);
         assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(nySluttDato);
+    }
+
+    private Veileder lagVeilederForGodkjenning(Avtale avtale, PostutsendelseService postutsendelseService) {
+        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
+        EregService eregService = mock(EregService.class);
+
+        Veileder veileder = new Veileder(
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            mock(Norg2Client.class),
+            Set.of(new NavEnhet("4802", "Trysil")),
+            TestData.INGEN_AD_GRUPPER,
+            veilarboppfolgingService,
+            mock(FeatureToggleService.class),
+            eregService,
+            postutsendelseService
+        );
+
+        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+        when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
+        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
+        return veileder;
     }
 }
