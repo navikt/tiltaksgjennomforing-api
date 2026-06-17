@@ -16,6 +16,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
+import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
@@ -100,7 +101,8 @@ public class InnloggetBrukerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService,
-                mock(EregService.class)
+                mock(EregService.class),
+                mock(PostutsendelseService.class)
         );
 
         assertThat(veileder.harTilgangTilAvtale(avtale).erTillat()).isTrue();
@@ -120,7 +122,8 @@ public class InnloggetBrukerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService,
-                mock(EregService.class)
+                mock(EregService.class),
+                mock(PostutsendelseService.class)
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,
@@ -142,7 +145,8 @@ public class InnloggetBrukerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService,
-                mock(EregService.class)
+                mock(EregService.class),
+                mock(PostutsendelseService.class)
         );
         when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
         assertThat(veileder.harTilgangTilAvtale(avtale).erTillat()).isTrue();
@@ -160,7 +164,8 @@ public class InnloggetBrukerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService,
-                mock(EregService.class)
+                mock(EregService.class),
+                mock(PostutsendelseService.class)
         );
         when(tilgangskontrollService.hentSkrivetilgang(
                 veileder,
@@ -200,7 +205,8 @@ public class InnloggetBrukerTest {
                         TestData.INGEN_AD_GRUPPER,
                         veilarboppfolgingService,
                         featureToggleService,
-                        mock(EregService.class)
+                        mock(EregService.class),
+                        mock(PostutsendelseService.class)
                 ).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
     }
@@ -220,7 +226,8 @@ public class InnloggetBrukerTest {
                         TestData.INGEN_AD_GRUPPER,
                         veilarboppfolgingService,
                         featureToggleService,
-                        mock(EregService.class)
+                        mock(EregService.class),
+                        mock(PostutsendelseService.class)
                 ).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
     }

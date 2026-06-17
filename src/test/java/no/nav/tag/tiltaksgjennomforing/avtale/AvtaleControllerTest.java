@@ -155,7 +155,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
             );
         værInnloggetSom(
             veileder
@@ -186,7 +187,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(veileder);
         Avtale exampleAvtale = Avtale.builder()
@@ -230,7 +232,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(veileder);
 
@@ -270,7 +273,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(veileder);
 
@@ -333,7 +337,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                eregService
+                eregService,
+                postutsendelseService
         );
 
         værInnloggetSom(veileder);
@@ -401,7 +406,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
@@ -481,7 +487,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = Fnr.generer(1978, 9, 10);
@@ -515,7 +522,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = Fnr.generer(1956, 7, 8);
@@ -546,7 +554,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = Fnr.generer(1978, 9, 10);
@@ -657,7 +666,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(veileder);
         when(kontoregisterService.hentKontonummer(anyString())).thenReturn("990983666");
@@ -691,7 +701,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
@@ -723,7 +734,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.hentSkrivetilgang(
@@ -884,7 +896,8 @@ public class AvtaleControllerTest {
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             featureToggleServiceMock,
-            mock(EregService.class)
+            mock(EregService.class),
+            postutsendelseService
         );
         værInnloggetSom(veileder);
 

@@ -1183,7 +1183,8 @@ public class AvtaleTest {
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),
+            mock(PostutsendelseService.class)
         );
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.endreAvtale(TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.ARBEIDSGIVER);
@@ -1469,7 +1470,8 @@ public class AvtaleTest {
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),
+            mock(PostutsendelseService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());

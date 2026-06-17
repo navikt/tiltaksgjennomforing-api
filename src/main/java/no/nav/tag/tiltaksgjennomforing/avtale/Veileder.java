@@ -39,6 +39,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -59,33 +60,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     private final FeatureToggleService featureToggleService;
     private final EregService eregService;
     private final PostutsendelseService postutsendelseService;
-
-    public Veileder(
-        NavIdent identifikator,
-        UUID azureOid,
-        TilgangskontrollService tilgangskontrollService,
-        PersondataService persondataService,
-        Norg2Client norg2Client,
-        Set<NavEnhet> navEnheter,
-        AdGruppeTilganger adGruppeTilganger,
-        VeilarboppfolgingService veilarboppfolgingService,
-        FeatureToggleService featureToggleService,
-        EregService eregService
-    ) {
-        this(
-            identifikator,
-            azureOid,
-            tilgangskontrollService,
-            persondataService,
-            norg2Client,
-            navEnheter,
-            adGruppeTilganger,
-            veilarboppfolgingService,
-            featureToggleService,
-            eregService,
-            null
-        );
-    }
 
     public Veileder(
         NavIdent identifikator,
