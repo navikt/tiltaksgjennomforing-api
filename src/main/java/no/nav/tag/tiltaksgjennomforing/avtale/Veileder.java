@@ -178,15 +178,22 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
-        sjekkAtDeltakerKanMottaPostHvisVeilederGodkjennerSist(avtale);
+        sjekkAtDeltakerKanMottaPostHvisAvtalenKanInngas(avtale);
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
-    private void sjekkAtDeltakerKanMottaPostHvisVeilederGodkjennerSist(Avtale avtale) {
+    private void sjekkAtDeltakerKanMottaPostHvisAvtalenKanInngas(
+        Avtale avtale,
+        Avtalerolle... rollerVeilederGodkjennerPaVegneAv
+    ) {
+        Set<Avtalerolle> rollerSomGodkjennesPaVegneAv = Set.of(rollerVeilederGodkjennerPaVegneAv);
+        boolean deltakerVilVaereGodkjent = avtale.erGodkjentAvDeltaker() || rollerSomGodkjennesPaVegneAv.contains(Avtalerolle.DELTAKER);
+        boolean arbeidsgiverVilVaereGodkjent = avtale.erGodkjentAvArbeidsgiver() || rollerSomGodkjennesPaVegneAv.contains(Avtalerolle.ARBEIDSGIVER);
+
         if (!avtale.erUfordelt()
             && !avtale.erGodkjentAvVeileder()
-            && avtale.erGodkjentAvArbeidsgiver()
-            && avtale.erGodkjentAvDeltaker()) {
+            && arbeidsgiverVilVaereGodkjent
+            && deltakerVilVaereGodkjent) {
             postutsendelseService.sjekkAtPersonKanMottaPost(avtale.getDeltakerFnr());
         }
     }
@@ -201,7 +208,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
-        sjekkAtDeltakerKanMottaPostHvisVeilederGodkjennerSist(avtale);
+        sjekkAtDeltakerKanMottaPostHvisAvtalenKanInngas(avtale, Avtalerolle.DELTAKER);
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
 
@@ -213,7 +220,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
-        sjekkAtDeltakerKanMottaPostHvisVeilederGodkjennerSist(avtale);
+        sjekkAtDeltakerKanMottaPostHvisAvtalenKanInngas(avtale, Avtalerolle.ARBEIDSGIVER);
         avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn);
     }
 
@@ -225,7 +232,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
-        sjekkAtDeltakerKanMottaPostHvisVeilederGodkjennerSist(avtale);
+        sjekkAtDeltakerKanMottaPostHvisAvtalenKanInngas(avtale, Avtalerolle.DELTAKER, Avtalerolle.ARBEIDSGIVER);
         avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(getIdentifikator(), paVegneAvDeltakerOgArbeidsgiverGrunn);
     }
 

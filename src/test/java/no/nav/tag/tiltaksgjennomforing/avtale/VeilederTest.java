@@ -172,6 +172,46 @@ public class VeilederTest {
     }
 
     @Test
+    public void godkjennForVeilederOgDeltaker__sjekker_postutsendelse_nar_veileder_godkjenner_deltaker_pa_vegne_av() {
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
+        PostutsendelseService postutsendelseService = mock(PostutsendelseService.class);
+        Veileder veileder = lagVeilederForGodkjenning(avtale, postutsendelseService);
+
+        veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
+
+        verify(postutsendelseService).sjekkAtPersonKanMottaPost(avtale.getDeltakerFnr());
+    }
+
+    @Test
+    public void godkjennForVeilederOgArbeidsgiver__sjekker_postutsendelse_nar_veileder_godkjenner_arbeidsgiver_pa_vegne_av() {
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
+        avtale.setOpphav(Avtaleopphav.ARENA);
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        PostutsendelseService postutsendelseService = mock(PostutsendelseService.class);
+        Veileder veileder = lagVeilederForGodkjenning(avtale, postutsendelseService);
+
+        veileder.godkjennForVeilederOgArbeidsgiver(TestData.enGodkjentPaVegneAvArbeidsgiverGrunn(), avtale);
+
+        verify(postutsendelseService).sjekkAtPersonKanMottaPost(avtale.getDeltakerFnr());
+    }
+
+    @Test
+    public void godkjennForVeilederOgDeltakerOgArbeidsgiver__sjekker_postutsendelse_nar_veileder_godkjenner_begge_pa_vegne_av() {
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
+        avtale.setOpphav(Avtaleopphav.ARENA);
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        PostutsendelseService postutsendelseService = mock(PostutsendelseService.class);
+        Veileder veileder = lagVeilederForGodkjenning(avtale, postutsendelseService);
+
+        veileder.godkjennForVeilederOgDeltakerOgArbeidsgiver(TestData.enGodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn(), avtale);
+
+        verify(postutsendelseService).sjekkAtPersonKanMottaPost(avtale.getDeltakerFnr());
+    }
+
+    @Test
     public void godkjennForVeilederOgDeltaker__kan_godkjenne_med_riktig_oppfølgingsstatus() {
         // GITT
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
