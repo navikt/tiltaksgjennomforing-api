@@ -117,9 +117,9 @@
             "00000000000": {
               "personident": "00000000000",
               "aktiv": true,
-              "kanVarsles": false,
+              "kanVarsles": true,
               "reservasjonOppdatert": "2026-05-20T11:13:59.895Z",
-              "reservert": true,
+              "reservert": false,
               "spraak": "nb",
               "spraakOppdatert": "2026-05-20T11:13:59.895Z",
               "epostadresse": "test@example.com",
