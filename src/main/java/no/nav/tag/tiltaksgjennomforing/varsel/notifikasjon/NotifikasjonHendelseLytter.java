@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
+import io.getunleash.Unleash;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -18,6 +19,7 @@ public class NotifikasjonHendelseLytter {
     private final ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
     private final NotifikasjonService notifikasjonService;
     private final NotifikasjonParser parser;
+    private final Unleash unleash;
 
     private void opprettOgSendNyBeskjed(Avtale avtale, HendelseType hendelseType, NotifikasjonTekst tekst) {
         final ArbeidsgiverNotifikasjon notifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(avtale,
@@ -30,6 +32,7 @@ public class NotifikasjonHendelseLytter {
 
     @EventListener
     public void avtaleKlarForRefusjon(RefusjonKlar event) {
+        if (unleash.isEnabled("refusjon-klar-i-tiltak-notifikasjon")) return;
         opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.REFUSJON_KLAR,
                 NotifikasjonTekst.TILTAK_AVTALE_KLAR_REFUSJON);
     }
