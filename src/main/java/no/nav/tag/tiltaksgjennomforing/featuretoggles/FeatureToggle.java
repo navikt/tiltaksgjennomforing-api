@@ -11,7 +11,8 @@ public enum FeatureToggle {
     PABEGYNT_AVTALE_RYDDE_JOBB("pabegyntAvtaleRyddeJobb"),
     KODE_6_SPERRE("kode6Sperre"),
     MIGRERING_SKRIVEBESKYTTET("migreringSkrivebeskyttet"),
-    FIREARIG_LONNSTILSKUDD("firearigLonnstilskudd");
+    FIREARIG_LONNSTILSKUDD("firearigLonnstilskudd"),
+    REFUSJON_KLAR_I_TILTAK_NOTIFIKASJON("refusjon-klar-i-tiltak-notifikasjon");
 
     private String toggleNavn;
 

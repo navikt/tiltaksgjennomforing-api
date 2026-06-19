@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.getunleash.Unleash;
 import io.getunleash.UnleashContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,7 @@ public class LagSmsFraAvtaleHendelse {
     private final FeatureToggleService featureToggleService;
 
     private static final BedriftNr NAV_ORGNR = new BedriftNr("889640782");
+    private final Unleash unleash;
 
     @EventListener
     public void avtaleDeltMedAvtalepart(AvtaleDeltMedAvtalepart event) {
@@ -67,6 +69,7 @@ public class LagSmsFraAvtaleHendelse {
     }
     @EventListener
     public void refusjonKlar(RefusjonKlar event) {
+        if (featureToggleService.isEnabled(FeatureToggle.REFUSJON_KLAR_I_TILTAK_NOTIFIKASJON)) return;
         if(event.getAvtale().getTiltakstype() == Tiltakstype.SOMMERJOBB || event.getAvtale().getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || event.getAvtale().getTiltakstype() == Tiltakstype.VARIG_LONNSTILSKUDD || event.getAvtale().getTiltakstype() == Tiltakstype.MENTOR){
             String tiltakNavn = event.getAvtale().getTiltakstype().getBeskrivelse().toLowerCase();
             String smsTekst = String.format("Dere kan nå søke om refusjon for tilskudd til %s for avtale med nr: %s. Frist for å søke er %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", tiltakNavn, event.getAvtale().getAvtaleNr(), event.getFristForGodkjenning());
