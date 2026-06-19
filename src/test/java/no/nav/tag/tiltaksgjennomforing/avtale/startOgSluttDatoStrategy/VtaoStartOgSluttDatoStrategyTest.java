@@ -43,15 +43,17 @@ class VtaoStartOgSluttDatoStrategyTest {
         LocalDate avtaleStart = LocalDate.of(2026, 9, 1);
         LocalDate avtaleSlutt = avtaleStart.plusMonths(11).plusDays(1);
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), VTAO), Avtaleopphav.VEILEDER, TestData.enNavIdent());
+        avtale.setGodkjentForEtterregistrering(true); // Unngå etterregistreringsbehov
         VtaoStartOgSluttdatoStrategy vtaoStartOgSluttDatoStrategy = new VtaoStartOgSluttdatoStrategy(avtale);
         assertFeilkode(Feilkode.FOR_SEN_STARTDATO_VTAO, () -> vtaoStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt));
     }
 
     @Test
-    public void startDato_er_ikke_for_sen_for_Vtao() {
+    public void startdato_er_ikke_for_sen_for_Vtao() {
         LocalDate avtaleStart = LocalDate.of(2026, 8, 31);
         LocalDate avtaleSlutt = avtaleStart.plusMonths(11).plusDays(1);
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), VTAO), Avtaleopphav.VEILEDER, TestData.enNavIdent());
+        avtale.setGodkjentForEtterregistrering(true); // Unngå etterregistreringsbehov
         VtaoStartOgSluttdatoStrategy vtaoStartOgSluttDatoStrategy = new VtaoStartOgSluttdatoStrategy(avtale);
         vtaoStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt);
     }
