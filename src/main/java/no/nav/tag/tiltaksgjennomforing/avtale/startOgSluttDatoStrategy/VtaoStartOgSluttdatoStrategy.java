@@ -23,7 +23,7 @@ public class VtaoStartOgSluttdatoStrategy extends StartOgSluttdatoStrategy {
         if (sluttDato != null && deltakerFnr != null && deltakerFnr.erOver67ÅrFraSluttDato(sluttDato)) {
             throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
         }
-        if (startDato != null && startDato.isAfter(SISTE_MULIGE_STARTDATO)) {
+        if (!avtale.erAvtaleInngått() && startDato != null && startDato.isAfter(SISTE_MULIGE_STARTDATO)) {
             throw new FeilkodeException(Feilkode.FOR_SEN_STARTDATO_VTAO);
         }
     }
