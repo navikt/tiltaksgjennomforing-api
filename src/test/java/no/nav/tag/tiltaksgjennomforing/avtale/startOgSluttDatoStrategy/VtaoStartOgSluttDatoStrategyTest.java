@@ -37,4 +37,36 @@ class VtaoStartOgSluttDatoStrategyTest {
         VtaoStartOgSluttdatoStrategy vtaoStartOgSluttDatoStrategy = new VtaoStartOgSluttdatoStrategy(avtale);
         assertFeilkode(Feilkode.DELTAKER_67_AAR, () -> vtaoStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt));
     }
+
+    @Test
+    public void startdato_er_for_sen_for_Vtao() {
+        LocalDate avtaleStart = LocalDate.of(2026, 9, 1);
+        LocalDate avtaleSlutt = avtaleStart.plusMonths(11).plusDays(1);
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), VTAO), Avtaleopphav.VEILEDER, TestData.enNavIdent());
+        avtale.setGodkjentForEtterregistrering(true); // Unngå etterregistreringsbehov
+        VtaoStartOgSluttdatoStrategy vtaoStartOgSluttDatoStrategy = new VtaoStartOgSluttdatoStrategy(avtale);
+        assertFeilkode(Feilkode.FOR_SEN_STARTDATO_VTAO, () -> vtaoStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt));
+    }
+
+    @Test
+    public void startdato_er_ikke_for_sen_for_Vtao() {
+        LocalDate avtaleStart = LocalDate.of(2026, 8, 31);
+        LocalDate avtaleSlutt = avtaleStart.plusMonths(11).plusDays(1);
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), VTAO), Avtaleopphav.VEILEDER, TestData.enNavIdent());
+        avtale.setGodkjentForEtterregistrering(true); // Unngå etterregistreringsbehov
+        VtaoStartOgSluttdatoStrategy vtaoStartOgSluttDatoStrategy = new VtaoStartOgSluttdatoStrategy(avtale);
+        vtaoStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt);
+    }
+
+    @Test
+    public void inngått_avtale_tillater_startdato_som_ellers_er_for_sen_for_Vtao() {
+        LocalDate avtaleStart = LocalDate.of(2026, 9, 1);
+        LocalDate avtaleSlutt = avtaleStart.plusMonths(11).plusDays(1);
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), VTAO), Avtaleopphav.VEILEDER, TestData.enNavIdent());
+        avtale.setGodkjentForEtterregistrering(true); // Unngå etterregistreringsbehov
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.instant());
+        VtaoStartOgSluttdatoStrategy vtaoStartOgSluttDatoStrategy = new VtaoStartOgSluttdatoStrategy(avtale);
+
+        vtaoStartOgSluttDatoStrategy.sjekkStartOgSluttdato(avtaleStart, avtaleSlutt);
+    }
 }
