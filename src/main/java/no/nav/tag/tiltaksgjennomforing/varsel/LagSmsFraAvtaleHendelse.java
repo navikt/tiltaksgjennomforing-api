@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.getunleash.Unleash;
 import io.getunleash.UnleashContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +34,6 @@ public class LagSmsFraAvtaleHendelse {
     private final FeatureToggleService featureToggleService;
 
     private static final BedriftNr NAV_ORGNR = new BedriftNr("889640782");
-    private final Unleash unleash;
 
     @EventListener
     public void avtaleDeltMedAvtalepart(AvtaleDeltMedAvtalepart event) {
