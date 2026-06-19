@@ -23,26 +23,18 @@ public class NotifikasjonHendelseLytter {
     private final FeatureToggleService featureToggleService;
 
     private void opprettOgSendNyBeskjed(Avtale avtale, HendelseType hendelseType, NotifikasjonTekst tekst) {
-        final ArbeidsgiverNotifikasjon notifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(
-            avtale,
-            hendelseType, notifikasjonService, parser
-        );
+        final ArbeidsgiverNotifikasjon notifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(avtale,
+                hendelseType, notifikasjonService, parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-        notifikasjonService.opprettNyBeskjed(
-            notifikasjon,
-            NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
-            tekst
-        );
+        notifikasjonService.opprettNyBeskjed(notifikasjon,
+                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
+                tekst);
     }
 
     @EventListener
     public void avtaleKlarForRefusjon(RefusjonKlar event) {
-        if (featureToggleService.isEnabled(FeatureToggle.REFUSJON_KLAR_I_TILTAK_NOTIFIKASJON)) {
-            return;
-        }
-        opprettOgSendNyBeskjed(
-            event.getAvtale(), HendelseType.REFUSJON_KLAR,
-            NotifikasjonTekst.TILTAK_AVTALE_KLAR_REFUSJON
-        );
+        if (featureToggleService.isEnabled(FeatureToggle.REFUSJON_KLAR_I_TILTAK_NOTIFIKASJON)) return;
+        opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.REFUSJON_KLAR,
+                NotifikasjonTekst.TILTAK_AVTALE_KLAR_REFUSJON);
     }
 }
