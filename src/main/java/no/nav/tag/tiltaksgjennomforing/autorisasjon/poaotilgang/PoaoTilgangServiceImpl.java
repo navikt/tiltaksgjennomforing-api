@@ -1,7 +1,6 @@
-package no.nav.tag.tiltaksgjennomforing.autorisasjon;
+package no.nav.tag.tiltaksgjennomforing.autorisasjon.poaotilgang;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.common.rest.client.RestClient;
 import no.nav.poao_tilgang.api.dto.response.TilgangsattributterResponse;
 import no.nav.poao_tilgang.client.Decision;
 import no.nav.poao_tilgang.client.NavAnsattTilgangTilEksternBrukerPolicyInput;
@@ -15,6 +14,9 @@ import no.nav.security.token.support.client.core.ClientProperties;
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService;
 import no.nav.security.token.support.client.spring.ClientConfigurationProperties;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgangsattributter;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,7 +48,7 @@ public class PoaoTilgangServiceImpl implements PoaoTilgangService {
                 new PoaoTilgangHttpClient(
                     poaoTilgangUrl,
                     () -> oAuth2AccessTokenService.getAccessToken(clientProperties).getAccessToken(),
-                    RestClient.baseClient()
+                    PoaoTilgangHttpRetryKlient.hentKlient()
                 )
         );
     }
