@@ -13,31 +13,43 @@ import java.util.concurrent.TimeUnit;
 public class PoaoTilgangHttpRetryKlient {
     private static final int HTTP_TIMEOUT_SECONDS = 15;
     private static final int MAX_RETRIES = 2;
+    private static final long RETRY_DELAY_MS = 500;
 
     private PoaoTilgangHttpRetryKlient() {}
 
     public static OkHttpClient hentKlient() {
         return RestClient.baseClientBuilder()
-                .connectTimeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .readTimeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .writeTimeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .addInterceptor(new RetryInterceptor())
-                .build();
+            .connectTimeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .readTimeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .writeTimeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .addInterceptor(PoaoTilgangHttpRetryKlient::retryIntercept)
+            .build();
     }
 
-    private static class RetryInterceptor implements Interceptor {
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-            IOException lastException = null;
-            for (int attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-                try {
-                    return chain.proceed(chain.request());
-                } catch (IOException e) {
-                    lastException = e;
-                    log.warn("poao-tilgang kall feilet (forsøk {}/{}): {}", attempt + 1, MAX_RETRIES + 1, e.getMessage());
+    private static Response retryIntercept(Interceptor.Chain chain) throws IOException {
+        IOException lastException = null;
+        for (int attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+            try {
+                return chain.proceed(chain.request());
+            } catch (IOException e) {
+                lastException = e;
+                log.warn(
+                    "poao-tilgang kall feilet (forsøk {}/{}): {} - {}",
+                    attempt + 1,
+                    MAX_RETRIES + 1,
+                    e.getClass().getSimpleName(),
+                    e.getMessage()
+                );
+                if (attempt < MAX_RETRIES) {
+                    try {
+                        Thread.sleep(RETRY_DELAY_MS);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        throw new IOException("Retry avbrutt", ie);
+                    }
                 }
             }
-            throw lastException;
         }
+        throw lastException;
     }
 }
