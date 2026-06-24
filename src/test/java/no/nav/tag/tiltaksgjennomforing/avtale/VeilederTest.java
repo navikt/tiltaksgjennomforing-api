@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -43,6 +44,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -77,7 +79,8 @@ public class VeilederTest {
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             mock(FeatureToggleService.class),
-            eregService
+            eregService,
+            mock(PostutsendelseService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -110,7 +113,8 @@ public class VeilederTest {
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             mock(FeatureToggleService.class),
-            eregService
+            eregService,
+            mock(PostutsendelseService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -123,6 +127,88 @@ public class VeilederTest {
 
         // SÅ
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
+    }
+
+    @Test
+    public void godkjennAvtale__sjekker_postutsendelse_nar_arbeidsgiver_og_deltaker_har_godkjent() {
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
+        PostutsendelseService postutsendelseService = mock(PostutsendelseService.class);
+        Veileder veileder = lagVeilederForGodkjenning(avtale, postutsendelseService);
+
+        veileder.godkjennAvtale(avtale);
+
+        verify(postutsendelseService).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
+    }
+
+    @Test
+    public void godkjennAvtale__sjekker_ikke_postutsendelse_nar_arbeidsgiver_ikke_har_godkjent() {
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        PostutsendelseService postutsendelseService = mock(PostutsendelseService.class);
+        Veileder veileder = lagVeilederForGodkjenning(avtale, postutsendelseService);
+
+        assertThatThrownBy(() -> veileder.godkjennAvtale(avtale))
+            .isExactlyInstanceOf(VeilederSkalGodkjenneSistException.class);
+
+        verify(postutsendelseService, never()).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
+    }
+
+    @Test
+    public void godkjennAvtale__sjekker_ikke_postutsendelse_nar_deltaker_ikke_har_godkjent() {
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
+        PostutsendelseService postutsendelseService = mock(PostutsendelseService.class);
+        Veileder veileder = lagVeilederForGodkjenning(avtale, postutsendelseService);
+
+        assertThatThrownBy(() -> veileder.godkjennAvtale(avtale))
+            .isExactlyInstanceOf(VeilederSkalGodkjenneSistException.class);
+
+        verify(postutsendelseService, never()).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
+    }
+
+    @Test
+    public void godkjennForVeilederOgDeltaker__sjekker_postutsendelse_nar_veileder_godkjenner_deltaker_pa_vegne_av() {
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
+        PostutsendelseService postutsendelseService = mock(PostutsendelseService.class);
+        Veileder veileder = lagVeilederForGodkjenning(avtale, postutsendelseService);
+
+        veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
+
+        verify(postutsendelseService).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
+    }
+
+    @Test
+    public void godkjennForVeilederOgArbeidsgiver__sjekker_postutsendelse_nar_veileder_godkjenner_arbeidsgiver_pa_vegne_av() {
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
+        avtale.setOpphav(Avtaleopphav.ARENA);
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        PostutsendelseService postutsendelseService = mock(PostutsendelseService.class);
+        Veileder veileder = lagVeilederForGodkjenning(avtale, postutsendelseService);
+
+        veileder.godkjennForVeilederOgArbeidsgiver(TestData.enGodkjentPaVegneAvArbeidsgiverGrunn(), avtale);
+
+        verify(postutsendelseService).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
+    }
+
+    @Test
+    public void godkjennForVeilederOgDeltakerOgArbeidsgiver__sjekker_postutsendelse_nar_veileder_godkjenner_begge_pa_vegne_av() {
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
+        avtale.setOpphav(Avtaleopphav.ARENA);
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        PostutsendelseService postutsendelseService = mock(PostutsendelseService.class);
+        Veileder veileder = lagVeilederForGodkjenning(avtale, postutsendelseService);
+
+        veileder.godkjennForVeilederOgDeltakerOgArbeidsgiver(TestData.enGodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn(), avtale);
+
+        verify(postutsendelseService).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
     }
 
     @Test
@@ -146,7 +232,8 @@ public class VeilederTest {
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),
+            mock(PostutsendelseService.class)
         );
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         // NÅR
@@ -180,7 +267,8 @@ public class VeilederTest {
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),
+            mock(PostutsendelseService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -217,7 +305,8 @@ public class VeilederTest {
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),
+            mock(PostutsendelseService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -255,7 +344,8 @@ public class VeilederTest {
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             featureToggleService,
-            mock(EregService.class)
+            mock(EregService.class),
+            mock(PostutsendelseService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -285,7 +375,8 @@ public class VeilederTest {
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             featureToggleService,
-            eregService
+            eregService,
+            mock(PostutsendelseService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -315,7 +406,8 @@ public class VeilederTest {
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             featureToggleService,
-            mock(EregService.class)
+            mock(EregService.class),
+            mock(PostutsendelseService.class)
         );
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         assertThatThrownBy(() -> veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale))
@@ -342,7 +434,8 @@ public class VeilederTest {
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),
+            mock(PostutsendelseService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -406,7 +499,8 @@ public class VeilederTest {
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),
+            mock(PostutsendelseService.class)
         );
         avtale.endreAvtale(
                 TestData.endringPåAlleArbeidstreningFelter(),
@@ -445,7 +539,8 @@ public class VeilederTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingServiceMock,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                mock(PostutsendelseService.class)
         );
         when(tilgangskontrollService.hentSkrivetilgang(eq(veileder), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
         when(veilarboppfolgingServiceMock.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
@@ -567,7 +662,8 @@ public class VeilederTest {
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),
+            mock(PostutsendelseService.class)
         );
 
         veileder.oppdatereOppfølgingStatusVedEndreAvtale(avtale);
@@ -610,7 +706,8 @@ public class VeilederTest {
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),
+            mock(PostutsendelseService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(nyVeileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -645,7 +742,8 @@ public class VeilederTest {
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),
+            mock(PostutsendelseService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -706,7 +804,8 @@ public class VeilederTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                eregService
+                eregService,
+                mock(PostutsendelseService.class)
         );
 
         when(persondataService.hentNavn(any())).thenReturn(new Navn("Donald", "", "Duck"));
@@ -887,5 +986,31 @@ public class VeilederTest {
 
         veileder.forlengAvtale(nySluttDato, avtale);
         assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(nySluttDato);
+    }
+
+    private Veileder lagVeilederForGodkjenning(Avtale avtale, PostutsendelseService postutsendelseService) {
+        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
+        EregService eregService = mock(EregService.class);
+
+        Veileder veileder = new Veileder(
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            mock(Norg2Client.class),
+            Set.of(new NavEnhet("4802", "Trysil")),
+            TestData.INGEN_AD_GRUPPER,
+            veilarboppfolgingService,
+            mock(FeatureToggleService.class),
+            eregService,
+            postutsendelseService
+        );
+
+        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+        when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
+        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
+        return veileder;
     }
 }

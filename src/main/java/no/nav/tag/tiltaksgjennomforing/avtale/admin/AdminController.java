@@ -101,7 +101,7 @@ public class AdminController {
         Fnr validertFnr = new Fnr(fnr);
         log.info("hent-postadresse FNR er validert, skal sjekke om person kan få post...");
         try {
-            postutsendelseService.validerAtPersonKanMottaPost(validertFnr);
+            postutsendelseService.sjekkOmPersonKanMottaPost(validertFnr);
             return true;
         } catch (FeilkodeException e) {
             if (e.getFeilkode() == Feilkode.KAN_IKKE_SENDE_POST_MANGLER_ADRESSE_OG_RESERVERT) {

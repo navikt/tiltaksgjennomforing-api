@@ -4,6 +4,7 @@ import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
+import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -1182,7 +1183,8 @@ public class AvtaleTest {
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),
+            mock(PostutsendelseService.class)
         );
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.endreAvtale(TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.ARBEIDSGIVER);
@@ -1408,7 +1410,8 @@ public class AvtaleTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 mock(FeatureToggleService.class),
-                eregService
+                eregService,
+                mock(PostutsendelseService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -1450,7 +1453,8 @@ public class AvtaleTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 mock(FeatureToggleService.class),
-                eregService
+                eregService,
+                mock(PostutsendelseService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -1488,7 +1492,8 @@ public class AvtaleTest {
             TestData.INGEN_AD_GRUPPER,
             mock(VeilarboppfolgingService.class),
             mock(FeatureToggleService.class),
-            mock(EregService.class)
+            mock(EregService.class),
+            mock(PostutsendelseService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -1532,7 +1537,8 @@ public class AvtaleTest {
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             mock(FeatureToggleService.class),
-            eregService
+            eregService,
+            mock(PostutsendelseService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -1568,7 +1574,8 @@ public class AvtaleTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 mock(FeatureToggleService.class),
-                eregService
+                eregService,
+                mock(PostutsendelseService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
@@ -1616,7 +1623,8 @@ public class AvtaleTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 mock(FeatureToggleService.class),
-                eregService
+                eregService,
+                mock(PostutsendelseService.class)
         );
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
