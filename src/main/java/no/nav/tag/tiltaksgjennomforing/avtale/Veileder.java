@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
+import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
@@ -57,6 +58,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     private final UUID azureOid;
     private final FeatureToggleService featureToggleService;
     private final EregService eregService;
+    private final PostutsendelseService postutsendelseService;
 
     public Veileder(
         NavIdent identifikator,
@@ -68,7 +70,8 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         AdGruppeTilganger adGruppeTilganger,
         VeilarboppfolgingService veilarboppfolgingService,
         FeatureToggleService featureToggleService,
-        EregService eregService
+        EregService eregService,
+        PostutsendelseService postutsendelseService
     ) {
 
         super(identifikator);
@@ -81,6 +84,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         this.veilarboppfolgingService = veilarboppfolgingService;
         this.featureToggleService = featureToggleService;
         this.eregService = eregService;
+        this.postutsendelseService = postutsendelseService;
     }
 
     @Override
@@ -174,7 +178,24 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
+        sjekkOmDeltakerKanMottaPostHvisAvtalenKanInngas(avtale);
         avtale.godkjennForVeileder(getIdentifikator());
+    }
+
+    private void sjekkOmDeltakerKanMottaPostHvisAvtalenKanInngas(
+        Avtale avtale,
+        Avtalerolle... rollerVeilederGodkjennerPaVegneAv
+    ) {
+        Set<Avtalerolle> rollerSomGodkjennesPaVegneAv = Set.of(rollerVeilederGodkjennerPaVegneAv);
+        boolean deltakerVilVaereGodkjent = avtale.erGodkjentAvDeltaker() || rollerSomGodkjennesPaVegneAv.contains(Avtalerolle.DELTAKER);
+        boolean arbeidsgiverVilVaereGodkjent = avtale.erGodkjentAvArbeidsgiver() || rollerSomGodkjennesPaVegneAv.contains(Avtalerolle.ARBEIDSGIVER);
+
+        if (!avtale.erUfordelt()
+            && !avtale.erGodkjentAvVeileder()
+            && arbeidsgiverVilVaereGodkjent
+            && deltakerVilVaereGodkjent) {
+            postutsendelseService.sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
+        }
     }
 
     @Override
@@ -187,6 +208,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
+        sjekkOmDeltakerKanMottaPostHvisAvtalenKanInngas(avtale, Avtalerolle.DELTAKER);
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
 
@@ -198,6 +220,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
+        sjekkOmDeltakerKanMottaPostHvisAvtalenKanInngas(avtale, Avtalerolle.ARBEIDSGIVER);
         avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn);
     }
 
@@ -209,6 +232,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
+        sjekkOmDeltakerKanMottaPostHvisAvtalenKanInngas(avtale, Avtalerolle.DELTAKER, Avtalerolle.ARBEIDSGIVER);
         avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(getIdentifikator(), paVegneAvDeltakerOgArbeidsgiverGrunn);
     }
 

@@ -10,6 +10,7 @@ public enum FeatureToggle {
     ARENA_KAFKA("arenaKafka"),
     PABEGYNT_AVTALE_RYDDE_JOBB("pabegyntAvtaleRyddeJobb"),
     KODE_6_SPERRE("kode6Sperre"),
+    SJEKK_OM_DELTAKER_KAN_MOTTA_POST("sjekkOmDeltakerKanMottaPost"),
     MIGRERING_SKRIVEBESKYTTET("migreringSkrivebeskyttet"),
     FIREARIG_LONNSTILSKUDD("firearigLonnstilskudd");
 
