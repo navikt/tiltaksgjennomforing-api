@@ -1,5 +1,7 @@
-package no.nav.tag.tiltaksgjennomforing.autorisasjon;
+package no.nav.tag.tiltaksgjennomforing.autorisasjon.poaotilgang;
 
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgangsattributter;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 
 import java.util.Map;
