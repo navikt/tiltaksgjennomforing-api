@@ -636,7 +636,7 @@ public class AvtaleControllerTest {
     }
 
     private void skruPåPostutsendelseValidering() {
-        when(featureToggleServiceMock.isEnabled(FeatureToggle.SJEKK_AT_DELTAKER_KAN_MOTTA_POST)).thenReturn(true);
+        when(featureToggleServiceMock.isEnabled(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST)).thenReturn(true);
     }
 
     @Test

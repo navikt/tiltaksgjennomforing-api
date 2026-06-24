@@ -37,7 +37,7 @@ public class PostutsendelseServiceTest {
 
     @BeforeEach
     public void setup() {
-        when(featureToggleService.isEnabled(FeatureToggle.SJEKK_AT_DELTAKER_KAN_MOTTA_POST)).thenReturn(true);
+        when(featureToggleService.isEnabled(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST)).thenReturn(true);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class PostutsendelseServiceTest {
 
     @Test
     public void sjekkOmPersonKanMottaPost__skal_ikke_sjekke_postutsendelse_nar_toggle_er_av() {
-        when(featureToggleService.isEnabled(FeatureToggle.SJEKK_AT_DELTAKER_KAN_MOTTA_POST)).thenReturn(false);
+        when(featureToggleService.isEnabled(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST)).thenReturn(false);
 
         assertThatCode(() -> postutsendelseService.sjekkOmPersonKanMottaPost(FNR)).doesNotThrowAnyException();
 

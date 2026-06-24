@@ -20,7 +20,7 @@ public class PostutsendelseService {
     private final FeatureToggleService featureToggleService;
 
     public void sjekkOmPersonKanMottaPost(Fnr fnr) {
-        if (!featureToggleService.isEnabled(FeatureToggle.SJEKK_AT_DELTAKER_KAN_MOTTA_POST)){
+        if (!featureToggleService.isEnabled(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST)){
             return;
         }
         boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedAdresse(fnr);
