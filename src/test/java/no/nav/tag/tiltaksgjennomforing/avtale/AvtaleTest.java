@@ -1249,6 +1249,28 @@ public class AvtaleTest {
     }
 
     @Test
+    public void inngått_vtao_avtale_kan_endre_stillingsbeskrivelse_selv_om_startdato_er_etter_cutoff() {
+        Avtale avtale = TestData.enVtaoAvtaleGodkjentAvVeileder();
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.instant());
+        avtale.getGjeldendeInnhold().setStartDato(LocalDate.of(2026, 9, 1));
+
+        String stillingstittel = "Kokk";
+        var endreStillingsbeskrivelse = new EndreStillingsbeskrivelse(
+            stillingstittel,
+            "Lage mat",
+            1234,
+            9999,
+            BigDecimal.valueOf(90.0),
+            BigDecimal.valueOf(4.0),
+            LonnstilskuddFormaal.SKAFFE_ARBEID,
+            Stillingstype.FAST
+        );
+        avtale.endreStillingsbeskrivelse(endreStillingsbeskrivelse, new NavIdent("Z123456"));
+        assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(2);
+        assertThat(avtale.getGjeldendeInnhold().getStillingstittel()).isEqualTo(stillingstittel);
+    }
+
+    @Test
     public void endre_tilskuddsberegning_kun_inngått_avtale() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         assertFeilkode(Feilkode.KAN_IKKE_ENDRE_OKONOMI_IKKE_GODKJENT_AVTALE, () -> avtale.endreTilskuddsberegning(TestData.enEndreTilskuddsberegning(), TestData.enNavIdent()));

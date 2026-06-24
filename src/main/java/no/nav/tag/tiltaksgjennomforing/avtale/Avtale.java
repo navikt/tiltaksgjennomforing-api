@@ -994,24 +994,29 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         this.gjeldendeTilskuddsperiode = tilskuddPeriode;
     }
 
-    public void oppdatereKostnadsstedForTilskuddsperioder(String enhet, String enhetsnavn) {
-        if (enhet.equals(gjeldendeInnhold.getEnhetKostnadssted())) {
-            return;
-        }
-
+    void oppdatereKostnadsstedForTilskuddsperioder(String enhet, String enhetsnavn) {
         sjekkAtIkkeAvtaleErAnnullert();
 
-        gjeldendeInnhold.setEnhetKostnadssted(enhet);
-        gjeldendeInnhold.setEnhetsnavnKostnadssted(enhetsnavn);
+        boolean avtaleManglerKostnadssted = !enhet.equals(gjeldendeInnhold.getEnhetKostnadssted());
+        if (avtaleManglerKostnadssted) {
+            gjeldendeInnhold.setEnhetKostnadssted(enhet);
+            gjeldendeInnhold.setEnhetsnavnKostnadssted(enhetsnavn);
+        }
 
-        tilskuddPeriode.stream()
-            .filter(periode -> TilskuddPeriodeStatus.UBEHANDLET.equals(periode.getStatus()))
-            .forEach(periode -> {
-                periode.setEnhet(enhet);
-                periode.setEnhetsnavn(enhetsnavn);
-            });
+        List<TilskuddPeriode> tilskuddsperioderUtenEnhet = tilskuddPeriode.stream()
+            .filter(ts -> TilskuddPeriodeStatus.UBEHANDLET.equals(ts.getStatus()))
+            .filter(ts -> !enhet.equals(ts.getEnhet()))
+            .toList();
 
-        utforEndring();
+        tilskuddsperioderUtenEnhet.forEach(ts -> {
+            ts.setEnhet(enhet);
+            ts.setEnhetsnavn(enhetsnavn);
+        });
+
+        boolean tilskuddsperioderManglerEnhet = !tilskuddsperioderUtenEnhet.isEmpty();
+        if (avtaleManglerKostnadssted || tilskuddsperioderManglerEnhet) {
+            utforEndring();
+        }
     }
 
     private void annullerTilskuddsperioder() {
