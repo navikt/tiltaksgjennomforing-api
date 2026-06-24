@@ -130,7 +130,7 @@ public class VeilederTest {
     }
 
     @Test
-    public void godkjennAvtale__sjekker_postutsendelse_nar_arbeidsgiver_og_deltaker_har_godkjent() {
+    public void godkjennAvtale__sjekker_ikke_postutsendelse_nar_arbeidsgiver_og_deltaker_har_godkjent() {
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
@@ -140,7 +140,7 @@ public class VeilederTest {
 
         veileder.godkjennAvtale(avtale);
 
-        verify(postutsendelseService).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
+        verify(postutsendelseService, never()).kanPersonMottaPost(avtale.getDeltakerFnr());
     }
 
     @Test
@@ -154,7 +154,7 @@ public class VeilederTest {
         assertThatThrownBy(() -> veileder.godkjennAvtale(avtale))
             .isExactlyInstanceOf(VeilederSkalGodkjenneSistException.class);
 
-        verify(postutsendelseService, never()).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
+        verify(postutsendelseService, never()).kanPersonMottaPost(avtale.getDeltakerFnr());
     }
 
     @Test
@@ -168,11 +168,11 @@ public class VeilederTest {
         assertThatThrownBy(() -> veileder.godkjennAvtale(avtale))
             .isExactlyInstanceOf(VeilederSkalGodkjenneSistException.class);
 
-        verify(postutsendelseService, never()).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
+        verify(postutsendelseService, never()).kanPersonMottaPost(avtale.getDeltakerFnr());
     }
 
     @Test
-    public void godkjennForVeilederOgDeltaker__sjekker_postutsendelse_nar_veileder_godkjenner_deltaker_pa_vegne_av() {
+    public void godkjennForVeilederOgDeltaker__sjekker_ikke_postutsendelse_nar_veileder_godkjenner_deltaker_pa_vegne_av() {
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
@@ -181,11 +181,11 @@ public class VeilederTest {
 
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
 
-        verify(postutsendelseService).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
+        verify(postutsendelseService, never()).kanPersonMottaPost(avtale.getDeltakerFnr());
     }
 
     @Test
-    public void godkjennForVeilederOgArbeidsgiver__sjekker_postutsendelse_nar_veileder_godkjenner_arbeidsgiver_pa_vegne_av() {
+    public void godkjennForVeilederOgArbeidsgiver__sjekker_ikke_postutsendelse_nar_veileder_godkjenner_arbeidsgiver_pa_vegne_av() {
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
         avtale.setOpphav(Avtaleopphav.ARENA);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
@@ -195,11 +195,11 @@ public class VeilederTest {
 
         veileder.godkjennForVeilederOgArbeidsgiver(TestData.enGodkjentPaVegneAvArbeidsgiverGrunn(), avtale);
 
-        verify(postutsendelseService).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
+        verify(postutsendelseService, never()).kanPersonMottaPost(avtale.getDeltakerFnr());
     }
 
     @Test
-    public void godkjennForVeilederOgDeltakerOgArbeidsgiver__sjekker_postutsendelse_nar_veileder_godkjenner_begge_pa_vegne_av() {
+    public void godkjennForVeilederOgDeltakerOgArbeidsgiver__sjekker_ikke_postutsendelse_nar_veileder_godkjenner_begge_pa_vegne_av() {
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
         avtale.setOpphav(Avtaleopphav.ARENA);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
@@ -208,7 +208,7 @@ public class VeilederTest {
 
         veileder.godkjennForVeilederOgDeltakerOgArbeidsgiver(TestData.enGodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn(), avtale);
 
-        verify(postutsendelseService).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
+        verify(postutsendelseService, never()).kanPersonMottaPost(avtale.getDeltakerFnr());
     }
 
     @Test

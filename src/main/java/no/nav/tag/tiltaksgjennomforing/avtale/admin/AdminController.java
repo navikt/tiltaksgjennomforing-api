@@ -29,8 +29,6 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
@@ -100,15 +98,7 @@ public class AdminController {
         log.info("skal hent-postadresse for FNR...");
         Fnr validertFnr = new Fnr(fnr);
         log.info("hent-postadresse FNR er validert, skal sjekke om person kan få post...");
-        try {
-            postutsendelseService.sjekkOmPersonKanMottaPost(validertFnr);
-            return true;
-        } catch (FeilkodeException e) {
-            if (e.getFeilkode() == Feilkode.KAN_IKKE_SENDE_POST_MANGLER_ADRESSE_OG_RESERVERT) {
-                return false;
-            }
-            throw e;
-        }
+        return postutsendelseService.kanPersonMottaPost(validertFnr);
     }
 
     @PostMapping("/annuller-tilskuddsperiode/{tilskuddsperiodeId}")

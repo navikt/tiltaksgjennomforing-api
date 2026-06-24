@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.brev;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.brev.digitalkontaktinformasjon.DigitalKontaktinformasjonClient;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.brev.postadresse.PostadresseClient;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
@@ -13,8 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,51 +39,47 @@ public class PostutsendelseServiceTest {
     }
 
     @Test
-    public void sjekkOmPersonKanMottaPost__skal_ikke_feile_nar_person_har_adresse_og_ikke_er_reservert() {
+    public void kanPersonMottaPost__skal_returnere_true_nar_person_har_adresse_og_ikke_er_reservert() {
         when(postadresseClient.sjekkOmPersonErRegistrertMedAdresse(FNR)).thenReturn(true);
         when(digitalKontaktinformasjonClient.erPersonReservertMotDigitalKontakt(FNR)).thenReturn(false);
 
-        assertThatCode(() -> postutsendelseService.sjekkOmPersonKanMottaPost(FNR)).doesNotThrowAnyException();
+        assertThat(postutsendelseService.kanPersonMottaPost(FNR)).isTrue();
     }
 
     @Test
-    public void sjekkOmPersonKanMottaPost__skal_feile_nar_person_mangler_adresse_og_er_reservert() {
+    public void kanPersonMottaPost__skal_returnere_false_nar_person_mangler_adresse_og_er_reservert() {
         when(postadresseClient.sjekkOmPersonErRegistrertMedAdresse(FNR)).thenReturn(false);
         when(digitalKontaktinformasjonClient.erPersonReservertMotDigitalKontakt(FNR)).thenReturn(true);
 
-        assertFeilkode(
-            Feilkode.KAN_IKKE_SENDE_POST_MANGLER_ADRESSE_OG_RESERVERT,
-            () -> postutsendelseService.sjekkOmPersonKanMottaPost(FNR)
-        );
+        assertThat(postutsendelseService.kanPersonMottaPost(FNR)).isFalse();
     }
 
     @Test
-    public void sjekkOmPersonKanMottaPost__skal_ikke_feile_nar_person_kun_mangler_adresse() {
+    public void kanPersonMottaPost__skal_returnere_true_nar_person_kun_mangler_adresse() {
         when(postadresseClient.sjekkOmPersonErRegistrertMedAdresse(FNR)).thenReturn(false);
         when(digitalKontaktinformasjonClient.erPersonReservertMotDigitalKontakt(FNR)).thenReturn(false);
 
-        assertThatCode(() -> postutsendelseService.sjekkOmPersonKanMottaPost(FNR)).doesNotThrowAnyException();
+        assertThat(postutsendelseService.kanPersonMottaPost(FNR)).isTrue();
     }
 
     @Test
-    public void sjekkOmPersonKanMottaPost__skal_ikke_feile_nar_person_kun_er_reservert() {
+    public void kanPersonMottaPost__skal_returnere_true_nar_person_kun_er_reservert() {
         when(postadresseClient.sjekkOmPersonErRegistrertMedAdresse(FNR)).thenReturn(true);
         when(digitalKontaktinformasjonClient.erPersonReservertMotDigitalKontakt(FNR)).thenReturn(true);
 
-        assertThatCode(() -> postutsendelseService.sjekkOmPersonKanMottaPost(FNR)).doesNotThrowAnyException();
+        assertThat(postutsendelseService.kanPersonMottaPost(FNR)).isTrue();
     }
 
     @Test
-    public void sjekkOmPersonKanMottaPost__skal_ikke_sjekke_postutsendelse_nar_toggle_er_av() {
+    public void kanPersonMottaPost__skal_returnere_true_og_ikke_sjekke_postutsendelse_nar_toggle_er_av() {
         when(featureToggleService.isEnabled(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST)).thenReturn(false);
 
-        assertThatCode(() -> postutsendelseService.sjekkOmPersonKanMottaPost(FNR)).doesNotThrowAnyException();
+        assertThat(postutsendelseService.kanPersonMottaPost(FNR)).isTrue();
 
         verify(postadresseClient, never()).sjekkOmPersonErRegistrertMedAdresse(FNR);
         verify(digitalKontaktinformasjonClient, never()).erPersonReservertMotDigitalKontakt(FNR);
     }
 }
-
 
 
 
