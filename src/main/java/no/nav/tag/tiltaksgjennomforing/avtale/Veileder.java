@@ -178,11 +178,11 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
-        sjekkAtDeltakerKanMottaPostHvisAvtalenKanInngas(avtale);
+        sjekkOmDeltakerKanMottaPostHvisAvtalenKanInngas(avtale);
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
-    private void sjekkAtDeltakerKanMottaPostHvisAvtalenKanInngas(
+    private void sjekkOmDeltakerKanMottaPostHvisAvtalenKanInngas(
         Avtale avtale,
         Avtalerolle... rollerVeilederGodkjennerPaVegneAv
     ) {
@@ -208,7 +208,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
-        sjekkAtDeltakerKanMottaPostHvisAvtalenKanInngas(avtale, Avtalerolle.DELTAKER);
+        sjekkOmDeltakerKanMottaPostHvisAvtalenKanInngas(avtale, Avtalerolle.DELTAKER);
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
 
@@ -220,7 +220,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
-        sjekkAtDeltakerKanMottaPostHvisAvtalenKanInngas(avtale, Avtalerolle.ARBEIDSGIVER);
+        sjekkOmDeltakerKanMottaPostHvisAvtalenKanInngas(avtale, Avtalerolle.ARBEIDSGIVER);
         avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn);
     }
 
@@ -232,7 +232,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
-        sjekkAtDeltakerKanMottaPostHvisAvtalenKanInngas(avtale, Avtalerolle.DELTAKER, Avtalerolle.ARBEIDSGIVER);
+        sjekkOmDeltakerKanMottaPostHvisAvtalenKanInngas(avtale, Avtalerolle.DELTAKER, Avtalerolle.ARBEIDSGIVER);
         avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(getIdentifikator(), paVegneAvDeltakerOgArbeidsgiverGrunn);
     }
 
