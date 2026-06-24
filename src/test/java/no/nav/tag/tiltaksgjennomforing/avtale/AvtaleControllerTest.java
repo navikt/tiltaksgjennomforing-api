@@ -768,7 +768,7 @@ public class AvtaleControllerTest {
             avtale.getSistEndret()
         );
 
-        verify(postutsendelseService).sjekkAtPersonKanMottaPost(avtale.getDeltakerFnr());
+        verify(postutsendelseService).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
     }
 
@@ -805,7 +805,7 @@ public class AvtaleControllerTest {
             avtale.getSistEndret()
         )).isInstanceOf(FeilkodeException.class);
 
-        verify(postutsendelseService, never()).sjekkAtPersonKanMottaPost(any(Fnr.class));
+        verify(postutsendelseService, never()).sjekkOmPersonKanMottaPost(any(Fnr.class));
         verify(avtaleRepository, never()).save(any(Avtale.class));
         assertThat(avtale.erGodkjentAvVeileder()).isFalse();
     }
@@ -823,7 +823,7 @@ public class AvtaleControllerTest {
             avtale.getSistEndret()
         );
 
-        verify(postutsendelseService, never()).sjekkAtPersonKanMottaPost(any(Fnr.class));
+        verify(postutsendelseService, never()).sjekkOmPersonKanMottaPost(any(Fnr.class));
     }
 
     @Test
@@ -858,7 +858,7 @@ public class AvtaleControllerTest {
             avtale.getSistEndret()
         )).isInstanceOf(IkkeTilgangTilAvtaleException.class);
 
-        verify(postutsendelseService, never()).sjekkAtPersonKanMottaPost(any(Fnr.class));
+        verify(postutsendelseService, never()).sjekkOmPersonKanMottaPost(any(Fnr.class));
     }
 
     @Test
@@ -871,7 +871,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         doThrow(new FeilkodeException(Feilkode.KAN_IKKE_SENDE_POST_MANGLER_ADRESSE_OG_RESERVERT))
             .when(postutsendelseService)
-            .sjekkAtPersonKanMottaPost(avtale.getDeltakerFnr());
+            .sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
 
         assertThatThrownBy(() -> avtaleController.godkjenn(
             avtale.getId(),

@@ -19,7 +19,7 @@ public class PostutsendelseService {
     private final DigitalKontaktinformasjonClient digitalKontaktinformasjonClient;
     private final FeatureToggleService featureToggleService;
 
-    public void sjekkAtPersonKanMottaPost(Fnr fnr) {
+    public void sjekkOmPersonKanMottaPost(Fnr fnr) {
         if (!featureToggleService.isEnabled(FeatureToggle.SJEKK_AT_DELTAKER_KAN_MOTTA_POST)){
             return;
         }

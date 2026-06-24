@@ -140,7 +140,7 @@ public class VeilederTest {
 
         veileder.godkjennAvtale(avtale);
 
-        verify(postutsendelseService).sjekkAtPersonKanMottaPost(avtale.getDeltakerFnr());
+        verify(postutsendelseService).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
     }
 
     @Test
@@ -154,7 +154,7 @@ public class VeilederTest {
         assertThatThrownBy(() -> veileder.godkjennAvtale(avtale))
             .isExactlyInstanceOf(VeilederSkalGodkjenneSistException.class);
 
-        verify(postutsendelseService, never()).sjekkAtPersonKanMottaPost(avtale.getDeltakerFnr());
+        verify(postutsendelseService, never()).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
     }
 
     @Test
@@ -168,7 +168,7 @@ public class VeilederTest {
         assertThatThrownBy(() -> veileder.godkjennAvtale(avtale))
             .isExactlyInstanceOf(VeilederSkalGodkjenneSistException.class);
 
-        verify(postutsendelseService, never()).sjekkAtPersonKanMottaPost(avtale.getDeltakerFnr());
+        verify(postutsendelseService, never()).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
     }
 
     @Test
@@ -181,7 +181,7 @@ public class VeilederTest {
 
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
 
-        verify(postutsendelseService).sjekkAtPersonKanMottaPost(avtale.getDeltakerFnr());
+        verify(postutsendelseService).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
     }
 
     @Test
@@ -195,7 +195,7 @@ public class VeilederTest {
 
         veileder.godkjennForVeilederOgArbeidsgiver(TestData.enGodkjentPaVegneAvArbeidsgiverGrunn(), avtale);
 
-        verify(postutsendelseService).sjekkAtPersonKanMottaPost(avtale.getDeltakerFnr());
+        verify(postutsendelseService).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
     }
 
     @Test
@@ -208,7 +208,7 @@ public class VeilederTest {
 
         veileder.godkjennForVeilederOgDeltakerOgArbeidsgiver(TestData.enGodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn(), avtale);
 
-        verify(postutsendelseService).sjekkAtPersonKanMottaPost(avtale.getDeltakerFnr());
+        verify(postutsendelseService).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
     }
 
     @Test

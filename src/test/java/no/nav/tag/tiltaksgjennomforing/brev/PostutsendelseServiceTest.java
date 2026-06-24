@@ -41,45 +41,45 @@ public class PostutsendelseServiceTest {
     }
 
     @Test
-    public void sjekkAtPersonKanMottaPost__skal_ikke_feile_nar_person_har_adresse_og_ikke_er_reservert() {
+    public void sjekkOmPersonKanMottaPost__skal_ikke_feile_nar_person_har_adresse_og_ikke_er_reservert() {
         when(postadresseClient.sjekkOmPersonErRegistrertMedAdresse(FNR)).thenReturn(true);
         when(digitalKontaktinformasjonClient.erPersonReservertMotDigitalKontakt(FNR)).thenReturn(false);
 
-        assertThatCode(() -> postutsendelseService.sjekkAtPersonKanMottaPost(FNR)).doesNotThrowAnyException();
+        assertThatCode(() -> postutsendelseService.sjekkOmPersonKanMottaPost(FNR)).doesNotThrowAnyException();
     }
 
     @Test
-    public void sjekkAtPersonKanMottaPost__skal_feile_nar_person_mangler_adresse_og_er_reservert() {
+    public void sjekkOmPersonKanMottaPost__skal_feile_nar_person_mangler_adresse_og_er_reservert() {
         when(postadresseClient.sjekkOmPersonErRegistrertMedAdresse(FNR)).thenReturn(false);
         when(digitalKontaktinformasjonClient.erPersonReservertMotDigitalKontakt(FNR)).thenReturn(true);
 
         assertFeilkode(
             Feilkode.KAN_IKKE_SENDE_POST_MANGLER_ADRESSE_OG_RESERVERT,
-            () -> postutsendelseService.sjekkAtPersonKanMottaPost(FNR)
+            () -> postutsendelseService.sjekkOmPersonKanMottaPost(FNR)
         );
     }
 
     @Test
-    public void sjekkAtPersonKanMottaPost__skal_ikke_feile_nar_person_kun_mangler_adresse() {
+    public void sjekkOmPersonKanMottaPost__skal_ikke_feile_nar_person_kun_mangler_adresse() {
         when(postadresseClient.sjekkOmPersonErRegistrertMedAdresse(FNR)).thenReturn(false);
         when(digitalKontaktinformasjonClient.erPersonReservertMotDigitalKontakt(FNR)).thenReturn(false);
 
-        assertThatCode(() -> postutsendelseService.sjekkAtPersonKanMottaPost(FNR)).doesNotThrowAnyException();
+        assertThatCode(() -> postutsendelseService.sjekkOmPersonKanMottaPost(FNR)).doesNotThrowAnyException();
     }
 
     @Test
-    public void sjekkAtPersonKanMottaPost__skal_ikke_feile_nar_person_kun_er_reservert() {
+    public void sjekkOmPersonKanMottaPost__skal_ikke_feile_nar_person_kun_er_reservert() {
         when(postadresseClient.sjekkOmPersonErRegistrertMedAdresse(FNR)).thenReturn(true);
         when(digitalKontaktinformasjonClient.erPersonReservertMotDigitalKontakt(FNR)).thenReturn(true);
 
-        assertThatCode(() -> postutsendelseService.sjekkAtPersonKanMottaPost(FNR)).doesNotThrowAnyException();
+        assertThatCode(() -> postutsendelseService.sjekkOmPersonKanMottaPost(FNR)).doesNotThrowAnyException();
     }
 
     @Test
-    public void sjekkAtPersonKanMottaPost__skal_ikke_sjekke_postutsendelse_nar_toggle_er_av() {
+    public void sjekkOmPersonKanMottaPost__skal_ikke_sjekke_postutsendelse_nar_toggle_er_av() {
         when(featureToggleService.isEnabled(FeatureToggle.SJEKK_AT_DELTAKER_KAN_MOTTA_POST)).thenReturn(false);
 
-        assertThatCode(() -> postutsendelseService.sjekkAtPersonKanMottaPost(FNR)).doesNotThrowAnyException();
+        assertThatCode(() -> postutsendelseService.sjekkOmPersonKanMottaPost(FNR)).doesNotThrowAnyException();
 
         verify(postadresseClient, never()).sjekkOmPersonErRegistrertMedAdresse(FNR);
         verify(digitalKontaktinformasjonClient, never()).erPersonReservertMotDigitalKontakt(FNR);
