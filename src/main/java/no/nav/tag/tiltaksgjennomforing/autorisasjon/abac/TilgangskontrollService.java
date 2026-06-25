@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.PoaoTilgangService;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.poaotilgang.PoaoTilgangService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgangsattributter;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;

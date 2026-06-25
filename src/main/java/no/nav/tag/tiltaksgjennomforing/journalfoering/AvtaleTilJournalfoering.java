@@ -7,8 +7,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.Inkluderingstilskuddsutgift;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.TilskuddPeriodeDTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -96,7 +96,7 @@ public class AvtaleTilJournalfoering {
     private LocalDate godkjentAvArbeidsgiver;
     private LocalDate godkjentAvVeileder;
     private LocalDate godkjentTaushetserklæringAvMentor;
-    private List<TilskuddPeriode> tilskuddsPerioder;
+    private List<TilskuddPeriodeDTO> tilskuddsPerioder;
     private boolean godkjentPaVegneAv;
     private Avtalerolle avtalerolle;
 
