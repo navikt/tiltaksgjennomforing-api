@@ -10,7 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleInnholdDTO;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.OppdaterMentorFnrRequest;
-import no.nav.tag.tiltaksgjennomforing.dokgen.DokgenService;
+import no.nav.tag.tiltaksgjennomforing.pdfgen.PdfgenService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
@@ -76,7 +76,7 @@ public class AvtaleController {
     private final InnloggingService innloggingService;
     private final Norg2Client norg2Client;
     private final KontoregisterService kontoregisterService;
-    private final DokgenService dokgenService;
+    private final PdfgenService pdfgenService;
     private final FilterSokRepository filterSokRepository;
     private final MeterRegistry meterRegistry;
     private final AktsomhetService aktsomhetService;
@@ -284,7 +284,7 @@ public class AvtaleController {
         if (!avtale.erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LASTE_NED_PDF);
         }
-        byte[] avtalePdf = dokgenService.avtalePdf(avtale, innloggetPart);
+        byte[] avtalePdf = pdfgenService.avtalePdf(avtale, innloggetPart);
         HttpHeaders header = new HttpHeaders();
         header.setContentType(MediaType.APPLICATION_PDF);
         header.set(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=Avtale om " + avtale.tiltakstype().getBeskrivelse() + ".pdf");
