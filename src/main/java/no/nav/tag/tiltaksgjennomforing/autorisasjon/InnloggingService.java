@@ -99,7 +99,7 @@ public class InnloggingService {
 
             if (!adGruppeTilganger.beslutter()) {
                 log.warn("Ugyldig kombinasjon av issuer={} og rolle={}", issuer, avtalerolle);
-                throw new FeilkodeException(Feilkode.UGYLDIG_KOMBINASJON_AV_ISSUER_OG_ROLLE);
+                throw new FeilkodeException(Feilkode.MANGLER_BESLUTTERTILGANG);
             }
 
             var navIdent = new NavIdent(brukerOgIssuer.getBrukerIdent());
