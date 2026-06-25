@@ -98,7 +98,7 @@ public class InnloggingService {
             AdGruppeTilganger adGruppeTilganger = AdGruppeTilganger.av(adGrupperProperties, tokenUtils);
 
             if (!adGruppeTilganger.beslutter()) {
-                log.warn("Ugyldig kombinasjon av issuer={} og rolle={}", issuer, avtalerolle);
+                log.warn("NAV-ansatt mangler besluttertilgang (issuer={}, rolle={})", issuer, avtalerolle);
                 throw new FeilkodeException(Feilkode.MANGLER_BESLUTTERTILGANG);
             }
 
