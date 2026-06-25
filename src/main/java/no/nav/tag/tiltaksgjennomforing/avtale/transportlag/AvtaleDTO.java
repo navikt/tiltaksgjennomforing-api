@@ -61,7 +61,8 @@ public record AvtaleDTO(
     boolean erOpprettetEllerEndretAvArena,
     TilskuddPeriodeDTO gjeldendeTilskuddsperiode,
     @JsonIgnore
-    FnrOgBedrift fnrOgBedrift
+    FnrOgBedrift fnrOgBedrift,
+    Boolean kanDeltakerMottaPost
 ) implements AuditerbarEntitet {
 
     public AvtaleDTO(
@@ -101,10 +102,10 @@ public record AvtaleDTO(
             avtale.felterSomIkkeErFyltUt(),
             avtale.erOpprettetEllerEndretAvArena(),
             avtale.getGjeldendeTilskuddsperiode() == null ? null : new TilskuddPeriodeDTO(avtale.getGjeldendeTilskuddsperiode()),
-            new FnrOgBedrift(avtale.getDeltakerFnr(), avtale.getBedriftNr())
+            new FnrOgBedrift(avtale.getDeltakerFnr(), avtale.getBedriftNr()),
+            null
         );
     }
-
 
     @JsonProperty
     public boolean erLaast() {

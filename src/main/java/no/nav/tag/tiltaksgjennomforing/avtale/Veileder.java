@@ -88,6 +88,14 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     @Override
+    public AvtaleDTO hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
+        AvtaleDTO avtale = super.hentAvtale(avtaleRepository, avtaleId);
+        return avtale.toBuilder()
+            .kanDeltakerMottaPost(postutsendelseService.kanPersonMottaPost(avtale.deltakerFnr()))
+            .build();
+    }
+
+    @Override
     public Page<BegrensetAvtale> hentBegrensedeAvtalerMedLesetilgang(
         AvtaleRepository avtaleRepository,
         AvtaleQueryParameter queryParametre,
@@ -179,11 +187,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
         avtale.godkjennForVeileder(getIdentifikator());
-    }
-
-    public boolean kanDeltakerMottaPost(Avtale avtale) {
-        sjekkTilgang(avtale);
-        return postutsendelseService.kanPersonMottaPost(avtale.getDeltakerFnr());
     }
 
     @Override

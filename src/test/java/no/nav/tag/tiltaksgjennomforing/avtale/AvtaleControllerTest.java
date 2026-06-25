@@ -881,20 +881,6 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void kanDeltakerMottaPost__skal_returnere_resultat_fra_postutsendelseService() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        Veileder veileder = enVeilederMedPostutsendelseService(avtale);
-        værInnloggetSom(veileder);
-        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        when(postutsendelseService.kanPersonMottaPost(avtale.getDeltakerFnr())).thenReturn(false);
-
-        boolean kanDeltakerMottaPost = avtaleController.kanDeltakerMottaPost(avtale.getId());
-
-        assertThat(kanDeltakerMottaPost).isFalse();
-        verify(postutsendelseService).kanPersonMottaPost(avtale.getDeltakerFnr());
-    }
-
-    @Test
     public void godkjennForAvtalepart__skal_ikke_fungere_hvis_versjon_er_feil() {
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
         Veileder veileder = new Veileder(
