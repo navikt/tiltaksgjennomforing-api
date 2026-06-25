@@ -7,6 +7,8 @@ import no.nav.tag.tiltaksgjennomforing.brev.digitalkontaktinformasjon.DigitalKon
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.brev.postadresse.PostadresseClient;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -15,8 +17,12 @@ import org.springframework.stereotype.Service;
 public class PostutsendelseService {
     private final PostadresseClient postadresseClient;
     private final DigitalKontaktinformasjonClient digitalKontaktinformasjonClient;
+    private final FeatureToggleService featureToggleService;
 
-    public void validerAtPersonKanMottaPost(Fnr fnr) {
+    public void sjekkOmPersonKanMottaPost(Fnr fnr) {
+        if (!featureToggleService.isEnabled(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST)){
+            return;
+        }
         boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedAdresse(fnr);
         boolean erReservertMotDigitalKommunikasjon = digitalKontaktinformasjonClient.erPersonReservertMotDigitalKontakt(fnr);
 
