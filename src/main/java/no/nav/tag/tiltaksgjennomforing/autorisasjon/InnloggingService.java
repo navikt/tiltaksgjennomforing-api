@@ -113,7 +113,8 @@ public class InnloggingService {
                 persondataService,
                 adGruppeTilganger,
                 veilarboppfolgingService,
-                featureToggleService
+                featureToggleService,
+                eregService
             );
         }
 
