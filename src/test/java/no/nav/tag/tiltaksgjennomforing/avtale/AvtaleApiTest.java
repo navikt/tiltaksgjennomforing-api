@@ -76,7 +76,7 @@ public class AvtaleApiTest {
     private PersondataService persondataService;
     @SpyBean
     private AuditConsoleLogger auditConsoleLogger;
-    @Mock
+    @MockBean
     private EregService eregService;
 
 
