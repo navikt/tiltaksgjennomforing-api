@@ -76,6 +76,8 @@ public class AvtaleApiTest {
     private PersondataService persondataService;
     @SpyBean
     private AuditConsoleLogger auditConsoleLogger;
+    @MockBean
+    private EregService eregService;
 
 
     @Test
@@ -132,7 +134,8 @@ public class AvtaleApiTest {
             persondataService,
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
-            featureToggleService
+            featureToggleService,
+            eregService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(beslutter), any(Fnr.class))).thenReturn(true);
         when(entraproxyService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of(ENHET_OPPFØLGING));

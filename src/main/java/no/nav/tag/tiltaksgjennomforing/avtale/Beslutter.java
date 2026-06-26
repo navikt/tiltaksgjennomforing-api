@@ -17,6 +17,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.NavEnhetIkkeFunnetException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RolleHarIkkeTilgangException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.springframework.data.domain.Page;
@@ -43,6 +44,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
     private final AdGruppeTilganger adGruppeTilganger;
     private final FeatureToggleService featureToggleService;
     private final VeilarboppfolgingService veilarboppfolgingService;
+    private final EregService eregService;
 
     public Beslutter(
         NavIdent identifikator,
@@ -53,7 +55,8 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         PersondataService persondataService,
         AdGruppeTilganger adGruppeTilganger,
         VeilarboppfolgingService veilarboppfolgingService,
-        FeatureToggleService featureToggleService
+        FeatureToggleService featureToggleService,
+        EregService eregService
     ) {
         super(identifikator);
         this.azureOid = azureOid;
@@ -64,6 +67,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         this.adGruppeTilganger = adGruppeTilganger;
         this.veilarboppfolgingService = veilarboppfolgingService;
         this.featureToggleService = featureToggleService;
+        this.eregService = eregService;
     }
 
     public void godkjennTilskuddsperiode(Avtale avtale, String enhet) {
@@ -89,6 +93,8 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
             if (!harOppfolgingsenhetTilgangPaTiltak) {
                 throw new FeilkodeException(Feilkode.ENHET_IKKE_TILGANG_PA_TILTAK);
             }
+
+            eregService.hentVirksomhet(avtale.getBedriftNr());
         } catch (FeilkodeException e) {
             if (!Feilkode.HENTING_AV_INNSATSBEHOV_FEILET.equals(e.getFeilkode())) {
                 throw e;

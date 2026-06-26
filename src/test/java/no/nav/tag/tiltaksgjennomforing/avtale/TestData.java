@@ -2,13 +2,13 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.AdGruppeTilganger;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetMentor;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
@@ -31,7 +31,6 @@ import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -1014,6 +1013,7 @@ public class TestData {
         PersondataService persondataService = mock(PersondataService.class);
         VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
         FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
+        EregService eregService = mock(EregService.class);
         NavIdent navIdent = new NavIdent("B999999");
         var beslutter = new Beslutter(
             navIdent,
@@ -1024,7 +1024,8 @@ public class TestData {
             persondataService,
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
-            featureToggleService
+            featureToggleService,
+            eregService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(beslutter, avtale.getDeltakerFnr())).thenReturn(true);
         when(norg2Client.hentOppfølgingsEnhet(eq("0000"))).thenReturn(new Norg2OppfølgingResponse(0, "0000", "Oslo", Norg2EnhetStatus.AKTIV));
