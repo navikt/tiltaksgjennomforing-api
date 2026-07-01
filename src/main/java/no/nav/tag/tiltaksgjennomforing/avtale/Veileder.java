@@ -417,6 +417,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     public void forlengAvtale(LocalDate sluttDato, Avtale avtale) {
         super.sjekkTilgang(avtale);
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
+        eregService.hentVirksomhet(avtale.getBedriftNr());
         avtale.forlengAvtale(sluttDato, getIdentifikator());
     }
 
