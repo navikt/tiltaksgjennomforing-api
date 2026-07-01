@@ -67,7 +67,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -754,7 +753,7 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void godkjennForAvtalepart__skal_validere_postutsendelse_nar_veileder_godkjenner_sist() {
+    public void godkjennForAvtalepart__skal_ikke_validere_postutsendelse_nar_veileder_godkjenner_sist() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
@@ -768,7 +767,7 @@ public class AvtaleControllerTest {
             avtale.getSistEndret()
         );
 
-        verify(postutsendelseService).sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
+        verify(postutsendelseService, never()).kanPersonMottaPost(avtale.getDeltakerFnr());
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
     }
 
@@ -805,7 +804,7 @@ public class AvtaleControllerTest {
             avtale.getSistEndret()
         )).isInstanceOf(FeilkodeException.class);
 
-        verify(postutsendelseService, never()).sjekkOmPersonKanMottaPost(any(Fnr.class));
+        verify(postutsendelseService, never()).kanPersonMottaPost(any(Fnr.class));
         verify(avtaleRepository, never()).save(any(Avtale.class));
         assertThat(avtale.erGodkjentAvVeileder()).isFalse();
     }
@@ -823,7 +822,7 @@ public class AvtaleControllerTest {
             avtale.getSistEndret()
         );
 
-        verify(postutsendelseService, never()).sjekkOmPersonKanMottaPost(any(Fnr.class));
+        verify(postutsendelseService, never()).kanPersonMottaPost(any(Fnr.class));
     }
 
     @Test
@@ -858,29 +857,27 @@ public class AvtaleControllerTest {
             avtale.getSistEndret()
         )).isInstanceOf(IkkeTilgangTilAvtaleException.class);
 
-        verify(postutsendelseService, never()).sjekkOmPersonKanMottaPost(any(Fnr.class));
+        verify(postutsendelseService, never()).kanPersonMottaPost(any(Fnr.class));
     }
 
     @Test
-    public void godkjennForAvtalepart__skal_ikke_godkjenne_veileder_hvis_postutsendelse_feiler() {
+    public void godkjennForAvtalepart__skal_godkjenne_veileder_uten_postutsendelse_sjekk() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
         skruPåPostutsendelseValidering();
         værInnloggetSom(enVeilederMedPostutsendelseService(avtale));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        doThrow(new FeilkodeException(Feilkode.KAN_IKKE_SENDE_POST_MANGLER_ADRESSE_OG_RESERVERT))
-            .when(postutsendelseService)
-            .sjekkOmPersonKanMottaPost(avtale.getDeltakerFnr());
 
-        assertThatThrownBy(() -> avtaleController.godkjenn(
+        avtaleController.godkjenn(
             avtale.getId(),
             Avtalerolle.VEILEDER,
             avtale.getSistEndret()
-        )).isInstanceOf(FeilkodeException.class);
+        );
 
-        verify(avtaleRepository, never()).save(any(Avtale.class));
-        assertThat(avtale.erGodkjentAvVeileder()).isFalse();
+        verify(postutsendelseService, never()).kanPersonMottaPost(any(Fnr.class));
+        verify(avtaleRepository).save(avtale);
+        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
     }
 
     @Test
