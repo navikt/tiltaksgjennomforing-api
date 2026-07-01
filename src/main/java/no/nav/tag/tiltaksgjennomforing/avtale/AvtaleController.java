@@ -767,7 +767,6 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @AuditLogging("Sjekk om deltaker kan motta post")
     @GetMapping("/{avtaleId}/kan-deltaker-motta-post")
     public boolean kanDeltakerMottaPost(@PathVariable("avtaleId") UUID avtaleId) {
         Veileder veileder = innloggingService.hentVeileder();
