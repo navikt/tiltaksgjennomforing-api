@@ -78,8 +78,8 @@ tiltaksgjennomforing:
       url: http://localhost:8090/norg2/api/v1/enhet/navkontor/
     enhet:
       url: http://localhost:8090/norg2/api/v1/enhet/
-  dokgen:
-    uri: http://localhost:9000/template/tiltak-avtale/create-pdf
+  pdfgen:
+    uri: http://localhost:9001/api/v1/genpdf
   entraproxy:
     uri: http://localhost:8090/entraproxy
 

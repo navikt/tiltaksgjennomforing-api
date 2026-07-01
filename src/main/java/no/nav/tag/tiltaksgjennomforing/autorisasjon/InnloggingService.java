@@ -98,8 +98,8 @@ public class InnloggingService {
             AdGruppeTilganger adGruppeTilganger = AdGruppeTilganger.av(adGrupperProperties, tokenUtils);
 
             if (!adGruppeTilganger.beslutter()) {
-                log.warn("Ugyldig kombinasjon av issuer={} og rolle={}", issuer, avtalerolle);
-                throw new FeilkodeException(Feilkode.UGYLDIG_KOMBINASJON_AV_ISSUER_OG_ROLLE);
+                log.warn("NAV-ansatt mangler besluttertilgang (issuer={}, rolle={})", issuer, avtalerolle);
+                throw new FeilkodeException(Feilkode.MANGLER_BESLUTTERTILGANG);
             }
 
             var navIdent = new NavIdent(brukerOgIssuer.getBrukerIdent());
@@ -113,7 +113,8 @@ public class InnloggingService {
                 persondataService,
                 adGruppeTilganger,
                 veilarboppfolgingService,
-                featureToggleService
+                featureToggleService,
+                eregService
             );
         }
 

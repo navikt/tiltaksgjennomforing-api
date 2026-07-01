@@ -176,13 +176,16 @@ public class AdminController {
 
     @PostMapping("/avtale/{id}/sjekk-tilgang")
     public ResponseEntity<String> sjekkTilgang(@PathVariable UUID id, @RequestBody AvtaleAdminSjekkTilgangRequest body) {
-        return avtaleRepository.findById(id)
-            .map(avtale -> tilgangskontrollService.hentSkrivetilgang(body.veilederAzureOid(), avtale.getDeltakerFnr()))
-            .filter(tilgang -> tilgang instanceof Tilgang.Avvis)
-            .map(tilgang -> ResponseEntity.ok(
-                "[" + ((Tilgang.Avvis) tilgang).tilgangskode() + "] " + ((Tilgang.Avvis) tilgang).melding()
-            ))
-            .orElseGet(() -> ResponseEntity.notFound().build());
+         Optional<Avtale> avtale = avtaleRepository.findById(id);
+         if (avtale.isEmpty()) {
+             return ResponseEntity.notFound().build();
+         }
+        return avtale.map(a -> tilgangskontrollService.hentSkrivetilgang(body.veilederAzureOid(), a.getDeltakerFnr()))
+            .map(tilgang -> tilgang.erTillat()
+                ? ResponseEntity.ok("Veileder har tilgang til avtalen")
+                : ResponseEntity.ok("[" + ((Tilgang.Avvis) tilgang).tilgangskode() + "] " + ((Tilgang.Avvis) tilgang).melding())
+            )
+            .orElse(ResponseEntity.badRequest().body("Kunne ikke hente tilgang for avtale " + id));
     }
 
     @GetMapping("/avtale/{id}/sjekk-tilgangsattributter")
