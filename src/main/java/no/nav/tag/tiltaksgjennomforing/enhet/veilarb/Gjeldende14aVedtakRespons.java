@@ -1,5 +1,6 @@
-package no.nav.tag.tiltaksgjennomforing.enhet.veilarbvedtaksstotte;
+package no.nav.tag.tiltaksgjennomforing.enhet.veilarb;
 
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import org.jspecify.annotations.NonNull;
 
 import java.time.ZonedDateTime;

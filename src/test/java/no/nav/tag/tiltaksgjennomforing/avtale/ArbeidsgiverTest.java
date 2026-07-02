@@ -6,7 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
@@ -92,7 +92,7 @@ public class ArbeidsgiverTest {
         PersondataService persondataService = mock(PersondataService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
         EregService eregService = mock(EregService.class);
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        VeilarbService veilarboppfolgingService = mock(VeilarbService.class);
 
         Norg2GeoResponse navEnhet = new Norg2GeoResponse("Nav Grorud", "0411");
         when(norg2Client.hentGeografiskEnhet(any())).thenReturn(navEnhet);
@@ -100,7 +100,7 @@ public class ArbeidsgiverTest {
         when(persondataService.hentGeografiskTilknytning(any())).thenReturn(Optional.of("0904"));
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
-        when(veilarboppfolgingService.hentOppfolgingsstatus(any(Fnr.class))).thenReturn(new Oppfølgingsstatus(
+        when(veilarboppfolgingService.hentOppfolging(any(Fnr.class))).thenReturn(new Oppfølgingsstatus(
             null,
             null,
             "0411"
@@ -196,8 +196,8 @@ public class ArbeidsgiverTest {
         EregService eregService = mock(EregService.class);
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
 
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
-        when(veilarboppfolgingService.hentOppfolgingsstatus(any(Fnr.class))).thenReturn(new Oppfølgingsstatus(
+        VeilarbService veilarbService = mock(VeilarbService.class);
+        when(veilarbService.hentOppfolging(any(Fnr.class))).thenReturn(new Oppfølgingsstatus(
             null,
             null,
             "0411"
@@ -212,7 +212,7 @@ public class ArbeidsgiverTest {
             persondataService,
             norg2Client,
             eregService,
-            veilarboppfolgingService
+            veilarbService
         );
         OpprettAvtale opprettAvtale = new OpprettAvtale(
             TestData.etFodselsnummer(),

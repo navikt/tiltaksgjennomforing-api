@@ -16,7 +16,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2EnhetStatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -958,7 +957,7 @@ public class TestData {
 
     public static Veileder enVeileder(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        VeilarbService veilarbService = mock(VeilarbService.class);
         PersondataService persondataService  = mock(PersondataService.class);
         EregService eregService  = mock(EregService.class);
 
@@ -970,7 +969,7 @@ public class TestData {
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Oslo gamlebyen")),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+                veilarbService,
                 featureToggleService,
                 eregService,
                 mock(PostutsendelseService.class)
@@ -987,7 +986,7 @@ public class TestData {
             )
         ).thenReturn(true);
 
-        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any()))
+        when(veilarbService.hentOgSjekkOppfolgingstatus(any()))
             .thenReturn(
                 new Oppfølgingsstatus(
                     Formidlingsgruppe.ARBEIDSSOKER,
@@ -995,7 +994,7 @@ public class TestData {
                     "0906"
                 )
             );
-        when(veilarboppfolgingService.hentOppfolgingsstatus(anyString()))
+        when(veilarbService.hentOppfolging(any(Avtale.class)))
             .thenReturn(
                 new Oppfølgingsstatus(
                     Formidlingsgruppe.ARBEIDSSOKER,
@@ -1011,7 +1010,7 @@ public class TestData {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
         PersondataService persondataService = mock(PersondataService.class);
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        VeilarbService veilarbService = mock(VeilarbService.class);
         FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
         EregService eregService = mock(EregService.class);
         NavIdent navIdent = new NavIdent("B999999");
@@ -1023,7 +1022,7 @@ public class TestData {
             norg2Client,
             persondataService,
             TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
+            veilarbService,
             featureToggleService,
             eregService
         );
@@ -1031,7 +1030,7 @@ public class TestData {
         when(norg2Client.hentOppfølgingsEnhet(eq("0000"))).thenReturn(new Norg2OppfølgingResponse(0, "0000", "Oslo", Norg2EnhetStatus.AKTIV));
         when(norg2Client.hentOppfølgingsEnhet(eq("0906"))).thenReturn(new Norg2OppfølgingResponse(906, "0906", "Oslo", Norg2EnhetStatus.AKTIV));
         when(featureToggleService.harEnhetTilgangPaTiltak(any(), any())).thenReturn(true);
-        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any(), any())).thenReturn(new Oppfølgingsstatus(
+        when(veilarbService.hentOgSjekkOppfolgingstatus(any())).thenReturn(new Oppfølgingsstatus(
             null,
             Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
             "0000"
@@ -1126,10 +1125,10 @@ public class TestData {
     }
 
     public static Veileder enVeileder(NavIdent navIdent) {
-        return enVeileder(navIdent, mock(VeilarboppfolgingService.class));
+        return enVeileder(navIdent, mock(VeilarbService.class));
     }
 
-    public static Veileder enVeileder(NavIdent navIdent, VeilarboppfolgingService veilarboppfolgingService) {
+    public static Veileder enVeileder(NavIdent navIdent, VeilarbService veilarbService) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
         var veileder = new Veileder(
@@ -1140,7 +1139,7 @@ public class TestData {
                 mock(Norg2Client.class),
                 Set.of(ENHET_OPPFØLGING),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+                veilarbService,
                 featureToggleService,
                 mock(EregService.class),
                 mock(PostutsendelseService.class)
@@ -1161,7 +1160,7 @@ public class TestData {
                 mock(Norg2Client.class),
                 Set.of(ENHET_OPPFØLGING),
                 TestData.INGEN_AD_GRUPPER,
-                mock(VeilarboppfolgingService.class),
+                mock(VeilarbService.class),
                 featureToggleService,
                 mock(EregService.class),
                 mock(PostutsendelseService.class)

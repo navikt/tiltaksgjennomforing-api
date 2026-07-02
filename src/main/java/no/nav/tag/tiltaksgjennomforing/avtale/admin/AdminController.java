@@ -25,14 +25,12 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.service.gjeldendetilskuddsperiode.GjeldendeTilskuddsperiodeJobbService;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarbvedtaksstotte.Gjeldende14aVedtakRespons;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarbvedtaksstotte.Innsatsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarbvedtaksstotte.VeilarbvedtaksstotteService;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
@@ -74,7 +72,6 @@ import static no.nav.tag.tiltaksgjennomforing.satser.Sats.VTAO_SATS;
 public class AdminController {
     private final AvtaleRepository avtaleRepository;
     private final TilskuddPeriodeRepository tilskuddPeriodeRepository;
-    private final VeilarboppfolgingService veilarboppfolgingService;
     private final TilgangskontrollService tilgangskontrollService;
     private final PersondataService persondataService;
     private final AdminService adminService;
@@ -82,7 +79,7 @@ public class AdminController {
     private final Norg2Client norg2Client;
     private final VarselRepository varselRepository;
     private final PostutsendelseService postutsendelseService;
-    private final VeilarbvedtaksstotteService veilarbvedtaksstotteService;
+    private final VeilarbService veilarbService;
 
     @GetMapping({ "", "/" })
     public String hjem() {
@@ -219,7 +216,7 @@ public class AdminController {
         Optional<Avtale> avtaleOpt = avtaleRepository.findById(id);
 
         return avtaleOpt.map(avtale -> {
-                Oppfølgingsstatus status = veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr().asString());
+                Oppfølgingsstatus status = veilarbService.hentOppfolging(avtale);
                 return Map.of(
                     "avtaleOppfolginsstatus", Map.of(
                         "formidlingsgruppe", avtale.getFormidlingsgruppe().name(),
@@ -243,7 +240,7 @@ public class AdminController {
         return avtaleRepository.findById(id)
             .map(avtale -> {
                 String enhetOppfolgingFraOppslag = Optional.ofNullable(
-                        veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr().asString()))
+                        veilarbService.hentOppfolging(avtale.getDeltakerFnr()))
                     .map(Oppfølgingsstatus::getOppfolgingsenhet)
                     .orElse("ikke funnet");
 
@@ -356,7 +353,7 @@ public class AdminController {
                     avtale.setEnhetsnavnGeografisk(enhet.getNavn());
                 });
 
-            Optional.ofNullable(veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr().asString()))
+            Optional.ofNullable(veilarbService.hentOppfolging(avtale.getDeltakerFnr()))
                 .ifPresent(oppfølgingsstatus -> {
                     log.info("Endrer enhet for avtale {} fra {} til {}",
                         avtale.getId(),
@@ -579,22 +576,20 @@ public class AdminController {
                 continue;
             }
             try {
-                var vedtak = veilarbvedtaksstotteService.hentGjeldende14aVedtak(avtale.getDeltakerFnr());
+                var innsatsgruppe = veilarbService.hentInnsatsgruppe(avtale.getDeltakerFnr());
 
-                Innsatsgruppe fraKvalifiseringsgruppe = Optional.ofNullable(avtale.getKvalifiseringsgruppe())
+                Innsatsgruppe nnsatsgruppeFraKvalifiseringsgruppe = Optional.ofNullable(avtale.getKvalifiseringsgruppe())
                     .map(Kvalifiseringsgruppe::getInnsatsgruppe)
                     .orElse(null);
-                Innsatsgruppe fraVedtak = vedtak.map(Gjeldende14aVedtakRespons::innsatsgruppe)
-                    .orElse(null);
 
-                boolean beggeErNull = fraVedtak == null && fraKvalifiseringsgruppe == null;
-                if (fraKvalifiseringsgruppe != fraVedtak || beggeErNull) {
+                boolean beggeErNull = innsatsgruppe == null && nnsatsgruppeFraKvalifiseringsgruppe == null;
+                if (nnsatsgruppeFraKvalifiseringsgruppe != innsatsgruppe || beggeErNull) {
                     log.info(
                         "14a-diff for avtale {}: kvalifiseringsgruppe={} (->{}), vedtak={}",
                         avtale.getId(),
                         avtale.getKvalifiseringsgruppe(),
-                        fraKvalifiseringsgruppe,
-                        fraVedtak
+                        nnsatsgruppeFraKvalifiseringsgruppe,
+                        innsatsgruppe
                     );
                 }
             } catch (Exception e) {

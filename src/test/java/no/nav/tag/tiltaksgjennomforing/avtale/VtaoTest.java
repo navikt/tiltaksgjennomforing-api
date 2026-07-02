@@ -6,7 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -39,7 +39,7 @@ public class VtaoTest {
     @Mock
     private PersondataService persondataService;
     @Mock
-    private VeilarboppfolgingService veilarboppfolgingService;
+    private VeilarbService veilarbService;
     @Mock
     private Norg2Client norg2Client;
     @MockBean
@@ -56,7 +56,7 @@ public class VtaoTest {
                 norg2Client,
                 Collections.emptySet(),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+                veilarbService,
                 featureToggleService,
                 mock(EregService.class),
                 mock(PostutsendelseService.class)

@@ -18,7 +18,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -54,7 +54,7 @@ public class InnloggetBrukerTest {
     private KontoregisterService kontoregisterService;
     private PersondataService persondataService;
     private Norg2Client norg2Client;
-    private VeilarboppfolgingService veilarboppfolgingService;
+    private VeilarbService veilarbService;
     private AvtaleRepository avtaleRepository;
     private FeatureToggleService featureToggleService;
     private final AltinnTilgangerDto altinn3Organisasjoner = TestData.enAltinnTilgangerDto(Map.of());
@@ -72,7 +72,7 @@ public class InnloggetBrukerTest {
         tilgangskontrollService = mock(TilgangskontrollService.class);
         persondataService = mock(PersondataService.class);
         kontoregisterService = mock(KontoregisterService.class);
-        veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        veilarbService = mock(VeilarbService.class);
         avtaleRepository = mock(AvtaleRepository.class);
 
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
@@ -99,7 +99,7 @@ public class InnloggetBrukerTest {
                 norg2Client,
                 Collections.emptySet(),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+                veilarbService,
                 featureToggleService,
                 mock(EregService.class),
                 mock(PostutsendelseService.class)
@@ -120,7 +120,7 @@ public class InnloggetBrukerTest {
                 norg2Client,
                 Collections.emptySet(),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+                veilarbService,
                 featureToggleService,
                 mock(EregService.class),
                 mock(PostutsendelseService.class)
@@ -143,7 +143,7 @@ public class InnloggetBrukerTest {
                 norg2Client,
                 Collections.emptySet(),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+                veilarbService,
                 featureToggleService,
                 mock(EregService.class),
                 mock(PostutsendelseService.class)
@@ -162,7 +162,7 @@ public class InnloggetBrukerTest {
                 norg2Client,
                 Collections.emptySet(),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+                veilarbService,
                 featureToggleService,
                 mock(EregService.class),
                 mock(PostutsendelseService.class)
@@ -203,7 +203,7 @@ public class InnloggetBrukerTest {
                         norg2Client,
                         Collections.emptySet(),
                         TestData.INGEN_AD_GRUPPER,
-                        veilarboppfolgingService,
+                        veilarbService,
                         featureToggleService,
                         mock(EregService.class),
                         mock(PostutsendelseService.class)
@@ -224,7 +224,7 @@ public class InnloggetBrukerTest {
                         norg2Client,
                         Collections.emptySet(),
                         TestData.INGEN_AD_GRUPPER,
-                        veilarboppfolgingService,
+                        veilarbService,
                         featureToggleService,
                         mock(EregService.class),
                         mock(PostutsendelseService.class)

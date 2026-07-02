@@ -13,7 +13,7 @@ import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaTiltakgjennomforing
 import no.nav.tag.tiltaksgjennomforing.arena.service.ArenaCleanUpService;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import org.springframework.data.domain.PageRequest;
@@ -41,7 +41,7 @@ public class ArenaAdminController {
     private final ArenaAgreementMigrationRepository agreementMigrationRepository;
     private final ArenaTiltakgjennomforingRepository tiltakgjennomforingRepository;
     private final EregService eregService;
-    private final VeilarboppfolgingService veilarboppfolgingService;
+    private final VeilarbService veilarbService;
     private final ArenaCleanUpService arenaCleanUpService;
 
     @GetMapping("/tiltak/{arenaTiltakskode}/sjekk-ereg")
@@ -95,7 +95,7 @@ public class ArenaAdminController {
                 ArenaTiltaksgjennomforingIdDeltakerIdOgFnr::getDeltakerId,
                 arenaTiltaksgjennomforingIdDeltakerIdOgFnr -> {
                     try {
-                        veilarboppfolgingService.hentOgSjekkOppfolgingstatus(
+                        veilarbService.hentOgSjekkOppfolgingstatus(
                             new Fnr(arenaTiltaksgjennomforingIdDeltakerIdOgFnr.getFnr()),
                             arenaTiltakskode.getTiltakstype()
                         );

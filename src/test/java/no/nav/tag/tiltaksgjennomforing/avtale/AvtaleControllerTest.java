@@ -14,8 +14,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilAvtaleException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
@@ -80,7 +79,7 @@ import static org.mockito.Mockito.when;
 public class AvtaleControllerTest {
 
     @MockBean
-    VeilarboppfolgingService veilarboppfolgingService;
+    VeilarbService veilarbService;
     @MockBean
     Norg2Client norg2Client;
     @Autowired
@@ -152,7 +151,7 @@ public class AvtaleControllerTest {
                 norg2Client,
                 Collections.emptySet(),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+                veilarbService,
                 featureToggleServiceMock,
                 mock(EregService.class),
                 postutsendelseService
@@ -184,7 +183,7 @@ public class AvtaleControllerTest {
                 norg2Client,
                 Collections.emptySet(),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+            veilarbService,
                 featureToggleServiceMock,
                 mock(EregService.class),
                 postutsendelseService
@@ -229,7 +228,7 @@ public class AvtaleControllerTest {
                 norg2Client,
                 Collections.emptySet(),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+            veilarbService,
                 featureToggleServiceMock,
                 mock(EregService.class),
                 postutsendelseService
@@ -270,7 +269,7 @@ public class AvtaleControllerTest {
                 norg2Client,
                 Collections.emptySet(),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+            veilarbService,
                 featureToggleServiceMock,
                 mock(EregService.class),
                 postutsendelseService
@@ -334,7 +333,7 @@ public class AvtaleControllerTest {
                 norg2Client,
                 Set.of(navEnhet),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+            veilarbService,
                 featureToggleServiceMock,
                 eregService,
                 postutsendelseService
@@ -360,7 +359,7 @@ public class AvtaleControllerTest {
                                 TestData.ENHET_GEOGRAFISK.getVerdi()
                         )
                 );
-        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any()))
+        when(veilarbService.hentOgSjekkOppfolgingstatus(any()))
                 .thenReturn(
                         new Oppfølgingsstatus(
                                 Formidlingsgruppe.ARBEIDSSOKER,
@@ -403,7 +402,7 @@ public class AvtaleControllerTest {
                 norg2Client,
                 Collections.emptySet(),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+            veilarbService,
                 featureToggleServiceMock,
                 mock(EregService.class),
                 postutsendelseService
@@ -484,7 +483,7 @@ public class AvtaleControllerTest {
                 norg2Client,
                 Collections.emptySet(),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+            veilarbService,
                 featureToggleServiceMock,
                 mock(EregService.class),
                 postutsendelseService
@@ -519,7 +518,7 @@ public class AvtaleControllerTest {
                 norg2Client,
                 Collections.emptySet(),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+            veilarbService,
                 featureToggleServiceMock,
                 mock(EregService.class),
                 postutsendelseService
@@ -551,7 +550,7 @@ public class AvtaleControllerTest {
                 norg2Client,
                 Collections.emptySet(),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+            veilarbService,
                 featureToggleServiceMock,
                 mock(EregService.class),
                 postutsendelseService
@@ -608,7 +607,6 @@ public class AvtaleControllerTest {
     private Veileder enVeilederMedPostutsendelseService(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
         EregService eregService = mock(EregService.class);
         Veileder veileder = new Veileder(
             Optional.ofNullable(avtale.getVeilederNavIdent()).orElse(new NavIdent("Z123456")),
@@ -618,13 +616,13 @@ public class AvtaleControllerTest {
             mock(Norg2Client.class),
             Set.of(TestData.ENHET_OPPFØLGING),
             TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
+            veilarbService,
             featureToggleServiceMock,
             eregService,
             postutsendelseService
         );
         when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
-        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any()))
+        when(veilarbService.hentOgSjekkOppfolgingstatus(any()))
             .thenReturn(new Oppfølgingsstatus(
                 Formidlingsgruppe.ARBEIDSSOKER,
                 Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
@@ -663,7 +661,7 @@ public class AvtaleControllerTest {
                 norg2Client,
                 Collections.emptySet(),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+            veilarbService,
                 featureToggleServiceMock,
                 mock(EregService.class),
                 postutsendelseService
@@ -698,7 +696,7 @@ public class AvtaleControllerTest {
                 norg2Client,
                 Collections.emptySet(),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+            veilarbService,
                 featureToggleServiceMock,
                 mock(EregService.class),
                 postutsendelseService
@@ -731,7 +729,7 @@ public class AvtaleControllerTest {
                 norg2Client,
                 Collections.emptySet(),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+            veilarbService,
                 featureToggleServiceMock,
                 mock(EregService.class),
                 postutsendelseService
@@ -839,7 +837,7 @@ public class AvtaleControllerTest {
             norg2Client,
             Collections.emptySet(),
             TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
+            veilarbService,
             featureToggleServiceMock,
             mock(EregService.class),
             postutsendelseService
@@ -891,7 +889,7 @@ public class AvtaleControllerTest {
             norg2Client,
             Collections.emptySet(),
             TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
+            veilarbService,
             featureToggleServiceMock,
             mock(EregService.class),
             postutsendelseService

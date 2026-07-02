@@ -13,7 +13,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
@@ -54,7 +54,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     private final AdGruppeTilganger adGruppeTilganger;
     private final Norg2Client norg2Client;
     private final Set<NavEnhet> navEnheter;
-    private final VeilarboppfolgingService veilarboppfolgingService;
+    private final VeilarbService veilarbService;
     private final UUID azureOid;
     private final FeatureToggleService featureToggleService;
     private final EregService eregService;
@@ -68,7 +68,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         Norg2Client norg2Client,
         Set<NavEnhet> navEnheter,
         AdGruppeTilganger adGruppeTilganger,
-        VeilarboppfolgingService veilarboppfolgingService,
+        VeilarbService veilarbService,
         FeatureToggleService featureToggleService,
         EregService eregService,
         PostutsendelseService postutsendelseService
@@ -81,7 +81,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         this.norg2Client = norg2Client;
         this.navEnheter = navEnheter;
         this.adGruppeTilganger = adGruppeTilganger;
-        this.veilarboppfolgingService = veilarboppfolgingService;
+        this.veilarbService = veilarbService;
         this.featureToggleService = featureToggleService;
         this.eregService = eregService;
         this.postutsendelseService = postutsendelseService;
@@ -243,7 +243,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void overtaAvtale(Avtale avtale) {
         super.sjekkTilgang(avtale);
-        this.hentOppfølging(avtale, veilarboppfolgingService);
+        this.hentOppfølging(avtale, veilarbService);
         if (this.getIdentifikator().equals(avtale.getVeilederNavIdent())) {
             throw new ErAlleredeVeilederException();
         }
@@ -280,9 +280,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     public void oppdatereOppfølgingStatusVedEndreAvtale(Avtale avtale) {
-        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOppfolgingsstatus(
-            avtale.getDeltakerFnr().asString()
-        );
+        Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOppfolging(avtale);
         if (oppfølgingsstatus == null) {
             return;
         }
@@ -317,7 +315,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     private void leggTilEnheter(Avtale avtale) {
         super.hentGeoEnhetFraNorg2(avtale, norg2Client, persondataService);
-        this.hentOppfølging(avtale, veilarboppfolgingService);
+        this.hentOppfølging(avtale, veilarbService);
         this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
     }
 
@@ -331,12 +329,12 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     void hentOppfølging(
         Avtale avtale,
-        VeilarboppfolgingService veilarboppfolgingService
+        VeilarbService veilarbService
     ) {
         if (avtale.harOppfølgingsStatus()) {
             return;
         }
-        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
+        Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
         if (oppfølgingsstatus == null || oppfølgingsstatus.getOppfolgingsenhet() == null) {
             return;
         }
@@ -350,7 +348,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             return;
         }
 
-        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
+        Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
         if (oppfølgingsstatus == null) {
             throw new FeilkodeException(Feilkode.FANT_IKKE_INNSATSBEHOV);
         }
@@ -431,8 +429,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         // Geo enhet
         super.hentGeoEnhetFraNorg2(avtale, norg2Client, persondataService);
         // Oppfølgingsenhet
-        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr()
-            .asString());
+        Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOppfolging(avtale);
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
         this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
     }

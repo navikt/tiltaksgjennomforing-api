@@ -12,7 +12,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2EnhetStatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
 import org.junit.jupiter.api.AfterEach;
@@ -47,14 +47,14 @@ public class CachingConfigMockTest {
 
     private TilgangskontrollService mockTilgangskontrollService;
     private Norg2Client mockNorg2Client;
-    private VeilarboppfolgingService mockVeilarboppfolgingService;
+    private VeilarbService mockVeilarbService;
 
     @Autowired
     private TilgangskontrollService tilgangskontrollService;
     @Autowired
     private Norg2Client norg2Client;
     @Autowired
-    private VeilarboppfolgingService veilarboppfolgingService;
+    private VeilarbService veilarbService;
 
     private Avtale avtale;
     private final Norg2OppfølgingResponse FØRSTE_NORG2_OPPFØLGNING_RESPONSE = new Norg2OppfølgingResponse(
@@ -105,8 +105,8 @@ public class CachingConfigMockTest {
         }
 
         @Bean
-        public VeilarboppfolgingService veilarbArenaClientMockImplementation() {
-            return mock(VeilarboppfolgingService.class);
+        public VeilarbService veilarbArenaClientMockImplementation() {
+            return mock(VeilarbService.class);
         }
 
         @Bean
@@ -133,7 +133,7 @@ public class CachingConfigMockTest {
 
         mockTilgangskontrollService = AopTestUtils.getTargetObject(tilgangskontrollService);
         mockNorg2Client = AopTestUtils.getTargetObject(norg2Client);
-        mockVeilarboppfolgingService = AopTestUtils.getTargetObject(veilarboppfolgingService);
+        mockVeilarbService = AopTestUtils.getTargetObject(veilarbService);
 
         lenient().when(mockTilgangskontrollService.harSkrivetilgangTilKandidat(
                 any(),
@@ -145,7 +145,7 @@ public class CachingConfigMockTest {
                 ANDRE_NORG2_OPPFØLGNING_RESPONSE
         );
         when(mockNorg2Client.hentGeoEnhetFraCacheEllerNorg2(any())).thenReturn(FØRSTE_NORG2_GEO_RESPONSE, ANDRE_NORG2_GEO_RESPONSE);
-        when(mockVeilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr().asString())).thenReturn(
+        when(mockVeilarbService.hentOppfolging(avtale.getDeltakerFnr())).thenReturn(
                 FØRSTE_OPPFØLGNING_ENHET_ARENA,
                 ANDRE_OPPFØLGNING_ENHET_ARENA
         );

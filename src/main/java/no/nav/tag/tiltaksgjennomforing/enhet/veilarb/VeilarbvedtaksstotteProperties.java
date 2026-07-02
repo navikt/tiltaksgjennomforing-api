@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging;
+package no.nav.tag.tiltaksgjennomforing.enhet.veilarb;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -8,7 +8,7 @@ import java.net.URI;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "tiltaksgjennomforing.veilarboppfolging")
-public class VeilarboppfolgingProperties {
+@ConfigurationProperties(prefix = "tiltaksgjennomforing.veilarbvedtaksstotte")
+public class VeilarbvedtaksstotteProperties {
     private URI url;
 }

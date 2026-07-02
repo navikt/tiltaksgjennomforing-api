@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.enhet.veilarbvedtaksstotte;
+package no.nav.tag.tiltaksgjennomforing.enhet.veilarb;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;

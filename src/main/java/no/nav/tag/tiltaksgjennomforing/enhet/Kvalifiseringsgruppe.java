@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.enhet;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarbvedtaksstotte.Innsatsgruppe;
 
 import java.util.Arrays;
 

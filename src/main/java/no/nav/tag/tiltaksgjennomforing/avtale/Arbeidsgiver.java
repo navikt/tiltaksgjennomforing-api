@@ -9,7 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.Altinn
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
@@ -40,7 +40,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
     private final EregService eregService;
-    private final VeilarboppfolgingService veilarboppfolgingService;
+    private final VeilarbService veilarbService;
 
     public Arbeidsgiver(
         Fnr identifikator,
@@ -49,7 +49,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         PersondataService persondataService,
         Norg2Client norg2Client,
         EregService eregService,
-        VeilarboppfolgingService veilarboppfolgingService
+        VeilarbService veilarbService
     ) {
         super(identifikator);
         this.altinnTilganger = altinnTilganger;
@@ -57,7 +57,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
         this.eregService = eregService;
-        this.veilarboppfolgingService = veilarboppfolgingService;
+        this.veilarbService = veilarbService;
     }
 
     @Override
@@ -292,7 +292,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     private void hentOppfolginsenhet(Avtale avtale) {
         try {
-            Oppfølgingsstatus status = veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr());
+            Oppfølgingsstatus status = veilarbService.hentOppfolging(avtale);
             if (status != null) {
                 avtale.setEnhetOppfolging(status.getOppfolgingsenhet());
             }
