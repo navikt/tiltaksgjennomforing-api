@@ -105,6 +105,9 @@ caches:
     - name: veilarboppfolging_cache
       expiryInMinutes: 5
       maximumSize: 1000
+    - name: veilarbvedtaksstotte_cache
+      expiryInMinutes: 5
+      maximumSize: 1000
     - name: entraproxy_cache
       expiryInMinutes: 60
       maximumSize: 1000

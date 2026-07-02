@@ -25,10 +25,14 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.service.gjeldendetilskuddsperiode.GjeldendeTilskuddsperiodeJobbService;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarbvedtaksstotte.Gjeldende14aVedtakRespons;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarbvedtaksstotte.Innsatsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarbvedtaksstotte.VeilarbvedtaksstotteService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
@@ -78,6 +82,7 @@ public class AdminController {
     private final Norg2Client norg2Client;
     private final VarselRepository varselRepository;
     private final PostutsendelseService postutsendelseService;
+    private final VeilarbvedtaksstotteService veilarbvedtaksstotteService;
 
     @GetMapping({ "", "/" })
     public String hjem() {
@@ -562,5 +567,39 @@ public class AdminController {
             avtaleRepository.saveAll(avtaler);
         }
         return resultat;
+    }
+
+    @GetMapping("/sammenlign-14a-innsatsgruppe")
+    public void sammenlign14aInnsatsgruppe() {
+        List<Avtale> avtaler = adminService.finnAvtalerForSammenligningAv14a();
+        log.info("Sammenligner 14a innsatsgruppe for {} avtaler", avtaler.size());
+
+        for (Avtale avtale : avtaler) {
+            if (avtale.getDeltakerFnr() == null) {
+                continue;
+            }
+            try {
+                var vedtak = veilarbvedtaksstotteService.hentGjeldende14aVedtak(avtale.getDeltakerFnr());
+
+                Innsatsgruppe fraKvalifiseringsgruppe = Optional.ofNullable(avtale.getKvalifiseringsgruppe())
+                    .map(Kvalifiseringsgruppe::getInnsatsgruppe)
+                    .orElse(null);
+                Innsatsgruppe fraVedtak = vedtak.map(Gjeldende14aVedtakRespons::innsatsgruppe)
+                    .orElse(null);
+
+                boolean beggeErNull = fraVedtak == null && fraKvalifiseringsgruppe == null;
+                if (fraKvalifiseringsgruppe != fraVedtak || beggeErNull) {
+                    log.info(
+                        "14a-diff for avtale {}: kvalifiseringsgruppe={} (->{}), vedtak={}",
+                        avtale.getId(),
+                        avtale.getKvalifiseringsgruppe(),
+                        fraKvalifiseringsgruppe,
+                        fraVedtak
+                    );
+                }
+            } catch (Exception e) {
+                log.warn("Feil ved henting av 14a-vedtak for avtale {}: {}", avtale.getId(), e.getMessage());
+            }
+        }
     }
 }

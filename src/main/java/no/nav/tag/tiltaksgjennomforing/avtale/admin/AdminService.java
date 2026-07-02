@@ -34,6 +34,19 @@ public class AdminService {
 
     Set<Status> avtalekravStatuser = Set.of(Status.GJENNOMFØRES, Status.MANGLER_GODKJENNING, Status.AVSLUTTET);
 
+    @Transactional(readOnly = true)
+    public List<Avtale> finnAvtalerForSammenligningAv14a() {
+        Set<Status> aktiveStatuser = Set.of(
+            Status.GJENNOMFØRES,
+            Status.KLAR_FOR_OPPSTART,
+            Status.MANGLER_GODKJENNING,
+            Status.PÅBEGYNT
+        );
+        try (Stream<Avtale> avtaler = avtaleRepository.streamAllByStatusIn(aktiveStatuser)) {
+            return avtaler.toList();
+        }
+    }
+
     @Async
     @Transactional
     public void oppdaterteAvtalekrav(LocalDateTime avtalekravDato) {
