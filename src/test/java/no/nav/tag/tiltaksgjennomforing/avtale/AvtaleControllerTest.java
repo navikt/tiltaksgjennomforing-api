@@ -8,12 +8,15 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
+import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilAvtaleException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Kode6SperretForOpprettelseOgEndringException;
@@ -67,6 +70,8 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -94,6 +99,8 @@ public class AvtaleControllerTest {
     private KontoregisterService kontoregisterService;
     @MockBean
     private FeatureToggleService featureToggleServiceMock;
+    @MockBean
+    private PostutsendelseService postutsendelseService;
 
     private Pageable pageable = PageRequest.of(0, 100);
     private final AltinnTilgangerDto altinn3Organisasjoner = TestData.enAltinnTilgangerDto(Map.of());
@@ -147,7 +154,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
             );
         værInnloggetSom(
             veileder
@@ -178,7 +186,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(veileder);
         Avtale exampleAvtale = Avtale.builder()
@@ -222,7 +231,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(veileder);
 
@@ -262,7 +272,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(veileder);
 
@@ -325,7 +336,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                eregService
+                eregService,
+                postutsendelseService
         );
 
         værInnloggetSom(veileder);
@@ -393,7 +405,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
@@ -473,7 +486,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = Fnr.generer(1978, 9, 10);
@@ -507,7 +521,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = Fnr.generer(1956, 7, 8);
@@ -538,7 +553,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = Fnr.generer(1978, 9, 10);
@@ -589,6 +605,39 @@ public class AvtaleControllerTest {
         }
     }
 
+    private Veileder enVeilederMedPostutsendelseService(Avtale avtale) {
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
+        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        EregService eregService = mock(EregService.class);
+        Veileder veileder = new Veileder(
+            Optional.ofNullable(avtale.getVeilederNavIdent()).orElse(new NavIdent("Z123456")),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            mock(Norg2Client.class),
+            Set.of(TestData.ENHET_OPPFØLGING),
+            TestData.INGEN_AD_GRUPPER,
+            veilarboppfolgingService,
+            featureToggleServiceMock,
+            eregService,
+            postutsendelseService
+        );
+        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
+        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any()))
+            .thenReturn(new Oppfølgingsstatus(
+                Formidlingsgruppe.ARBEIDSSOKER,
+                Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
+                "0906"
+            ));
+        when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
+        return veileder;
+    }
+
+    private void skruPåPostutsendelseValidering() {
+        when(featureToggleServiceMock.isEnabled(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST)).thenReturn(true);
+    }
+
     @Test
     public void viser_ikke_navenheter_til_arbeidsgiver() {
         Avtale avtale = enArbeidstreningAvtale();
@@ -616,7 +665,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(veileder);
         when(kontoregisterService.hentKontonummer(anyString())).thenReturn("990983666");
@@ -650,7 +700,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
@@ -682,7 +733,8 @@ public class AvtaleControllerTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock,
-                mock(EregService.class)
+                mock(EregService.class),
+                postutsendelseService
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.hentSkrivetilgang(
@@ -701,6 +753,134 @@ public class AvtaleControllerTest {
     }
 
     @Test
+    public void godkjennForAvtalepart__skal_ikke_validere_postutsendelse_nar_veileder_godkjenner_sist() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        skruPåPostutsendelseValidering();
+        værInnloggetSom(enVeilederMedPostutsendelseService(avtale));
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+
+        avtaleController.godkjenn(
+            avtale.getId(),
+            Avtalerolle.VEILEDER,
+            avtale.getSistEndret()
+        );
+
+        verify(postutsendelseService, never()).kanPersonMottaPost(avtale.getDeltakerFnr());
+        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
+    }
+
+    @Test
+    public void godkjennForAvtalepart__skal_godkjenne_nar_postutsendelse_toggle_er_av() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        værInnloggetSom(enVeilederMedPostutsendelseService(avtale));
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+
+        avtaleController.godkjenn(
+            avtale.getId(),
+            Avtalerolle.VEILEDER,
+            avtale.getSistEndret()
+        );
+
+        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
+    }
+
+    @Test
+    public void godkjennForAvtalepart__skal_ikke_validere_postutsendelse_nar_avtale_er_ufordelt() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setVeilederNavIdent(null);
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        skruPåPostutsendelseValidering();
+        værInnloggetSom(enVeilederMedPostutsendelseService(avtale));
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+
+        assertThatThrownBy(() -> avtaleController.godkjenn(
+            avtale.getId(),
+            Avtalerolle.VEILEDER,
+            avtale.getSistEndret()
+        )).isInstanceOf(FeilkodeException.class);
+
+        verify(postutsendelseService, never()).kanPersonMottaPost(any(Fnr.class));
+        verify(avtaleRepository, never()).save(any(Avtale.class));
+        assertThat(avtale.erGodkjentAvVeileder()).isFalse();
+    }
+
+    @Test
+    public void godkjennForAvtalepart__skal_ikke_validere_postutsendelse_nar_deltaker_godkjenner() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        skruPåPostutsendelseValidering();
+        værInnloggetSom(TestData.enDeltaker(avtale));
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+
+        avtaleController.godkjenn(
+            avtale.getId(),
+            Avtalerolle.DELTAKER,
+            avtale.getSistEndret()
+        );
+
+        verify(postutsendelseService, never()).kanPersonMottaPost(any(Fnr.class));
+    }
+
+    @Test
+    public void godkjennForAvtalepart__skal_ikke_validere_postutsendelse_hvis_veileder_mangler_tilgang() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        skruPåPostutsendelseValidering();
+        Veileder veileder = new Veileder(
+            new NavIdent("Z333333"),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            norg2Client,
+            Collections.emptySet(),
+            TestData.INGEN_AD_GRUPPER,
+            veilarboppfolgingService,
+            featureToggleServiceMock,
+            mock(EregService.class),
+            postutsendelseService
+        );
+        værInnloggetSom(veileder);
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+        when(tilgangskontrollService.hentSkrivetilgang(
+            veileder,
+            avtale.getDeltakerFnr())
+        ).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC, "Ukjent tilgang"));
+
+        assertThatThrownBy(() -> avtaleController.godkjenn(
+            avtale.getId(),
+            Avtalerolle.VEILEDER,
+            avtale.getSistEndret()
+        )).isInstanceOf(IkkeTilgangTilAvtaleException.class);
+
+        verify(postutsendelseService, never()).kanPersonMottaPost(any(Fnr.class));
+    }
+
+    @Test
+    public void godkjennForAvtalepart__skal_godkjenne_veileder_uten_postutsendelse_sjekk() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
+        skruPåPostutsendelseValidering();
+        værInnloggetSom(enVeilederMedPostutsendelseService(avtale));
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+
+        avtaleController.godkjenn(
+            avtale.getId(),
+            Avtalerolle.VEILEDER,
+            avtale.getSistEndret()
+        );
+
+        verify(postutsendelseService, never()).kanPersonMottaPost(any(Fnr.class));
+        verify(avtaleRepository).save(avtale);
+        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
+    }
+
+    @Test
     public void godkjennForAvtalepart__skal_ikke_fungere_hvis_versjon_er_feil() {
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
         Veileder veileder = new Veileder(
@@ -713,7 +893,8 @@ public class AvtaleControllerTest {
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
             featureToggleServiceMock,
-            mock(EregService.class)
+            mock(EregService.class),
+            postutsendelseService
         );
         værInnloggetSom(veileder);
 

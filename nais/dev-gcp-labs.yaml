@@ -15,8 +15,8 @@ spec:
       value: http://tiltak-refusjon-api-labs
     - name: MIN_SIDE_ARBEIDSGIVER_URI
       value: https://arbeidsgiver-q.nav.no
-    - name: TILTAK_DOKGEN_URI
-      value: http://tiltak-dokgen
+    - name: TILTAK_PDFGEN_URI
+      value: http://tiltak-pdfgen
     - name: NOTIFIKASJONER_URI
       value: https://notifikasjon-fake-produsent-api.labs.nais.io
     - name: NOTIFIKASJONER_LENKE
@@ -65,4 +65,4 @@ spec:
       rules:
         - application: tiltak-fakelogin
         - application: tiltak-refusjon-api-labs
-        - application: tiltak-dokgen
+        - application: tiltak-pdfgen

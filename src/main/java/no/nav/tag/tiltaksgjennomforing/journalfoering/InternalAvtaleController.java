@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnholdRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleInnholdDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.TilskuddPeriodeDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,7 +48,7 @@ public class InternalAvtaleController {
                     new AvtaleDTO(avtaleInnhold.getAvtale()),
                     null
                 );
-                avtaleTilJournalfoering.setTilskuddsPerioder(tilskuddPeriode.stream().toList());
+                avtaleTilJournalfoering.setTilskuddsPerioder(tilskuddPeriode.stream().map(TilskuddPeriodeDTO::new).toList());
                 return avtaleTilJournalfoering;
             }).collect(Collectors.toList());
             return avtalerTilJournalfoering;

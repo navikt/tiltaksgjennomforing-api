@@ -29,8 +29,6 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
@@ -100,15 +98,7 @@ public class AdminController {
         log.info("skal hent-postadresse for FNR...");
         Fnr validertFnr = new Fnr(fnr);
         log.info("hent-postadresse FNR er validert, skal sjekke om person kan få post...");
-        try {
-            postutsendelseService.validerAtPersonKanMottaPost(validertFnr);
-            return true;
-        } catch (FeilkodeException e) {
-            if (e.getFeilkode() == Feilkode.KAN_IKKE_SENDE_POST_MANGLER_ADRESSE_OG_RESERVERT) {
-                return false;
-            }
-            throw e;
-        }
+        return postutsendelseService.kanPersonMottaPost(validertFnr);
     }
 
     @PostMapping("/annuller-tilskuddsperiode/{tilskuddsperiodeId}")
@@ -186,13 +176,16 @@ public class AdminController {
 
     @PostMapping("/avtale/{id}/sjekk-tilgang")
     public ResponseEntity<String> sjekkTilgang(@PathVariable UUID id, @RequestBody AvtaleAdminSjekkTilgangRequest body) {
-        return avtaleRepository.findById(id)
-            .map(avtale -> tilgangskontrollService.hentSkrivetilgang(body.veilederAzureOid(), avtale.getDeltakerFnr()))
-            .filter(tilgang -> tilgang instanceof Tilgang.Avvis)
-            .map(tilgang -> ResponseEntity.ok(
-                "[" + ((Tilgang.Avvis) tilgang).tilgangskode() + "] " + ((Tilgang.Avvis) tilgang).melding()
-            ))
-            .orElseGet(() -> ResponseEntity.notFound().build());
+         Optional<Avtale> avtale = avtaleRepository.findById(id);
+         if (avtale.isEmpty()) {
+             return ResponseEntity.notFound().build();
+         }
+        return avtale.map(a -> tilgangskontrollService.hentSkrivetilgang(body.veilederAzureOid(), a.getDeltakerFnr()))
+            .map(tilgang -> tilgang.erTillat()
+                ? ResponseEntity.ok("Veileder har tilgang til avtalen")
+                : ResponseEntity.ok("[" + ((Tilgang.Avvis) tilgang).tilgangskode() + "] " + ((Tilgang.Avvis) tilgang).melding())
+            )
+            .orElse(ResponseEntity.badRequest().body("Kunne ikke hente tilgang for avtale " + id));
     }
 
     @GetMapping("/avtale/{id}/sjekk-tilgangsattributter")

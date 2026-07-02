@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.entra.EntraproxyService;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
@@ -75,6 +76,8 @@ public class AvtaleApiTest {
     private PersondataService persondataService;
     @SpyBean
     private AuditConsoleLogger auditConsoleLogger;
+    @MockBean
+    private EregService eregService;
 
 
     @Test
@@ -92,7 +95,8 @@ public class AvtaleApiTest {
                 TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService,
-                mock(EregService.class)
+                mock(EregService.class),
+                mock(PostutsendelseService.class)
         );
         when(tilgangskontrollService.hentSkrivetilgang(veileder,avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(entraproxyService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of());
@@ -130,7 +134,8 @@ public class AvtaleApiTest {
             persondataService,
             TestData.INGEN_AD_GRUPPER,
             veilarboppfolgingService,
-            featureToggleService
+            featureToggleService,
+            eregService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(beslutter), any(Fnr.class))).thenReturn(true);
         when(entraproxyService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of(ENHET_OPPFØLGING));

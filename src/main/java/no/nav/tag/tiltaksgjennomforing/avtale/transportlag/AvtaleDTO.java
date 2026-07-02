@@ -105,7 +105,6 @@ public record AvtaleDTO(
         );
     }
 
-
     @JsonProperty
     public boolean erLaast() {
         return erGodkjentAvVeileder() && erGodkjentAvArbeidsgiver() && erGodkjentAvDeltaker();

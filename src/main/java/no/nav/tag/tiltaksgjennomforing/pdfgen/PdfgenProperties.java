@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.dokgen;
+package no.nav.tag.tiltaksgjennomforing.pdfgen;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -8,7 +8,7 @@ import java.net.URI;
 
 @Data
 @Component
-@ConfigurationProperties(prefix = "tiltaksgjennomforing.dokgen")
-public class DokgenProperties {
+@ConfigurationProperties(prefix = "tiltaksgjennomforing.pdfgen")
+public class PdfgenProperties {
     private URI uri;
 }

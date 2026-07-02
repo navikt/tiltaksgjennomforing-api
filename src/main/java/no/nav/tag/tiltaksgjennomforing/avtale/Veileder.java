@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
+import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
@@ -57,6 +58,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     private final UUID azureOid;
     private final FeatureToggleService featureToggleService;
     private final EregService eregService;
+    private final PostutsendelseService postutsendelseService;
 
     public Veileder(
         NavIdent identifikator,
@@ -68,7 +70,8 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         AdGruppeTilganger adGruppeTilganger,
         VeilarboppfolgingService veilarboppfolgingService,
         FeatureToggleService featureToggleService,
-        EregService eregService
+        EregService eregService,
+        PostutsendelseService postutsendelseService
     ) {
 
         super(identifikator);
@@ -81,6 +84,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         this.veilarboppfolgingService = veilarboppfolgingService;
         this.featureToggleService = featureToggleService;
         this.eregService = eregService;
+        this.postutsendelseService = postutsendelseService;
     }
 
     @Override
@@ -175,6 +179,11 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         sjekkOmBedriftErGyldigOgOppdaterNavn(avtale);
         avtale.godkjennForVeileder(getIdentifikator());
+    }
+
+    public boolean kanDeltakerMottaPost(Avtale avtale) {
+        sjekkTilgang(avtale);
+        return postutsendelseService.kanPersonMottaPost(avtale.getDeltakerFnr());
     }
 
     @Override
@@ -408,6 +417,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     public void forlengAvtale(LocalDate sluttDato, Avtale avtale) {
         super.sjekkTilgang(avtale);
         sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
+        eregService.hentVirksomhet(avtale.getBedriftNr());
         avtale.forlengAvtale(sluttDato, getIdentifikator());
     }
 
