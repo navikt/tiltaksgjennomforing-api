@@ -28,7 +28,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-@ActiveProfiles({ Miljø.TEST, Miljø.WIREMOCK })
+@ActiveProfiles({Miljø.TEST, Miljø.WIREMOCK})
 @DirtiesContext
 public class AltinnTilgangsstyringServiceTest {
     private Fnr fnr;
@@ -63,7 +63,16 @@ public class AltinnTilgangsstyringServiceTest {
         assertThat(tilganger).doesNotContainKeys(new BedriftNr("910825550"), new BedriftNr("910825555"));
 
         // Virksomheter skal være i tilgang-map med forventede tiltakstyper
-        assertThat(tilganger.get(new BedriftNr("999999999"))).containsOnly(Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB, Tiltakstype.MENTOR, Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.VTAO);
+        assertThat(tilganger.get(new BedriftNr("999999999"))).containsOnly(
+            Tiltakstype.ARBEIDSTRENING,
+            Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
+            Tiltakstype.VARIG_LONNSTILSKUDD,
+            Tiltakstype.SOMMERJOBB,
+            Tiltakstype.MENTOR,
+            Tiltakstype.INKLUDERINGSTILSKUDD,
+            Tiltakstype.VTAO,
+            Tiltakstype.FIREARIG_LONNSTILSKUDD
+        );
         assertThat(tilganger.get(new BedriftNr("910712314"))).containsOnly(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         assertThat(tilganger.get(new BedriftNr("910712306"))).containsOnly(Tiltakstype.VARIG_LONNSTILSKUDD);
 
@@ -81,14 +90,24 @@ public class AltinnTilgangsstyringServiceTest {
 
         // Virksomheter skal være i tilgang-map
         assertThat(tilganger.get(new BedriftNr("999999999"))).containsOnly(
-                Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD,
-                Tiltakstype.SOMMERJOBB, Tiltakstype.MENTOR, Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.VTAO); // TODO: Tilgangsstyring skal skille på midlertidig lønnstilskudd og sommerjobb
+            Tiltakstype.ARBEIDSTRENING,
+            Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
+            Tiltakstype.VARIG_LONNSTILSKUDD,
+            Tiltakstype.SOMMERJOBB,
+            Tiltakstype.MENTOR,
+            Tiltakstype.INKLUDERINGSTILSKUDD,
+            Tiltakstype.VTAO,
+            Tiltakstype.FIREARIG_LONNSTILSKUDD
+        ); // TODO: Tilgangsstyring skal skille på midlertidig lønnstilskudd og sommerjobb
     }
 
     @Test
     public void manglende_serviceCode_skal_kaste_feil() {
         AltinnTilgangsstyringProperties altinnTilgangsstyringProperties = new AltinnTilgangsstyringProperties();
-        assertThatThrownBy(() -> new AltinnTilgangsstyringService(altinnTilgangsstyringProperties, null)).isExactlyInstanceOf(TiltaksgjennomforingException.class);
+        assertThatThrownBy(() -> new AltinnTilgangsstyringService(
+            altinnTilgangsstyringProperties,
+            null
+        )).isExactlyInstanceOf(TiltaksgjennomforingException.class);
     }
 
     @Test
@@ -105,7 +124,8 @@ public class AltinnTilgangsstyringServiceTest {
         assertThat(dto.tilganger()).containsKey(new BedriftNr("999999999"));
         assertThat(dto.tilganger().get(new BedriftNr("999999999"))).containsOnly(
             Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD,
-            Tiltakstype.SOMMERJOBB, Tiltakstype.MENTOR, Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.VTAO
+            Tiltakstype.SOMMERJOBB, Tiltakstype.MENTOR, Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.VTAO,
+            Tiltakstype.FIREARIG_LONNSTILSKUDD
         );
         assertThat(dto.tilganger().get(new BedriftNr("910712314"))).containsOnly(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         assertThat(dto.tilganger().get(new BedriftNr("910712306"))).containsOnly(Tiltakstype.VARIG_LONNSTILSKUDD);
@@ -127,7 +147,8 @@ public class AltinnTilgangsstyringServiceTest {
         // 999999999 har alle tilganger
         assertThat(tilganger.get(new BedriftNr("999999999"))).containsOnly(
             Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD,
-            Tiltakstype.SOMMERJOBB, Tiltakstype.MENTOR, Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.VTAO
+            Tiltakstype.SOMMERJOBB, Tiltakstype.MENTOR, Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.VTAO,
+            Tiltakstype.FIREARIG_LONNSTILSKUDD
         );
 
         // 910712314 har bare midlertidig lønnstilskudd
