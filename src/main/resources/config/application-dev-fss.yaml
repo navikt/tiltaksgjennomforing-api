@@ -153,7 +153,7 @@ tiltaksgjennomforing:
     arbeidsgiverAltinnTilgangerUri: https://arbeidsgiver-altinn-tilganger.intern.dev.nav.no/altinn-tilganger
     uri: https://api-gw-q1.adeo.no
     proxyUri: https://altinn-rettigheter-proxy.intern.dev.nav.no/altinn-rettigheter-proxy
-    beOmRettighetBaseUrl: https://min-side-arbeidsgiver.dev.nav.no/min-side-arbeidsgiver/?fragment=be-om-tilgang
+    beOmRettighetBaseUrl: https://arbeidsgiver.ekstern.dev.nav.no/min-side-arbeidsgiver/?fragment=be-om-tilgang
     ltsMidlertidigServiceCode: 5516
     ltsMidlertidigServiceEdition: 1
     ltsVarigServiceCode: 5516
