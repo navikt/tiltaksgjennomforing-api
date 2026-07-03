@@ -100,8 +100,8 @@ public class VeilarbService {
         Kvalifiseringsgruppe kvalifiseringsgruppe = oppfølgingsstatus.getKvalifiseringsgruppe();
         if (kvalifiseringsgruppe.getInnsatsgruppe() != innsatsgruppe) {
             log.warn(
-                "14a-diff{} kvalifiseringsgruppe={} (->{}), vedtak={}",
-                avtaleId != null ? " for avtale: " + avtaleId + " -" : " -",
+                "14a-diff{} kvalifiseringsgruppe(arena)={} (som tilsvarer {}), vedtak(obo)={}",
+                avtaleId != null ? " for avtale=" + avtaleId + " -" : " -",
                 kvalifiseringsgruppe,
                 kvalifiseringsgruppe.getInnsatsgruppe(),
                 innsatsgruppe

@@ -25,8 +25,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.service.gjeldendetilskuddsperiode.GjeldendeTilskuddsperiodeJobbService;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
-import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
@@ -568,33 +566,6 @@ public class AdminController {
 
     @GetMapping("/sammenlign-14a-innsatsgruppe")
     public void sammenlign14aInnsatsgruppe() {
-        List<Avtale> avtaler = adminService.finnAvtalerForSammenligningAv14a();
-        log.info("Sammenligner 14a innsatsgruppe for {} avtaler", avtaler.size());
-
-        for (Avtale avtale : avtaler) {
-            if (avtale.getDeltakerFnr() == null) {
-                continue;
-            }
-            try {
-                var innsatsgruppe = veilarbService.hentInnsatsgruppe(avtale.getDeltakerFnr());
-
-                Innsatsgruppe nnsatsgruppeFraKvalifiseringsgruppe = Optional.ofNullable(avtale.getKvalifiseringsgruppe())
-                    .map(Kvalifiseringsgruppe::getInnsatsgruppe)
-                    .orElse(null);
-
-                boolean beggeErNull = innsatsgruppe == null && nnsatsgruppeFraKvalifiseringsgruppe == null;
-                if (nnsatsgruppeFraKvalifiseringsgruppe != innsatsgruppe || beggeErNull) {
-                    log.info(
-                        "14a-diff for avtale {}: kvalifiseringsgruppe={} (->{}), vedtak={}",
-                        avtale.getId(),
-                        avtale.getKvalifiseringsgruppe(),
-                        nnsatsgruppeFraKvalifiseringsgruppe,
-                        innsatsgruppe
-                    );
-                }
-            } catch (Exception e) {
-                log.warn("Feil ved henting av 14a-vedtak for avtale {}: {}", avtale.getId(), e.getMessage());
-            }
-        }
+        adminService.sammenlign14aInnsatsgruppe();
     }
 }
