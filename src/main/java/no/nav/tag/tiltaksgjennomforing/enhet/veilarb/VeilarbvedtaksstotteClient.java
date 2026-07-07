@@ -32,8 +32,6 @@ class VeilarbvedtaksstotteClient {
     @Retryable(backoff = @Backoff(delayExpression = "${tiltaksgjennomforing.retry.delay}", maxDelayExpression = "${tiltaksgjennomforing.retry.max-delay}", multiplier = 2))
     @Cacheable(CacheConfig.VEILARBVEDTAKSSTOTTE_CACHE)
     public Optional<Gjeldende14aVedtakRespons> hentGjeldende14aVedtak(Gjeldende14aVedtakRequest request) {
-        log.info("Henter gjeldende § 14 a-vedtak fra veilarbvedtaksstotte");
-
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
