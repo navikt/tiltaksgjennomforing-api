@@ -52,4 +52,11 @@ class InnsatsgruppeTest {
         assertFalse(isArenaOboEqual(JOBBE_DELVIS, TRENGER_VEILEDNING));
         assertFalse(isArenaOboEqual(TRENGER_VEILEDNING, LITEN_MULIGHET_TIL_A_JOBBE));
     }
+
+    @Test
+    void is_equal_returnerer_false_naar_obo_er_ukjent() {
+        assertFalse(isArenaOboEqual(TRENGER_VEILEDNING, UKJENT));
+        assertFalse(isArenaOboEqual(UKJENT, UKJENT));
+        assertFalse(isArenaOboEqual(null, UKJENT));
+    }
 }
