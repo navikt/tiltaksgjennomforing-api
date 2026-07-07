@@ -9,6 +9,9 @@ import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.Varsel;
@@ -19,7 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
@@ -31,6 +37,7 @@ import java.util.stream.Stream;
 public class AdminService {
     private final AvtaleRepository avtaleRepository;
     private final VarselRepository varselRepository;
+    private final VeilarbService veilarbService;
 
     Set<Status> avtalekravStatuser = Set.of(Status.GJENNOMFØRES, Status.MANGLER_GODKJENNING, Status.AVSLUTTET);
 
@@ -103,6 +110,79 @@ public class AdminService {
                 ignorertPgaEksisterendeVarsel
             );
         }
+    }
+
+    private record Sammenligning14aKombinasjon(
+        Kvalifiseringsgruppe kvalifiseringsgruppe,
+        Innsatsgruppe vedtakInnsatsgruppe
+    ) {
+    }
+
+    @Async
+    @Transactional(readOnly = true)
+    public void sammenlign14aInnsatsgruppe() {
+        Map<Sammenligning14aKombinasjon, Long> antallPerKombinasjon = new HashMap<>();
+        AtomicInteger antallBehandlet = new AtomicInteger(0);
+        Set<Status> aktiveStatuser = Set.of(
+            Status.GJENNOMFØRES,
+            Status.KLAR_FOR_OPPSTART,
+            Status.MANGLER_GODKJENNING,
+            Status.PÅBEGYNT
+        );
+        try (Stream<Avtale> avtaler = avtaleRepository.streamAllByStatusIn(aktiveStatuser)) {
+            avtaler.forEach(avtale -> {
+                if (avtale.getDeltakerFnr() == null) {
+                    return;
+                }
+                try {
+                    var innsatsgruppe = veilarbService.hentInnsatsgruppe(avtale.getDeltakerFnr());
+
+                    Innsatsgruppe innsatsgruppeFraKvalifiseringsgruppe = Optional.ofNullable(avtale.getKvalifiseringsgruppe())
+                        .map(Kvalifiseringsgruppe::getInnsatsgruppe)
+                        .orElse(null);
+
+                    antallPerKombinasjon.merge(
+                        new Sammenligning14aKombinasjon(
+                            avtale.getKvalifiseringsgruppe(),
+                            innsatsgruppe
+                        ),
+                        1L,
+                        Long::sum
+                    );
+
+                    boolean beggeErNull = innsatsgruppe == null && innsatsgruppeFraKvalifiseringsgruppe == null;
+                    if (innsatsgruppeFraKvalifiseringsgruppe != innsatsgruppe || beggeErNull) {
+                        log.info(
+                            "14a-diff for avtale={} kvalifiseringsgruppe(arena)={} (som tilsvarer {}), vedtak(obo)={}",
+                            avtale.getId(),
+                            avtale.getKvalifiseringsgruppe(),
+                            innsatsgruppeFraKvalifiseringsgruppe,
+                            innsatsgruppe
+                        );
+                    }
+                    antallBehandlet.incrementAndGet();
+                } catch (Exception e) {
+                    log.warn("Feil ved henting av 14a-vedtak for avtale {}: {}", avtale.getId(), e.getMessage());
+                }
+            });
+        }
+
+        log.info("Sammenligner 14a innsatsgruppe for {} avtaler", antallBehandlet.get());
+
+        StringBuilder rader = new StringBuilder();
+        antallPerKombinasjon.entrySet().stream()
+            .sorted(Map.Entry.<Sammenligning14aKombinasjon, Long>comparingByValue().reversed())
+            .forEach(entry -> {
+                Sammenligning14aKombinasjon kombinasjon = entry.getKey();
+                rader.append('\n').append(String.format(
+                    "kvalifiseringsgruppe=%s, innsatsgruppe(obo)=%s, antall=%d",
+                    kombinasjon.kvalifiseringsgruppe(),
+                    kombinasjon.vedtakInnsatsgruppe(),
+                    entry.getValue()
+                ));
+            });
+
+        log.info("Oppsummering av 14a-sammenligning:{}", rader);
     }
 
     private Varsel lagHendelse(Avtale avtale) {

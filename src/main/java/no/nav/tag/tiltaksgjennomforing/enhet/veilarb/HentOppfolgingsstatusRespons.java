@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging;
+package no.nav.tag.tiltaksgjennomforing.enhet.veilarb;
 
 public record HentOppfolgingsstatusRespons(
     Oppfolgingsenhet oppfolgingsenhet,

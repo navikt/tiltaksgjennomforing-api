@@ -20,7 +20,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.entra.EntraproxyService;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RolleHarIkkeTilgangException;
@@ -47,7 +47,7 @@ public class InnloggingService {
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
     private final EntraproxyService entraproxyService;
-    private final VeilarboppfolgingService veilarboppfolgingService;
+    private final VeilarbService veilarbService;
     private final FeatureToggleService featureToggleService;
     private final EregService eregService;
     private final PostutsendelseService postutsendelseService;
@@ -73,7 +73,7 @@ public class InnloggingService {
                 persondataService,
                 norg2Client,
                 eregService,
-                veilarboppfolgingService
+                veilarbService
             );
         }
         if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.VEILEDER) {
@@ -88,7 +88,7 @@ public class InnloggingService {
                 norg2Client,
                 navEnheter,
                 adGruppeTilganger,
-                veilarboppfolgingService,
+                veilarbService,
                 featureToggleService,
                 eregService,
                 postutsendelseService
@@ -112,7 +112,7 @@ public class InnloggingService {
                 norg2Client,
                 persondataService,
                 adGruppeTilganger,
-                veilarboppfolgingService,
+                veilarbService,
                 featureToggleService,
                 eregService
             );

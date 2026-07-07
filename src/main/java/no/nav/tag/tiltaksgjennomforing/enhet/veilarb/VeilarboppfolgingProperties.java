@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging;
+package no.nav.tag.tiltaksgjennomforing.enhet.veilarb;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

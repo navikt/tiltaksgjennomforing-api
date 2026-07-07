@@ -13,9 +13,9 @@ import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.HentOppfolgingsstatusRequest;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.HentOppfolgingsstatusRespons;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.HentOppfolgingsstatusRequest;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.HentOppfolgingsstatusRespons;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -50,18 +50,18 @@ import static org.mockito.Mockito.when;
 public class CachingConfigTest {
 
     private final CacheManager cacheManager;
-    private final VeilarboppfolgingService veilarboppfolgingService;
+    private final VeilarbService veilarbService;
     private final Norg2Client norg2Client;
     private final PersondataService persondataService;
 
     public CachingConfigTest(
             @Autowired CacheManager cacheManager,
-            @Autowired VeilarboppfolgingService veilarboppfolgingService,
+            @Autowired VeilarbService veilarbService,
             @Autowired Norg2Client norg2Client,
             @Autowired PersondataService persondataService
     ){
         this.cacheManager = cacheManager;
-        this.veilarboppfolgingService = veilarboppfolgingService;
+        this.veilarbService = veilarbService;
         this.norg2Client = norg2Client;
         this.persondataService = persondataService;
     }
@@ -82,11 +82,11 @@ public class CachingConfigTest {
         TestData.setGeoNavEnhet(avtale, oppfolgingNavEnhet);
         TestData.setOppfolgingNavEnhet(avtale, oppfolgingNavEnhet);
 
-        veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr().asString());
-        veilarboppfolgingService.hentOppfolgingsstatus(ETT_FNR_NR2);
-        veilarboppfolgingService.hentOppfolgingsstatus(ETT_FNR_NR2);
-        veilarboppfolgingService.hentOppfolgingsstatus(ETT_FNR_NR3);
-        veilarboppfolgingService.hentOppfolgingsstatus(ETT_FNR_NR2);
+        veilarbService.hentOppfolging(avtale.getDeltakerFnr());
+        veilarbService.hentOppfolging(Fnr.fraDb(ETT_FNR_NR2));
+        veilarbService.hentOppfolging(Fnr.fraDb(ETT_FNR_NR2));
+        veilarbService.hentOppfolging(Fnr.fraDb(ETT_FNR_NR3));
+        veilarbService.hentOppfolging(Fnr.fraDb(ETT_FNR_NR2));
 
         Assertions.assertEquals(
             "0906",
@@ -160,7 +160,7 @@ public class CachingConfigTest {
                 norg2Client,
                 Set.of(new NavEnhet(avtale.getEnhetOppfolging(), avtale.getEnhetsnavnOppfolging())),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+                veilarbService,
                 mockFeatureToggleService,
                 mock(EregService.class),
                 mock(PostutsendelseService.class)

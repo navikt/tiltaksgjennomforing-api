@@ -7,7 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.entra.EntraproxyService;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditConsoleLogger;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -63,7 +63,7 @@ public class AvtaleApiTest {
     @MockBean
     EntraproxyService entraproxyService;
     @Mock
-    VeilarboppfolgingService veilarboppfolgingService;
+    VeilarbService veilarbService;
     @Mock
     FeatureToggleService featureToggleService;
     @Mock
@@ -93,7 +93,7 @@ public class AvtaleApiTest {
                 norg2Client,
                 Collections.emptySet(),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+                veilarbService,
                 featureToggleService,
                 mock(EregService.class),
                 mock(PostutsendelseService.class)
@@ -133,7 +133,7 @@ public class AvtaleApiTest {
             norg2Client,
             persondataService,
             TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
+            veilarbService,
             featureToggleService,
             eregService
         );

@@ -10,7 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.NavEnhetIkkeFunnetException;
@@ -43,7 +43,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
     private final PersondataService persondataService;
     private final AdGruppeTilganger adGruppeTilganger;
     private final FeatureToggleService featureToggleService;
-    private final VeilarboppfolgingService veilarboppfolgingService;
+    private final VeilarbService veilarbService;
     private final EregService eregService;
 
     public Beslutter(
@@ -54,7 +54,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         Norg2Client norg2Client,
         PersondataService persondataService,
         AdGruppeTilganger adGruppeTilganger,
-        VeilarboppfolgingService veilarboppfolgingService,
+        VeilarbService veilarbService,
         FeatureToggleService featureToggleService,
         EregService eregService
     ) {
@@ -65,7 +65,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         this.norg2Client = norg2Client;
         this.persondataService = persondataService;
         this.adGruppeTilganger = adGruppeTilganger;
-        this.veilarboppfolgingService = veilarboppfolgingService;
+        this.veilarbService = veilarbService;
         this.featureToggleService = featureToggleService;
         this.eregService = eregService;
     }
@@ -79,10 +79,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
 
         Tiltakstype tiltakstype = avtale.getTiltakstype();
         try {
-            Oppfølgingsstatus status = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(
-                avtale.getDeltakerFnr(),
-                avtale.getTiltakstype()
-            );
+            Oppfølgingsstatus status = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
             if (status.getOppfolgingsenhet() == null) {
                 throw new FeilkodeException(Feilkode.ENHET_MANGLER);
             }

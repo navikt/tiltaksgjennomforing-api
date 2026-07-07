@@ -24,7 +24,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -47,7 +47,7 @@ public class ArenaAgreementProcessingService {
     private final EregService eregService;
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
-    private final VeilarboppfolgingService veilarboppfolgingService;
+    private final VeilarbService veilarbService;
     private final AktivitetArenaAclClient aktivitetArenaAclClient;
     private final HendelseAktivitetsplanClient hendelseAktivitetsplanClient;
     private final FeatureToggleService featureToggleService;
@@ -58,7 +58,7 @@ public class ArenaAgreementProcessingService {
             EregService eregService,
             PersondataService persondataService,
             Norg2Client norg2Client,
-            VeilarboppfolgingService veilarboppfolgingService,
+            VeilarbService veilarbService,
             AktivitetArenaAclClient aktivitetArenaAclClient,
             HendelseAktivitetsplanClient hendelseAktivitetsplanClient,
             FeatureToggleService featureToggleService
@@ -68,7 +68,7 @@ public class ArenaAgreementProcessingService {
         this.eregService = eregService;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
-        this.veilarboppfolgingService = veilarboppfolgingService;
+        this.veilarbService = veilarbService;
         this.aktivitetArenaAclClient = aktivitetArenaAclClient;
         this.hendelseAktivitetsplanClient = hendelseAktivitetsplanClient;
         this.featureToggleService = featureToggleService;
@@ -388,11 +388,11 @@ public class ArenaAgreementProcessingService {
 
     private Optional<Oppfølgingsstatus> getOppfolgingsstatusFromVeilarboppfolging(Fnr fnr, Tiltakstype tiltakstype) {
         if (featureToggleService.isEnabled(FeatureToggle.ARENA_OPPFOLGING_SJEKK)) {
-            return Optional.ofNullable(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(fnr, tiltakstype));
+            return Optional.ofNullable(veilarbService.hentOgSjekkOppfolgingstatus(fnr, tiltakstype));
         }
 
         try {
-            return Optional.ofNullable(veilarboppfolgingService.hentOppfolgingsstatus(fnr.asString()));
+            return Optional.ofNullable(veilarbService.hentOppfolging(fnr));
         } catch (Exception e) {
             log.info(
                 "ARENA_OPPFOLGING_SJEKK toggle er skrudd av. Ignorer derfor feil på oppfølging med melding: " +

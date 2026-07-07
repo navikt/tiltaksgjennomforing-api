@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging;
+package no.nav.tag.tiltaksgjennomforing.enhet.veilarb;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import org.junit.jupiter.api.Test;

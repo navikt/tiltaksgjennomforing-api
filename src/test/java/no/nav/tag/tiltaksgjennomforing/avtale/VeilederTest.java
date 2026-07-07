@@ -11,7 +11,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2EnhetStatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
@@ -40,7 +40,6 @@ import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.featureToggleService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -67,7 +66,7 @@ public class VeilederTest {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
         EregService eregService  = mock(EregService.class);
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        VeilarbService veilarbService = mock(VeilarbService.class);
 
         Veileder veileder = new Veileder(
             avtale.getVeilederNavIdent(),
@@ -77,7 +76,7 @@ public class VeilederTest {
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
             TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
+            veilarbService,
             mock(FeatureToggleService.class),
             eregService,
             mock(PostutsendelseService.class)
@@ -85,7 +84,7 @@ public class VeilederTest {
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
-        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
+        when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
 
         assertThatThrownBy(() -> veileder.godkjennAvtale(avtale))
                 .isExactlyInstanceOf(VeilederSkalGodkjenneSistException.class);
@@ -99,7 +98,7 @@ public class VeilederTest {
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
 
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        VeilarbService veilarbService = mock(VeilarbService.class);
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
         EregService eregService  = mock(EregService.class);
@@ -111,7 +110,7 @@ public class VeilederTest {
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
             TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
+            veilarbService,
             mock(FeatureToggleService.class),
             eregService,
             mock(PostutsendelseService.class)
@@ -120,7 +119,7 @@ public class VeilederTest {
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
-        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
+        when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
 
         // NÅR
         veileder.godkjennAvtale(avtale);
@@ -217,7 +216,7 @@ public class VeilederTest {
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        VeilarbService veilarbService = mock(VeilarbService.class);
 
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
@@ -230,14 +229,14 @@ public class VeilederTest {
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
             TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
+            veilarbService,
             mock(FeatureToggleService.class),
             mock(EregService.class),
             mock(PostutsendelseService.class)
         );
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         // NÅR
-        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
+        when(veilarbService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
         veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
 
@@ -252,7 +251,7 @@ public class VeilederTest {
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
         avtale.setOpphav(Avtaleopphav.ARENA);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        VeilarbService veilarbService = mock(VeilarbService.class);
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
@@ -265,7 +264,7 @@ public class VeilederTest {
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
             TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
+            veilarbService,
             mock(FeatureToggleService.class),
             mock(EregService.class),
             mock(PostutsendelseService.class)
@@ -274,7 +273,7 @@ public class VeilederTest {
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
 
         // NÅR
-        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
+        when(veilarbService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
         GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn godkjentPaVegneAvDeltakerOgArbeidsgiverGrunn = TestData.enGodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn();
         veileder.godkjennForVeilederOgDeltakerOgArbeidsgiver(godkjentPaVegneAvDeltakerOgArbeidsgiverGrunn, avtale);
 
@@ -290,7 +289,7 @@ public class VeilederTest {
         avtale.setOpphav(Avtaleopphav.ARENA);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        VeilarbService veilarbService = mock(VeilarbService.class);
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
@@ -303,7 +302,7 @@ public class VeilederTest {
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
             TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
+            veilarbService,
             mock(FeatureToggleService.class),
             mock(EregService.class),
             mock(PostutsendelseService.class)
@@ -312,7 +311,7 @@ public class VeilederTest {
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
 
         // NÅR
-        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
+        when(veilarbService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
         GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneAvArbeidsgiverGrunn();
         veileder.godkjennForVeilederOgArbeidsgiver(godkjentPaVegneGrunn, avtale);
 
@@ -330,7 +329,7 @@ public class VeilederTest {
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
 
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        VeilarbService veilarbService = mock(VeilarbService.class);
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
 
@@ -342,7 +341,7 @@ public class VeilederTest {
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
             TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
+            veilarbService,
             featureToggleService,
             mock(EregService.class),
             mock(PostutsendelseService.class)
@@ -361,7 +360,7 @@ public class VeilederTest {
         when(featureToggleService.isEnabled(FeatureToggle.KODE_6_SPERRE)).thenReturn(false);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        VeilarbService veilarbService = mock(VeilarbService.class);
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         EregService eregService  = mock(EregService.class);
 
@@ -373,7 +372,7 @@ public class VeilederTest {
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
             TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
+            veilarbService,
             featureToggleService,
             eregService,
             mock(PostutsendelseService.class)
@@ -381,7 +380,7 @@ public class VeilederTest {
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
-        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
+        when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
 
         veileder.godkjennAvtale(avtale);
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
@@ -404,7 +403,7 @@ public class VeilederTest {
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
             TestData.INGEN_AD_GRUPPER,
-            mock(VeilarboppfolgingService.class),
+            mock(VeilarbService.class),
             featureToggleService,
             mock(EregService.class),
             mock(PostutsendelseService.class)
@@ -422,7 +421,7 @@ public class VeilederTest {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        VeilarbService veilarbService = mock(VeilarbService.class);
 
         Veileder veileder = new Veileder(
             avtale.getVeilederNavIdent(),
@@ -432,14 +431,14 @@ public class VeilederTest {
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
             TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
+            veilarbService,
             mock(FeatureToggleService.class),
             mock(EregService.class),
             mock(PostutsendelseService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
-        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
+        when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
     }
@@ -484,7 +483,7 @@ public class VeilederTest {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
 
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        VeilarbService veilarbService = mock(VeilarbService.class);
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
@@ -497,7 +496,7 @@ public class VeilederTest {
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
             TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
+            veilarbService,
             mock(FeatureToggleService.class),
             mock(EregService.class),
             mock(PostutsendelseService.class)
@@ -508,7 +507,7 @@ public class VeilederTest {
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
-        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
+        when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
         arbeidsgiver.godkjennAvtale(avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
 
@@ -525,7 +524,7 @@ public class VeilederTest {
 
         // Gi veileder tilgang til deltaker
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        VeilarboppfolgingService veilarboppfolgingServiceMock = mock(VeilarboppfolgingService.class);
+        VeilarbService veilarbServiceMock = mock(VeilarbService.class);
         PersondataService persondataService = mock(PersondataService.class);
         FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
@@ -537,13 +536,13 @@ public class VeilederTest {
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingServiceMock,
+                veilarbServiceMock,
                 featureToggleServiceMock,
                 mock(EregService.class),
                 mock(PostutsendelseService.class)
         );
         when(tilgangskontrollService.hentSkrivetilgang(eq(veileder), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
-        when(veilarboppfolgingServiceMock.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
+        when(veilarbServiceMock.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
 
         avtale.endreAvtale(
                 TestData.endringPåAlleLønnstilskuddFelter(),
@@ -606,18 +605,18 @@ public class VeilederTest {
     public void overta_avtale_hvor_veileder_allerede_er_satt_og_skal_bare_overskrive_oppfølgningsstatus_når_avtalen_endres() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
 
-        VeilarboppfolgingService veilarboppfolgingService = Mockito.spy(new VeilarboppfolgingService(null));
-        Veileder nyVeileder = TestData.enVeileder(new NavIdent("J987654"),veilarboppfolgingService);
+        VeilarbService veilarbService = Mockito.spy(new VeilarbService(null, null));
+        Veileder nyVeileder = TestData.enVeileder(new NavIdent("J987654"),veilarbService);
 
         Oppfølgingsstatus nyOppfølgingsstatusSomSkalIkkeSettes = new Oppfølgingsstatus(
                 Formidlingsgruppe.ARBEIDSSOKER,
                 Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
                 "0906"
         );
-        Mockito.doReturn(nyOppfølgingsstatusSomSkalIkkeSettes).when(veilarboppfolgingService).hentOppfolgingsstatus(
-            anyString());
+        Mockito.doReturn(nyOppfølgingsstatusSomSkalIkkeSettes).when(veilarbService)
+            .hentOppfolging(any(Fnr.class));
 
-        nyVeileder.hentOppfølging(avtale,veilarboppfolgingService );
+        nyVeileder.hentOppfølging(avtale, veilarbService);
 
         assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(avtale.getKvalifiseringsgruppe());
 
@@ -627,8 +626,8 @@ public class VeilederTest {
                 Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
                 "0906"
         );
-        Mockito.doReturn(nyOppfølgingsstatusSomSkalSettes).when(veilarboppfolgingService).hentOppfolgingsstatus(
-            anyString());
+        Mockito.doReturn(nyOppfølgingsstatusSomSkalSettes).when(veilarbService)
+            .hentOppfolging(any(Avtale.class));
         nyVeileder.oppdatereOppfølgingStatusVedEndreAvtale(avtale);
         assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(nyOppfølgingsstatusSomSkalSettes.getKvalifiseringsgruppe());
     }
@@ -646,8 +645,8 @@ public class VeilederTest {
         when(norg2ClientMock.hentOppfølgingsEnhetFraCacheNorg2(nyEnhet))
             .thenReturn(new Norg2OppfølgingResponse(1234, nyEnhet, nyttEnhetsnavn, Norg2EnhetStatus.AKTIV));
 
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
-        when(veilarboppfolgingService.hentOppfolgingsstatus(anyString()))
+        VeilarbService veilarbService = mock(VeilarbService.class);
+        when(veilarbService.hentOppfolging(any(Avtale.class)))
             .thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, nyEnhet));
 
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
@@ -660,7 +659,7 @@ public class VeilederTest {
             norg2ClientMock,
             Set.of(new NavEnhet("4802", "Trysil")),
             TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
+            veilarbService,
             mock(FeatureToggleService.class),
             mock(EregService.class),
             mock(PostutsendelseService.class)
@@ -684,7 +683,7 @@ public class VeilederTest {
                 Avtaleopphav.ARBEIDSGIVER
         );
 
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        VeilarbService veilarbService = mock(VeilarbService.class);
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
@@ -704,7 +703,7 @@ public class VeilederTest {
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
             TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
+            veilarbService,
             mock(FeatureToggleService.class),
             mock(EregService.class),
             mock(PostutsendelseService.class)
@@ -727,7 +726,7 @@ public class VeilederTest {
     public void overtarAvtale__feil_hvis_samme_ident() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
 
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        VeilarbService veilarbService = mock(VeilarbService.class);
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
@@ -740,7 +739,7 @@ public class VeilederTest {
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
             TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
+            veilarbService,
             mock(FeatureToggleService.class),
             mock(EregService.class),
             mock(PostutsendelseService.class)
@@ -790,7 +789,7 @@ public class VeilederTest {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        VeilarbService veilarbService = mock(VeilarbService.class);
         FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
         EregService eregService  = mock(EregService.class);
 
@@ -802,7 +801,7 @@ public class VeilederTest {
                 norg2Client,
                 Set.of(navEnhet),
                 TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
+                veilarbService,
                 featureToggleServiceMock,
                 eregService,
                 mock(PostutsendelseService.class)
@@ -842,10 +841,10 @@ public class VeilederTest {
                 Kvalifiseringsgruppe.IKKE_VURDERT,
                 "0906"
         );
-        VeilarboppfolgingService veilarboppfolgingService = Mockito.spy(new VeilarboppfolgingService(null));
-        Mockito.doReturn(oppfølgingsstatus).when(veilarboppfolgingService).hentOppfolgingsstatus(anyString());
+        VeilarbService veilarbService = Mockito.spy(new VeilarbService(null, null));
+        Mockito.doReturn(oppfølgingsstatus).when(veilarbService).hentOppfolging(any(Fnr.class));
 
-        assertThatThrownBy(() -> veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale))
+        assertThatThrownBy(() -> veilarbService.hentOgSjekkOppfolgingstatus(avtale))
                 .isExactlyInstanceOf(FeilkodeException.class)
                 .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
     }
@@ -963,9 +962,9 @@ public class VeilederTest {
             Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
             "0906"
         );
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
-        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(oppfølgingsstatus);
-        Veileder veileder = TestData.enVeileder(avtale.getVeilederNavIdent(), veilarboppfolgingService);
+        VeilarbService veilarbService = mock(VeilarbService.class);
+        when(veilarbService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(oppfølgingsstatus);
+        Veileder veileder = TestData.enVeileder(avtale.getVeilederNavIdent(), veilarbService);
         assertFeilkode(Feilkode.OPPFOLGINGSTATUS_ENDRET, () -> veileder.godkjennForAvtalepart(avtale));
     }
 
@@ -978,9 +977,9 @@ public class VeilederTest {
             Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
             avtale.getEnhetOppfolging()
         );
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
-        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(annenOppfølgingsstatus);
-        Veileder veileder = TestData.enVeileder(avtale.getVeilederNavIdent(), veilarboppfolgingService);
+        VeilarbService veilarbService = mock(VeilarbService.class);
+        when(veilarbService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(annenOppfølgingsstatus);
+        Veileder veileder = TestData.enVeileder(avtale.getVeilederNavIdent(), veilarbService);
 
         LocalDate nySluttDato = avtale.getGjeldendeInnhold().getSluttDato().plusMonths(1);
 
@@ -989,7 +988,7 @@ public class VeilederTest {
     }
 
     private Veileder lagVeilederForGodkjenning(Avtale avtale, PostutsendelseService postutsendelseService) {
-        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        VeilarbService veilarbService = mock(VeilarbService.class);
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
         EregService eregService = mock(EregService.class);
@@ -1002,7 +1001,7 @@ public class VeilederTest {
             mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
             TestData.INGEN_AD_GRUPPER,
-            veilarboppfolgingService,
+            veilarbService,
             mock(FeatureToggleService.class),
             eregService,
             postutsendelseService
@@ -1010,7 +1009,7 @@ public class VeilederTest {
 
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
-        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
+        when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
         return veileder;
     }
 }
