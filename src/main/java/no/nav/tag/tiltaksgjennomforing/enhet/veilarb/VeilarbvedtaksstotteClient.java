@@ -35,8 +35,8 @@ class VeilarbvedtaksstotteClient {
         log.info("Henter gjeldende § 14 a-vedtak fra veilarbvedtaksstotte");
 
         HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
-        headers.set("Nav-Consumer-Id", "tiltaksgjennomforing-api");
 
         ResponseEntity<Gjeldende14aVedtakRespons> response = restTemplate.exchange(
             properties.getUrl() + "/veilarbvedtaksstotte/api/ekstern/hent-gjeldende-14a-vedtak",

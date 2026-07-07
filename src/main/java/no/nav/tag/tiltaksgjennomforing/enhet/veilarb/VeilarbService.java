@@ -82,8 +82,8 @@ public class VeilarbService {
         try {
             respons = veilarbvedtaksstotteClient.hentGjeldende14aVedtak(new Gjeldende14aVedtakRequest(fnr.asString()));
         } catch (Exception e) {
-            log.error("Feil ved henting av gjeldende § 14 a-vedtak fra veilarbvedtaksstotte", e);
-            throw new FeilkodeException(Feilkode.HENTING_AV_14A_VEDTAK_FEILET);
+            log.warn("Feil ved henting av gjeldende § 14 a-vedtak fra veilarbvedtaksstotte", e);
+            return null;
         }
 
         if (respons.isEmpty()) {
