@@ -41,19 +41,6 @@ public class AdminService {
 
     Set<Status> avtalekravStatuser = Set.of(Status.GJENNOMFØRES, Status.MANGLER_GODKJENNING, Status.AVSLUTTET);
 
-    @Transactional(readOnly = true)
-    public List<Avtale> finnAvtalerForSammenligningAv14a() {
-        Set<Status> aktiveStatuser = Set.of(
-            Status.GJENNOMFØRES,
-            Status.KLAR_FOR_OPPSTART,
-            Status.MANGLER_GODKJENNING,
-            Status.PÅBEGYNT
-        );
-        try (Stream<Avtale> avtaler = avtaleRepository.streamAllByStatusIn(aktiveStatuser)) {
-            return avtaler.toList();
-        }
-    }
-
     @Async
     @Transactional
     public void oppdaterteAvtalekrav(LocalDateTime avtalekravDato) {
@@ -134,45 +121,53 @@ public class AdminService {
     @Async
     @Transactional(readOnly = true)
     public void sammenlign14aInnsatsgruppe() {
-        List<Avtale> avtaler = finnAvtalerForSammenligningAv14a();
-        log.info("Sammenligner 14a innsatsgruppe for {} avtaler", avtaler.size());
-
         Map<Sammenligning14aKombinasjon, Long> antallPerKombinasjon = new HashMap<>();
-
-        for (Avtale avtale : avtaler) {
-            if (avtale.getDeltakerFnr() == null) {
-                continue;
-            }
-            try {
-                var innsatsgruppe = veilarbService.hentInnsatsgruppe(avtale.getDeltakerFnr());
-
-                Innsatsgruppe innsatsgruppeFraKvalifiseringsgruppe = Optional.ofNullable(avtale.getKvalifiseringsgruppe())
-                    .map(Kvalifiseringsgruppe::getInnsatsgruppe)
-                    .orElse(null);
-
-                antallPerKombinasjon.merge(
-                    new Sammenligning14aKombinasjon(
-                        avtale.getKvalifiseringsgruppe(),
-                        innsatsgruppe
-                    ),
-                    1L,
-                    Long::sum
-                );
-
-                boolean beggeErNull = innsatsgruppe == null && innsatsgruppeFraKvalifiseringsgruppe == null;
-                if (innsatsgruppeFraKvalifiseringsgruppe != innsatsgruppe || beggeErNull) {
-                    log.info(
-                        "14a-diff for avtale={} kvalifiseringsgruppe(arena)={} (som tilsvarer {}), vedtak(obo)={}",
-                        avtale.getId(),
-                        avtale.getKvalifiseringsgruppe(),
-                        innsatsgruppeFraKvalifiseringsgruppe,
-                        innsatsgruppe
-                    );
+        AtomicInteger antallBehandlet = new AtomicInteger(0);
+        Set<Status> aktiveStatuser = Set.of(
+            Status.GJENNOMFØRES,
+            Status.KLAR_FOR_OPPSTART,
+            Status.MANGLER_GODKJENNING,
+            Status.PÅBEGYNT
+        );
+        try (Stream<Avtale> avtaler = avtaleRepository.streamAllByStatusIn(aktiveStatuser)) {
+            avtaler.forEach(avtale -> {
+                if (avtale.getDeltakerFnr() == null) {
+                    return;
                 }
-            } catch (Exception e) {
-                log.warn("Feil ved henting av 14a-vedtak for avtale {}: {}", avtale.getId(), e.getMessage());
-            }
+                try {
+                    var innsatsgruppe = veilarbService.hentInnsatsgruppe(avtale.getDeltakerFnr());
+
+                    Innsatsgruppe innsatsgruppeFraKvalifiseringsgruppe = Optional.ofNullable(avtale.getKvalifiseringsgruppe())
+                        .map(Kvalifiseringsgruppe::getInnsatsgruppe)
+                        .orElse(null);
+
+                    antallPerKombinasjon.merge(
+                        new Sammenligning14aKombinasjon(
+                            avtale.getKvalifiseringsgruppe(),
+                            innsatsgruppe
+                        ),
+                        1L,
+                        Long::sum
+                    );
+
+                    boolean beggeErNull = innsatsgruppe == null && innsatsgruppeFraKvalifiseringsgruppe == null;
+                    if (innsatsgruppeFraKvalifiseringsgruppe != innsatsgruppe || beggeErNull) {
+                        log.info(
+                            "14a-diff for avtale={} kvalifiseringsgruppe(arena)={} (som tilsvarer {}), vedtak(obo)={}",
+                            avtale.getId(),
+                            avtale.getKvalifiseringsgruppe(),
+                            innsatsgruppeFraKvalifiseringsgruppe,
+                            innsatsgruppe
+                        );
+                    }
+                    antallBehandlet.incrementAndGet();
+                } catch (Exception e) {
+                    log.warn("Feil ved henting av 14a-vedtak for avtale {}: {}", avtale.getId(), e.getMessage());
+                }
+            });
         }
+
+        log.info("Sammenligner 14a innsatsgruppe for {} avtaler", antallBehandlet.get());
 
         StringBuilder rader = new StringBuilder();
         antallPerKombinasjon.entrySet().stream()
