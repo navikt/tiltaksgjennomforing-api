@@ -136,7 +136,7 @@ public class AdminService {
                 }
                 try {
                     var innsatsgruppeObo = veilarbService.hentInnsatsgruppe(avtale.getDeltakerFnr());
-                    Innsatsgruppe innsatsgruppeArena = Optional.ofNullable(avtale.getKvalifiseringsgruppe())
+                    var innsatsgruppeArena = Optional.ofNullable(avtale.getKvalifiseringsgruppe())
                         .map(Kvalifiseringsgruppe::getInnsatsgruppe)
                         .orElse(null);
 
@@ -149,8 +149,7 @@ public class AdminService {
                         Long::sum
                     );
 
-                    boolean manglerGyldigInnsatsgruppe = innsatsgruppeArena == Innsatsgruppe.UKJENT && innsatsgruppeObo == null;
-                    if (innsatsgruppeArena != innsatsgruppeObo && !manglerGyldigInnsatsgruppe) {
+                    if (!Innsatsgruppe.isArenaOboEqual(innsatsgruppeArena, innsatsgruppeObo)) {
                         log.info(
                             "14a-diff for avtale={} kvalifiseringsgruppe(arena)={} (som tilsvarer {}), vedtak(obo)={}",
                             avtale.getId(),

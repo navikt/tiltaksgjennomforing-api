@@ -100,8 +100,7 @@ public class VeilarbService {
         Kvalifiseringsgruppe kvalifiseringsgruppe = oppfølgingsstatus.getKvalifiseringsgruppe();
         Innsatsgruppe innsatsgruppeArena = kvalifiseringsgruppe.getInnsatsgruppe();
 
-        boolean manglerGyldigInnsatsgruppe = innsatsgruppeArena == Innsatsgruppe.UKJENT && innsatsgruppeObo == null;
-        if (innsatsgruppeArena != innsatsgruppeObo && !manglerGyldigInnsatsgruppe) {
+        if (!Innsatsgruppe.isArenaOboEqual(innsatsgruppeArena, innsatsgruppeObo)) {
             log.warn(
                 "14a-diff{} kvalifiseringsgruppe(arena)={} (som tilsvarer {}), vedtak(obo)={}",
                 avtaleId != null ? " for avtale=" + avtaleId + " -" : " -",
