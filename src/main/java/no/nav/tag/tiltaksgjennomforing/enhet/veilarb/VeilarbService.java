@@ -95,16 +95,19 @@ public class VeilarbService {
 
     private Oppfølgingsstatus hentOppfolging(UUID avtaleId, Fnr fnr) {
         Oppfølgingsstatus oppfølgingsstatus = hentOppfølgingstatus(fnr);
-        Innsatsgruppe innsatsgruppe = hentInnsatsgruppe(fnr);
+        Innsatsgruppe innsatsgruppeObo = hentInnsatsgruppe(fnr);
 
         Kvalifiseringsgruppe kvalifiseringsgruppe = oppfølgingsstatus.getKvalifiseringsgruppe();
-        if (kvalifiseringsgruppe.getInnsatsgruppe() != innsatsgruppe) {
+        Innsatsgruppe innsatsgruppeArena = kvalifiseringsgruppe.getInnsatsgruppe();
+
+        boolean manglerGyldigInnsatsgruppe = innsatsgruppeArena == Innsatsgruppe.UKJENT && innsatsgruppeObo == null;
+        if (innsatsgruppeArena != innsatsgruppeObo && !manglerGyldigInnsatsgruppe) {
             log.warn(
                 "14a-diff{} kvalifiseringsgruppe(arena)={} (som tilsvarer {}), vedtak(obo)={}",
                 avtaleId != null ? " for avtale=" + avtaleId + " -" : " -",
                 kvalifiseringsgruppe,
-                kvalifiseringsgruppe.getInnsatsgruppe(),
-                innsatsgruppe
+                innsatsgruppeArena,
+                innsatsgruppeObo
             );
         }
 

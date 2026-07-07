@@ -135,29 +135,28 @@ public class AdminService {
                     return;
                 }
                 try {
-                    var innsatsgruppe = veilarbService.hentInnsatsgruppe(avtale.getDeltakerFnr());
-
-                    Innsatsgruppe innsatsgruppeFraKvalifiseringsgruppe = Optional.ofNullable(avtale.getKvalifiseringsgruppe())
+                    var innsatsgruppeObo = veilarbService.hentInnsatsgruppe(avtale.getDeltakerFnr());
+                    Innsatsgruppe innsatsgruppeArena = Optional.ofNullable(avtale.getKvalifiseringsgruppe())
                         .map(Kvalifiseringsgruppe::getInnsatsgruppe)
                         .orElse(null);
 
                     antallPerKombinasjon.merge(
                         new Sammenligning14aKombinasjon(
                             avtale.getKvalifiseringsgruppe(),
-                            innsatsgruppe
+                            innsatsgruppeObo
                         ),
                         1L,
                         Long::sum
                     );
 
-                    boolean beggeErNull = innsatsgruppe == null && innsatsgruppeFraKvalifiseringsgruppe == null;
-                    if (innsatsgruppeFraKvalifiseringsgruppe != innsatsgruppe || beggeErNull) {
+                    boolean manglerGyldigInnsatsgruppe = innsatsgruppeArena == Innsatsgruppe.UKJENT && innsatsgruppeObo == null;
+                    if (innsatsgruppeArena != innsatsgruppeObo && !manglerGyldigInnsatsgruppe) {
                         log.info(
                             "14a-diff for avtale={} kvalifiseringsgruppe(arena)={} (som tilsvarer {}), vedtak(obo)={}",
                             avtale.getId(),
                             avtale.getKvalifiseringsgruppe(),
-                            innsatsgruppeFraKvalifiseringsgruppe,
-                            innsatsgruppe
+                            innsatsgruppeArena,
+                            innsatsgruppeObo
                         );
                     }
                     antallBehandlet.incrementAndGet();
