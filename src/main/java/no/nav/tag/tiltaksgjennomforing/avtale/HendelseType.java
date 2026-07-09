@@ -43,7 +43,7 @@ public enum HendelseType {
     STILLINGSBESKRIVELSE_ENDRET("Stillingsbeskrivelse endret av veileder"),
     KID_OG_KONTONUMMER_ENDRET("Betalingsinformasjon endret"),
     OPPFØLGING_OG_TILRETTELEGGING_ENDRET("Oppfølging og tilrettelegging endret av veileder"),
-    AVTALE_INNGÅTT("Avtale godkjent av NAV"),
+    AVTALE_INNGÅTT("Avtale godkjent av Nav"),
     REFUSJON_KLAR("Refusjon klar"),
     REFUSJON_KLAR_REVARSEL("Refusjon klar, revarsel"),
     REFUSJON_FRIST_FORLENGET("Frist for refusjon forlenget"),

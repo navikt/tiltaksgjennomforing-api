@@ -7,7 +7,7 @@ public class NavIdent extends Identifikator {
     public NavIdent(String verdi) {
         super(verdi);
         if (!erNavIdent(verdi)) {
-            throw new IllegalArgumentException("Er ikke en nav-ident");
+            throw new IllegalArgumentException("Ugyldig Nav-ident");
         }
     }
 

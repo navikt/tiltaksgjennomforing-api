@@ -259,7 +259,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
         switch (opphav) {
             case VEILEDER -> {
-                avtale.veilederNavIdent = sjekkAtIkkeNull(navIdent, "Veileders NAV-ident må være satt.");
+                avtale.veilederNavIdent = sjekkAtIkkeNull(navIdent, "Veileders Nav-ident må være satt.");
                 avtale.registerEvent(new AvtaleOpprettetAvVeileder(avtale, navIdent));
             }
             case ARBEIDSGIVER -> avtale.registerEvent(new AvtaleOpprettetAvArbeidsgiver(avtale));
