@@ -17,7 +17,7 @@ public enum Kvalifiseringsgruppe {
     BEHOV_FOR_ARBEIDSEVNEVURDERING("BKART", Innsatsgruppe.UKJENT),                              // Personen har behov for arbeidsevnevurdering
     IKKE_VURDERT("IVURD", Innsatsgruppe.UKJENT),                                                // Ikke vurdert
     RETTIGHETER_ETTER_FTRL_KAP11("KAP11", Innsatsgruppe.UKJENT),                                // Rettigheter etter Ftrl. Kapittel 11
-    HELSERELATERT_ARBEIDSRETTET_OPPFOLGING_I_NAV("OPPFI", Innsatsgruppe.UKJENT),                // Helserelatert arbeidsrettet oppfølging i NAV
+    HELSERELATERT_ARBEIDSRETTET_OPPFOLGING_I_NAV("OPPFI", Innsatsgruppe.UKJENT),                // Helserelatert arbeidsrettet oppfølging i Nav
     SYKMELDT_OPPFOLGING_PA_ARBEIDSPLASSEN("VURDI", Innsatsgruppe.UKJENT),                       // Sykmeldt, oppfølging på arbeidsplassen
     SYKMELDT_UTEN_ARBEIDSGIVER("VURDU", Innsatsgruppe.UKJENT);                                  // Sykmeldt uten arbeidsgiver
 
