@@ -86,6 +86,8 @@ public class AvroTiltakHendelseFabrikk {
             hendelse.setArenaMigreringDeltaker(godkjentPaVegneGrunn.isArenaMigreringDeltaker());
         });
 
+        hendelse.setOpprettetTidspunkt(avtale.getOpprettetTidspunkt());
+        hendelse.setSisteEndret(avtale.getSistEndret());
         hendelse.setMeldingId(beregnNokkel(hendelse));
         hendelse.setTidspunkt(Now.instant());
 
