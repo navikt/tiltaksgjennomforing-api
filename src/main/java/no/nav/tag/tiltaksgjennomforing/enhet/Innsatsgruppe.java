@@ -22,6 +22,8 @@ public enum Innsatsgruppe {
         if (innsatsgruppeArena == UKJENT && innsatsgruppeObo == null) {
             return true;
         }
-        return VARIG_TILPASSET_VARIANTER.contains(innsatsgruppeArena) && VARIG_TILPASSET_VARIANTER.contains(innsatsgruppeObo);
+        return innsatsgruppeArena != null && innsatsgruppeObo != null
+            && VARIG_TILPASSET_VARIANTER.contains(innsatsgruppeArena)
+            && VARIG_TILPASSET_VARIANTER.contains(innsatsgruppeObo);
     }
 }
