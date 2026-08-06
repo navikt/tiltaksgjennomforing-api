@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
@@ -114,7 +116,8 @@ public class AdminService {
 
     private record Sammenligning14aKombinasjon(
         Kvalifiseringsgruppe kvalifiseringsgruppe,
-        Innsatsgruppe vedtakInnsatsgruppe
+        Innsatsgruppe vedtakInnsatsgruppe,
+        Tiltakstype tiltakstype
     ) {
     }
 
@@ -131,7 +134,8 @@ public class AdminService {
         );
         try (Stream<Avtale> avtaler = avtaleRepository.streamAllByStatusIn(aktiveStatuser)) {
             avtaler.forEach(avtale -> {
-                if (avtale.getDeltakerFnr() == null) {
+                boolean erOpprettetAvArbeidsgiverOgIkkeTattOver = Avtaleopphav.ARBEIDSGIVER == avtale.getOpphav() && avtale.getVeilederNavIdent() == null;
+                if (avtale.getDeltakerFnr() == null || erOpprettetAvArbeidsgiverOgIkkeTattOver) {
                     return;
                 }
                 try {
@@ -140,22 +144,26 @@ public class AdminService {
                         .map(Kvalifiseringsgruppe::getInnsatsgruppe)
                         .orElse(null);
 
-                    antallPerKombinasjon.merge(
-                        new Sammenligning14aKombinasjon(
-                            avtale.getKvalifiseringsgruppe(),
-                            innsatsgruppeObo
-                        ),
-                        1L,
-                        Long::sum
-                    );
+                    var erLike = Innsatsgruppe.isArenaOboEqual(innsatsgruppeArena, innsatsgruppeObo);
+                    var erGyldig = Optional.ofNullable(innsatsgruppeObo).map(gruppe -> gruppe.erGyldig(avtale.getTiltakstype())).orElse(false);
 
-                    if (!Innsatsgruppe.isArenaOboEqual(innsatsgruppeArena, innsatsgruppeObo)) {
+                    if (!erLike && !erGyldig) {
                         log.info(
-                            "14a-diff for avtale={} kvalifiseringsgruppe(arena)={} (som tilsvarer {}), vedtak(obo)={}",
+                            "14a-diff for avtale={} kvalifiseringsgruppe(arena)={} (som tilsvarer {}), vedtak(obo)={}, tiltakstype={}",
                             avtale.getId(),
                             avtale.getKvalifiseringsgruppe(),
                             innsatsgruppeArena,
-                            innsatsgruppeObo
+                            innsatsgruppeObo,
+                            avtale.getTiltakstype()
+                        );
+                        antallPerKombinasjon.merge(
+                            new Sammenligning14aKombinasjon(
+                                avtale.getKvalifiseringsgruppe(),
+                                innsatsgruppeObo,
+                                avtale.getTiltakstype()
+                            ),
+                            1L,
+                            Long::sum
                         );
                     }
                     antallBehandlet.incrementAndGet();
@@ -173,9 +181,10 @@ public class AdminService {
             .forEach(entry -> {
                 Sammenligning14aKombinasjon kombinasjon = entry.getKey();
                 rader.append('\n').append(String.format(
-                    "kvalifiseringsgruppe=%s, innsatsgruppe(obo)=%s, antall=%d",
+                    "kvalifiseringsgruppe=%s, innsatsgruppe(obo)=%s, tiltakstype=%s, antall=%d",
                     kombinasjon.kvalifiseringsgruppe(),
                     kombinasjon.vedtakInnsatsgruppe(),
+                    kombinasjon.tiltakstype(),
                     entry.getValue()
                 ));
             });
