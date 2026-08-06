@@ -394,6 +394,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         }
         avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
         avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
+        avtale.setInnsatsgruppe(oppfølgingsstatus.getInnsatsgruppe());
 
     }
 

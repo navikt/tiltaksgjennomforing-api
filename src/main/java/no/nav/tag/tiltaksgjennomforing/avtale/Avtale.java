@@ -75,6 +75,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttdatoStrategy;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
@@ -175,6 +176,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     private Kvalifiseringsgruppe kvalifiseringsgruppe;
     @Enumerated(EnumType.STRING)
     private Formidlingsgruppe formidlingsgruppe;
+    @Enumerated(EnumType.STRING)
+    private Innsatsgruppe innsatsgruppe;
 
     @OneToOne(cascade = CascadeType.ALL)
     @Nullable

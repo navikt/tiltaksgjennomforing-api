@@ -7,4 +7,5 @@ public class Oppfølgingsstatus {
     Formidlingsgruppe formidlingsgruppe;
     Kvalifiseringsgruppe kvalifiseringsgruppe;
     String oppfolgingsenhet;
+    Innsatsgruppe innsatsgruppe;
 }

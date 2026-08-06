@@ -43,9 +43,6 @@ class VeilarbvedtaksstotteClient {
             Gjeldende14aVedtakRespons.class
         );
 
-        Optional<Gjeldende14aVedtakRespons> responsOpt = Optional.ofNullable(response.getBody());
-        log.info("Respons fra 14a status={} body={}", response.getStatusCode().value(), responsOpt.map(Gjeldende14aVedtakRespons::toString).orElse("null"));
-
-        return responsOpt;
+        return Optional.ofNullable(response.getBody());
     }
 }
