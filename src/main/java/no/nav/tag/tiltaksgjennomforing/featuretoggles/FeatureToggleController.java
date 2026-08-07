@@ -23,7 +23,7 @@ public class FeatureToggleController {
     }
 
     @GetMapping
-    public Map<String, Boolean> feature(@RequestParam("feature") List<String> features) {
+    public Map<FeatureToggle, Boolean> feature(@RequestParam("feature") List<FeatureToggle> features) {
         return featureToggleService.hentFeatureToggles(features);
     }
 

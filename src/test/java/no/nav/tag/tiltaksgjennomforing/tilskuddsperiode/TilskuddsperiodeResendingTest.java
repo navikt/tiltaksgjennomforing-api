@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -27,7 +28,7 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
@@ -47,7 +48,7 @@ public class TilskuddsperiodeResendingTest {
 
     @Test
     public void sjekk_at_godkjent_med_samme_løpenummer_får_resendings_nummer() {
-        when(featureToggleService.isEnabled(anyString())).thenReturn(true);
+        when(featureToggleService.isEnabled(any(FeatureToggle.class))).thenReturn(true);
 
         Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka);
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);

@@ -29,35 +29,36 @@ public class FeatureToggleServiceTest {
 
     @Test
     public void hentFeatureToggles__skal_returnere_true_hvis_feature_er_på() {
-        when(unleash.isEnabled(eq("feature_som_er_på"), any(UnleashContext.class))).thenReturn(true);
-        Map<String, Boolean> toggles = featureToggleService.hentFeatureToggles(List.of("feature_som_er_på"));
-        assertThat(toggles.get("feature_som_er_på")).isTrue();
+        when(unleash.isEnabled(eq(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST.getToggleNavn()), any(UnleashContext.class))).thenReturn(true);
+        Map<FeatureToggle, Boolean> toggles = featureToggleService.hentFeatureToggles(List.of(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST));
+        assertThat(toggles.get(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST)).isTrue();
     }
 
     @Test
     public void hentFeatureToggles__skal_returnere_false_hvis_feature_er_av() {
-        when(unleash.isEnabled(eq("feature_som_er_av"), any(UnleashContext.class))).thenReturn(false);
-        Map<String, Boolean> toggles = featureToggleService.hentFeatureToggles(List.of("feature_som_er_av"));
-        assertThat(toggles.get("feature_som_er_av")).isFalse();
+        when(unleash.isEnabled(eq(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST.getToggleNavn()), any(UnleashContext.class))).thenReturn(false);
+        Map<FeatureToggle, Boolean> toggles = featureToggleService.hentFeatureToggles(List.of(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST));
+        assertThat(toggles.get(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST)).isFalse();
     }
 
     @Test
     public void hentFeatureToggles__skal_returnere_false_hvis_feature_ikke_finnes() {
-        Map<String, Boolean> toggles = featureToggleService.hentFeatureToggles(List.of("feature_som_ikke_finnes"));
-        assertThat(toggles.get("feature_som_ikke_finnes")).isFalse();
+        Map<FeatureToggle, Boolean> toggles = featureToggleService.hentFeatureToggles(List.of(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST));
+        assertThat(toggles.get(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST)).isFalse();
     }
 
     @Test
     public void hentFeatureToggles__skal_kunne_returnere_flere_toggles() {
-        List<String> features = Arrays.asList("feature1", "feature2", "feature3");
-        when(unleash.isEnabled(eq("feature1"), any(UnleashContext.class))).thenReturn(true);
-        when(unleash.isEnabled(eq("feature2"), any(UnleashContext.class))).thenReturn(false);
+        List<FeatureToggle> features = Arrays.asList(FeatureToggle.KODE_6_SPERRE, FeatureToggle.ARENA_KAFKA, FeatureToggle.SMS_TIL_MOBILNUMMER);
+        when(unleash.isEnabled(eq(FeatureToggle.KODE_6_SPERRE.getToggleNavn()), any(UnleashContext.class))).thenReturn(true);
+        when(unleash.isEnabled(eq(FeatureToggle.ARENA_KAFKA.getToggleNavn()), any(UnleashContext.class))).thenReturn(false);
+        when(unleash.isEnabled(eq(FeatureToggle.SMS_TIL_MOBILNUMMER.getToggleNavn()), any(UnleashContext.class))).thenReturn(false);
 
-        Map<String, Boolean> toggles = featureToggleService.hentFeatureToggles(features);
+        Map<FeatureToggle, Boolean> toggles = featureToggleService.hentFeatureToggles(features);
 
-        assertThat(toggles.get("feature1")).isTrue();
-        assertThat(toggles.get("feature2")).isFalse();
-        assertThat(toggles.get("feature3")).isFalse();
+        assertThat(toggles.get(FeatureToggle.KODE_6_SPERRE)).isTrue();
+        assertThat(toggles.get(FeatureToggle.ARENA_KAFKA)).isFalse();
+        assertThat(toggles.get(FeatureToggle.SMS_TIL_MOBILNUMMER)).isFalse();
         assertThat(toggles.size()).isEqualTo(3);
     }
 }

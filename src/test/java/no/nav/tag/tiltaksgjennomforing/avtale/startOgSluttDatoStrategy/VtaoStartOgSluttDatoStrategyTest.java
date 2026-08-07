@@ -7,6 +7,9 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleHolder;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,12 +19,17 @@ import java.time.LocalDate;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.VTAO;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class VtaoStartOgSluttDatoStrategyTest {
 
     @BeforeEach
     public void setup() {
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
+        FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
+        when(featureToggleService.isEnabled(FeatureToggle.VTAO_VEILEDER_TILGANG)).thenReturn(false);
+        new FeatureToggleHolder(featureToggleService);
     }
 
     @AfterEach

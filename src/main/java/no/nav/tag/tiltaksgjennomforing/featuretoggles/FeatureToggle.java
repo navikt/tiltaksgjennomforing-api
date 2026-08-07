@@ -13,7 +13,8 @@ public enum FeatureToggle {
     SJEKK_OM_DELTAKER_KAN_MOTTA_POST("sjekkOmDeltakerKanMottaPost"),
     MIGRERING_SKRIVEBESKYTTET("migreringSkrivebeskyttet"),
     FIREARIG_LONNSTILSKUDD("firearigLonnstilskudd"),
-    REFUSJON_KLAR_I_TILTAK_NOTIFIKASJON("refusjon-klar-i-tiltak-notifikasjon");
+    REFUSJON_KLAR_I_TILTAK_NOTIFIKASJON("refusjon-klar-i-tiltak-notifikasjon"),
+    VTAO_VEILEDER_TILGANG("vtaoVeilederTilgang");
 
     private String toggleNavn;
 

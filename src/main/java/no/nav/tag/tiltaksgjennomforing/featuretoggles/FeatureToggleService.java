@@ -27,7 +27,7 @@ public class FeatureToggleService {
         this.tokenUtils = tokenUtils;
     }
 
-    public Map<String, Boolean> hentFeatureToggles(List<String> features) {
+    public Map<FeatureToggle, Boolean> hentFeatureToggles(List<FeatureToggle> features) {
         return features.stream().collect(Collectors.toMap(feature -> feature, this::isEnabled));
     }
 
@@ -36,11 +36,6 @@ public class FeatureToggleService {
                 feature -> feature,
                 feature -> unleash.getVariant(feature, contextMedInnloggetBruker())
         ));
-    }
-
-    @Deprecated
-    public Boolean isEnabled(String feature) {
-        return unleash.isEnabled(feature, contextMedInnloggetBruker());
     }
 
     public Boolean isEnabled(FeatureToggle feature) {
@@ -60,7 +55,7 @@ public class FeatureToggleService {
         if (!tiltakstype.isFirearigLonnstilskudd()) {
             return true;
         }
-        return rolle.erInternBruker() ? isEnabled(FeatureToggle.FIREARIG_LONNSTILSKUDD) : false;
+        return rolle.erInternBruker() && isEnabled(FeatureToggle.FIREARIG_LONNSTILSKUDD);
     }
 
     public boolean kanOppretteAvtale(Avtale avtale) {
