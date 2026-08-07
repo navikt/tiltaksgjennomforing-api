@@ -42,7 +42,7 @@ public class FeatureToggleServiceTest {
     }
 
     @Test
-    public void hentFeatureToggles__skal_returnere_false_hvis_feature_ikke_finnes() {
+    public void hentFeatureToggles__skal_default_returnere_false() {
         Map<FeatureToggle, Boolean> toggles = featureToggleService.hentFeatureToggles(List.of(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST));
         assertThat(toggles.get(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST)).isFalse();
     }

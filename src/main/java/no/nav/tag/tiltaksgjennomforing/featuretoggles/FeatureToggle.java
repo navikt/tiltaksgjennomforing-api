@@ -1,5 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum FeatureToggle {
     SMS_TIL_MOBILNUMMER("sms-til-mobilnummer"),
     ARENA_AVTALE_JOBB("arenaAvtaleJobb"),
@@ -14,7 +16,9 @@ public enum FeatureToggle {
     MIGRERING_SKRIVEBESKYTTET("migreringSkrivebeskyttet"),
     FIREARIG_LONNSTILSKUDD("firearigLonnstilskudd"),
     REFUSJON_KLAR_I_TILTAK_NOTIFIKASJON("refusjon-klar-i-tiltak-notifikasjon"),
-    VTAO_VEILEDER_TILGANG("vtaoVeilederTilgang");
+    VTAO_VEILEDER_TILGANG("vtaoVeilederTilgang"),
+    VIS_HVEM_HAR_GODKJENT("visHvemHarGodkjent"),
+    VIS_NEDETID_BANNER("visNedetidBanner");
 
     private String toggleNavn;
 
@@ -22,6 +26,7 @@ public enum FeatureToggle {
         this.toggleNavn = toggleNavn;
     }
 
+    @JsonValue
     public String getToggleNavn() {
         return toggleNavn;
     }

@@ -31,10 +31,10 @@ public class FeatureToggleService {
         return features.stream().collect(Collectors.toMap(feature -> feature, this::isEnabled));
     }
 
-    public Map<String, Variant> hentVarianter(List<String> features) {
+    public Map<FeatureToggle, Variant> hentVarianter(List<FeatureToggle> features) {
         return features.stream().collect(Collectors.toMap(
                 feature -> feature,
-                feature -> unleash.getVariant(feature, contextMedInnloggetBruker())
+                feature -> unleash.getVariant(feature.getToggleNavn(), contextMedInnloggetBruker())
         ));
     }
 

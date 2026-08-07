@@ -28,8 +28,8 @@ public class FeatureToggleController {
     }
 
     @GetMapping("/variant")
-    public Map<String, Variant> variant(@RequestParam("feature") List<String> features) {
-        return  featureToggleService.hentVarianter(features);
+    public Map<FeatureToggle, Variant> variant(@RequestParam("feature") List<FeatureToggle> features) {
+        return featureToggleService.hentVarianter(features);
     }
 
 }
