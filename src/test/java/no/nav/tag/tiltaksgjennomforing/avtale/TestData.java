@@ -11,6 +11,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2EnhetStatus;
@@ -991,7 +992,8 @@ public class TestData {
                 new Oppfølgingsstatus(
                     Formidlingsgruppe.ARBEIDSSOKER,
                     Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
-                    "0906"
+                    "0906",
+                    Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
                 )
             );
         when(veilarbService.hentOppfolging(any(Avtale.class)))
@@ -999,7 +1001,8 @@ public class TestData {
                 new Oppfølgingsstatus(
                     Formidlingsgruppe.ARBEIDSSOKER,
                     Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
-                    "0906"
+                    "0906",
+                    Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
                 )
             );
 
@@ -1033,7 +1036,8 @@ public class TestData {
         when(veilarbService.hentOgSjekkOppfolgingstatus(any())).thenReturn(new Oppfølgingsstatus(
             null,
             Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
-            "0000"
+            "0000",
+            Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE
         ));
         return beslutter;
     }
