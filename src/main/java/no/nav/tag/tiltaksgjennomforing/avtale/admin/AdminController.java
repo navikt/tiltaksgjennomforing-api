@@ -564,8 +564,8 @@ public class AdminController {
         return resultat;
     }
 
-    @GetMapping("/sammenlign-14a-innsatsgruppe")
-    public void sammenlign14aInnsatsgruppe() {
-        adminService.sammenlign14aInnsatsgruppe();
+    @PostMapping("/avtale/oppdater-14a-innsatsgruppe")
+    public void oppdater14aInnsatsgruppe() {
+        adminService.oppdater14aInnsatsgruppe();
     }
 }
