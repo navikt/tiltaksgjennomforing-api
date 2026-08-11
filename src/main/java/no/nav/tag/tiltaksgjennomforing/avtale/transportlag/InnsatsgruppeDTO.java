@@ -15,6 +15,6 @@ public record InnsatsgruppeDTO(
                 innsatsgruppe,
                 innsatsgruppe.erGyldig(avtale.getTiltakstype())
             ))
-            .orElse(new InnsatsgruppeDTO(null, false));
+            .orElse(null);
     }
 }

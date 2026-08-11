@@ -380,7 +380,7 @@ public class TestData {
             avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         } else {
             avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-            avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
+            avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING);
         }
         if (tiltakstype == Tiltakstype.FIREARIG_LONNSTILSKUDD) {
             LocalDate start = Now.localDate().isBefore(LocalDate.of(2026, 8, 1)) ? LocalDate.of(2026, 8, 1) : Now.localDate();
