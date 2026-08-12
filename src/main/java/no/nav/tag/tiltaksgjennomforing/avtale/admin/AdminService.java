@@ -4,15 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
-import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.Varsel;
@@ -24,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
@@ -36,7 +31,6 @@ import java.util.stream.Stream;
 public class AdminService {
     private final AvtaleRepository avtaleRepository;
     private final VarselRepository varselRepository;
-    private final VeilarbService veilarbService;
 
     Set<Status> avtalekravStatuser = Set.of(Status.GJENNOMFØRES, Status.MANGLER_GODKJENNING, Status.AVSLUTTET);
 
@@ -109,49 +103,6 @@ public class AdminService {
                 ignorertPgaEksisterendeVarsel
             );
         }
-    }
-
-    @Async
-    @Transactional
-    public void oppdater14aInnsatsgruppe() {
-        AtomicInteger antallBehandlet = new AtomicInteger(0);
-        Set<Status> aktiveStatuser = Set.of(
-            Status.GJENNOMFØRES,
-            Status.KLAR_FOR_OPPSTART,
-            Status.MANGLER_GODKJENNING,
-            Status.PÅBEGYNT
-        );
-        try (Stream<Avtale> avtaler = avtaleRepository.streamAllByStatusIn(aktiveStatuser)) {
-            avtaler.forEach(avtale -> {
-                var erOpprettetAvArbeidsgiverOgIkkeTattOver = Avtaleopphav.ARBEIDSGIVER == avtale.getOpphav() && avtale.getVeilederNavIdent() == null;
-                var harInnsatsgruppe = avtale.getInnsatsgruppe() != null;
-
-                if (avtale.getDeltakerFnr() == null || erOpprettetAvArbeidsgiverOgIkkeTattOver || harInnsatsgruppe) {
-                    return;
-                }
-
-                try {
-                    var innsatsgruppeObo = veilarbService.hentInnsatsgruppe(avtale.getDeltakerFnr());
-                    var innsatsgruppeArena = Optional.ofNullable(avtale.getKvalifiseringsgruppe())
-                        .map(Kvalifiseringsgruppe::getInnsatsgruppe)
-                        .orElse(null);
-
-                    var erNyInnsatsgruppeLikGammel = Innsatsgruppe.isArenaOboEqual(innsatsgruppeArena, innsatsgruppeObo);
-                    var erNyInnsatsgruppeGyldigForTiltakstypen = Optional.ofNullable(innsatsgruppeObo).map(gruppe -> gruppe.erGyldig(avtale.getTiltakstype())).orElse(false);
-
-                    if (erNyInnsatsgruppeLikGammel || erNyInnsatsgruppeGyldigForTiltakstypen) {
-                        avtale.setInnsatsgruppe(innsatsgruppeObo);
-                        avtaleRepository.save(avtale);
-                    }
-
-                    antallBehandlet.incrementAndGet();
-                } catch (Exception e) {
-                    log.warn("Feil ved henting av 14a-vedtak for avtale {}: {}", avtale.getId(), e.getMessage());
-                }
-            });
-        }
-
-        log.info("14a innsatsgruppe oppdatert for {} avtaler", antallBehandlet.get());
     }
 
     private Varsel lagHendelse(Avtale avtale) {

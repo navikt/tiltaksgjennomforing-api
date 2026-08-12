@@ -51,7 +51,7 @@ class VeilarbServiceTest {
 
         assertThatThrownBy(() -> veilarbService.hentOgSjekkOppfolgingstatus(avtale))
                 .isExactlyInstanceOf(FeilkodeException.class)
-                .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
+                .hasMessage(Feilkode.INNSATSGRUPPE_MIDLERTIDIG_LONNTILSKUDD_OG_SOMMERJOBB_FEIL.name());
     }
 
     @Test
@@ -98,14 +98,16 @@ class VeilarbServiceTest {
 
     @Test
     public void hent_gjeldende_14a_vedtak() {
-        Innsatsgruppe innsatsgruppe = veilarbService.hentInnsatsgruppe(Fnr.generer(1990, 4, 12));
-        assertThat(innsatsgruppe).isEqualTo(Innsatsgruppe.TRENGER_VEILEDNING);
+        Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOppfolging(Fnr.generer(1990, 4, 12));
+        assertThat(oppfølgingsstatus.getInnsatsgruppe()).isEqualTo(Innsatsgruppe.TRENGER_VEILEDNING);
     }
 
     @Test
-    public void returnerer_tomt_resultat_naar_person_ikke_har_gjeldende_vedtak() {
-        Innsatsgruppe innsatsgruppe = veilarbService.hentInnsatsgruppe(Fnr.generer(1985, 3, 22));
-        assertThat(innsatsgruppe).isNull();
+    public void kaster_exception_naar_person_ikke_har_gjeldende_vedtak() {
+        Fnr fnr = Fnr.generer(1985, 3, 22);
+        assertThatThrownBy(() -> veilarbService.hentOppfolging(fnr))
+                .isExactlyInstanceOf(FeilkodeException.class)
+                .hasMessage(Feilkode.FANT_IKKE_INNSATSBEHOV.name());
     }
 
 }

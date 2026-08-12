@@ -183,8 +183,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     public AvtaleDTO maskerFelterForAvtalepart(AvtaleDTO avtaleDTO) {
         return avtaleDTO.toBuilder()
             .annullertGrunn(null)
-            .kvalifiseringsgruppe(null)
-            .formidlingsgruppe(null)
             .innsatsgruppe(null)
             .build();
     }
@@ -294,14 +292,14 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     private void hentOppfolginsenhet(Avtale avtale) {
         try {
             Oppfølgingsstatus status = veilarbService.hentOppfolging(avtale);
-            if (status != null) {
-                avtale.setEnhetOppfolging(status.getOppfolgingsenhet());
-            }
+            avtale.setEnhetOppfolging(status.getOppfolgingsenhet());
         } catch (FeilkodeException e) {
-            if (e.getFeilkode() == Feilkode.FANT_IKKE_INNSATSBEHOV || e.getFeilkode() == Feilkode.HENTING_AV_INNSATSBEHOV_FEILET) {
+            if (e.getFeilkode() == Feilkode.FANT_IKKE_INNSATSBEHOV ||
+                e.getFeilkode() == Feilkode.HENTING_AV_INNSATSBEHOV_FEILET ||
+                e.getFeilkode() == Feilkode.ENHET_MANGLER) {
                 log.warn(
                     "Fant ikke innsatsbehov ved henting av oppfølgingstatus for avtale opprettet av arbeidsgiver " +
-                        "Med melding: {}. Fortsetter uten.",
+                    "Med melding: {}. Fortsetter uten.",
                     e.getMessage()
                 );
             } else {

@@ -8,7 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
@@ -265,7 +265,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     protected void oppdatereEnheterVedEndreAvtale(Avtale avtale) {
         this.oppdatereOppfølgingStatusVedEndreAvtale(avtale);
         this.oppdatereGeoEnhetVedEndreAvtale(avtale);
-
     }
 
     private void oppdatereGeoEnhetVedEndreAvtale(Avtale avtale) {
@@ -281,9 +280,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void oppdatereOppfølgingStatusVedEndreAvtale(Avtale avtale) {
         Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOppfolging(avtale);
-        if (oppfølgingsstatus == null) {
-            return;
-        }
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
     }
 
@@ -334,12 +330,15 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (avtale.harOppfølgingsStatus()) {
             return;
         }
-        Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
-        if (oppfølgingsstatus == null || oppfølgingsstatus.getOppfolgingsenhet() == null) {
-            return;
+        try {
+            Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
+            this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
+            this.settLonntilskuddProsentsats(avtale);
+        } catch (FeilkodeException ex) {
+            if (!Feilkode.ENHET_MANGLER.equals(ex.getFeilkode())) {
+                throw ex;
+            }
         }
-        this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
-        this.settLonntilskuddProsentsats(avtale);
     }
 
     public void sjekkOgOppdaterOppfølgningsstatusForAvtale(Avtale avtale) {
@@ -349,25 +348,18 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         }
 
         Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
-        if (oppfølgingsstatus == null) {
-            throw new FeilkodeException(Feilkode.FANT_IKKE_INNSATSBEHOV);
-        }
-        if (oppfølgingsstatus.getOppfolgingsenhet() == null) {
-            throw new FeilkodeException(Feilkode.ENHET_MANGLER);
-        }
-
-        Kvalifiseringsgruppe gammelKvalifiseringsgruppe = avtale.getKvalifiseringsgruppe();
-        Boolean oppfolgingHarEndret = Optional.ofNullable(gammelKvalifiseringsgruppe)
-            .map(kg -> !kg.equals(oppfølgingsstatus.getKvalifiseringsgruppe()))
+        Innsatsgruppe innsatsgruppe = avtale.getInnsatsgruppe();
+        Boolean innsatsgruppeHarEndret = Optional.ofNullable(innsatsgruppe)
+            .map(gruppe -> gruppe != oppfølgingsstatus.getInnsatsgruppe())
             .orElse(false);
         settOppfølgingsStatus(avtale, oppfølgingsstatus);
 
-        if (oppfolgingHarEndret && !avtale.erAvtaleInngått() && avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD) {
+        if (innsatsgruppeHarEndret && !avtale.erAvtaleInngått() && avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD) {
             log.info(
-                "Kvalifiseringsgruppe for avtale {} har endret seg fra {} til {}, oppdaterer avtale",
+                "Innsatsgruppe for avtale {} har endret seg fra {} til {}, oppdaterer avtale",
                 avtale.getId(),
-                gammelKvalifiseringsgruppe,
-                oppfølgingsstatus.getKvalifiseringsgruppe()
+                innsatsgruppe,
+                oppfølgingsstatus.getInnsatsgruppe()
             );
             avtale.opphevGodkjenningerSomVeileder();
             avtale.endreBeløpOgProsentITilskuddsperioder();
@@ -388,7 +380,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     private void settOppfølgingsStatus(Avtale avtale, Oppfølgingsstatus oppfølgingsstatus) {
         String oppfolgingsenhet = oppfølgingsstatus.getOppfolgingsenhet();
-        if (oppfolgingsenhet != null && !oppfolgingsenhet.equals(avtale.getEnhetOppfolging())) {
+        if (!oppfolgingsenhet.equals(avtale.getEnhetOppfolging())) {
             avtale.setEnhetOppfolging(oppfolgingsenhet);
             hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
         }

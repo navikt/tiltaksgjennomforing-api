@@ -563,9 +563,4 @@ public class AdminController {
         }
         return resultat;
     }
-
-    @PostMapping("/avtale/oppdater-14a-innsatsgruppe")
-    public void oppdater14aInnsatsgruppe() {
-        adminService.oppdater14aInnsatsgruppe();
-    }
 }

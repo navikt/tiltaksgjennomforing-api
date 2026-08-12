@@ -5,16 +5,15 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.InnsatsgruppeException;
 import no.nav.tag.tiltaksgjennomforing.logging.TeamLogs;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -40,85 +39,57 @@ public class VeilarbService {
             return oppfølgingStatus;
         }
 
-        if (oppfølgingStatus.getKvalifiseringsgruppe().isUgyldigKvalifiseringsgruppe()) {
-            throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET);
-        }
+        boolean erGyldig = Optional.ofNullable(oppfølgingStatus.getInnsatsgruppe())
+            .map(innsatsgruppe -> innsatsgruppe.erGyldig(tiltakstype))
+            .orElse(false);
 
-        if (tiltakstype.isMidlerTidiglonnstilskuddEllerSommerjobbEllerMentor() &&
-            !oppfølgingStatus.getKvalifiseringsgruppe()
-                .isKvalifisererTilMidlertidiglonnstilskuddOgSommerjobbOgMentor()) {
-            throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_MIDLERTIDIG_LONNTILSKUDD_OG_SOMMERJOBB_FEIL);
-        }
-
-        if (tiltakstype.isVariglonnstilskudd() &&
-            !oppfølgingStatus.getKvalifiseringsgruppe().isKvalifisererTilVariglonnstilskudd()) {
-            throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_VARIG_LONNTILSKUDD_FEIL);
-        }
-
-        if (tiltakstype.isVTAO() &&
-            !oppfølgingStatus.getKvalifiseringsgruppe().isKvalifisererTilVTAO()) {
-            throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_VTAO_FEIL);
-        }
-
-        if (tiltakstype.isFirearigLonnstilskudd() &&
-            !oppfølgingStatus.getKvalifiseringsgruppe().isKvalifisererTilFirearigLonnstilskuddForUnge()) {
-            throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_FIREARIG_LONNTILSKUDD_FOR_UNGE_FEIL);
+        if (!erGyldig) {
+            throw InnsatsgruppeException.fraTiltakstype(tiltakstype);
         }
 
         return oppfølgingStatus;
     }
 
-    public Oppfølgingsstatus hentOppfolging(Fnr fnr) {
-        return hentOppfolging(null, fnr);
-    }
-
     public Oppfølgingsstatus hentOppfolging(Avtale avtale) {
-        return hentOppfolging(avtale.getId(), avtale.getDeltakerFnr());
+        return hentOppfolging(avtale.getDeltakerFnr());
     }
 
-    public Innsatsgruppe hentInnsatsgruppe(Fnr fnr) {
-        Optional<Gjeldende14aVedtakRespons> respons;
+    public Oppfølgingsstatus hentOppfolging(Fnr fnr) {
+        HentOppfolgingsstatusRespons oppfølgingsstatus = hentOppfølgingstatus(fnr);
+        Gjeldende14aVedtakRespons innsatsgruppe = hentInnsatsgruppe(fnr);
 
         try {
-            respons = veilarbvedtaksstotteClient.hentGjeldende14aVedtak(new Gjeldende14aVedtakRequest(fnr.asString()));
-        } catch (Exception e) {
-            log.warn("Feil ved henting av gjeldende § 14 a-vedtak fra veilarbvedtaksstotte", e);
-            return null;
-        }
-
-        if (respons.isEmpty()) {
-            teamLogs.info("Fant ikke gjeldende § 14 a-vedtak for fnr {}", fnr);
-        }
-
-        return respons.map(Gjeldende14aVedtakRespons::innsatsgruppe).orElse(null);
-    }
-
-    private Oppfølgingsstatus hentOppfolging(UUID avtaleId, Fnr fnr) {
-        Oppfølgingsstatus oppfølgingsstatus = hentOppfølgingstatus(fnr);
-        Innsatsgruppe innsatsgruppeObo = hentInnsatsgruppe(fnr);
-
-        Kvalifiseringsgruppe kvalifiseringsgruppe = oppfølgingsstatus.getKvalifiseringsgruppe();
-        Innsatsgruppe innsatsgruppeArena = kvalifiseringsgruppe.getInnsatsgruppe();
-
-        if (!Innsatsgruppe.isArenaOboEqual(innsatsgruppeArena, innsatsgruppeObo)) {
-            log.warn(
-                "14a-diff{} kvalifiseringsgruppe(arena)={} (som tilsvarer {}), vedtak(obo)={}",
-                avtaleId != null ? " for avtale=" + avtaleId + " -" : " -",
-                kvalifiseringsgruppe,
-                innsatsgruppeArena,
-                innsatsgruppeObo
+            return new Oppfølgingsstatus(
+                Formidlingsgruppe.parse(oppfølgingsstatus.formidlingsgruppe()),
+                Kvalifiseringsgruppe.parse(oppfølgingsstatus.servicegruppe()),
+                oppfølgingsstatus.oppfolgingsenhet().enhetId(),
+                innsatsgruppe.innsatsgruppe()
             );
+        } catch (Exception e) {
+            log.error("Feil ved parsing av oppfølgingsstatus", e);
+            throw new FeilkodeException(Feilkode.HENTING_AV_INNSATSBEHOV_FEILET);
         }
-
-        return new Oppfølgingsstatus(
-            oppfølgingsstatus.getFormidlingsgruppe(),
-            oppfølgingsstatus.getKvalifiseringsgruppe(),
-            oppfølgingsstatus.getOppfolgingsenhet(),
-            innsatsgruppeObo
-        );
     }
 
-    private Oppfølgingsstatus hentOppfølgingstatus(Fnr fnr) {
+    private Gjeldende14aVedtakRespons hentInnsatsgruppe(Fnr fnr) {
+        Optional<Gjeldende14aVedtakRespons> responsOpt;
+
+        try {
+            responsOpt = veilarbvedtaksstotteClient.hentGjeldende14aVedtak(new Gjeldende14aVedtakRequest(fnr.asString()));
+        } catch (Exception e) {
+            log.error("Feil ved henting av gjeldende § 14 a-vedtak fra veilarbvedtaksstotte", e);
+            throw new FeilkodeException(Feilkode.HENTING_AV_INNSATSBEHOV_FEILET);
+        }
+
+        if (responsOpt.isEmpty()) {
+            teamLogs.info("Fant ikke gjeldende § 14 a-vedtak for fnr {}", fnr);
+            throw new FeilkodeException(Feilkode.FANT_IKKE_INNSATSBEHOV);
+        }
+
+        return responsOpt.get();
+    }
+
+    private HentOppfolgingsstatusRespons hentOppfølgingstatus(Fnr fnr) {
         Optional<HentOppfolgingsstatusRespons> responsOpt;
 
         try {
@@ -129,11 +100,17 @@ public class VeilarbService {
         }
 
         if (responsOpt.isEmpty()) {
-            teamLogs.info("Fant ikke innsatsbehov for fnr {}", fnr);
+            teamLogs.info("Fant ikke oppfølgingsstatus for fnr {}", fnr);
             throw new FeilkodeException(Feilkode.FANT_IKKE_INNSATSBEHOV);
         }
 
         HentOppfolgingsstatusRespons respons = responsOpt.get();
+
+        if (respons.oppfolgingsenhet() == null || respons.oppfolgingsenhet().enhetId() == null) {
+            log.info("Fant ingen enhet. Deltaker er sannsynligvis ikke under oppfølging.");
+            throw new FeilkodeException(Feilkode.ENHET_MANGLER);
+        }
+
         teamLogs.info(
             "Hentet servicegruppe {} og formidlingsgruppe {} for fnr {}",
             respons.servicegruppe(),
@@ -141,23 +118,6 @@ public class VeilarbService {
             fnr
         );
 
-        Optional<String> enhet = Optional.ofNullable(respons.oppfolgingsenhet()).
-            map(HentOppfolgingsstatusRespons.Oppfolgingsenhet::enhetId);
-
-        if (enhet.isEmpty()) {
-            log.info("Fant ingen enhet. Deltaker er sannsynligvis ikke under oppfølging.");
-        }
-
-        try {
-            return new Oppfølgingsstatus(
-                Formidlingsgruppe.parse(respons.formidlingsgruppe()),
-                Kvalifiseringsgruppe.parse(respons.servicegruppe()),
-                enhet.orElse(null),
-                null
-            );
-        } catch (Exception e) {
-            log.error("Feil ved parsing av oppfølgingsstatus", e);
-            throw new FeilkodeException(Feilkode.HENTING_AV_INNSATSBEHOV_FEILET);
-        }
+        return respons;
     }
 }

@@ -275,9 +275,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     protected boolean harOppfølgingsStatus() {
-        return this.getEnhetOppfolging() != null
-            && this.getKvalifiseringsgruppe() != null
-            && this.getFormidlingsgruppe() != null;
+        return this.getEnhetOppfolging() != null && this.getInnsatsgruppe() != null;
     }
 
     public void endreAvtale(

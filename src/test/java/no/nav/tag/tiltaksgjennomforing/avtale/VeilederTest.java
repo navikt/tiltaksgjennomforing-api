@@ -940,7 +940,7 @@ public class VeilederTest {
 
         assertThatThrownBy(() -> veilarbService.hentOgSjekkOppfolgingstatus(avtale))
             .isExactlyInstanceOf(FeilkodeException.class)
-            .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
+            .hasMessage(Feilkode.INNSATSGRUPPE_IKKE_RETTIGHET.name());
     }
 
     @Test
