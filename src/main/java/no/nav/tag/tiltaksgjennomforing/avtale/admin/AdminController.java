@@ -51,6 +51,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -567,5 +568,35 @@ public class AdminController {
     @PostMapping("/avtale/oppdater-14a-innsatsgruppe")
     public void oppdater14aInnsatsgruppe() {
         adminService.oppdater14aInnsatsgruppe();
+    }
+
+    @Transactional
+    @PostMapping("/avtale/fikse-datafeil")
+    public void fikseDatafeil() {
+        // Er påbegynt, skulle vært mangler-godkjenning - Må bare oppdatere status
+        avtaleRepository.findById(UUID.fromString("1d59be82-c7c1-4a37-8b9c-37dadcbbd44b")).ifPresent(avtale -> {
+            avtale.setStatus(Status.fra(avtale));
+            avtaleRepository.save(avtale);
+        });
+
+        // Er påbeygnt, skulle vært annullert - Mangler annullert tidspunkt
+        avtaleRepository.findById(UUID.fromString("ba75ab72-8412-481a-8285-bef11cfd268e")).ifPresent(avtale -> {
+            ZonedDateTime zdt = ZonedDateTime.parse("2026-08-10T14:50:25.867676+02:00");
+            avtale.setAnnullertTidspunkt(zdt.toInstant());
+            avtale.setStatus(Status.fra(avtale));
+            avtaleRepository.save(avtale);
+        });
+
+        // Mangler-godkjenning, skulle være under gjennomføring - Må bare oppdatere status
+        avtaleRepository.findById(UUID.fromString("45277646-3772-4fa4-aa0a-c404f71c9d99")).ifPresent(avtale -> {
+            avtale.setStatus(Status.fra(avtale));
+            avtaleRepository.save(avtale);
+        });
+
+        // Mangler-godkjenning, skulle være under gjennomføring - Må bare oppdatere status
+        avtaleRepository.findById(UUID.fromString("3fdc5881-faec-4688-b3ce-6255c898b9d3")).ifPresent(avtale -> {
+            avtale.setStatus(Status.fra(avtale));
+            avtaleRepository.save(avtale);
+        });
     }
 }
