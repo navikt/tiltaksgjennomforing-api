@@ -55,15 +55,15 @@ public class VeilarbService {
     }
 
     public Oppfølgingsstatus hentOppfolging(Fnr fnr) {
+        Gjeldende14aVedtakRespons vedtak = hentInnsatsgruppe(fnr);
         HentOppfolgingsstatusRespons oppfølgingsstatus = hentOppfølgingstatus(fnr);
-        Gjeldende14aVedtakRespons innsatsgruppe = hentInnsatsgruppe(fnr);
 
         try {
             return new Oppfølgingsstatus(
                 Formidlingsgruppe.parse(oppfølgingsstatus.formidlingsgruppe()),
                 Kvalifiseringsgruppe.parse(oppfølgingsstatus.servicegruppe()),
                 oppfølgingsstatus.oppfolgingsenhet().enhetId(),
-                innsatsgruppe.innsatsgruppe()
+                vedtak.innsatsgruppe()
             );
         } catch (Exception e) {
             log.error("Feil ved parsing av oppfølgingsstatus", e);
@@ -81,7 +81,7 @@ public class VeilarbService {
             throw new FeilkodeException(Feilkode.HENTING_AV_INNSATSBEHOV_FEILET);
         }
 
-        if (responsOpt.isEmpty()) {
+        if (responsOpt.isEmpty() || responsOpt.get().innsatsgruppe() == null) {
             teamLogs.info("Fant ikke gjeldende § 14 a-vedtak for fnr {}", fnr);
             throw new FeilkodeException(Feilkode.FANT_IKKE_INNSATSBEHOV);
         }

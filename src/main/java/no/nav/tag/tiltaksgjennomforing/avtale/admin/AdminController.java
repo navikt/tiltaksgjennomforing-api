@@ -219,11 +219,13 @@ public class AdminController {
                     "avtaleOppfolginsstatus", Map.of(
                         "formidlingsgruppe", avtale.getFormidlingsgruppe().name(),
                         "kvalifiseringsgruppe", avtale.getKvalifiseringsgruppe().name(),
+                        "innsatsgruppe", Optional.ofNullable(avtale.getInnsatsgruppe()).map(Enum::name).orElse(""),
                         "oppfolginsenhet", avtale.getEnhetOppfolging()
                     ),
                     "veilarbOppfolginsstatus", Map.of(
                         "formidlingsgruppe", status.getFormidlingsgruppe().name(),
                         "kvalifiseringsgruppe", status.getKvalifiseringsgruppe().name(),
+                        "innsatsgruppe", status.getInnsatsgruppe().name(),
                         "oppfolginsenhet", status.getOppfolgingsenhet()
                     )
                 );
@@ -413,13 +415,14 @@ public class AdminController {
         );
 
         nyAvtale.setEnhetGeografisk(avtale.getEnhetGeografisk());
-        nyAvtale.setEnhetsnavnGeografisk(avtale.getEnhetsnavnGeografisk());
         nyAvtale.setEnhetOppfolging(avtale.getEnhetOppfolging());
-        nyAvtale.setKvalifiseringsgruppe(avtale.getKvalifiseringsgruppe());
-        nyAvtale.setFormidlingsgruppe(avtale.getFormidlingsgruppe());
+        nyAvtale.setEnhetsnavnGeografisk(avtale.getEnhetsnavnGeografisk());
         nyAvtale.setEnhetsnavnOppfolging(avtale.getEnhetsnavnOppfolging());
-        nyAvtale.setOpprettetTidspunkt(avtale.getOpprettetTidspunkt());
+        nyAvtale.setFormidlingsgruppe(avtale.getFormidlingsgruppe());
         nyAvtale.setGodkjentForEtterregistrering(avtale.isGodkjentForEtterregistrering());
+        nyAvtale.setInnsatsgruppe(avtale.getInnsatsgruppe());
+        nyAvtale.setKvalifiseringsgruppe(avtale.getKvalifiseringsgruppe());
+        nyAvtale.setOpprettetTidspunkt(avtale.getOpprettetTidspunkt());
 
         // Omgå vaildering av start og sluttdato
         EndreAvtale endreAvtale = EndreAvtale.fraAvtale(avtale);

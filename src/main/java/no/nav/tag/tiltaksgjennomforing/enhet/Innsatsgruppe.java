@@ -5,11 +5,11 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import java.util.Set;
 
 public enum Innsatsgruppe {
-    GODE_MULIGHETER,
-    TRENGER_VEILEDNING,
-    TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE,
-    JOBBE_DELVIS,
-    LITEN_MULIGHET_TIL_A_JOBBE,
+    GODE_MULIGHETER,                        // STANDARD_INNSATS
+    TRENGER_VEILEDNING,                     // SITUASJONSBESTEMT_INNSATS
+    TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE, // SPESIELT_TILPASSET_INNSATS
+    JOBBE_DELVIS,                           // GRADERT_VARIG_TILPASSET_INNSATS
+    LITEN_MULIGHET_TIL_A_JOBBE,             // VARIG_TILPASSET_INNSATS
     UKJENT;
 
     private static final Set<Innsatsgruppe> VARIG_TILPASSET_VARIANTER = Set.of(JOBBE_DELVIS, LITEN_MULIGHET_TIL_A_JOBBE);

@@ -18,10 +18,11 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy extends GenerellLon
         super(avtale);
     }
 
+    @Override
     public Integer getProsentForForstePeriode() {
-        return switch (avtale.getKvalifiseringsgruppe()) {
-            case SPESIELT_TILPASSET_INNSATS, VARIG_TILPASSET_INNSATS -> TILSKUDDSPROSENT_TILPASSET;
-            case SITUASJONSBESTEMT_INNSATS -> TILSKUDDSPROSENT;
+        return switch (avtale.getInnsatsgruppe()) {
+            case TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE, LITEN_MULIGHET_TIL_A_JOBBE, JOBBE_DELVIS -> TILSKUDDSPROSENT_TILPASSET;
+            case TRENGER_VEILEDNING -> TILSKUDDSPROSENT;
             case null, default -> null;
         };
     }
@@ -51,9 +52,9 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy extends GenerellLon
             return Collections.emptyList();
         }
 
-        LocalDate datoForReduksjon = switch (avtale.getKvalifiseringsgruppe()) {
-            case SPESIELT_TILPASSET_INNSATS, VARIG_TILPASSET_INNSATS -> startDato.plusYears(1);
-            case SITUASJONSBESTEMT_INNSATS -> startDato.plusMonths(6);
+        LocalDate datoForReduksjon = switch (avtale.getInnsatsgruppe()) {
+            case TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE, LITEN_MULIGHET_TIL_A_JOBBE, JOBBE_DELVIS -> startDato.plusYears(1);
+            case TRENGER_VEILEDNING -> startDato.plusMonths(6);
             case null, default -> null;
         };
 

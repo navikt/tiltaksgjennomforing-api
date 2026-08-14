@@ -396,31 +396,10 @@ public class AvtaleControllerTest {
     @Test
     public void endreAvtaleSkalReturnereOkHvisInnloggetPersonErVeileder() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        Veileder veileder = new Veileder(
-                enNavIdent(),
-                null,
-                tilgangskontrollService,
-                persondataService,
-                norg2Client,
-                Collections.emptySet(),
-                TestData.INGEN_AD_GRUPPER,
-            veilarbService,
-                featureToggleServiceMock,
-                mock(EregService.class),
-                postutsendelseService
-        );
+        Veileder veileder = TestData.enVeileder(avtale);
         værInnloggetSom(veileder);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                any(Veileder.class),
-                any(Fnr.class)
-        )).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         when(avtaleRepository.save(avtale)).thenReturn(avtale);
-        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
-        when(tilgangskontrollService.hentSkrivetilgang(
-            veileder,
-            avtale.getDeltakerFnr())
-        ).thenReturn(new Tilgang.Tillat());
         ResponseEntity svar = avtaleController.endreAvtale(
                 avtale.getId(),
                 TestData.ingenEndring(),

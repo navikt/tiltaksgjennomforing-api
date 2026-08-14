@@ -18,6 +18,7 @@ public class FirearigLonnstilskuddBeregningStrategy extends GenerellLonnstilskud
         super(avtale);
     }
 
+    @Override
     public Integer getProsentForForstePeriode() {
         return TILSKUDDSPROSENT_FORSTE_AAR;
     }

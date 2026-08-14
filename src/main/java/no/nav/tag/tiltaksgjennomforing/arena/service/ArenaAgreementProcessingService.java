@@ -333,6 +333,7 @@ public class ArenaAgreementProcessingService {
             avtale.setEnhetOppfolging(status.getOppfolgingsenhet());
             avtale.setKvalifiseringsgruppe(status.getKvalifiseringsgruppe());
             avtale.setFormidlingsgruppe(status.getFormidlingsgruppe());
+            avtale.setInnsatsgruppe(status.getInnsatsgruppe());
         });
 
         getOppfolgingsenhetnavnFromNorg2(avtale.getEnhetOppfolging()).ifPresent(avtale::setEnhetsnavnOppfolging);

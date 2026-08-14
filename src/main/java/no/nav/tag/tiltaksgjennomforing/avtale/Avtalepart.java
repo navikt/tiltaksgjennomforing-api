@@ -16,6 +16,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -224,12 +225,7 @@ public abstract class Avtalepart<T extends Identifikator> {
     }
 
     public void settLonntilskuddProsentsats(Avtale avtale) {
-        Integer sats = switch (avtale.getTiltakstype()) {
-            case MIDLERTIDIG_LONNSTILSKUDD -> avtale.getKvalifiseringsgruppe().finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(40, 60);
-            case FIREARIG_LONNSTILSKUDD -> 70;
-            default -> null;
-        };
-
+        Integer sats = BeregningStrategy.create(avtale).getProsentForForstePeriode();
         if (sats != null) {
             avtale.getGjeldendeInnhold().setLonnstilskuddProsent(sats);
         }

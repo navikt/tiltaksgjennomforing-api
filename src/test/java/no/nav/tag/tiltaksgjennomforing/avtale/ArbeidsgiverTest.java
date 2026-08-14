@@ -100,7 +100,7 @@ public class ArbeidsgiverTest {
         when(persondataService.hentGeografiskTilknytning(any())).thenReturn(Optional.of("0904"));
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
-        when(veilarboppfolgingService.hentOppfolging(any(Fnr.class))).thenReturn(new Oppfølgingsstatus(
+        when(veilarboppfolgingService.hentOppfolging(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             null,
             null,
             "0411",
@@ -198,7 +198,7 @@ public class ArbeidsgiverTest {
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
 
         VeilarbService veilarbService = mock(VeilarbService.class);
-        when(veilarbService.hentOppfolging(any(Fnr.class))).thenReturn(new Oppfølgingsstatus(
+        when(veilarbService.hentOppfolging(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             null,
             null,
             "0411",

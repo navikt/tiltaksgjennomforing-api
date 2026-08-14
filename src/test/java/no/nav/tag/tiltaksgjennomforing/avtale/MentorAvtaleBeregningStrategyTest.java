@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentorBeregningStrategy;
@@ -110,7 +110,7 @@ public class MentorAvtaleBeregningStrategyTest {
     public void forleng_mentor_avtale_med_godkjent_tilskuddsperiode_skal_generere_nye_perioder() {
         // Opprett mentor-avtale med alle godkjenninger
         Avtale avtale = TestData.enMentorAvtaleSignertAvAlle();
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.JOBBE_DELVIS);
         Now.fixedDate(avtale.getGjeldendeInnhold().getSluttDato().plusDays(1));
 
         // Verifiser at vi har tilskuddsperioder før forlenging

@@ -84,6 +84,10 @@ public abstract class BeregningStrategy {
         return null;
     }
 
+    public Integer getProsentForForstePeriode() {
+        return null;
+    }
+
     protected static BigDecimal getFeriepengerBelop(BigDecimal feriepengersats, Integer manedslonn) {
         if (erIkkeTomme(feriepengersats, manedslonn)) {
             return (feriepengersats.multiply(BigDecimal.valueOf(manedslonn)));

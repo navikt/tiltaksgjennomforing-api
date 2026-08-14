@@ -330,15 +330,9 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (avtale.harOppfølgingsStatus()) {
             return;
         }
-        try {
-            Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
-            this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
-            this.settLonntilskuddProsentsats(avtale);
-        } catch (FeilkodeException ex) {
-            if (!Feilkode.ENHET_MANGLER.equals(ex.getFeilkode())) {
-                throw ex;
-            }
-        }
+        Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
+        this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
+        this.settLonntilskuddProsentsats(avtale);
     }
 
     public void sjekkOgOppdaterOppfølgningsstatusForAvtale(Avtale avtale) {
@@ -387,7 +381,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
         avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
         avtale.setInnsatsgruppe(oppfølgingsstatus.getInnsatsgruppe());
-
     }
 
     public void endreMål(EndreMål endreMål, Avtale avtale) {

@@ -4,7 +4,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -36,14 +36,14 @@ public class MentorStartOgSluttdatoStrategy extends StartOgSluttdatoStrategy {
             return;
         }
 
-        Kvalifiseringsgruppe kvalifiseringsgruppe = avtale.getKvalifiseringsgruppe();
-        boolean erSpesieltTilpasset = kvalifiseringsgruppe == Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS;
-        boolean erVarigTilpasset = kvalifiseringsgruppe == Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS;
+        Innsatsgruppe innsatsgruppe = avtale.getInnsatsgruppe();
+        boolean erNedsattArbeidsevne = innsatsgruppe == Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE;
+        boolean erLitenMulighetEllerJobbeDelvis = innsatsgruppe == Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE || innsatsgruppe == Innsatsgruppe.JOBBE_DELVIS;
 
-        if ((erSpesieltTilpasset || erVarigTilpasset) && startDato.plusMonths(36).minusDays(1).isBefore(sluttDato)) {
+        if ((erNedsattArbeidsevne || erLitenMulighetEllerJobbeDelvis) && startDato.plusMonths(36).minusDays(1).isBefore(sluttDato)) {
             throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MENTOR_36_MND);
         }
-        if (!erSpesieltTilpasset && !erVarigTilpasset && startDato.plusMonths(6).minusDays(1).isBefore(sluttDato)) {
+        if (!erNedsattArbeidsevne && !erLitenMulighetEllerJobbeDelvis && startDato.plusMonths(6).minusDays(1).isBefore(sluttDato)) {
             throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MENTOR_6_MND);
         }
 

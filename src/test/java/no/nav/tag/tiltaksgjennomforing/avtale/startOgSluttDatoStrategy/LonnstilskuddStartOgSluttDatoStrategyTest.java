@@ -8,7 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.AfterEach;
@@ -51,7 +51,7 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
         LocalDate sluttDato = startDato.plusMonths(24).minusDays(1);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         Avtale avtale = enMidlertidig();
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         endreAvtale(avtale, endreAvtale);
     }
 
@@ -61,7 +61,7 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
         LocalDate sluttDato = startDato.plusMonths(24).plusDays(1);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         Avtale avtale = enMidlertidig();
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE);
         assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_24_MND, () -> endreAvtale(avtale, endreAvtale));
     }
 
@@ -71,7 +71,7 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
         LocalDate sluttDato = startDato.plusMonths(24).plusDays(1);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         Avtale avtale = enMidlertidig();
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_24_MND, () -> endreAvtale(avtale, endreAvtale));
     }
 
@@ -81,7 +81,7 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
         LocalDate sluttDato = startDato.plusMonths(12).plusDays(1);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         Avtale avtale = enMidlertidig();
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING);
         assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_12_MND, () -> endreAvtale(avtale, endreAvtale));
     }
 
@@ -91,7 +91,7 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
         LocalDate sluttDato = startDato.plusMonths(12).plusDays(1);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         Avtale avtale = enMidlertidig();
-        avtale.setKvalifiseringsgruppe(null);
+        avtale.setInnsatsgruppe(null);
         assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_12_MND, () -> endreAvtale(avtale, endreAvtale));
     }
 

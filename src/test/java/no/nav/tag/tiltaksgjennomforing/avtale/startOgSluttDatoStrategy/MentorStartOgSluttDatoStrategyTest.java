@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy;
 
+import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
@@ -7,8 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
-import no.bekk.bekkopen.person.FodselsnummerValidator;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.AfterEach;
@@ -68,7 +68,6 @@ public class MentorStartOgSluttDatoStrategyTest {
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(6);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MENTOR_6_MND, () -> endreAvtale(endreAvtale));
     }
 
@@ -77,7 +76,7 @@ public class MentorStartOgSluttDatoStrategyTest {
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(36).minusDays(1);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         endreAvtale(endreAvtale);
     }
 
@@ -86,7 +85,7 @@ public class MentorStartOgSluttDatoStrategyTest {
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(36);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MENTOR_36_MND, () -> endreAvtale(endreAvtale));
     }
 
@@ -96,7 +95,7 @@ public class MentorStartOgSluttDatoStrategyTest {
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(32);
         avtale.setDeltakerFnr(deltakerFnr);
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         MentorStartOgSluttdatoStrategy mentorStartOgSluttDatoStrategy = new MentorStartOgSluttdatoStrategy(avtale);
         assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> mentorStartOgSluttDatoStrategy.sjekkStartOgSluttdato(startDato, sluttDato));
     }

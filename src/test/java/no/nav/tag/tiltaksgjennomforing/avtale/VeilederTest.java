@@ -15,7 +15,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.InnsatsgruppeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Kode6SperretForOpprettelseOgEndringException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
@@ -103,7 +103,6 @@ public class VeilederTest {
     public void godkjennAvtale__kan_godkjenne_sist() {
         // GITT
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
 
@@ -148,7 +147,6 @@ public class VeilederTest {
     @Test
     public void godkjennAvtale__sjekker_ikke_postutsendelse_nar_arbeidsgiver_og_deltaker_har_godkjent() {
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         PostutsendelseService postutsendelseService = mock(PostutsendelseService.class);
@@ -162,7 +160,6 @@ public class VeilederTest {
     @Test
     public void godkjennAvtale__sjekker_ikke_postutsendelse_nar_arbeidsgiver_ikke_har_godkjent() {
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
         PostutsendelseService postutsendelseService = mock(PostutsendelseService.class);
         Veileder veileder = lagVeilederForGodkjenning(avtale, postutsendelseService);
@@ -176,7 +173,6 @@ public class VeilederTest {
     @Test
     public void godkjennAvtale__sjekker_ikke_postutsendelse_nar_deltaker_ikke_har_godkjent() {
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         PostutsendelseService postutsendelseService = mock(PostutsendelseService.class);
         Veileder veileder = lagVeilederForGodkjenning(avtale, postutsendelseService);
@@ -190,7 +186,6 @@ public class VeilederTest {
     @Test
     public void godkjennForVeilederOgDeltaker__sjekker_ikke_postutsendelse_nar_veileder_godkjenner_deltaker_pa_vegne_av() {
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         PostutsendelseService postutsendelseService = mock(PostutsendelseService.class);
         Veileder veileder = lagVeilederForGodkjenning(avtale, postutsendelseService);
@@ -204,7 +199,6 @@ public class VeilederTest {
     public void godkjennForVeilederOgArbeidsgiver__sjekker_ikke_postutsendelse_nar_veileder_godkjenner_arbeidsgiver_pa_vegne_av() {
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
         avtale.setOpphav(Avtaleopphav.ARENA);
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
         PostutsendelseService postutsendelseService = mock(PostutsendelseService.class);
         Veileder veileder = lagVeilederForGodkjenning(avtale, postutsendelseService);
@@ -218,7 +212,6 @@ public class VeilederTest {
     public void godkjennForVeilederOgDeltakerOgArbeidsgiver__sjekker_ikke_postutsendelse_nar_veileder_godkjenner_begge_pa_vegne_av() {
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
         avtale.setOpphav(Avtaleopphav.ARENA);
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         PostutsendelseService postutsendelseService = mock(PostutsendelseService.class);
         Veileder veileder = lagVeilederForGodkjenning(avtale, postutsendelseService);
 
@@ -234,7 +227,6 @@ public class VeilederTest {
     public void godkjennForVeilederOgDeltaker__kan_godkjenne_med_riktig_oppfølgingsstatus() {
         // GITT
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         VeilarbService veilarbService = mock(VeilarbService.class);
 
@@ -270,8 +262,7 @@ public class VeilederTest {
 
         // SÅ
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
-        assertThat(avtale.getKvalifiseringsgruppe()
-            .getKvalifiseringskode()).isEqualTo(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS.getKvalifiseringskode());
+        assertThat(avtale.getInnsatsgruppe()).isEqualTo(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
     }
 
     @Test
@@ -279,7 +270,6 @@ public class VeilederTest {
         // GITT
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
         avtale.setOpphav(Avtaleopphav.ARENA);
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         VeilarbService veilarbService = mock(VeilarbService.class);
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
@@ -316,8 +306,7 @@ public class VeilederTest {
 
         // SÅ
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
-        assertThat(avtale.getKvalifiseringsgruppe()
-            .getKvalifiseringskode()).isEqualTo(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS.getKvalifiseringskode());
+        assertThat(avtale.getInnsatsgruppe()).isEqualTo(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
     }
 
     @Test
@@ -325,7 +314,6 @@ public class VeilederTest {
         // GITT
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltUtenEtterregistrering();
         avtale.setOpphav(Avtaleopphav.ARENA);
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
         VeilarbService veilarbService = mock(VeilarbService.class);
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
@@ -363,8 +351,7 @@ public class VeilederTest {
 
         // SÅ
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
-        assertThat(avtale.getKvalifiseringsgruppe()
-            .getKvalifiseringskode()).isEqualTo(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS.getKvalifiseringskode());
+        assertThat(avtale.getInnsatsgruppe()).isEqualTo(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
     }
 
     @Test
@@ -686,22 +673,13 @@ public class VeilederTest {
     @Test
     public void overta_avtale_hvor_veileder_allerede_er_satt_og_skal_bare_overskrive_oppfølgningsstatus_når_avtalen_endres() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        Innsatsgruppe innsatsgruppeForOppfolging = avtale.getInnsatsgruppe();
 
         VeilarbService veilarbService = Mockito.spy(new VeilarbService(null, null));
         Veileder nyVeileder = TestData.enVeileder(new NavIdent("J987654"), veilarbService);
 
-        Oppfølgingsstatus nyOppfølgingsstatusSomSkalIkkeSettes = new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
-            "0906",
-            Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE
-        );
-        Mockito.doReturn(nyOppfølgingsstatusSomSkalIkkeSettes).when(veilarbService)
-            .hentOppfolging(any(Fnr.class));
-
         nyVeileder.hentOppfølging(avtale, veilarbService);
-
-        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(avtale.getKvalifiseringsgruppe());
+        assertThat(avtale.getInnsatsgruppe()).isEqualTo(innsatsgruppeForOppfolging);
 
         //SKal kunne endre oppfølgningsstatus på endre avtale
         Oppfølgingsstatus nyOppfølgingsstatusSomSkalSettes = new Oppfølgingsstatus(
@@ -713,7 +691,7 @@ public class VeilederTest {
         Mockito.doReturn(nyOppfølgingsstatusSomSkalSettes).when(veilarbService)
             .hentOppfolging(any(Avtale.class));
         nyVeileder.oppdatereOppfølgingStatusVedEndreAvtale(avtale);
-        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(nyOppfølgingsstatusSomSkalSettes.getKvalifiseringsgruppe());
+        assertThat(avtale.getInnsatsgruppe()).isEqualTo(nyOppfølgingsstatusSomSkalSettes.getInnsatsgruppe());
     }
 
     @Test
@@ -777,7 +755,6 @@ public class VeilederTest {
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
 
-
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(null);
         avtale.getGjeldendeInnhold().setSumLonnstilskudd(null);
@@ -802,15 +779,18 @@ public class VeilederTest {
             nyVeileder,
             avtale.getDeltakerFnr()
         )).thenReturn(new Tilgang.Tillat());
+        when(veilarbService.hentOgSjekkOppfolgingstatus(any())).thenReturn(
+            new Oppfølgingsstatus(
+                Formidlingsgruppe.ARBEIDSSOKER,
+                Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
+                "0906",
+                Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
+            )
+        );
 
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        avtale.setFormidlingsgruppe(Formidlingsgruppe.ARBEIDSSOKER);
-        avtale.getGjeldendeInnhold().setLonnstilskuddProsent(avtale.getKvalifiseringsgruppe()
-            .finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(40, 60));
+        avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING);
         assertThat(avtale.getGjeldendeInnhold().getSumLonnstilskudd()).isNull();
-
         nyVeileder.overtaAvtale(avtale);
-
         assertThat(avtale.getGjeldendeInnhold().getSumLonnstilskudd()).isNotNull();
     }
 
@@ -841,7 +821,14 @@ public class VeilederTest {
             veileder,
             avtale.getDeltakerFnr()
         )).thenReturn(new Tilgang.Tillat());
-
+        when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(
+            new Oppfølgingsstatus(
+                Formidlingsgruppe.ARBEIDSSOKER,
+                Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
+                "0906",
+                Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
+            )
+        );
 
         assertThatThrownBy(() -> veileder.overtaAvtale(avtale)).isExactlyInstanceOf(ErAlleredeVeilederException.class);
     }
@@ -860,7 +847,6 @@ public class VeilederTest {
         Veileder veileder = TestData.enVeileder(new NavIdent("Z123456"));
 
         //Tilsvarende operasjon som gjøres fra endepunketet overta avtalecontrolleren
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.getGjeldendeInnhold().setLonnstilskuddProsent(60);
         veileder.overtaAvtale(avtale);
 
@@ -908,6 +894,14 @@ public class VeilederTest {
                 TestData.ENHET_GEOGRAFISK.getNavn(),
                 TestData.ENHET_GEOGRAFISK.getVerdi()
             ));
+        when(veilarbService.hentOgSjekkOppfolgingstatus(any())).thenReturn(
+            new Oppfølgingsstatus(
+                Formidlingsgruppe.ARBEIDSSOKER,
+                Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
+                "0906",
+                Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
+            )
+        );
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
 
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
@@ -939,7 +933,7 @@ public class VeilederTest {
         Mockito.doReturn(oppfølgingsstatus).when(veilarbService).hentOppfolging(any(Fnr.class));
 
         assertThatThrownBy(() -> veilarbService.hentOgSjekkOppfolgingstatus(avtale))
-            .isExactlyInstanceOf(FeilkodeException.class)
+            .isExactlyInstanceOf(InnsatsgruppeException.class)
             .hasMessage(Feilkode.INNSATSGRUPPE_IKKE_RETTIGHET.name());
     }
 
@@ -1107,21 +1101,17 @@ public class VeilederTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setEnhetOppfolging("0101");
         avtale.setDeltakerFnr(new Fnr("31129118213"));
-        avtale.setFormidlingsgruppe(Formidlingsgruppe.FRA_NAV_NO);
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING);
         Veileder veileder = TestData.enVeileder(avtale);
 
         assertThat(avtale.getEnhetOppfolging()).isEqualTo("0101");
-        assertThat(avtale.getFormidlingsgruppe()).isEqualTo(Formidlingsgruppe.FRA_NAV_NO);
-        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        assertThat(avtale.getInnsatsgruppe()).isEqualTo(Innsatsgruppe.TRENGER_VEILEDNING);
         veileder.oppdaterOppfølgingOgGeoEnhetEtterForespørsel(avtale);
 
         // Oppdaterer oppfølgingsenhet
         assertThat(avtale.getEnhetOppfolging()).isEqualTo("0906");
         // Og ingen andre oppfølgingstatus reltaterte endringer:
-        assertThat(avtale.getFormidlingsgruppe()).isEqualTo(Formidlingsgruppe.FRA_NAV_NO);
-        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-
+        assertThat(avtale.getInnsatsgruppe()).isEqualTo(Innsatsgruppe.TRENGER_VEILEDNING);
     }
 
     @Test

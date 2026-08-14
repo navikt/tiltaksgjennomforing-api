@@ -9,10 +9,10 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.InnsatsgruppeException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ class VeilarbServiceTest {
         avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
 
         assertThatThrownBy(() -> veilarbService.hentOgSjekkOppfolgingstatus(avtale))
-                .isExactlyInstanceOf(FeilkodeException.class)
+                .isExactlyInstanceOf(InnsatsgruppeException.class)
                 .hasMessage(Feilkode.INNSATSGRUPPE_MIDLERTIDIG_LONNTILSKUDD_OG_SOMMERJOBB_FEIL.name());
     }
 
@@ -69,19 +69,15 @@ class VeilarbServiceTest {
     @Test
     public void sjekk_at_lonnstilskuddsprosent_blir_satt_paa_midlertidiglonnstilskudd_ved_AvtaleInnhold_constructor() {
         final Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setLonnstilskuddProsent(null);
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
 
         Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
-        avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
-        avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
-        avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
+        avtale.setInnsatsgruppe(oppfølgingsstatus.getInnsatsgruppe());
         avtale.endreAvtale(new EndreAvtale(), Avtalerolle.VEILEDER);
 
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isNotNull();
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(60);
 
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING);
         avtale.endreAvtale(new EndreAvtale(), Avtalerolle.VEILEDER);
 
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(40);
