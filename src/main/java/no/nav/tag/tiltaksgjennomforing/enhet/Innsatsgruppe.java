@@ -12,22 +12,7 @@ public enum Innsatsgruppe {
     LITEN_MULIGHET_TIL_A_JOBBE,             // VARIG_TILPASSET_INNSATS
     UKJENT;
 
-    private static final Set<Innsatsgruppe> VARIG_TILPASSET_VARIANTER = Set.of(JOBBE_DELVIS, LITEN_MULIGHET_TIL_A_JOBBE);
-
-    public static boolean isArenaOboEqual(Innsatsgruppe innsatsgruppeArena, Innsatsgruppe innsatsgruppeObo) {
-        if (innsatsgruppeObo == UKJENT) {
-            return false;
-        }
-        if (innsatsgruppeArena == innsatsgruppeObo) {
-            return true;
-        }
-        if (innsatsgruppeArena == UKJENT && innsatsgruppeObo == null) {
-            return true;
-        }
-        return innsatsgruppeArena != null && innsatsgruppeObo != null
-            && VARIG_TILPASSET_VARIANTER.contains(innsatsgruppeArena)
-            && VARIG_TILPASSET_VARIANTER.contains(innsatsgruppeObo);
-    }
+    public static final Set<Innsatsgruppe> LITEN_MULIGHET_ELLER_JOBBE_DELVIS = Set.of(LITEN_MULIGHET_TIL_A_JOBBE, JOBBE_DELVIS);
 
     public boolean erGyldig(Tiltakstype tiltakstype) {
         return switch (tiltakstype) {

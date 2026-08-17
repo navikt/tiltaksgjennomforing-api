@@ -38,7 +38,7 @@ public class MentorStartOgSluttdatoStrategy extends StartOgSluttdatoStrategy {
 
         Innsatsgruppe innsatsgruppe = avtale.getInnsatsgruppe();
         boolean erNedsattArbeidsevne = innsatsgruppe == Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE;
-        boolean erLitenMulighetEllerJobbeDelvis = innsatsgruppe == Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE || innsatsgruppe == Innsatsgruppe.JOBBE_DELVIS;
+        boolean erLitenMulighetEllerJobbeDelvis = Innsatsgruppe.LITEN_MULIGHET_ELLER_JOBBE_DELVIS.contains(innsatsgruppe);
 
         if ((erNedsattArbeidsevne || erLitenMulighetEllerJobbeDelvis) && startDato.plusMonths(36).minusDays(1).isBefore(sluttDato)) {
             throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MENTOR_36_MND);

@@ -33,19 +33,19 @@ public class MidlertidigLonnstilskuddStartOgSluttdatoStrategy extends StartOgSlu
         }
 
         Innsatsgruppe innsatsgruppe = avtale.getInnsatsgruppe();
-        boolean erSpesieltTilpassetInnsats = innsatsgruppe == Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE;
-        boolean erVarigTilpassetInnsats = innsatsgruppe == Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE || innsatsgruppe == Innsatsgruppe.JOBBE_DELVIS;
-        boolean erSituasjonsbestemtInnsats = innsatsgruppe == Innsatsgruppe.TRENGER_VEILEDNING;
+        boolean erNedsattArbeidsevne = innsatsgruppe == Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE;
+        boolean erLitenMulighetEllerJobbeDelvis = Innsatsgruppe.LITEN_MULIGHET_ELLER_JOBBE_DELVIS.contains(innsatsgruppe);
+        boolean erTrengerVeiledning = innsatsgruppe == Innsatsgruppe.TRENGER_VEILEDNING;
 
         if (
-            (erSpesieltTilpassetInnsats || erVarigTilpassetInnsats) &&
+            (erNedsattArbeidsevne || erLitenMulighetEllerJobbeDelvis) &&
             startDato.plusMonths(TJUEFIRE_MND_MAKS_LENGDE).minusDays(1).isBefore(sluttDato)
         ) {
             throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_24_MND);
         }
 
         if (
-            erSituasjonsbestemtInnsats &&
+            erTrengerVeiledning &&
             startDato.plusMonths(TOLV_MND_MAKS_LENGDE).minusDays(1).isBefore(sluttDato)
         ) {
             throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_12_MND);
