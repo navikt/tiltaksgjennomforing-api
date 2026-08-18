@@ -87,7 +87,7 @@ public class AvroTiltakHendelseFabrikk {
         });
 
         hendelse.setOpprettetTidspunkt(avtale.getOpprettetTidspunkt());
-        hendelse.setSisteEndret(avtale.getSistEndret());
+        hendelse.setSistEndret(avtale.getSistEndret());
         hendelse.setMeldingId(beregnNokkel(hendelse));
         hendelse.setTidspunkt(Now.instant());
 
