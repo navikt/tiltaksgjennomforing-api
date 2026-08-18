@@ -2,8 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.enhet;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
-import java.util.Set;
-
 public enum Innsatsgruppe {
     GODE_MULIGHETER,                        // STANDARD_INNSATS
     TRENGER_VEILEDNING,                     // SITUASJONSBESTEMT_INNSATS
@@ -11,8 +9,6 @@ public enum Innsatsgruppe {
     JOBBE_DELVIS,                           // GRADERT_VARIG_TILPASSET_INNSATS
     LITEN_MULIGHET_TIL_A_JOBBE,             // VARIG_TILPASSET_INNSATS
     UKJENT;
-
-    public static final Set<Innsatsgruppe> LITEN_MULIGHET_ELLER_JOBBE_DELVIS = Set.of(LITEN_MULIGHET_TIL_A_JOBBE, JOBBE_DELVIS);
 
     public boolean erGyldig(Tiltakstype tiltakstype) {
         return switch (tiltakstype) {

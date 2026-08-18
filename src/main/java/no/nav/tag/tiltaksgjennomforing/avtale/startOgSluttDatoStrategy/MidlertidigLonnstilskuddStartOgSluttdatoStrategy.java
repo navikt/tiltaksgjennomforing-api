@@ -34,7 +34,7 @@ public class MidlertidigLonnstilskuddStartOgSluttdatoStrategy extends StartOgSlu
 
         Innsatsgruppe innsatsgruppe = avtale.getInnsatsgruppe();
         boolean erNedsattArbeidsevne = innsatsgruppe == Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE;
-        boolean erLitenMulighetEllerJobbeDelvis = Innsatsgruppe.LITEN_MULIGHET_ELLER_JOBBE_DELVIS.contains(innsatsgruppe);
+        boolean erLitenMulighetEllerJobbeDelvis = innsatsgruppe == Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE || innsatsgruppe == Innsatsgruppe.JOBBE_DELVIS;
         boolean erTrengerVeiledning = innsatsgruppe == Innsatsgruppe.TRENGER_VEILEDNING;
 
         if (
