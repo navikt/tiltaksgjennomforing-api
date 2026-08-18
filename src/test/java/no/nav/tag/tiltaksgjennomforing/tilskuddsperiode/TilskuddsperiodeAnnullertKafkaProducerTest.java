@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -24,7 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
@@ -44,7 +45,7 @@ class TilskuddsperiodeAnnullertKafkaProducerTest {
 
     @Test
     public void skal_kunne_sende_tilskuddperiode_annullert_på_kafka_topic() throws JSONException {
-        when(featureToggleService.isEnabled(anyString())).thenReturn(true);
+        when(featureToggleService.isEnabled(any(FeatureToggle.class))).thenReturn(true);
 
         var consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka);
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);

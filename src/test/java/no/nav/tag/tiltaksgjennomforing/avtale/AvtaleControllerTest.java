@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.Altinn
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
@@ -364,7 +365,8 @@ public class AvtaleControllerTest {
                         new Oppfølgingsstatus(
                                 Formidlingsgruppe.ARBEIDSSOKER,
                                 Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS,
-                                "0906"
+                                "0906",
+                                Innsatsgruppe.TRENGER_VEILEDNING
                         )
                 );
         when(featureToggleServiceMock.kanOppretteTiltak(any(), any())).thenCallRealMethod();
@@ -626,7 +628,8 @@ public class AvtaleControllerTest {
             .thenReturn(new Oppfølgingsstatus(
                 Formidlingsgruppe.ARBEIDSSOKER,
                 Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
-                "0906"
+                "0906",
+                Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
             ));
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
         return veileder;

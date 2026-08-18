@@ -9,6 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +25,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -45,7 +46,7 @@ public class AltinnTilgangsstyringServiceTest {
     @BeforeEach
     public void setup() {
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
-        when(featureToggleService.isEnabled(anyString())).thenReturn(false);
+        when(featureToggleService.isEnabled(any(FeatureToggle.class))).thenReturn(false);
         fnr = Fnr.generer(25);
     }
 

@@ -48,6 +48,12 @@ class InnsatsgruppeTest {
     }
 
     @Test
+    void is_equal_returnerer_false_naar_obo_er_null_og_arena_er_variant_av_varig_tilpasset() {
+        assertFalse(isArenaOboEqual(LITEN_MULIGHET_TIL_A_JOBBE, null));
+        assertFalse(isArenaOboEqual(JOBBE_DELVIS, null));
+    }
+
+    @Test
     void is_equal_returnerer_false_naar_kun_en_er_variant_av_varig_tilpasset() {
         assertFalse(isArenaOboEqual(JOBBE_DELVIS, TRENGER_VEILEDNING));
         assertFalse(isArenaOboEqual(TRENGER_VEILEDNING, LITEN_MULIGHET_TIL_A_JOBBE));

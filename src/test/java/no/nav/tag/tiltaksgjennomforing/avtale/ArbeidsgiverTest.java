@@ -103,7 +103,8 @@ public class ArbeidsgiverTest {
         when(veilarboppfolgingService.hentOppfolging(any(Fnr.class))).thenReturn(new Oppfølgingsstatus(
             null,
             null,
-            "0411"
+            "0411",
+            null
         ));
 
         Map<BedriftNr, Collection<Tiltakstype>> tilgangerMap = Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
@@ -200,7 +201,8 @@ public class ArbeidsgiverTest {
         when(veilarbService.hentOppfolging(any(Fnr.class))).thenReturn(new Oppfølgingsstatus(
             null,
             null,
-            "0411"
+            "0411",
+            null
         ));
 
         List<BedriftNr> adressesperreTilganger = List.of(TestData.etBedriftNr());

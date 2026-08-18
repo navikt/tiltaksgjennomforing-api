@@ -67,11 +67,11 @@ public enum Kvalifiseringsgruppe {
     }
 
     public boolean isKvalifisererTilVariglonnstilskudd() {
-        return this == VARIG_TILPASSET_INNSATS;
+        return this == VARIG_TILPASSET_INNSATS || this == GRADERT_VARIG_TILPASSET_INNSATS;
     }
 
     public boolean isKvalifisererTilVTAO(){
-        return this == VARIG_TILPASSET_INNSATS;
+        return this == VARIG_TILPASSET_INNSATS || this == GRADERT_VARIG_TILPASSET_INNSATS;
     }
 
     public Integer finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(Integer prosentsatsLiten, Integer prosentsatsStor) {

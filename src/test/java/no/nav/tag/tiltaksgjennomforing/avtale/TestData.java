@@ -11,6 +11,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2EnhetStatus;
@@ -244,6 +245,7 @@ public class TestData {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         setOppfølgingOgGeografiskPåAvtale(avtale);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         avtale.setGodkjentForEtterregistrering(true);
         avtale.endreAvtale(endring, Avtalerolle.VEILEDER);
@@ -258,6 +260,7 @@ public class TestData {
         avtale.setArenaRyddeAvtale(new ArenaRyddeAvtale());
         setOppfølgingOgGeografiskPåAvtale(avtale);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         avtale.setGodkjentForEtterregistrering(true);
         avtale.endreAvtale(endring, Avtalerolle.VEILEDER);
@@ -272,6 +275,7 @@ public class TestData {
         avtale.setArenaRyddeAvtale(new ArenaRyddeAvtale());
         setOppfølgingOgGeografiskPåAvtale(avtale);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         avtale.setGodkjentForEtterregistrering(true);
         avtale.endreAvtale(endring, Avtalerolle.VEILEDER);
@@ -373,8 +377,10 @@ public class TestData {
         setOppfølgingPåAvtale(avtale);
         if (tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD) {
             avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+            avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         } else {
             avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+            avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING);
         }
         if (tiltakstype == Tiltakstype.FIREARIG_LONNSTILSKUDD) {
             LocalDate start = Now.localDate().isBefore(LocalDate.of(2026, 8, 1)) ? LocalDate.of(2026, 8, 1) : Now.localDate();
@@ -401,6 +407,7 @@ public class TestData {
         Avtale avtale = Avtale.opprett(lagOpprettAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, veilderNavIdent);
         setOppfølgingPåAvtale(avtale);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter();
         endreAvtale.setSluttDato(Now.localDate().plusMonths(23).minusDays(2));
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
@@ -422,6 +429,7 @@ public class TestData {
         Avtale avtale = Avtale.opprett(lagOpprettAvtale(tiltakstype), Avtaleopphav.VEILEDER, veilderNavIdent);
         setOppfølgingPåAvtale(avtale);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         avtale.endreAvtale(endringPåAlleLønnstilskuddFelter(), Avtalerolle.VEILEDER);
         avtale.setTiltakstype(tiltakstype);
         avtale.getGjeldendeInnhold().setDeltakerFornavn("Lilly");
@@ -489,6 +497,7 @@ public class TestData {
     public static Avtale enLonnstilskuddAvtaleGodkjentAvVeilederUtenTilskuddsperioder() {
         Avtale avtale = enMidlertidigLonnstilskuddAvtaleMedAltUtfyltUtenTilskuddsperioder();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
@@ -716,6 +725,7 @@ public class TestData {
     public static Avtale enLonnstilskuddAvtaleMedAltUtfyltMedGodkjentForEtterregistrering(LocalDate avtaleStart, LocalDate avtaleSlutt) {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter(avtaleStart, avtaleSlutt);
         avtale.setGodkjentForEtterregistrering(true);
         avtale.endreAvtale(endring, Avtalerolle.VEILEDER);
@@ -991,7 +1001,8 @@ public class TestData {
                 new Oppfølgingsstatus(
                     Formidlingsgruppe.ARBEIDSSOKER,
                     Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
-                    "0906"
+                    "0906",
+                    Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
                 )
             );
         when(veilarbService.hentOppfolging(any(Avtale.class)))
@@ -999,7 +1010,8 @@ public class TestData {
                 new Oppfølgingsstatus(
                     Formidlingsgruppe.ARBEIDSSOKER,
                     Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
-                    "0906"
+                    "0906",
+                    Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
                 )
             );
 
@@ -1033,7 +1045,8 @@ public class TestData {
         when(veilarbService.hentOgSjekkOppfolgingstatus(any())).thenReturn(new Oppfølgingsstatus(
             null,
             Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
-            "0000"
+            "0000",
+            Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE
         ));
         return beslutter;
     }

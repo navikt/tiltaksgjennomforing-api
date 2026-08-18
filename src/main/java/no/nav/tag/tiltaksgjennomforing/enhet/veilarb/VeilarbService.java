@@ -110,7 +110,12 @@ public class VeilarbService {
             );
         }
 
-        return oppfølgingsstatus;
+        return new Oppfølgingsstatus(
+            oppfølgingsstatus.getFormidlingsgruppe(),
+            oppfølgingsstatus.getKvalifiseringsgruppe(),
+            oppfølgingsstatus.getOppfolgingsenhet(),
+            innsatsgruppeObo
+        );
     }
 
     private Oppfølgingsstatus hentOppfølgingstatus(Fnr fnr) {
@@ -147,7 +152,8 @@ public class VeilarbService {
             return new Oppfølgingsstatus(
                 Formidlingsgruppe.parse(respons.formidlingsgruppe()),
                 Kvalifiseringsgruppe.parse(respons.servicegruppe()),
-                enhet.orElse(null)
+                enhet.orElse(null),
+                null
             );
         } catch (Exception e) {
             log.error("Feil ved parsing av oppfølgingsstatus", e);

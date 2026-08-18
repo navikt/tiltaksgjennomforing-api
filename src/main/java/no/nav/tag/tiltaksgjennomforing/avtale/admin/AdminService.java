@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
@@ -22,9 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -112,16 +111,9 @@ public class AdminService {
         }
     }
 
-    private record Sammenligning14aKombinasjon(
-        Kvalifiseringsgruppe kvalifiseringsgruppe,
-        Innsatsgruppe vedtakInnsatsgruppe
-    ) {
-    }
-
     @Async
-    @Transactional(readOnly = true)
-    public void sammenlign14aInnsatsgruppe() {
-        Map<Sammenligning14aKombinasjon, Long> antallPerKombinasjon = new HashMap<>();
+    @Transactional
+    public void oppdater14aInnsatsgruppe() {
         AtomicInteger antallBehandlet = new AtomicInteger(0);
         Set<Status> aktiveStatuser = Set.of(
             Status.GJENNOMFØRES,
@@ -131,33 +123,27 @@ public class AdminService {
         );
         try (Stream<Avtale> avtaler = avtaleRepository.streamAllByStatusIn(aktiveStatuser)) {
             avtaler.forEach(avtale -> {
-                if (avtale.getDeltakerFnr() == null) {
+                var erOpprettetAvArbeidsgiverOgIkkeTattOver = Avtaleopphav.ARBEIDSGIVER == avtale.getOpphav() && avtale.getVeilederNavIdent() == null;
+                var harInnsatsgruppe = avtale.getInnsatsgruppe() != null;
+
+                if (avtale.getDeltakerFnr() == null || erOpprettetAvArbeidsgiverOgIkkeTattOver || harInnsatsgruppe) {
                     return;
                 }
+
                 try {
                     var innsatsgruppeObo = veilarbService.hentInnsatsgruppe(avtale.getDeltakerFnr());
                     var innsatsgruppeArena = Optional.ofNullable(avtale.getKvalifiseringsgruppe())
                         .map(Kvalifiseringsgruppe::getInnsatsgruppe)
                         .orElse(null);
 
-                    antallPerKombinasjon.merge(
-                        new Sammenligning14aKombinasjon(
-                            avtale.getKvalifiseringsgruppe(),
-                            innsatsgruppeObo
-                        ),
-                        1L,
-                        Long::sum
-                    );
+                    var erNyInnsatsgruppeLikGammel = Innsatsgruppe.isArenaOboEqual(innsatsgruppeArena, innsatsgruppeObo);
+                    var erNyInnsatsgruppeGyldigForTiltakstypen = Optional.ofNullable(innsatsgruppeObo).map(gruppe -> gruppe.erGyldig(avtale.getTiltakstype())).orElse(false);
 
-                    if (!Innsatsgruppe.isArenaOboEqual(innsatsgruppeArena, innsatsgruppeObo)) {
-                        log.info(
-                            "14a-diff for avtale={} kvalifiseringsgruppe(arena)={} (som tilsvarer {}), vedtak(obo)={}",
-                            avtale.getId(),
-                            avtale.getKvalifiseringsgruppe(),
-                            innsatsgruppeArena,
-                            innsatsgruppeObo
-                        );
+                    if (erNyInnsatsgruppeLikGammel || erNyInnsatsgruppeGyldigForTiltakstypen) {
+                        avtale.setInnsatsgruppe(innsatsgruppeObo);
+                        avtaleRepository.save(avtale);
                     }
+
                     antallBehandlet.incrementAndGet();
                 } catch (Exception e) {
                     log.warn("Feil ved henting av 14a-vedtak for avtale {}: {}", avtale.getId(), e.getMessage());
@@ -165,22 +151,7 @@ public class AdminService {
             });
         }
 
-        log.info("Sammenligner 14a innsatsgruppe for {} avtaler", antallBehandlet.get());
-
-        StringBuilder rader = new StringBuilder();
-        antallPerKombinasjon.entrySet().stream()
-            .sorted(Map.Entry.<Sammenligning14aKombinasjon, Long>comparingByValue().reversed())
-            .forEach(entry -> {
-                Sammenligning14aKombinasjon kombinasjon = entry.getKey();
-                rader.append('\n').append(String.format(
-                    "kvalifiseringsgruppe=%s, innsatsgruppe(obo)=%s, antall=%d",
-                    kombinasjon.kvalifiseringsgruppe(),
-                    kombinasjon.vedtakInnsatsgruppe(),
-                    entry.getValue()
-                ));
-            });
-
-        log.info("Oppsummering av 14a-sammenligning:{}", rader);
+        log.info("14a innsatsgruppe oppdatert for {} avtaler", antallBehandlet.get());
     }
 
     private Varsel lagHendelse(Avtale avtale) {

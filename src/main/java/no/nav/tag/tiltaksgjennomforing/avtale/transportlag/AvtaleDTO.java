@@ -50,6 +50,7 @@ public record AvtaleDTO(
     boolean godkjentForEtterregistrering,
     Kvalifiseringsgruppe kvalifiseringsgruppe,
     Formidlingsgruppe formidlingsgruppe,
+    InnsatsgruppeDTO innsatsgruppe,
     SortedSet<TilskuddPeriodeDTO> tilskuddPeriode,
     boolean feilregistrert,
     @Deprecated
@@ -90,6 +91,7 @@ public record AvtaleDTO(
             avtale.isGodkjentForEtterregistrering(),
             avtale.getKvalifiseringsgruppe(),
             avtale.getFormidlingsgruppe(),
+            InnsatsgruppeDTO.map(avtale),
             avtale.getTilskuddPeriode()
                 .stream()
                 .map(TilskuddPeriodeDTO::new)
