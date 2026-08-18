@@ -5,6 +5,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleHolder;
 
 import java.time.LocalDate;
 
@@ -24,7 +26,9 @@ public class VtaoStartOgSluttdatoStrategy extends StartOgSluttdatoStrategy {
             throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
         }
         if (!avtale.erAvtaleInngått() && startDato != null && startDato.isAfter(SISTE_MULIGE_STARTDATO)) {
-            throw new FeilkodeException(Feilkode.FOR_SEN_STARTDATO_VTAO);
+            if (!FeatureToggleHolder.get().isEnabled(FeatureToggle.VTAO_VEILEDER_TILGANG)) {
+                throw new FeilkodeException(Feilkode.FOR_SEN_STARTDATO_VTAO);
+            }
         }
     }
 }
