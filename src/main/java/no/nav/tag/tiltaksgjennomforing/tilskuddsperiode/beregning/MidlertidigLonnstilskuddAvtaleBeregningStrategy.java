@@ -2,6 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.exceptions.InnsatsgruppeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 
 import java.time.LocalDate;
@@ -23,7 +25,7 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy extends GenerellLon
         return switch (avtale.getInnsatsgruppe()) {
             case TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE, LITEN_MULIGHET_TIL_A_JOBBE, JOBBE_DELVIS -> TILSKUDDSPROSENT_TILPASSET;
             case TRENGER_VEILEDNING -> TILSKUDDSPROSENT;
-            case null, default -> null;
+            case null, default -> throw InnsatsgruppeException.fraTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         };
     }
 
