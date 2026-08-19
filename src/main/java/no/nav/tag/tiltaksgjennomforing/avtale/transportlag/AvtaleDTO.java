@@ -12,8 +12,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditerbarEntitet;
 import no.nav.tag.tiltaksgjennomforing.oppfolging.Oppfolging;
@@ -48,8 +46,6 @@ public record AvtaleDTO(
     Avtaleopphav opphav,
     Status status,
     boolean godkjentForEtterregistrering,
-    Kvalifiseringsgruppe kvalifiseringsgruppe,
-    Formidlingsgruppe formidlingsgruppe,
     InnsatsgruppeDTO innsatsgruppe,
     SortedSet<TilskuddPeriodeDTO> tilskuddPeriode,
     boolean feilregistrert,
@@ -89,8 +85,6 @@ public record AvtaleDTO(
             avtale.getOpphav(),
             avtale.getStatus(),
             avtale.isGodkjentForEtterregistrering(),
-            avtale.getKvalifiseringsgruppe(),
-            avtale.getFormidlingsgruppe(),
             InnsatsgruppeDTO.map(avtale),
             avtale.getTilskuddPeriode()
                 .stream()

@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.bekk.bekkopen.person.FodselsnummerValidator;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
@@ -136,7 +136,6 @@ public class BeregningStrategyTest {
     @Test
     public void reduksjon_etter_6_mnd__30_prosent_lonnstilskudd() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(40);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
@@ -200,7 +199,7 @@ public class BeregningStrategyTest {
     @Test
     public void reduksjon_etter_12_mnd_60_prosent_lonnstilskudd() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(60);
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(13));

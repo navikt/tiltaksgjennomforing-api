@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.FirearigLonnstilskuddProperties;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
@@ -19,10 +20,13 @@ import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
@@ -42,6 +46,22 @@ public class AvtalepartTest {
     @AfterEach
     public void tearDown() {
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
+    }
+
+    @BeforeAll
+    static void setupFirearigProperties() throws Exception {
+        FirearigLonnstilskuddProperties props = new FirearigLonnstilskuddProperties();
+        props.setDato(LocalDate.of(2024, 1, 1));
+        var field = FirearigLonnstilskuddProperties.class.getDeclaredField("instance");
+        field.setAccessible(true);
+        field.set(null, props);
+    }
+
+    @AfterAll
+    static void teardownFirearigProperties() throws Exception {
+        var field = FirearigLonnstilskuddProperties.class.getDeclaredField("instance");
+        field.setAccessible(true);
+        field.set(null, null);
     }
 
     @Test
@@ -204,24 +224,7 @@ public class AvtalepartTest {
     @Test
     public void endreAvtale__skal_fungere_for_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        PersondataService persondataService = mock(PersondataService.class);
-
-        Veileder veileder = new Veileder(
-            avtale.getVeilederNavIdent(),
-            null,
-            tilgangskontrollService,
-            persondataService,
-            mock(Norg2Client.class),
-            Set.of(new NavEnhet("4802", "Trysil")),
-            TestData.INGEN_AD_GRUPPER,
-            mock(VeilarbService.class),
-            mock(FeatureToggleService.class),
-            mock(EregService.class),
-            mock(PostutsendelseService.class)
-        );
-
-        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+        Veileder veileder = TestData.enVeileder(avtale);
 
         veileder.endreAvtale(TestData.ingenEndring(), avtale);
     }
@@ -346,5 +349,37 @@ public class AvtalepartTest {
 
         arbeidsgiver.opphevGodkjenninger(avtale);
         assertFeilkode(Feilkode.KAN_IKKE_OPPHEVE, () -> arbeidsgiver.opphevGodkjenninger(avtale));
+    }
+
+    @Test
+    public void settLonntilskuddProsentsats__skal_sette_70_prosent_for_fireårig_lønnstilskudd() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.FIREARIG_LONNSTILSKUDD);
+        Veileder veileder = TestData.enVeileder(avtale);
+
+        veileder.settLonntilskuddProsentsats(avtale);
+
+        assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(70);
+    }
+
+    @Test
+    public void settLonntilskuddProsentsats__skal_sette_40_prosent_for_midlertidig_lønnstilskudd_med_innsatsgruppe_trenger_veiledning() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING);
+        Veileder veileder = TestData.enVeileder(avtale);
+
+        veileder.settLonntilskuddProsentsats(avtale);
+
+        assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(40);
+    }
+
+    @Test
+    public void settLonntilskuddProsentsats__skal_sette_60_prosent_for_midlertidig_lønnstilskudd_med_innsatsgruppe_liten_mulighet_til_a_jobbe() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
+        Veileder veileder = TestData.enVeileder(avtale);
+
+        veileder.settLonntilskuddProsentsats(avtale);
+
+        assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(60);
     }
 }

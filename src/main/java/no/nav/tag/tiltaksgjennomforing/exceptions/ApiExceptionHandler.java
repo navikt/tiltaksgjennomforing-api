@@ -23,7 +23,10 @@ import java.util.stream.Collectors;
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String FEILKODE = "feilkode";
 
-    @ExceptionHandler({FeilkodeException.class})
+    @ExceptionHandler({
+        FeilkodeException.class,
+        InnsatsgruppeException.class
+    })
     public ResponseEntity<Object> feilkodeException(FeilkodeException e) {
         log.info("Feilkode inntruffet: {}", e.getFeilkode());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)

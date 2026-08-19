@@ -3,7 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
@@ -32,27 +32,27 @@ public class MidlertidigLonnstilskuddStartOgSluttdatoStrategy extends StartOgSlu
             return;
         }
 
-        Kvalifiseringsgruppe kvalifiseringsgruppe = avtale.getKvalifiseringsgruppe();
-        boolean erSpesieltTilpassetInnsats = kvalifiseringsgruppe == Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS;
-        boolean erVarigTilpassetInnsats = kvalifiseringsgruppe == Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS;
-        boolean erSituasjonsbestemtInnsats = kvalifiseringsgruppe == Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS;
+        Innsatsgruppe innsatsgruppe = avtale.getInnsatsgruppe();
+        boolean erNedsattArbeidsevne = innsatsgruppe == Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE;
+        boolean erLitenMulighetEllerJobbeDelvis = innsatsgruppe == Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE || innsatsgruppe == Innsatsgruppe.JOBBE_DELVIS;
+        boolean erTrengerVeiledning = innsatsgruppe == Innsatsgruppe.TRENGER_VEILEDNING;
 
         if (
-            (erSpesieltTilpassetInnsats || erVarigTilpassetInnsats) &&
+            (erNedsattArbeidsevne || erLitenMulighetEllerJobbeDelvis) &&
             startDato.plusMonths(TJUEFIRE_MND_MAKS_LENGDE).minusDays(1).isBefore(sluttDato)
         ) {
             throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_24_MND);
         }
 
         if (
-            erSituasjonsbestemtInnsats &&
+            erTrengerVeiledning &&
             startDato.plusMonths(TOLV_MND_MAKS_LENGDE).minusDays(1).isBefore(sluttDato)
         ) {
             throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_12_MND);
         }
 
-        // Ikke funnet kvalifiseringsgruppe, default 12 mnd
-        if (avtale.getKvalifiseringsgruppe() == null && startDato.plusMonths(TOLV_MND_MAKS_LENGDE)
+        // Ikke funnet innsatsgruppe, default 12 mnd
+        if (avtale.getInnsatsgruppe() == null && startDato.plusMonths(TOLV_MND_MAKS_LENGDE)
             .minusDays(1)
             .isBefore(sluttDato)) {
             throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_12_MND);

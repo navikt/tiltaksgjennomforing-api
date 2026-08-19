@@ -80,8 +80,8 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         Tiltakstype tiltakstype = avtale.getTiltakstype();
         try {
             Oppfølgingsstatus status = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
-            if (status.getOppfolgingsenhet() == null) {
-                throw new FeilkodeException(Feilkode.ENHET_MANGLER);
+            if (avtale.getInnsatsgruppe() == null) {
+                throw new FeilkodeException(Feilkode.INNSATSGRUPPE_MANGLER);
             }
             boolean harOppfolgingsenhetTilgangPaTiltak = featureToggleService.harEnhetTilgangPaTiltak(
                 tiltakstype,

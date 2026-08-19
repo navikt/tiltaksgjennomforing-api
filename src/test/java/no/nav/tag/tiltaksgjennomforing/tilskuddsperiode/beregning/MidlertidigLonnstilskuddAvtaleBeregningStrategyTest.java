@@ -5,7 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,9 +31,9 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
     }
 
-    private Avtale lagAvtale(Kvalifiseringsgruppe kvalifiseringsgruppe) {
+    private Avtale lagAvtale(Innsatsgruppe innsatsgruppe) {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
-        avtale.setKvalifiseringsgruppe(kvalifiseringsgruppe);
+        avtale.setInnsatsgruppe(innsatsgruppe);
         return avtale;
     }
 
@@ -46,7 +46,7 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
 
     @Test
     void getDatoerForReduksjon__returnerer_tom_liste_naar_startdato_er_null() {
-        Avtale avtale = lagAvtale(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        Avtale avtale = lagAvtale(Innsatsgruppe.TRENGER_VEILEDNING);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy strategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(avtale);
         List<LocalDate> result = strategy.getDatoerForReduksjon(innholdMedDatoer(null, LocalDate.of(2025, 1, 1)));
 
@@ -55,7 +55,7 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
 
     @Test
     void getDatoerForReduksjon__returnerer_tom_liste_naar_sluttdato_er_null() {
-        Avtale avtale = lagAvtale(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        Avtale avtale = lagAvtale(Innsatsgruppe.TRENGER_VEILEDNING);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy strategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(avtale);
         List<LocalDate> result = strategy.getDatoerForReduksjon(innholdMedDatoer(LocalDate.of(2024, 1, 1), null));
 
@@ -66,7 +66,7 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
     void getDatoerForReduksjon__situasjonsbestemt_innsats_gir_reduksjon_etter_6_maaneder() {
         LocalDate startDato = LocalDate.of(2024, 1, 1);
         LocalDate sluttDato = LocalDate.of(2024, 12, 31);
-        Avtale avtale = lagAvtale(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        Avtale avtale = lagAvtale(Innsatsgruppe.TRENGER_VEILEDNING);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy strategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(avtale);
         List<LocalDate> result = strategy.getDatoerForReduksjon(innholdMedDatoer(startDato, sluttDato));
 
@@ -77,7 +77,7 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
     void getDatoerForReduksjon__spesielt_tilpasset_innsats_gir_reduksjon_etter_1_aar() {
         LocalDate startDato = LocalDate.of(2024, 1, 1);
         LocalDate sluttDato = LocalDate.of(2026, 1, 1);
-        Avtale avtale = lagAvtale(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
+        Avtale avtale = lagAvtale(Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy strategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(avtale);
         List<LocalDate> result = strategy.getDatoerForReduksjon(innholdMedDatoer(startDato, sluttDato));
 
@@ -88,7 +88,7 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
     void getDatoerForReduksjon__varig_tilpasset_innsats_gir_reduksjon_etter_1_aar() {
         LocalDate startDato = LocalDate.of(2024, 1, 1);
         LocalDate sluttDato = LocalDate.of(2026, 1, 1);
-        Avtale avtale = lagAvtale(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        Avtale avtale = lagAvtale(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy strategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(avtale);
         List<LocalDate> result = strategy.getDatoerForReduksjon(innholdMedDatoer(startDato, sluttDato));
 
@@ -100,7 +100,7 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
         LocalDate startDato = LocalDate.of(2024, 1, 1);
         // Sluttdato er bare 3 måneder frem, men reduksjon for SITUASJONSBESTEMT er etter 6 måneder
         LocalDate sluttDato = LocalDate.of(2024, 3, 31);
-        Avtale avtale = lagAvtale(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        Avtale avtale = lagAvtale(Innsatsgruppe.TRENGER_VEILEDNING);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy strategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(avtale);
         List<LocalDate> result = strategy.getDatoerForReduksjon(innholdMedDatoer(startDato, sluttDato));
 
@@ -113,7 +113,7 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
         // so the date IS returned (the reduksjon starts on the very last day of the avtale).
         LocalDate startDato = LocalDate.of(2024, 1, 1);
         LocalDate sluttDato = startDato.plusMonths(6); // Reduksjonsdato for SITUASJONSBESTEMT = 2024-07-01
-        Avtale avtale = lagAvtale(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        Avtale avtale = lagAvtale(Innsatsgruppe.TRENGER_VEILEDNING);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy strategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(avtale);
         List<LocalDate> result = strategy.getDatoerForReduksjon(innholdMedDatoer(startDato, sluttDato));
 
@@ -123,14 +123,14 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
     @Test
     void getDatoerForReduksjon_handterer_skuddaar() {
         LocalDate varigTilpassetStart = LocalDate.of(2024, 2, 29);
-        Avtale varigTilpassetAvtale = lagAvtale(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        Avtale varigTilpassetAvtale = lagAvtale(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy strategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(varigTilpassetAvtale);
         List<LocalDate> reduksjon = strategy.getDatoerForReduksjon(innholdMedDatoer(varigTilpassetStart, LocalDate.of(2026, 2, 28)));
 
         assertThat(reduksjon).containsExactly(LocalDate.of(2025, 2, 28));
 
         LocalDate situasjonsbestemtStart = LocalDate.of(2024, 2, 29);
-        Avtale situasjonsbestemtAvtale = lagAvtale(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        Avtale situasjonsbestemtAvtale = lagAvtale(Innsatsgruppe.TRENGER_VEILEDNING);
         strategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(situasjonsbestemtAvtale);
         reduksjon = strategy.getDatoerForReduksjon(innholdMedDatoer(situasjonsbestemtStart, LocalDate.of(2026, 2, 28)));
 
@@ -140,20 +140,20 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
     @Test
     void getDatoerForReduksjon_handterer_skuddaar_i_midten_av_trinn() {
         LocalDate varigTilpassetStart = LocalDate.of(2023, 3, 1);
-        Avtale varigTilpassetAvtale = lagAvtale(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        Avtale varigTilpassetAvtale = lagAvtale(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy strategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(varigTilpassetAvtale);
         List<LocalDate> reduksjon = strategy.getDatoerForReduksjon(innholdMedDatoer(varigTilpassetStart, LocalDate.of(2025, 2, 28)));
         assertThat(reduksjon).containsExactly(LocalDate.of(2024, 3, 1)); // 2024 = skuddaar
 
         LocalDate situasjonsbestemtStart = LocalDate.of(2023, 8, 29);
-        Avtale situasjonsbestemtAvtale = lagAvtale(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        Avtale situasjonsbestemtAvtale = lagAvtale(Innsatsgruppe.TRENGER_VEILEDNING);
         strategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(situasjonsbestemtAvtale);
         reduksjon = strategy.getDatoerForReduksjon(innholdMedDatoer(situasjonsbestemtStart, LocalDate.of(2025, 2, 28)));
 
         assertThat(reduksjon).containsExactly(LocalDate.of(2024, 2, 29)); // 2024 = skuddaar
 
         LocalDate situasjonsbestemtStart2 = LocalDate.of(2023, 8, 31);
-        Avtale situasjonsbestemtAvtale2 = lagAvtale(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        Avtale situasjonsbestemtAvtale2 = lagAvtale(Innsatsgruppe.TRENGER_VEILEDNING);
         strategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(situasjonsbestemtAvtale2);
         reduksjon = strategy.getDatoerForReduksjon(innholdMedDatoer(situasjonsbestemtStart2, LocalDate.of(2025, 2, 28)));
 
@@ -164,7 +164,7 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
     void getProsentForPeriode__situasjonsbestemt_innsats_gir_40_prosent_foer_reduksjon() {
         LocalDate startDato = LocalDate.of(2024, 1, 1);
         LocalDate sluttDato = LocalDate.of(2024, 12, 31);
-        Avtale avtale = lagAvtale(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        Avtale avtale = lagAvtale(Innsatsgruppe.TRENGER_VEILEDNING);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy strategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(avtale);
         Periode periode = new Periode(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 31));
 
@@ -177,7 +177,7 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
     void getProsentForPeriode__situasjonsbestemt_innsats_gir_redusert_prosent_etter_6_maaneder() {
         LocalDate startDato = LocalDate.of(2024, 1, 1);
         LocalDate sluttDato = LocalDate.of(2024, 12, 31);
-        Avtale avtale = lagAvtale(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        Avtale avtale = lagAvtale(Innsatsgruppe.TRENGER_VEILEDNING);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy strategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(avtale);
         // Perioden starter etter reduksjonsdato (2024-07-01)
         Periode periode = new Periode(LocalDate.of(2024, 8, 1), LocalDate.of(2024, 8, 31));
@@ -194,7 +194,7 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
     void getProsentForPeriode__spesielt_tilpasset_innsats_gir_60_prosent_foer_reduksjon() {
         LocalDate startDato = LocalDate.of(2024, 1, 1);
         LocalDate sluttDato = LocalDate.of(2026, 1, 1);
-        Avtale avtale = lagAvtale(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
+        Avtale avtale = lagAvtale(Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy strategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(avtale);
         Periode periode = new Periode(LocalDate.of(2024, 6, 1), LocalDate.of(2024, 6, 30));
 
@@ -207,7 +207,7 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
     void getProsentForPeriode__spesielt_tilpasset_innsats_gir_redusert_prosent_etter_1_aar() {
         LocalDate startDato = LocalDate.of(2024, 1, 1);
         LocalDate sluttDato = LocalDate.of(2026, 1, 1);
-        Avtale avtale = lagAvtale(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
+        Avtale avtale = lagAvtale(Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy strategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(avtale);
         // Perioden starter etter reduksjonsdato (2025-01-01)
         Periode periode = new Periode(LocalDate.of(2025, 3, 1), LocalDate.of(2025, 3, 31));
@@ -224,7 +224,7 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
     void getProsentForPeriode__ukjent_kvalifiseringsgruppe_gir_null() {
         LocalDate startDato = LocalDate.of(2024, 1, 1);
         LocalDate sluttDato = LocalDate.of(2024, 12, 31);
-        Avtale avtale = lagAvtale(Kvalifiseringsgruppe.STANDARD_INNSATS);
+        Avtale avtale = lagAvtale(Innsatsgruppe.GODE_MULIGHETER);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy strategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(avtale);
         Periode periode = new Periode(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 31));
 
@@ -237,7 +237,7 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
     void getProsentForPeriode__periode_slutter_paa_reduksjonsdato_er_redusert() {
         LocalDate startDato = LocalDate.of(2024, 1, 1);
         LocalDate sluttDato = LocalDate.of(2025, 1, 1);
-        Avtale avtale = lagAvtale(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        Avtale avtale = lagAvtale(Innsatsgruppe.TRENGER_VEILEDNING);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy strategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(avtale);
         // Perioden slutter akkurat på reduksjonsdatoen
         Periode periode = new Periode(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 7, 1));
@@ -250,7 +250,7 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
     @Test
     void getProsentForPeriode_handterer_skuddaar() {
         LocalDate varigTilpassetStart = LocalDate.of(2024, 2, 29);
-        Avtale varigTilpassetAvtale = lagAvtale(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        Avtale varigTilpassetAvtale = lagAvtale(Innsatsgruppe.JOBBE_DELVIS);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy varigStrategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(varigTilpassetAvtale);
 
         Integer forstePeriode = varigStrategy.getProsentForPeriode(
@@ -266,7 +266,7 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
         assertThat(andrePeriode).isEqualTo(TILSKUDDSPROSENT_TILPASSET - TILSKUDDSPROSENT_REDUKSJONSFAKTOR);
 
         LocalDate situasjonsbestemtStart = LocalDate.of(2024, 2, 29);
-        Avtale situasjonsbestemtAvtale = lagAvtale(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        Avtale situasjonsbestemtAvtale = lagAvtale(Innsatsgruppe.TRENGER_VEILEDNING);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy situasjonsbestemtStrategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(situasjonsbestemtAvtale);
         forstePeriode = situasjonsbestemtStrategy.getProsentForPeriode(
             innholdMedDatoer(situasjonsbestemtStart, LocalDate.of(2026, 2, 28)),
@@ -284,7 +284,7 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
     @Test
     void getProsentForPeriode_handterer_skuddaar_i_midten_av_trinn() {
         LocalDate varigTilpassetStart = LocalDate.of(2023, 3, 1);
-        Avtale varigTilpassetAvtale = lagAvtale(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        Avtale varigTilpassetAvtale = lagAvtale(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy varigStrategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(varigTilpassetAvtale);
 
         Integer forstePeriode = varigStrategy.getProsentForPeriode(
@@ -300,7 +300,7 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
         assertThat(andrePeriode).isEqualTo(TILSKUDDSPROSENT_TILPASSET - TILSKUDDSPROSENT_REDUKSJONSFAKTOR);
 
         LocalDate situasjonsbestemtStart = LocalDate.of(2023, 8, 29);
-        Avtale situasjonsbestemtAvtale = lagAvtale(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        Avtale situasjonsbestemtAvtale = lagAvtale(Innsatsgruppe.TRENGER_VEILEDNING);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy situasjonsbestemtStrategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(situasjonsbestemtAvtale);
         forstePeriode = situasjonsbestemtStrategy.getProsentForPeriode(
             innholdMedDatoer(situasjonsbestemtStart, LocalDate.of(2025, 2, 28)),
@@ -315,7 +315,7 @@ class MidlertidigLonnstilskuddAvtaleBeregningStrategyTest {
         assertThat(andrePeriode).isEqualTo(TILSKUDDSPROSENT - TILSKUDDSPROSENT_REDUKSJONSFAKTOR);
 
         LocalDate situasjonsbestemtStart2 = LocalDate.of(2023, 8, 31);
-        Avtale situasjonsbestemtAvtale2 = lagAvtale(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        Avtale situasjonsbestemtAvtale2 = lagAvtale(Innsatsgruppe.TRENGER_VEILEDNING);
         MidlertidigLonnstilskuddAvtaleBeregningStrategy situasjonsbestemtStrategy2 = new MidlertidigLonnstilskuddAvtaleBeregningStrategy(situasjonsbestemtAvtale2);
         forstePeriode = situasjonsbestemtStrategy2.getProsentForPeriode(
             innholdMedDatoer(situasjonsbestemtStart2, LocalDate.of(2025, 2, 28)),

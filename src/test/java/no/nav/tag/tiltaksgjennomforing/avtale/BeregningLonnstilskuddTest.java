@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.bekk.bekkopen.person.FodselsnummerValidator;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ class BeregningLonnstilskuddTest {
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
 
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         avtaleInnhold = avtale.getGjeldendeInnhold();
         strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, MIDLERTIDIG_LONNSTILSKUDD);
     }

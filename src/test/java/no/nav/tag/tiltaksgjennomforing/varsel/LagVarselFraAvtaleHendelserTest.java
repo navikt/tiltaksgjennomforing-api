@@ -25,7 +25,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.datavarehus.DvhMeldingEntitetRepository;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.ArbeidsgiverNotifikasjonRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -92,7 +92,7 @@ class LagVarselFraAvtaleHendelserTest {
     @Test
     void test_alt() {
         Avtale avtale = avtaleRepository.save(Avtale.opprett(new OpprettAvtale(new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent()));
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
 
         assertHendelse(OPPRETTET, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.VEILEDER, false);
         assertHendelse(OPPRETTET, AvtaleHendelseUtførtAv.Rolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
@@ -223,7 +223,6 @@ class LagVarselFraAvtaleHendelserTest {
     @Test
     void test_for_delt_med_mentor() {
         Avtale avtale = avtaleRepository.save(Avtale.opprett(new OpprettMentorAvtale(new Fnr("00000000000") , new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MENTOR, Avtalerolle.VEILEDER), Avtaleopphav.VEILEDER, TestData.enNavIdent()));
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         avtale.endreAvtale(TestData.endrePåAlleMentorFelter(), Avtalerolle.VEILEDER);
         avtale = avtaleRepository.save(avtale);
 
@@ -244,7 +243,7 @@ class LagVarselFraAvtaleHendelserTest {
     @Test
     void forleng_avtale() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder();
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         avtale = avtaleRepository.save(avtale);
         Veileder veileder = TestData.enVeileder(avtale);
 

@@ -9,10 +9,10 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.InnsatsgruppeException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,8 +50,8 @@ class VeilarbServiceTest {
         avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
 
         assertThatThrownBy(() -> veilarbService.hentOgSjekkOppfolgingstatus(avtale))
-                .isExactlyInstanceOf(FeilkodeException.class)
-                .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
+                .isExactlyInstanceOf(InnsatsgruppeException.class)
+                .hasMessage(Feilkode.INNSATSGRUPPE_MIDLERTIDIG_LONNTILSKUDD_OG_SOMMERJOBB_FEIL.name());
     }
 
     @Test
@@ -69,19 +69,15 @@ class VeilarbServiceTest {
     @Test
     public void sjekk_at_lonnstilskuddsprosent_blir_satt_paa_midlertidiglonnstilskudd_ved_AvtaleInnhold_constructor() {
         final Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setLonnstilskuddProsent(null);
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
 
         Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
-        avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
-        avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
-        avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
+        avtale.setInnsatsgruppe(oppfølgingsstatus.getInnsatsgruppe());
         avtale.endreAvtale(new EndreAvtale(), Avtalerolle.VEILEDER);
 
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isNotNull();
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(60);
 
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING);
         avtale.endreAvtale(new EndreAvtale(), Avtalerolle.VEILEDER);
 
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(40);
@@ -98,14 +94,16 @@ class VeilarbServiceTest {
 
     @Test
     public void hent_gjeldende_14a_vedtak() {
-        Innsatsgruppe innsatsgruppe = veilarbService.hentInnsatsgruppe(Fnr.generer(1990, 4, 12));
-        assertThat(innsatsgruppe).isEqualTo(Innsatsgruppe.TRENGER_VEILEDNING);
+        Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOppfolging(Fnr.generer(1990, 4, 12));
+        assertThat(oppfølgingsstatus.getInnsatsgruppe()).isEqualTo(Innsatsgruppe.TRENGER_VEILEDNING);
     }
 
     @Test
-    public void returnerer_tomt_resultat_naar_person_ikke_har_gjeldende_vedtak() {
-        Innsatsgruppe innsatsgruppe = veilarbService.hentInnsatsgruppe(Fnr.generer(1985, 3, 22));
-        assertThat(innsatsgruppe).isNull();
+    public void kaster_exception_naar_person_ikke_har_gjeldende_vedtak() {
+        Fnr fnr = Fnr.generer(1985, 3, 22);
+        assertThatThrownBy(() -> veilarbService.hentOppfolging(fnr))
+                .isExactlyInstanceOf(FeilkodeException.class)
+                .hasMessage(Feilkode.FANT_IKKE_INNSATSBEHOV.name());
     }
 
 }
