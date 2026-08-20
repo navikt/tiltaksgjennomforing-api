@@ -1695,6 +1695,18 @@ public class AvtaleTest {
     }
 
     @Test
+    public void godkjenn_tilskuddsperiode_skal_ikke_gå_hvis_beslutter_er_veileder() {
+        Now.fixedDate(LocalDate.of(2021, 6, 1));
+        Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
+        avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent2());
+
+        assertFeilkode(
+            Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE,
+            () -> avtale.godkjennTilskuddsperiode(avtale.getVeilederNavIdent())
+        );
+    }
+
+    @Test
     public void godkjenn_avtale_skal_ikke_gå_hvis_over_72() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         Fnr fnr = new Fnr("07075014443");
