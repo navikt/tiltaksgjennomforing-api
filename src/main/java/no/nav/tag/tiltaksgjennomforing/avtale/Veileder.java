@@ -336,11 +336,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     public void sjekkOgOppdaterOppfølgningsstatusForAvtale(Avtale avtale) {
-        boolean harSluttdatoPassert = DatoUtils.harDatoPassert(avtale.getGjeldendeInnhold().getSluttDato());
-        if (harSluttdatoPassert) {
-            return;
-        }
-
         Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
         Innsatsgruppe innsatsgruppe = avtale.getInnsatsgruppe();
         Boolean innsatsgruppeHarEndret = Optional.ofNullable(innsatsgruppe)
