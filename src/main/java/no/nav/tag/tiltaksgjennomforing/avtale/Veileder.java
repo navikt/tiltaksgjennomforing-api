@@ -18,6 +18,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.InnsatsgruppeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Kode6SperretForOpprettelseOgEndringException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.OppfolgingstatusEndretException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
@@ -405,7 +406,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.endreKidOgKontonummer(endreKidOgKontonummer, getIdentifikator());
     }
 
-    protected void oppdaterOppfølgingOgGeoEnhetEtterForespørsel(Avtale avtale) {
+    public void oppdaterOppfølgingOgGeoEnhetEtterForespørsel(Avtale avtale) {
         sjekkTilgang(avtale);
         // Geo enhet
         super.hentGeoEnhetFraNorg2(avtale, norg2Client, persondataService);
@@ -413,6 +414,24 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOppfolging(avtale);
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
         this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
+    }
+
+    public void oppdaterInnsatsgruppeEtterForesporsel(Avtale avtale) {
+        sjekkTilgang(avtale);
+        if (avtale.getInnsatsgruppe() != null) {
+            throw new InnsatsgruppeException(Feilkode.INNSATSGRUPPE_ER_ALLEREDE_SATT);
+        }
+
+        Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOppfolging(avtale);
+        Boolean erLikKvalifiseringsgruppeFraAvtalen = Optional.ofNullable(avtale.getKvalifiseringsgruppe())
+            .map(kg -> kg.isEqualToInnsatsgruppe(oppfølgingsstatus.getInnsatsgruppe()))
+            .orElse(false);
+
+        if (!erLikKvalifiseringsgruppeFraAvtalen) {
+            throw new InnsatsgruppeException(Feilkode.INNSATSGRUPPE_IKKE_LIK_KVALIFISERINGSGRUPPE);
+        }
+
+        avtale.setInnsatsgruppe(oppfølgingsstatus.getInnsatsgruppe());
     }
 
     public void endreStillingbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse, Avtale avtale) {
