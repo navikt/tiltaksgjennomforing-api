@@ -930,6 +930,21 @@ public class AvtaleController {
         return new AvtaleDTO(avtaleRepository.save(avtale));
     }
 
+    @AuditLogging(value = "Oppdater avtale om arbeidsmarkedstiltak", type = EventType.UPDATE)
+    @PostMapping("/{avtaleId}/oppdater-innsatsgruppe")
+    public AvtaleDTO oppdaterInnsatsgruppe(
+        @PathVariable("avtaleId") UUID avtaleId,
+        @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret
+    ) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+            .map(this::sjekkSkrivebeskyttelse)
+            .map(sjekkeSistEndret(sistEndret))
+            .orElseThrow(RessursFinnesIkkeException::new);
+        veileder.oppdaterInnsatsgruppeEtterForesporsel(avtale);
+        return new AvtaleDTO(avtaleRepository.save(avtale));
+    }
+
     @GetMapping("/{avtaleId}/krever-aktsomhet")
     public Aktsomhet kreverAktsomhet(
         @PathVariable("avtaleId") UUID avtaleId,
