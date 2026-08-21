@@ -5,7 +5,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.ForkortetGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.Inkluderingstilskuddsutgift;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.TilskuddstrinnDTO;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
@@ -48,7 +47,6 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setLonnstilskuddFormaal(mapLonnstilskuddFormaal(avtale));
         hendelse.setLonnstilskuddProsent(avtale.getGjeldendeInnhold().getLonnstilskuddProsent());
         hendelse.setManedslonn(avtale.getGjeldendeInnhold().getManedslonn());
-        hendelse.setMaster(erMaster(avtale));
         hendelse.setMentorAntallTimer(avtale.getGjeldendeInnhold().getMentorAntallTimer());
         hendelse.setMentorTimelonn(avtale.getGjeldendeInnhold().getMentorTimelonn());
         hendelse.setOpprettetAvArbeidsgiver(Avtaleopphav.ARBEIDSGIVER.equals(avtale.getOpphav()));
@@ -141,13 +139,6 @@ public class AvroTiltakHendelseFabrikk {
                     .build()
                 )
                 .collect(Collectors.toList());
-    }
-
-    private Boolean erMaster(Avtale avtale) {
-        if (avtale.getTiltakstype() == Tiltakstype.SOMMERJOBB || avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || avtale.getTiltakstype() == Tiltakstype.VARIG_LONNSTILSKUDD) {
-            return Boolean.TRUE;
-        }
-        return Boolean.FALSE;
     }
 
     static String beregnNokkel(AvroTiltakHendelse hendelse) {
