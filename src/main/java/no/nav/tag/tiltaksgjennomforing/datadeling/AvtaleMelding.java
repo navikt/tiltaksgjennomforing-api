@@ -49,15 +49,15 @@ public class AvtaleMelding {
     Instant sistEndret;
     Instant annullertTidspunkt;
     String annullertGrunn;
-    @Deprecated(since = "Ikke i bruk lenger - må koordinere endringene med konsumenter før fjerning")
-    boolean slettemerket;
     boolean opprettetAvArbeidsgiver;
     String enhetGeografisk;
     String enhetsnavnGeografisk;
     String enhetOppfolging;
     String enhetsnavnOppfolging;
     boolean godkjentForEtterregistrering;
+    @Deprecated
     Kvalifiseringsgruppe kvalifiseringsgruppe;
+    @Deprecated
     Formidlingsgruppe formidlingsgruppe;
     SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
     boolean feilregistrert;
@@ -110,10 +110,6 @@ public class AvtaleMelding {
     Integer sumLonnsutgifter;
     Integer sumLonnstilskudd;
     Integer manedslonn100pst;
-    @Deprecated
-    Integer sumLønnstilskuddRedusert;
-    @Deprecated
-    LocalDate datoForRedusertProsent;
     Stillingstype stillingstype;
 
     List<Maal> maal = new ArrayList<>();
@@ -165,7 +161,6 @@ public class AvtaleMelding {
         avtaleMelding.setSistEndret(avtale.getSistEndret());
         avtaleMelding.setAnnullertTidspunkt(avtale.getAnnullertTidspunkt());
         avtaleMelding.setAnnullertGrunn(avtale.getAnnullertGrunn());
-        avtaleMelding.setSlettemerket(false);
         avtaleMelding.setOpprettetAvArbeidsgiver(Avtaleopphav.ARBEIDSGIVER.equals(avtale.getOpphav()));
         avtaleMelding.setEnhetGeografisk(avtale.getEnhetGeografisk());
         avtaleMelding.setEnhetsnavnGeografisk(avtale.getEnhetsnavnGeografisk());
@@ -218,8 +213,6 @@ public class AvtaleMelding {
         avtaleMelding.setSumLonnsutgifter(avtaleInnhold.getSumLonnsutgifter());
         avtaleMelding.setSumLonnstilskudd(avtaleInnhold.getSumLonnstilskudd());
         avtaleMelding.setManedslonn100pst(avtaleInnhold.getManedslonn100pst());
-        avtaleMelding.setSumLønnstilskuddRedusert(null);
-        avtaleMelding.setDatoForRedusertProsent(null);
         avtaleMelding.setStillingstype(avtaleInnhold.getStillingstype());
         avtaleMelding.setInkluderingstilskuddBegrunnelse(avtaleInnhold.getInkluderingstilskuddBegrunnelse());
         avtaleMelding.setInkluderingstilskuddTotalBeløp(avtaleInnhold.inkluderingstilskuddTotalBeløp());
