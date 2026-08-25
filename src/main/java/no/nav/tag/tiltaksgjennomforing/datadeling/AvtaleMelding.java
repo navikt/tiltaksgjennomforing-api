@@ -18,6 +18,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 
@@ -59,6 +60,7 @@ public class AvtaleMelding {
     Kvalifiseringsgruppe kvalifiseringsgruppe;
     @Deprecated
     Formidlingsgruppe formidlingsgruppe;
+    Innsatsgruppe innsatsgruppe;
     SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
     boolean feilregistrert;
     Avtaleopphav opphav;
@@ -169,6 +171,7 @@ public class AvtaleMelding {
         avtaleMelding.setGodkjentForEtterregistrering(avtale.isGodkjentForEtterregistrering());
         avtaleMelding.setKvalifiseringsgruppe(avtale.getKvalifiseringsgruppe());
         avtaleMelding.setFormidlingsgruppe(avtale.getFormidlingsgruppe());
+        avtaleMelding.setInnsatsgruppe(avtale.getInnsatsgruppe());
         avtaleMelding.setFeilregistrert(avtale.isFeilregistrert());
         avtaleMelding.setVersjon(avtaleInnhold.getVersjon());
         avtaleMelding.setDeltakerFornavn(avtaleInnhold.getDeltakerFornavn());
