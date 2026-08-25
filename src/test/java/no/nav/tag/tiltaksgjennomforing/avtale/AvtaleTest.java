@@ -16,7 +16,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleHolder;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
@@ -821,6 +820,7 @@ public class AvtaleTest {
     @Test
     public void endreAvtale__startdato_og_sluttdato_satt_18mnd() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
+        avtale.setInnsatsgruppe(Innsatsgruppe.JOBBE_DELVIS);
         EndreAvtale endreAvtale = new EndreAvtale();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(18).minusDays(1);
@@ -840,7 +840,7 @@ public class AvtaleTest {
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         assertThatThrownBy(() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER)).isInstanceOf(
-            VarighetForLangArbeidstreningException.class);
+            FeilkodeException.class);
     }
 
     @Test

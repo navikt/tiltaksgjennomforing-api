@@ -803,7 +803,7 @@ public class TestData {
         endreAvtale.setAntallDagerPerUke(BigDecimal.valueOf(5.0));
         endreAvtale.getMaal().add(TestData.etMaal());
         endreAvtale.setStartDato(Now.localDate());
-        endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(12).minusDays(1));
+        endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(6).minusDays(1));
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setOppfolging("Telefon hver uke");
         return endreAvtale;
