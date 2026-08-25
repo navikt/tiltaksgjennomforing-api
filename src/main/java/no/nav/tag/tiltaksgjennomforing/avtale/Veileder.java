@@ -419,6 +419,10 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     public void oppdaterInnsatsgruppeEtterForesporsel(Avtale avtale) {
         sjekkTilgang(avtale);
         if (avtale.getInnsatsgruppe() != null) {
+            log.info(
+                "Innsatsgruppe for avtale {} er allerede satt, kan ikke oppdatere innsatsgruppe",
+                avtale.getId()
+            );
             throw new InnsatsgruppeException(Feilkode.INNSATSGRUPPE_ER_ALLEREDE_SATT);
         }
 
@@ -428,9 +432,20 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             .orElse(false);
 
         if (!erLikKvalifiseringsgruppeFraAvtalen) {
+            log.info(
+                "Kan ikke oppdatere innsatsgruppe for avtale {}. Innsatsgruppe {} er ikke lik kvalifiseringsgruppe {}.",
+                avtale.getId(),
+                oppfølgingsstatus.getInnsatsgruppe(),
+                avtale.getKvalifiseringsgruppe()
+            );
             throw new InnsatsgruppeException(Feilkode.INNSATSGRUPPE_IKKE_LIK_KVALIFISERINGSGRUPPE);
         }
 
+        log.info(
+            "Oppdaterer innsatsgruppe til {} for avtale {} etter forespørsel",
+            oppfølgingsstatus.getInnsatsgruppe(),
+            avtale.getId()
+        );
         avtale.setInnsatsgruppe(oppfølgingsstatus.getInnsatsgruppe());
     }
 
