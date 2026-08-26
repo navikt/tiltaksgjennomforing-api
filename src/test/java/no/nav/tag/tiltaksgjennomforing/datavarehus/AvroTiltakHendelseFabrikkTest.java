@@ -137,7 +137,6 @@ class AvroTiltakHendelseFabrikkTest {
         hendelse.setOpprettetAvArbeidsgiver(false);
         hendelse.setAnnullertTidspunkt(null);
         hendelse.setAnnullertGrunn(null);
-        hendelse.setMaster(true);
         hendelse.setForkortetGrunn(null);
         hendelse.setAvtaleNr(null);
         hendelse.setMentorTimelonn(null);
