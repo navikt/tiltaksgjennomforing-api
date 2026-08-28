@@ -1,0 +1,46 @@
+name: Bygg image
+
+on:
+  workflow_call:
+    inputs:
+      push-image:
+        type: boolean
+        required: false
+        default: false
+    outputs:
+      image:
+        description: Docker image (settes kun ved push-image=true)
+        value: ${{ jobs.build.outputs.image }}
+
+jobs:
+  build:
+    name: Bygg
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      image: ${{ steps.docker-build-push.outputs.image }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sjekk ut kode
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Oppsett Java 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: maven
+
+      - name: Bygg og test med Maven
+        run: mvn package -B -Dsurefire.useFile=false
+
+      - name: Push docker image to GAR
+        if: inputs.push-image
+        uses: nais/docker-build-push@v0
+        id: docker-build-push
+        with:
+          byosbom: target/classes/META-INF/sbom/application.cdx.json
+          team: arbeidsgiver
