@@ -10,7 +10,7 @@ on:
     outputs:
       image:
         description: Docker image (settes kun ved push-image=true)
-        value: ${{ jobs.bygg.outputs.image }}
+        value: ${{ jobs.build.outputs.image }}
 
 jobs:
   build:
