@@ -11,6 +11,10 @@ public class FeatureToggleHolder {
         FeatureToggleHolder.instance = featureToggleService;
     }
 
+    public static void reset() {
+        instance = null;
+    }
+
     public static FeatureToggleService get() {
         if (instance == null) {
             throw new IllegalStateException("FeatureToggleHolder er ikke initialisert — Spring-konteksten er ikke startet");
