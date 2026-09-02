@@ -28,6 +28,7 @@ public class AvtaleArenaMigreringTest {
     @AfterEach
     public void tearDown() {
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
+        FeatureToggleHolder.reset();
     }
 
     @Test
