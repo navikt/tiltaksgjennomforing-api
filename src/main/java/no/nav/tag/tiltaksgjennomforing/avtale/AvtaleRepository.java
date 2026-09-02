@@ -212,19 +212,23 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     );
 
     @Query("""
-        SELECT a
+        SELECT a.id
         FROM Avtale a
-        WHERE a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.PÅBEGYNT OR a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.MANGLER_GODKJENNING
+        WHERE (a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.PÅBEGYNT OR a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.MANGLER_GODKJENNING)
+          AND a.id > :fraId
+        ORDER BY a.id
     """)
-    List<Avtale> findAvtalerSomErPabegyntEllerManglerGodkjenning();
+    List<UUID> finnAvtaleIderSomErPabegyntEllerManglerGodkjenning(@Param("fraId") UUID fraId, Limit limit);
 
     @Query("""
-        SELECT a
+        SELECT a.id
         FROM Avtale a
-        WHERE (a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.KLAR_FOR_OPPSTART AND a.gjeldendeInnhold.startDato <= current_date)
-           OR (a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.GJENNOMFØRES AND a.gjeldendeInnhold.sluttDato < current_date)
+        WHERE ((a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.KLAR_FOR_OPPSTART AND a.gjeldendeInnhold.startDato <= current_date)
+           OR (a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.GJENNOMFØRES AND a.gjeldendeInnhold.sluttDato < current_date))
+          AND a.id > :fraId
+        ORDER BY a.id
     """)
-    List<Avtale> findAvtalerForEndringAvStatus();
+    List<UUID> finnAvtaleIderForEndringAvStatus(@Param("fraId") UUID fraId, Limit limit);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Query(
