@@ -1,21 +1,17 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.service.gjeldendetilskuddsperiode;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import java.util.UUID;
 
 @Slf4j
 @Service
 public class GjeldendeTilskuddsperiodeJobbService {
-    private static final Pageable DEFAULT_PAGE = PageRequest.of(0, 1000).withSort(Sort.Direction.ASC, "id");
+    private static final int SIDESTØRRELSE = 500;
     private final GjeldendeTilskuddsperiodeService gjeldendeTilskuddsperiodeService;
 
     public GjeldendeTilskuddsperiodeJobbService(GjeldendeTilskuddsperiodeService gjeldendeTilskuddsperiodeService) {
@@ -23,21 +19,27 @@ public class GjeldendeTilskuddsperiodeJobbService {
     }
 
     @Async
-    public CompletableFuture<Void> start() {
+    public void startAsynkront() {
+        start();
+    }
+
+    public void start() {
         log.info("Jobb for å oppdatere gjeldedeTilskuddsperiode-felt startet...");
 
-        Slice<Avtale> slice = null;
+        Pageable side = PageRequest.of(0, SIDESTØRRELSE);
+        UUID sisteId = new UUID(0L, 0L);
+        boolean harFlere = true;
         int antallOppdatert = 0;
         int antallIkkeOppdatert = 0;
 
-        do {
-            SettGjeldendeTilskuddsperiodeRespons respons = gjeldendeTilskuddsperiodeService.settGjeldendeTilskuddsperiode(
-                Optional.ofNullable(slice).map(Slice::nextPageable).orElse(DEFAULT_PAGE)
-            );
-            slice = respons.slice();
+        while (harFlere) {
+            SettGjeldendeTilskuddsperiodeRespons respons =
+                gjeldendeTilskuddsperiodeService.settGjeldendeTilskuddsperiode(sisteId, side);
+            sisteId = respons.sisteId();
+            harFlere = respons.harFlere();
             antallOppdatert += respons.antallOppdatert();
             antallIkkeOppdatert += respons.antallIkkeOppdatert();
-        } while (slice.hasNext());
+        }
 
         log.info(
             "Jobb for å oppdatere gjeldedeTilskuddsperiode-felt fullført! " +
@@ -46,8 +48,5 @@ public class GjeldendeTilskuddsperiodeJobbService {
             antallOppdatert == 0 ? "ingen" : antallOppdatert,
             antallIkkeOppdatert == 0 ? "ingen" : antallIkkeOppdatert
         );
-
-        System.gc();
-        return CompletableFuture.completedFuture(null);
     }
 }
