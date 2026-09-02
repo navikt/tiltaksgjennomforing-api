@@ -70,6 +70,7 @@ public class AvtaleTest {
     @AfterEach
     public void tearDown() {
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
+        FeatureToggleHolder.reset();
     }
 
     @Test
