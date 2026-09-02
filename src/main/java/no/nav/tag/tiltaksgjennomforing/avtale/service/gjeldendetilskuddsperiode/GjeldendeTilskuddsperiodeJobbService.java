@@ -1,8 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.service.gjeldendetilskuddsperiode;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Limit;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +10,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class GjeldendeTilskuddsperiodeJobbService {
-    private static final int SIDESTØRRELSE = 500;
+    private static final Limit LIMIT = Limit.of(500);
     private final GjeldendeTilskuddsperiodeService gjeldendeTilskuddsperiodeService;
 
     public GjeldendeTilskuddsperiodeJobbService(GjeldendeTilskuddsperiodeService gjeldendeTilskuddsperiodeService) {
@@ -26,7 +25,6 @@ public class GjeldendeTilskuddsperiodeJobbService {
     public void start() {
         log.info("Jobb for å oppdatere gjeldendeTilskuddsperiode-felt startet...");
 
-        Pageable side = PageRequest.of(0, SIDESTØRRELSE);
         UUID sisteId = new UUID(0L, 0L);
         boolean harFlere = true;
         int antallOppdatert = 0;
@@ -34,7 +32,7 @@ public class GjeldendeTilskuddsperiodeJobbService {
 
         while (harFlere) {
             SettGjeldendeTilskuddsperiodeRespons respons =
-                gjeldendeTilskuddsperiodeService.settGjeldendeTilskuddsperiode(sisteId, side);
+                gjeldendeTilskuddsperiodeService.settGjeldendeTilskuddsperiode(sisteId, LIMIT);
             sisteId = respons.sisteId();
             harFlere = respons.harFlere();
             antallOppdatert += respons.antallOppdatert();

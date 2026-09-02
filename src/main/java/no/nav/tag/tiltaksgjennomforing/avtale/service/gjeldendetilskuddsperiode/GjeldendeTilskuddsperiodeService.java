@@ -4,8 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +23,9 @@ public class GjeldendeTilskuddsperiodeService {
     }
 
     @Transactional
-    public SettGjeldendeTilskuddsperiodeRespons settGjeldendeTilskuddsperiode(UUID fraId, Pageable pageable) {
-        Slice<UUID> idSlice = avtaleRepository.finnAvtaleIderMedAktiveTilskuddsperioder(fraId, pageable);
-        List<UUID> ider = idSlice.getContent();
+    public SettGjeldendeTilskuddsperiodeRespons settGjeldendeTilskuddsperiode(UUID fraId, Limit limit) {
+        List<UUID> ider = avtaleRepository.finnAvtaleIderMedAktiveTilskuddsperioder(fraId, limit);
+        boolean harFlere = ider.size() == limit.max();
 
         if (ider.isEmpty()) {
             log.debug("Ingen avtaler å behandle");
@@ -71,6 +70,6 @@ public class GjeldendeTilskuddsperiodeService {
                 antallOppdatert++;
             }
         }
-        return new SettGjeldendeTilskuddsperiodeRespons(sisteId, idSlice.hasNext(), antallOppdatert, antallIkkeOppdatert);
+        return new SettGjeldendeTilskuddsperiodeRespons(sisteId, harFlere, antallOppdatert, antallIkkeOppdatert);
     }
 }
