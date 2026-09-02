@@ -24,7 +24,7 @@ public class GjeldendeTilskuddsperiodeJobbService {
     }
 
     public void start() {
-        log.info("Jobb for å oppdatere gjeldedeTilskuddsperiode-felt startet...");
+        log.info("Jobb for å oppdatere gjeldendeTilskuddsperiode-felt startet...");
 
         Pageable side = PageRequest.of(0, SIDESTØRRELSE);
         UUID sisteId = new UUID(0L, 0L);
