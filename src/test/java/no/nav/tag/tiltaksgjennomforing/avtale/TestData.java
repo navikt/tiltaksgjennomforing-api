@@ -119,6 +119,7 @@ public class TestData {
 
     public static Avtale enMentorAvtaleSignert() {
         Avtale avtale = enMentorAvtale();
+        avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING);
         EndreAvtale endreAvtale = endrePåAlleMentorFelter();
         avtale.godkjennForMentor(avtale.getMentorFnr());
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
@@ -177,6 +178,7 @@ public class TestData {
     public static Avtale enAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.opprett(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), Avtaleopphav.VEILEDER, veilderNavIdent);
+        avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING);
         avtale.endreAvtale(endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER);
         return avtale;
     }
@@ -296,6 +298,7 @@ public class TestData {
         setOppfølgingPåAvtale(avtale);
         avtale.endreAvtale(endringPåAlleLønnstilskuddFelterForSommerjobb(lonnstilskuddProsent), Avtalerolle.VEILEDER);
         avtale.setTiltakstype(Tiltakstype.SOMMERJOBB);
+        avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING);
         avtale.getGjeldendeInnhold().setDeltakerFornavn("Lilly");
         avtale.getGjeldendeInnhold().setDeltakerEtternavn("Lønning");
         avtale.getGjeldendeInnhold().setArbeidsgiverKontonummer("22222222222");
@@ -1209,6 +1212,7 @@ public class TestData {
 
     public static Avtale enArbeidstreningAvtaleMedAltUtfylt() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
+        avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING);
         avtale.endreAvtale(endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER);
         return avtale;
     }

@@ -1252,6 +1252,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (!nySluttDato.isBefore(gjeldendeInnhold.getSluttDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_ETTER_SLUTTDATO);
         }
+        if (innsatsgruppe == null) {
+            throw new FeilkodeException(Feilkode.INNSATSGRUPPE_MANGLER);
+        }
         // Kan ikke forkorte før en utbetalt/sendtkrav tilskuddsperiode
         TreeSet<TilskuddPeriode> aktiveTilskuddsperioder = new TreeSet(tilskuddPeriode.stream()
             .filter(TilskuddPeriode::isAktiv)
@@ -1329,6 +1332,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
         if (endreTilskuddsberegning.harMangler(tiltakstype)) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
+        }
+        if (innsatsgruppe == null) {
+            throw new FeilkodeException(Feilkode.INNSATSGRUPPE_MANGLER);
         }
 
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_TILSKUDDSBEREGNING);
