@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import io.micrometer.core.annotation.Timed;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -90,10 +91,11 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     Slice<Avtale> findAllByGjeldendeInnhold_AvtaleInngåttNotNull(Pageable pageable);
 
     @Query(value = """
-        SELECT a
+        SELECT a.id
         FROM Avtale a
         WHERE a.tiltakstype IN ('MIDLERTIDIG_LONNSTILSKUDD', 'VARIG_LONNSTILSKUDD', 'SOMMERJOBB', 'VTAO', 'MENTOR')
           AND a.status IN ('GJENNOMFØRES', 'KLAR_FOR_OPPSTART', 'AVSLUTTET')
+          AND a.id > :fraId
           AND (a.gjeldendeTilskuddsperiode IS NULL OR EXISTS (
               SELECT tp
               FROM TilskuddPeriode tp
@@ -102,8 +104,9 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                 AND tp.startDato <= current_date + 3 month
                 AND tp.status = 'UBEHANDLET'
           ))
+        ORDER BY a.id
     """)
-    Slice<Avtale> finnAvtaleMedAktiveTilskuddsperioder(Pageable pageable);
+    List<UUID> finnAvtaleIderMedAktiveTilskuddsperioder(@Param("fraId") UUID fraId, Limit limit);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override
