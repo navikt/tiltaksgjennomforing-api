@@ -17,9 +17,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 
 import java.math.BigDecimal;
@@ -56,10 +54,6 @@ public class AvtaleMelding {
     String enhetOppfolging;
     String enhetsnavnOppfolging;
     boolean godkjentForEtterregistrering;
-    @Deprecated
-    Kvalifiseringsgruppe kvalifiseringsgruppe;
-    @Deprecated
-    Formidlingsgruppe formidlingsgruppe;
     Innsatsgruppe innsatsgruppe;
     SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
     boolean feilregistrert;
@@ -169,8 +163,6 @@ public class AvtaleMelding {
         avtaleMelding.setEnhetOppfolging(avtale.getEnhetOppfolging());
         avtaleMelding.setEnhetsnavnOppfolging(avtale.getEnhetsnavnOppfolging());
         avtaleMelding.setGodkjentForEtterregistrering(avtale.isGodkjentForEtterregistrering());
-        avtaleMelding.setKvalifiseringsgruppe(avtale.getKvalifiseringsgruppe());
-        avtaleMelding.setFormidlingsgruppe(avtale.getFormidlingsgruppe());
         avtaleMelding.setInnsatsgruppe(avtale.getInnsatsgruppe());
         avtaleMelding.setFeilregistrert(avtale.isFeilregistrert());
         avtaleMelding.setVersjon(avtaleInnhold.getVersjon());
