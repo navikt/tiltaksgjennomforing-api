@@ -347,7 +347,7 @@ class PabegynteAvtalerRyddeServiceTest {
             })
             .toList();
 
-        when(avtaleRepositoryMock.finnAvtaleIderSomErPabegyntEllerManglerGodkjenning(any(UUID.class), any(Limit.class))).thenReturn(ider, List.of());
+        when(avtaleRepositoryMock.finnAvtaleIderSomErPabegyntEllerManglerGodkjenning(any(UUID.class), any(Limit.class))).thenReturn(ider);
         when(avtaleRepositoryMock.findAllById(any())).thenReturn(avtaler);
     }
 
