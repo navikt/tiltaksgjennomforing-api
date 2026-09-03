@@ -922,7 +922,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_KAN_KUN_BEHANDLES_VED_INNGAATT_AVTALE);
         }
-        if (beslutter.equals(gjeldendeInnhold.getGodkjentAvNavIdent())) {
+        if (beslutter.equals(getVeilederNavIdent()) || beslutter.equals(gjeldendeInnhold.getGodkjentAvNavIdent())) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE);
         }
         TilskuddPeriode gjeldendePeriode = getGjeldendeTilskuddsperiode();
