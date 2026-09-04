@@ -1,8 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.arena.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.logging.ArenaEventLogging;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaKafkaMessage;
@@ -47,7 +47,7 @@ public class ArenaEventProcessingService {
         try {
             ArenaKafkaMessage message = this.objectMapper.readValue(sanitize(value), ArenaKafkaMessage.class);
             create(key, message);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.error("Feil ved prosessering av Arena-event", e);
         }
     }

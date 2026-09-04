@@ -1,9 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Data;
@@ -36,17 +37,18 @@ public class FilterSok {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.readValue(this.queryParametre, AvtaleQueryParameter.class).equals(avtalePredicate);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             return false;
         }
     }
 
     public AvtaleQueryParameter getAvtalePredicate() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        ObjectMapper mapper = JsonMapper.builder()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .build();
         try {
             return mapper.readValue(this.queryParametre, AvtaleQueryParameter.class);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             return new AvtaleQueryParameter();
         }
     }

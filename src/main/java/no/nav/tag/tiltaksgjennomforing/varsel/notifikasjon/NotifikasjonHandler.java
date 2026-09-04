@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -10,7 +11,6 @@ import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.FellesRespon
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +25,7 @@ public class NotifikasjonHandler {
     public <T> T readResponse(String json, Class<T> contentClass) {
         try {
             return objectMapper.readValue(json, contentClass);
-        } catch (IOException exception) {
+        } catch (JacksonException exception) {
             log.error("objectmapper feilet med lesing av data: ", exception);
         }
         return null;

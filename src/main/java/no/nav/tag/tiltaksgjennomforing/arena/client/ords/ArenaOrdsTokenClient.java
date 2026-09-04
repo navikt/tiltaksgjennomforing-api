@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.arena.client.ords;
 
 import no.nav.tag.tiltaksgjennomforing.arena.configuration.ArenaOrdsProperties;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import org.apache.tomcat.util.codec.binary.Base64;
+import java.util.Base64;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -47,7 +47,7 @@ public class ArenaOrdsTokenClient {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.set(HttpHeaders.AUTHORIZATION, "Basic " + Base64.encodeBase64String(auth.getBytes()));
+        headers.set(HttpHeaders.AUTHORIZATION, "Basic " + Base64.getEncoder().encodeToString(auth.getBytes()));
 
         return restTemplate.postForObject(
             baseUrl + "/arena/api/oauth/token",

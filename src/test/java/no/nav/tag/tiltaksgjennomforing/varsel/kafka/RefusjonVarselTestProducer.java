@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -23,7 +23,7 @@ public class RefusjonVarselTestProducer {
         this.objectMapper = objectMapper;
     }
 
-    public void publiserMelding(String meldingId, RefusjonVarselMelding refusjonVarselMelding) throws JsonProcessingException {
+    public void publiserMelding(String meldingId, RefusjonVarselMelding refusjonVarselMelding) throws JacksonException {
         String melding = objectMapper.writeValueAsString(refusjonVarselMelding);
 
         kafkaTemplate.send(Topics.TILTAK_VARSEL, meldingId, melding).whenComplete((result, ex) -> {

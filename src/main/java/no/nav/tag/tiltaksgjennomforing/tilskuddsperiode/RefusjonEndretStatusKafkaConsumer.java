@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
@@ -29,7 +29,7 @@ public class RefusjonEndretStatusKafkaConsumer {
     }
 
     @KafkaListener(topics = Topics.REFUSJON_ENDRET_STATUS)
-    public void refusjonEndretStatus(String melding) throws JsonProcessingException {
+    public void refusjonEndretStatus(String melding) throws JacksonException {
         RefusjonEndretStatusMelding refusjonEndretStatusMelding = objectMapper.readValue(melding, RefusjonEndretStatusMelding.class);
         TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(UUID.fromString(refusjonEndretStatusMelding.getTilskuddsperiodeId())).orElseThrow();
         if(tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
