@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
@@ -41,7 +41,7 @@ class MentorTilskuddsperioderTest {
 
 
     @Test
-    void avtaleInngåttMentorTilskuddsperioder() throws JsonProcessingException {
+    void avtaleInngåttMentorTilskuddsperioder() throws JacksonException {
         Avtale avtale = TestData.enMentorAvtaleUsignert();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         Mentor mentor = TestData.enMentor(avtale);
@@ -115,13 +115,13 @@ class MentorTilskuddsperioderTest {
         AvtaleTest.testAtHvertEnkeltFeltMangler(avtale, mentorfelter, avtale.getTiltakstype());
     }
 
-    private void assertIngenIngåttMelding(UUID avtaleId) throws JsonProcessingException {
+    private void assertIngenIngåttMelding(UUID avtaleId) throws JacksonException {
         assertThat(avtaleMeldingEntitetRepository.findAllByAvtaleId(avtaleId))
             .filteredOn(avtaleMelding -> avtaleMelding.getHendelseType() == HendelseType.AVTALE_INNGÅTT)
             .isEmpty();
     }
 
-    private void assertIngåttMeldingOpprettetOgIngått(UUID avtaleId) throws JsonProcessingException {
+    private void assertIngåttMeldingOpprettetOgIngått(UUID avtaleId) throws JacksonException {
         assertThat(avtaleMeldingEntitetRepository.findAllByAvtaleId(avtaleId))
             .filteredOn(avtaleMelding ->
                 avtaleMelding.getHendelseType() == HendelseType.AVTALE_INNGÅTT &&

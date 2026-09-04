@@ -14,9 +14,9 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -34,9 +34,9 @@ import static org.mockito.Mockito.when;
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class VtaoTest {
-    @MockBean
+    @MockitoBean
     private InnloggingService innloggingService;
-    @MockBean
+    @MockitoBean
     private TilgangskontrollService tilgangskontrollService;
     @Mock
     private PersondataService persondataService;
@@ -44,7 +44,7 @@ public class VtaoTest {
     private VeilarbService veilarbService;
     @Mock
     private Norg2Client norg2Client;
-    @MockBean
+    @MockitoBean
     private FeatureToggleService featureToggleService;
 
     @BeforeEach

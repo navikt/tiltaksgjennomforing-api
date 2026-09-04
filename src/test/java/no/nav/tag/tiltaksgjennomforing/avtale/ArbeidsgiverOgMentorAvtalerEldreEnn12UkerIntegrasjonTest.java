@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
@@ -33,7 +33,7 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
     @Autowired
     private AvtaleRepository avtaleRepository;
 
-    @MockBean
+    @MockitoBean
     private TilskuddPeriodeRepository tilskuddPeriodeRepository;
 
     @Autowired
@@ -45,16 +45,16 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
     @Autowired
     private AvtaleInnholdRepository avtaleInnholdRepository;
 
-    @MockBean
+    @MockitoBean
     private DvhMeldingEntitetRepository dvhMeldingEntitetRepository;
 
-    @MockBean
+    @MockitoBean
     private AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
 
-    @MockBean
+    @MockitoBean
     private ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
 
-    @MockBean
+    @MockitoBean
     private MetrikkRegistrering metrikkRegistrering;
 
     @BeforeEach

@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.arena.client.acl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import no.nav.tag.tiltaksgjennomforing.arena.configuration.AktivitetArenaAclProperties;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -59,7 +59,7 @@ public class AktivitetArenaAclClient {
 
         try {
             return objectMapper.readValue(body, UUID.class);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException("Svar fra aktivitetsplanen er ikke en gyldig UUID: " + body);
         }
     }

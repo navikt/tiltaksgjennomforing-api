@@ -6,7 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.datavarehus.AvroTiltakHendelse;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -27,7 +27,7 @@ public class DvhMeldingKafkaConfiguration {
     }
 
     private Map<String, Object> producerConfigs(KafkaProperties kafkaProperties) {
-        Map<String, Object> props = kafkaProperties.buildProducerProperties(null);
+        Map<String, Object> props = kafkaProperties.buildProducerProperties();
 
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);

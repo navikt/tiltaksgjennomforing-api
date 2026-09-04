@@ -1,9 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.json.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -15,9 +15,9 @@ import org.springframework.stereotype.Component;
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 public class AuditKafkaLogger implements AuditLogger {
     private final KafkaTemplate<String, String> auditKafkaTemplate;
-    private final ObjectMapper mapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule())
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    private final ObjectMapper mapper = JsonMapper.builder()
+            .configure(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+            .build();
 
     public AuditKafkaLogger(KafkaTemplate<String, String> kafkaTemplate) {
         this.auditKafkaTemplate = kafkaTemplate;
@@ -31,7 +31,7 @@ public class AuditKafkaLogger implements AuditLogger {
                     log.error("Audit-hendelse kunne ikke sendes til Kafka topic {}", Topics.AUDIT_HENDELSE, ex);
                 }
             });
-        } catch (JsonProcessingException ex) {
+        } catch (JacksonException ex) {
             log.error("Audit-hendelse kunne ikke serialiseres til Kafkamelding", ex);
         }
     }

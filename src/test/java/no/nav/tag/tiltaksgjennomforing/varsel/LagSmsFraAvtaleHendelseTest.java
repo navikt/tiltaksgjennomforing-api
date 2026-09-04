@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -46,7 +46,7 @@ class LagSmsFraAvtaleHendelseTest {
     private static final String FAGSYSTEMSONE_VARSELTEKST = "Du har mottatt et nytt varsel på https://tiltaksgjennomforing.intern.nav.no/tiltaksgjennomforing";
 
     @Test
-    void avtaleDeltMedAvtalepart__skal_opprette_sms_til_riktig_mottaker() throws JsonProcessingException {
+    void avtaleDeltMedAvtalepart__skal_opprette_sms_til_riktig_mottaker() throws JacksonException {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         avtale.getGjeldendeInnhold().setDeltakerTlf("42234567");
@@ -63,7 +63,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void avtaleGodkjent() throws JsonProcessingException {
+    void avtaleGodkjent() throws JacksonException {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         Deltaker deltaker = TestData.enDeltaker(avtale);
@@ -76,7 +76,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_somerjobb_klar() throws JsonProcessingException {
+    void refusjon_somerjobb_klar() throws JacksonException {
         Avtale avtale = TestData.enSommerjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
@@ -90,7 +90,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_midlertidig_lonnstilskudd_klar() throws JsonProcessingException {
+    void refusjon_midlertidig_lonnstilskudd_klar() throws JacksonException {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
@@ -103,7 +103,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_varig_lonnstilskudd_Klar() throws JsonProcessingException {
+    void refusjon_varig_lonnstilskudd_Klar() throws JacksonException {
         Avtale avtale = TestData.enVarigLonnstilskuddsjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
@@ -116,7 +116,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_mentor_klar() throws JsonProcessingException {
+    void refusjon_mentor_klar() throws JacksonException {
         Avtale avtale = TestData.enMentorAvtaleUsignert();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         LocalDate fristForGodkjenning = LocalDate.of(2022, 04, 05);
@@ -129,7 +129,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_arbeidstrening_klar() throws JsonProcessingException {
+    void refusjon_arbeidstrening_klar() throws JacksonException {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
@@ -143,7 +143,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_sommerjobb_klar_revarsel() throws JsonProcessingException {
+    void refusjon_sommerjobb_klar_revarsel() throws JacksonException {
         Avtale avtale = TestData.enSommerjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
@@ -155,7 +155,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_midlertidig_lonnstilskudd_klar_revarsel() throws JsonProcessingException {
+    void refusjon_midlertidig_lonnstilskudd_klar_revarsel() throws JacksonException {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
@@ -167,7 +167,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_varig_lonnstilskudd_klar_revarsel() throws JsonProcessingException {
+    void refusjon_varig_lonnstilskudd_klar_revarsel() throws JacksonException {
         Avtale avtale = TestData.enVarigLonnstilskuddsjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
@@ -179,7 +179,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_mentor_klar_revarsel() throws JsonProcessingException {
+    void refusjon_mentor_klar_revarsel() throws JacksonException {
         Avtale avtale = TestData.enMentorAvtaleUsignert();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
@@ -191,7 +191,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_arbeidstrening_klar_revarsel() throws JsonProcessingException {
+    void refusjon_arbeidstrening_klar_revarsel() throws JacksonException {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
@@ -203,7 +203,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_sommerjobb_frist_forlenget() throws JsonProcessingException {
+    void refusjon_sommerjobb_frist_forlenget() throws JacksonException {
         Avtale avtale = TestData.enSommerjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         // I et reelt scenario kan ikke refusjonFristForlenget bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
@@ -214,7 +214,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_midlertidig_lonnstilskudd_frist_forlenget() throws JsonProcessingException {
+    void refusjon_midlertidig_lonnstilskudd_frist_forlenget() throws JacksonException {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         // I et reelt scenario kan ikke refusjonFristForlenget bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
@@ -225,7 +225,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_varig_lonnstilskudd_frist_forlenget() throws JsonProcessingException {
+    void refusjon_varig_lonnstilskudd_frist_forlenget() throws JacksonException {
         Avtale avtale = TestData.enVarigLonnstilskuddsjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         // I et reelt scenario kan ikke refusjonFristForlenget bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
@@ -237,7 +237,7 @@ class LagSmsFraAvtaleHendelseTest {
 
 
     @Test
-    void refusjon_mentor_frist_forlenget() throws JsonProcessingException {
+    void refusjon_mentor_frist_forlenget() throws JacksonException {
         Avtale avtale = TestData.enMentorAvtaleUsignert();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         // I et reelt scenario kan ikke refusjonFristForlenget bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
@@ -248,7 +248,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_arbeidstrening_frist_forlenget() throws JsonProcessingException {
+    void refusjon_arbeidstrening_frist_forlenget() throws JacksonException {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         // I et reelt scenario kan ikke refusjonFristForlenget bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
@@ -259,7 +259,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_sommerjobb_korrigert() throws JsonProcessingException {
+    void refusjon_sommerjobb_korrigert() throws JacksonException {
         Avtale avtale = TestData.enSommerjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         // I et reelt scenario kan ikke refusjonKorrigert bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
@@ -270,7 +270,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_midlertidig_lonnstilskudd_korrigert() throws JsonProcessingException {
+    void refusjon_midlertidig_lonnstilskudd_korrigert() throws JacksonException {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         // I et reelt scenario kan ikke refusjonKorrigert bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
@@ -281,7 +281,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_varig_lonnstilskudd_korrigert() throws JsonProcessingException {
+    void refusjon_varig_lonnstilskudd_korrigert() throws JacksonException {
         Avtale avtale = TestData.enVarigLonnstilskuddsjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         // I et reelt scenario kan ikke refusjonKorrigert bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
@@ -292,7 +292,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_mentor_korrigert() throws JsonProcessingException {
+    void refusjon_mentor_korrigert() throws JacksonException {
         Avtale avtale = TestData.enMentorAvtaleUsignert();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         // I et reelt scenario kan ikke refusjonKorrigert bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
@@ -303,7 +303,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjon_arbeidstrening_korrigert() throws JsonProcessingException {
+    void refusjon_arbeidstrening_korrigert() throws JacksonException {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         // I et reelt scenario kan ikke refusjonKorrigert bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
@@ -315,7 +315,7 @@ class LagSmsFraAvtaleHendelseTest {
 
 
     @Test
-    void refusjonKorrigertKontaktperson__begge_skal_få_sms() throws JsonProcessingException {
+    void refusjonKorrigertKontaktperson__begge_skal_få_sms() throws JacksonException {
         Avtale avtale = TestData.enSommerjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         RefusjonKontaktperson refusjonKontaktperson = new RefusjonKontaktperson("Per", "Persen", "49876543", true);
@@ -329,7 +329,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjonKorrigertKontaktperson__bare_kontaktperson_skal_få_sms() throws JsonProcessingException {
+    void refusjonKorrigertKontaktperson__bare_kontaktperson_skal_få_sms() throws JacksonException {
         Avtale avtale = TestData.enSommerjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         RefusjonKontaktperson refusjonKontaktperson = new RefusjonKontaktperson("Per", "Persen", "49876543", false);
@@ -342,7 +342,7 @@ class LagSmsFraAvtaleHendelseTest {
         assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), meldingstekst);
     }
 
-    private void assertSmsOpprettetOgSendt(HendelseType hendelseType, UUID avtaleId, String telefonnummer, String meldingstekst) throws JsonProcessingException {
+    private void assertSmsOpprettetOgSendt(HendelseType hendelseType, UUID avtaleId, String telefonnummer, String meldingstekst) throws JacksonException {
         assertThat(smsRepository.findAll())
                 .filteredOn(sms -> sms.getHendelseType() == hendelseType
                         && sms.getAvtaleId().equals(avtaleId)
@@ -356,7 +356,7 @@ class LagSmsFraAvtaleHendelseTest {
                 && sms.getMeldingstekst().equals(meldingstekst)));
     }
 
-    private void assertSmsIkkeOpprettetEllerSendt(HendelseType hendelseType, UUID avtaleId, String telefonnummer, String meldingstekst) throws JsonProcessingException {
+    private void assertSmsIkkeOpprettetEllerSendt(HendelseType hendelseType, UUID avtaleId, String telefonnummer, String meldingstekst) throws JacksonException {
         assertThat(smsRepository.findAll())
                 .filteredOn(sms -> sms.getHendelseType() == hendelseType
                         && sms.getAvtaleId().equals(avtaleId)
