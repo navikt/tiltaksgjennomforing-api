@@ -25,7 +25,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.service.gjeldendetilskuddsperiode.GjeldendeTilskuddsperiodeJobbService;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
@@ -566,53 +565,5 @@ public class AdminController {
             avtaleRepository.saveAll(avtaler);
         }
         return resultat;
-    }
-
-    @Transactional
-    @PostMapping("/avtale/fikse-mlt-med-feil-innsatsgruppe")
-    public ResponseEntity<Void> fikseMidlertidigLtsMedFeilInnsatsgruppe() {
-        List<Avtale> avtaler = avtaleRepository.findAllById(List.of(
-                UUID.fromString("08cb4a30-3b13-4db5-9b4f-6f14a29df45c"),
-                UUID.fromString("532e9186-abd3-40c8-a6c1-38eb2b84de9e"),
-                UUID.fromString("6106ff44-c67a-4bb6-965d-56060d89965a"),
-                UUID.fromString("d882dec1-ca7a-4631-8cb3-c2ee0d24861a"),
-                UUID.fromString("0a7846bb-d977-4a5c-9e56-b29d62cab0fc"),
-                UUID.fromString("8d83429e-d157-4cb0-ac93-d244c761a9a3"),
-                UUID.fromString("9f452051-8a60-4de6-bce6-507151ae79a5"),
-                UUID.fromString("b6d8a832-4b35-4cb9-a9e7-8f56a45dfd92"),
-                UUID.fromString("b8e998fc-9ab5-46df-b7c9-919b8046c583"),
-                UUID.fromString("08f3b184-3bc2-47d0-9747-b71867076a60"),
-                UUID.fromString("69308d0e-e35a-43eb-a386-3f426993d9b8"),
-                UUID.fromString("f86fa231-4ab0-4e9f-b09a-2ceabc7958df"),
-                UUID.fromString("559ba719-08cf-44bd-8ad6-68b7615cc627"),
-                UUID.fromString("c131234d-79f6-4346-bead-3db61062034b"),
-                UUID.fromString("a7fc214a-1604-4ed5-8ba6-897bef3b08b6"),
-                UUID.fromString("c4dde15d-f239-4fda-8e14-208c0a83180e")
-            )
-        );
-
-        avtaler.forEach(avtale -> {
-           if (!Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD.equals(avtale.getTiltakstype())) {
-               return;
-           }
-           if (!Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS.equals(avtale.getKvalifiseringsgruppe())) {
-               return;
-           }
-           if (Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS.getInnsatsgruppe().equals(avtale.getInnsatsgruppe())) {
-               return;
-           }
-
-            log.info(
-                "Avtale {} har feil innsatsgruppe {}. Skulle vært {} (som var kvalifiseringsgruppe ved avtaleinngåelse). " +
-                "Nuller ut slik at veileder må hente den på ny.",
-                avtale.getId(),
-                avtale.getInnsatsgruppe(),
-                Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS.getInnsatsgruppe()
-            );
-           avtale.setInnsatsgruppe(null);
-           avtaleRepository.save(avtale);
-        });
-
-        return ResponseEntity.ok().build();
     }
 }
