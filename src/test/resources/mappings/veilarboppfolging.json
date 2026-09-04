@@ -7,7 +7,7 @@
         "urlPattern": "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus",
         "bodyPatterns": [
           {
-            "equalToJson": "{\"fnr\":\"31129118213\"}",
+            "equalToJson": "{\"fnr\":\"07518815401\"}",
             "ignoreArrayOrder": true
           }
         ]
@@ -36,7 +36,7 @@
         "urlPattern": "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus",
         "bodyPatterns": [
           {
-            "equalToJson": "{\"fnr\":\"02104317386\"}",
+            "equalToJson": "{\"fnr\":\"10526244570\"}",
             "ignoreArrayOrder": true
           }
         ]
@@ -65,7 +65,7 @@
         "urlPattern": "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus",
         "bodyPatterns": [
           {
-            "equalToJson": "{\"fnr\":\"09019621658\"}",
+            "equalToJson": "{\"fnr\":\"14443543733\"}",
             "ignoreArrayOrder": true
           }
         ]
@@ -155,7 +155,7 @@
         "urlPath": "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus",
         "bodyPatterns": [
           {
-            "equalToJson": "{\"fnr\":\"06109845173\"}",
+            "equalToJson": "{\"fnr\":\"11427290672\"}",
             "ignoreArrayOrder": true
           }
         ]

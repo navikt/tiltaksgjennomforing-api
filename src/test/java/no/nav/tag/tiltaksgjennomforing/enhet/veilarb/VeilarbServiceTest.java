@@ -44,7 +44,7 @@ class VeilarbServiceTest {
 
     @Test
     public void sjekkAt_kvalifiseringsgruppe_som_faller_utenfor_kaster_exception() {
-        String fnr_har_kvalifiseringsgruppe_med_kode_IVURD = "02104317386";
+        String fnr_har_kvalifiseringsgruppe_med_kode_IVURD = "10526244570";
         final Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setDeltakerFnr(new Fnr(fnr_har_kvalifiseringsgruppe_med_kode_IVURD));
         avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
@@ -85,7 +85,7 @@ class VeilarbServiceTest {
 
     @Test
     public void hent_oppfølging_status() {
-        Oppfølgingsstatus oppfølgingStatus = veilarbService.hentOppfolging(Fnr.fraDb("01056210306"));
+        Oppfølgingsstatus oppfølgingStatus = veilarbService.hentOppfolging(Fnr.fraDb("24469412950"));
 
         assertThat(oppfølgingStatus.getFormidlingsgruppe().getKode()).isEqualTo(("ARBS"));
         assertThat(oppfølgingStatus.getKvalifiseringsgruppe().getKvalifiseringskode()).isEqualTo(("VARIG"));
