@@ -75,7 +75,7 @@ public class CachingConfigTest {
         final NavEnhet oppfolgingNavEnhet = TestData.ENHET_OPPFØLGING;
         final String ETT_FNR_NR = "00000000000";
         final String ETT_FNR_NR2 = "11111111111";
-        final String ETT_FNR_NR3 = "22127748067";
+        final String ETT_FNR_NR3 = "10460928627";
 
         Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
         avtale.setDeltakerFnr(new Fnr(ETT_FNR_NR));

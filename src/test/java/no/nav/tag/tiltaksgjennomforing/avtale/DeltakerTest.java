@@ -55,7 +55,7 @@ public class DeltakerTest {
         Now.fixedDate(LocalDate.of(2021, 1, 20));
         Avtale avtale = Avtale.opprett(
             new OpprettAvtale(
-                new Fnr("30015521534"),
+                new Fnr("31475498774"),
                 TestData.etBedriftNr(),
                 Tiltakstype.VARIG_LONNSTILSKUDD
             ), Avtaleopphav.VEILEDER, TestData.enNavIdent()

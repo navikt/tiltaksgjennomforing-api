@@ -1100,7 +1100,7 @@ public class VeilederTest {
     public void oppdaterOppfølgingOgGeoEnhetEtterForespørsel_skal_endre_oppfølgingsenhet_men_ikke_noe_annet() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setEnhetOppfolging("0101");
-        avtale.setDeltakerFnr(new Fnr("31129118213"));
+        avtale.setDeltakerFnr(new Fnr("07518815401"));
         avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING);
         Veileder veileder = TestData.enVeileder(avtale);
 

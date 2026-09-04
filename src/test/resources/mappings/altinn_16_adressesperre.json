@@ -7,7 +7,7 @@
         "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",
         "queryParameters": {
           "subject": {
-            "equalTo": "16021877674"
+            "equalTo": "25489746932"
           },
           "serviceCode": {
             "equalTo": "5516"
@@ -48,7 +48,7 @@
         "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",
         "queryParameters": {
           "subject": {
-            "equalTo": "16021877674"
+            "equalTo": "25489746932"
           },
           "serviceCode": {
             "equalTo": "5516"
@@ -89,7 +89,7 @@
         "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",
         "queryParameters": {
           "subject": {
-            "equalTo": "16021877674"
+            "equalTo": "25489746932"
           },
           "serviceCode": {
             "absent": true
