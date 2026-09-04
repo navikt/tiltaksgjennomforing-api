@@ -430,7 +430,7 @@ public class AvtaleControllerTest {
     public void hentAlleAvtalerInnloggetBrukerHarTilgangTilSkalIkkeReturnereAvtalerManIkkeHarTilgangTil() {
         Avtale avtaleMedTilgang = TestData.enArbeidstreningAvtale();
         Avtale avtaleUtenTilgang = Avtale.opprett(
-                new OpprettAvtale(new Fnr("01039513753"), new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING),
+                new OpprettAvtale(new Fnr("05466399770"), new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING),
                 Avtaleopphav.VEILEDER,
                 new NavIdent("X643564")
         );

@@ -191,7 +191,7 @@ public class TestData {
         // TODO: Skal en avtale med opphav Arena bli generert på en mer realistisk måte, feks ved å kalle ArenaMigreringService.createAvtale(..)?
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate());
         avtale.endreAvtale(endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER);
-        avtale.setDeltakerFnr(new Fnr("17120276662"));
+        avtale.setDeltakerFnr(new Fnr("30485048738"));
         avtale.getGjeldendeInnhold().setDeltakerFornavn("ARENA");
         avtale.getGjeldendeInnhold().setDeltakerEtternavn("Opphav");
         return avtale;
@@ -199,7 +199,7 @@ public class TestData {
     public static Avtale enMentorArenaAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.opprett(lagOpprettMentorAvtale(Tiltakstype.MENTOR), Avtaleopphav.ARENA, veilderNavIdent);
-        avtale.setDeltakerFnr(new Fnr("17120276662"));
+        avtale.setDeltakerFnr(new Fnr("30485048738"));
         avtale.getGjeldendeInnhold().setDeltakerFornavn("ARENA2");
         avtale.getGjeldendeInnhold().setDeltakerEtternavn("Opphav2");
         // Kan ikke endre startdato på arena-avtale, så endringen i endreAvtale feiler uten denne
@@ -584,7 +584,7 @@ public class TestData {
     public static Avtale enMentorArenaAvtaleMedAltUtfyltMedSluttDatoTilbakeITid() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.opprett(lagOpprettMentorAvtale(Tiltakstype.MENTOR), Avtaleopphav.ARENA, veilderNavIdent);
-        avtale.setDeltakerFnr(new Fnr("17120276662"));
+        avtale.setDeltakerFnr(new Fnr("30485048738"));
         avtale.getGjeldendeInnhold().setDeltakerFornavn("ARENA2");
         avtale.getGjeldendeInnhold().setDeltakerEtternavn("Opphav2");
         // Kan ikke endre startdato på arena-avtale, så endringen i endreAvtale feiler uten denne
@@ -738,7 +738,7 @@ public class TestData {
     private static OpprettMentorAvtale lagOpprettMentorAvtale(Tiltakstype tiltakstype) {
         Fnr deltakerFnr = new Fnr("00000000000");
         BedriftNr bedriftNr = new BedriftNr("999999999");
-        Fnr mentorFnr =  new Fnr("23090170716");
+        Fnr mentorFnr =  new Fnr("10489244638");
         return new OpprettMentorAvtale(deltakerFnr, mentorFnr, bedriftNr, tiltakstype, Avtalerolle.VEILEDER);
     }
 

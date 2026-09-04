@@ -632,7 +632,7 @@ public class AvtaleTest {
 
     @Test
     public void nyAvtaleFactorySkalReturnereRiktigeStandardverdier() {
-        Fnr deltakerFnr = new Fnr("23078637692");
+        Fnr deltakerFnr = new Fnr("28429493813");
 
         NavIdent veilederNavIdent = new NavIdent("X123456");
         BedriftNr bedriftNr = new BedriftNr("000111222");
@@ -683,7 +683,7 @@ public class AvtaleTest {
     public void nyAvtaleSkalFeileHvisManglerArbeidsgiver() {
         assertThatThrownBy(() -> Avtale.opprett(
             new OpprettAvtale(
-                new Fnr("23078637692"),
+                new Fnr("28429493813"),
                 null,
                 Tiltakstype.ARBEIDSTRENING
             ), Avtaleopphav.VEILEDER, new NavIdent("X123456")
@@ -694,7 +694,7 @@ public class AvtaleTest {
     public void nyAvtaleSkalFeileHvisManglerVeileder() {
         assertThatThrownBy(() -> Avtale.opprett(
             new OpprettAvtale(
-                new Fnr("23078637692"),
+                new Fnr("28429493813"),
                 new BedriftNr("000111222"),
                 Tiltakstype.ARBEIDSTRENING
             ), Avtaleopphav.VEILEDER, null
@@ -722,7 +722,7 @@ public class AvtaleTest {
             Feilkode.SOMMERJOBB_FOR_GAMMEL,
             () -> Avtale.opprett(
                 new OpprettAvtale(
-                    new Fnr("08098114468"),
+                    new Fnr("27446635765"),
                     new BedriftNr("000111222"),
                     Tiltakstype.SOMMERJOBB
                 ), Avtaleopphav.VEILEDER, null
@@ -1715,7 +1715,7 @@ public class AvtaleTest {
     @Test
     public void godkjenn_avtale_skal_ikke_gå_hvis_over_72() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        Fnr fnr = new Fnr("07075014443");
+        Fnr fnr = new Fnr("04518124647");
         avtale.setDeltakerFnr(fnr);
         Deltaker deltaker = TestData.enDeltaker(avtale);
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);

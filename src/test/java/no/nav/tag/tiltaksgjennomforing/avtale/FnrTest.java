@@ -74,11 +74,11 @@ public class FnrTest {
     @Test
     public void testFnr1() {
         Now.fixedDate(LocalDate.of(2021, 12, 20));
-        Fnr fnrOver16 = new Fnr("29110976648");
+        Fnr fnrOver16 = new Fnr("13459803674");
         assertThat(fnrOver16.erUnder16år()).isTrue();
         assertThat(fnrOver16.erOver30år()).isFalse();
 
-        fnrOver16 = Fnr.fraDb("29110976648");
+        fnrOver16 = Fnr.fraDb("13459803674");
         assertThat(fnrOver16.erUnder16år()).isTrue();
         assertThat(fnrOver16.erOver30år()).isFalse();
 
@@ -88,11 +88,11 @@ public class FnrTest {
     @Test
     public void testFnr2() {
         Now.fixedDate(LocalDate.of(2021, 12, 20));
-        Fnr fnr = new Fnr("19109613897");
+        Fnr fnr = new Fnr("15433330207");
         assertThat(fnr.erUnder16år()).isFalse();
         assertThat(fnr.erOver30år()).isFalse();
 
-        fnr = Fnr.fraDb("19109613897");
+        fnr = Fnr.fraDb("15433330207");
         assertThat(fnr.erUnder16år()).isFalse();
         assertThat(fnr.erOver30år()).isFalse();
 
@@ -102,11 +102,11 @@ public class FnrTest {
     @Test
     public void testFnr3() {
         Now.fixedDate(LocalDate.of(2021, 12, 20));
-        Fnr fnr = new Fnr("25128626630");
+        Fnr fnr = new Fnr("13507127384");
         assertThat(fnr.erOver30år()).isTrue();
         assertThat(fnr.erUnder16år()).isFalse();
 
-        fnr = Fnr.fraDb("25128626630");
+        fnr = Fnr.fraDb("13507127384");
         assertThat(fnr.erOver30år()).isTrue();
         assertThat(fnr.erUnder16år()).isFalse();
 
@@ -116,11 +116,11 @@ public class FnrTest {
     @Test
     public void testFnr4() {
         Now.fixedDate(LocalDate.of(2021, 12, 20));
-        Fnr fnr = new Fnr("23029149054");
+        Fnr fnr = new Fnr("25506715337");
         assertThat(fnr.erOver30årFørsteJanuar()).isFalse();
         assertThat(fnr.erUnder16år()).isFalse();
 
-        fnr = Fnr.fraDb("23029149054");
+        fnr = Fnr.fraDb("25506715337");
         assertThat(fnr.erOver30årFørsteJanuar()).isFalse();
         assertThat(fnr.erUnder16år()).isFalse();
 
@@ -132,11 +132,11 @@ public class FnrTest {
         Now.fixedDate(LocalDate.of(2021, 12, 20));
         LocalDate startDato = LocalDate.of(2022, 1, 5);
 
-        Fnr fnr = new Fnr("23029149054");
+        Fnr fnr = new Fnr("25506715337");
         assertThat(fnr.erOver30årFørsteJanuar()).isFalse();
         assertThat(fnr.erOver30årFraOppstartDato(startDato)).isTrue();
 
-        fnr = Fnr.fraDb("23029149054");
+        fnr = Fnr.fraDb("25506715337");
         assertThat(fnr.erOver30årFørsteJanuar()).isFalse();
         assertThat(fnr.erOver30årFraOppstartDato(startDato)).isTrue();
 
@@ -146,11 +146,11 @@ public class FnrTest {
     @Test
     public void testDnr1() {
         Now.fixedDate(LocalDate.of(2023, 11, 1));
-        Fnr fnr = new Fnr("49120799125");
+        Fnr fnr = new Fnr("26490929648");
         assertThat(fnr.erUnder16år()).isTrue();
         assertThat(fnr.erOver30år()).isFalse();
 
-        fnr = Fnr.fraDb("49120799125");
+        fnr = Fnr.fraDb("26490929648");
         assertThat(fnr.erUnder16år()).isTrue();
         assertThat(fnr.erOver30år()).isFalse();
 
@@ -160,11 +160,11 @@ public class FnrTest {
     @Test
     public void testDnr2() {
         Now.fixedDate(LocalDate.of(2023, 12, 1));
-        Fnr fnr = new Fnr("64090099076");
+        Fnr fnr = new Fnr("05449314524");
         assertThat(fnr.erUnder16år()).isFalse();
         assertThat(fnr.erOver30år()).isFalse();
 
-        fnr = Fnr.fraDb("64090099076");
+        fnr = Fnr.fraDb("05449314524");
         assertThat(fnr.erUnder16år()).isFalse();
         assertThat(fnr.erOver30år()).isFalse();
 
@@ -206,7 +206,7 @@ public class FnrTest {
         assertThat(Fnr.fraDb("00000000000").hashCode()).isEqualTo(new Fnr("00000000000").hashCode());
         assertThat(new Fnr("12345678910").hashCode()).isEqualTo(Fnr.fraDb("12345678910").hashCode());
 
-        assertThat(Fnr.fraDb("01015808566")).isEqualTo(new Fnr("01015808566"));
+        assertThat(Fnr.fraDb("29462114573")).isEqualTo(new Fnr("29462114573"));
     }
 
     @Test
@@ -218,7 +218,7 @@ public class FnrTest {
         assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate().plusDays(1))).isTrue();
         assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate().minusDays(1))).isFalse();
 
-        fnr = Fnr.fraDb("01015808566");
+        fnr = Fnr.fraDb("29462114573");
         assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate())).isTrue();
         assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate().plusDays(1))).isTrue();
         assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate().minusDays(1))).isFalse();

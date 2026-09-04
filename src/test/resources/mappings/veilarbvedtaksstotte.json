@@ -43,7 +43,7 @@
         "method": "POST",
         "urlPattern": "/veilarbvedtaksstotte/api/ekstern/hent-gjeldende-14a-vedtak",
         "bodyPatterns": [
-          { "matches": ".*\"fnr\":\"02104317386\".*" }
+          { "matches": ".*\"fnr\":\"10526244570\".*" }
         ]
       },
       "response": {
