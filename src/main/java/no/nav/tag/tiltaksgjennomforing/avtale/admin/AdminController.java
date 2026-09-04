@@ -570,7 +570,7 @@ public class AdminController {
 
     @Transactional
     @PostMapping("/avtale/fikse-mlt-med-feil-innsatsgruppe")
-    public ResponseEntity<UUID> fikseMidlertidigLtsMedFeilInnsatsgruppe() {
+    public ResponseEntity<Void> fikseMidlertidigLtsMedFeilInnsatsgruppe() {
         List<Avtale> avtaler = avtaleRepository.findAllById(List.of(
                 UUID.fromString("08cb4a30-3b13-4db5-9b4f-6f14a29df45c"),
                 UUID.fromString("532e9186-abd3-40c8-a6c1-38eb2b84de9e"),
