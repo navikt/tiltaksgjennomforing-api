@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
@@ -26,7 +26,7 @@ public class RefusjonVarselConsumer {
     }
 
     @KafkaListener(topics = Topics.TILTAK_VARSEL)
-    public void consume(String melding) throws JsonProcessingException {
+    public void consume(String melding) throws JacksonException {
         RefusjonVarselMelding refusjonVarselMelding = objectMapper.readValue(melding, RefusjonVarselMelding.class);
         Avtale avtale = avtaleRepository.findById(refusjonVarselMelding.getAvtaleId()).orElseThrow(RuntimeException::new);
         VarselType varselType = refusjonVarselMelding.getVarselType();

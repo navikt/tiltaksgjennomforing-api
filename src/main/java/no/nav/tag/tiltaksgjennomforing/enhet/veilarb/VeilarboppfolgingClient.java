@@ -9,8 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -33,7 +32,7 @@ class VeilarboppfolgingClient {
         this.properties = properties;
     }
 
-    @Retryable(backoff = @Backoff(delayExpression = "${tiltaksgjennomforing.retry.delay}", maxDelayExpression = "${tiltaksgjennomforing.retry.max-delay}", multiplier = 2))
+    @Retryable(delayString = "${tiltaksgjennomforing.retry.delay}", maxDelayString = "${tiltaksgjennomforing.retry.max-delay}", multiplier = 2, maxRetries = 2)
     @Cacheable(CacheConfig.VEILARBOPPFOLGING_CACHE)
     public Optional<HentOppfolgingsstatusRespons> hentOppfolgingsstatus(HentOppfolgingsstatusRequest request) {
         log.info("Henter oppfølgingenhet fra veilarboppfolging");

@@ -12,7 +12,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
-import org.springframework.kafka.test.EmbeddedKafkaZKBroker;
+import org.springframework.kafka.test.EmbeddedKafkaKraftBroker;
 
 import java.util.Map;
 
@@ -25,9 +25,9 @@ public class LokalConfiguration {
   public EmbeddedKafkaBroker lokalKafkaBroker(ArenaKafkaProperties arenaKafkaProperties) {
     log.info("Starter lokal Kafka");
 
-    return new EmbeddedKafkaZKBroker(
+    return new EmbeddedKafkaKraftBroker(
         1,
-        true,
+        1,
         arenaKafkaProperties.getTiltakdeltakerEndretTopic(),
         arenaKafkaProperties.getTiltakgjennomforingEndretTopic()
     ).kafkaPorts(3333);

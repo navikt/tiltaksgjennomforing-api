@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
@@ -49,7 +49,7 @@ class RefusjonVarselConsumerTest {
     private EmbeddedKafkaBroker embeddedKafkaBroker;
 
      @Test
-     public void skal_sende_sms_når_det_leses_varsel_kafkamelding() throws InterruptedException, JsonProcessingException {
+     public void skal_sende_sms_når_det_leses_varsel_kafkamelding() throws InterruptedException, JacksonException {
          Now.fixedDate(LocalDate.of(2021, 6, 1));
          Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvBeslutter();
          avtale = avtaleRepository.save(avtale);
