@@ -9,7 +9,6 @@ import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleInnholdDTO;
-import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.OppdaterMentorFnrRequest;
 import no.nav.tag.tiltaksgjennomforing.pdfgen.PdfgenService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -989,31 +988,6 @@ public class AvtaleController {
             avtale
         );
         return new AvtaleDTO(avtaleRepository.save(avtale));
-    }
-
-    @PatchMapping("/{avtaleId}/oppdater-mentor-fnr")
-    public AvtaleDTO oppdaterMentorFnr(
-        @PathVariable("avtaleId") UUID avtaleId,
-        @RequestBody OppdaterMentorFnrRequest mentorFnrRequest,
-        @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret
-    ) {
-        Fnr mentorFnr = mentorFnrRequest.mentorFnr();
-        Veileder veileder = innloggingService.hentVeileder();
-        Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(this::sjekkSkrivebeskyttelse)
-            .map(sjekkeSistEndret(sistEndret))
-            .orElseThrow(RessursFinnesIkkeException::new);
-
-        veileder.oppdaterMentorFnrForMigrertAvtale(mentorFnr, avtale);
-        Navn mentorNavn = persondataService.hentNavn(mentorFnr);
-        EndreAvtale endreAvtale = EndreAvtale.fraAvtale(avtale);
-        endreAvtale.setMentorFornavn(mentorNavn.fornavn());
-        endreAvtale.setMentorEtternavn(mentorNavn.etternavn());
-        veileder.endreAvtale(endreAvtale, avtale);
-
-        avtaleRepository.save(avtale);
-
-        return veileder.hentAvtale(avtaleRepository, avtaleId);
     }
 
     private Avtale sjekkSkrivebeskyttelse(Avtale avtale) {
