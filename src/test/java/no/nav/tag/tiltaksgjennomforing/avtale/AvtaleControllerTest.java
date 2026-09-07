@@ -16,6 +16,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilAvtaleException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
@@ -63,6 +64,7 @@ import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAvtale;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enNavIdent;
+import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.any;
@@ -570,6 +572,30 @@ public class AvtaleControllerTest {
                                 Tiltakstype.ARBEIDSTRENING)
                 )
         ).isInstanceOf(TilgangskontrollException.class);
+    }
+
+    @Test
+    public void opprettAvtaleSomArbeidsgiver__skal_ikke_tillate_vtao() {
+        when(featureToggleServiceMock.kanOppretteTiltak(any(), any())).thenCallRealMethod();
+        when(featureToggleServiceMock.kanOppretteAvtale(any())).thenCallRealMethod();
+
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
+            TestData.etFodselsnummer(),
+            altinn3Organisasjoner,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+        værInnloggetSom(arbeidsgiver);
+
+        assertFeilkode(
+            Feilkode.IKKE_TILGANG_TIL_A_OPPRETTE_TILTAK,
+            () -> avtaleController.opprettAvtaleSomArbeidsgiver(
+                new OpprettAvtale(Fnr.generer(1978, 9, 10), new BedriftNr("111222333"), Tiltakstype.VTAO)
+            )
+        );
     }
 
     private void værInnloggetSom(Avtalepart<?> avtalepart) {

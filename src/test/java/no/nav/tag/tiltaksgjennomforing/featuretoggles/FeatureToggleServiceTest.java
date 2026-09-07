@@ -3,6 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 import io.getunleash.Unleash;
 import io.getunleash.UnleashContext;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -60,5 +62,15 @@ public class FeatureToggleServiceTest {
         assertThat(toggles.get(FeatureToggle.ARENA_KAFKA)).isFalse();
         assertThat(toggles.get(FeatureToggle.SMS_TIL_MOBILNUMMER)).isFalse();
         assertThat(toggles.size()).isEqualTo(3);
+    }
+
+    @Test
+    public void kanOppretteTiltak__skal_ikke_tillate_vtao_for_arbeidsgiver() {
+        assertThat(featureToggleService.kanOppretteTiltak(Avtalerolle.ARBEIDSGIVER, Tiltakstype.VTAO)).isFalse();
+    }
+
+    @Test
+    public void kanOppretteTiltak__skal_tillate_vtao_for_veileder() {
+        assertThat(featureToggleService.kanOppretteTiltak(Avtalerolle.VEILEDER, Tiltakstype.VTAO)).isTrue();
     }
 }

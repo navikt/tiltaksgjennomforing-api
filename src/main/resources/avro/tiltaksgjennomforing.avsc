@@ -353,11 +353,6 @@
       ]
     },
     {
-      "name": "master",
-      "type": "boolean",
-      "default" : false
-    },
-    {
       "name": "forkortetGrunn",
       "type": [
         "null",

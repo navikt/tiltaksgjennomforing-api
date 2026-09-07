@@ -8,6 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.brev.postadresse.PostadresseClient;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 
 @Slf4j
 @Service
@@ -22,7 +23,13 @@ public class PostutsendelseService {
             return true;
         }
         boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedAdresse(fnr);
-        boolean erReservertMotDigitalKommunikasjon = digitalKontaktinformasjonClient.erPersonReservertMotDigitalKontakt(fnr);
+        boolean erReservertMotDigitalKommunikasjon = false;
+
+        try {
+            erReservertMotDigitalKommunikasjon = digitalKontaktinformasjonClient.erPersonReservertMotDigitalKontakt(fnr);
+        } catch (RestClientException e) {
+            log.warn("Feil ved sjekk av digital kontaktreservasjon for person, fortsetter uten", e);
+        }
 
         if (!harAdresse && erReservertMotDigitalKommunikasjon) {
             log.info("Person kan ikke få post: mangler adresse og er reservert mot digital kommunikasjon");

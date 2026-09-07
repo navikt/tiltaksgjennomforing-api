@@ -19,8 +19,8 @@ class GjeldendeTilskuddsperiodeJobb {
     }
 
     @Scheduled(cron = "0 30 0 * * *")
-    @SchedulerLock(name = "GjeldendeTilskuddsperiodeJobb_settGjeldendeTilskuddsperiodeJobb", lockAtLeastFor = "PT30M", lockAtMostFor = "PT60M")
+    @SchedulerLock(name = "GjeldendeTilskuddsperiodeJobb_settGjeldendeTilskuddsperiodeJobb", lockAtMostFor = "PT8H")
     public void settGjeldendeTilskuddsperiodeJobb() {
-            gjeldendeTilskuddsperiodeJobbService.start();
+        gjeldendeTilskuddsperiodeJobbService.start();
     }
 }

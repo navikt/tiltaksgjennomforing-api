@@ -17,8 +17,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 
 import java.math.BigDecimal;
@@ -49,16 +48,13 @@ public class AvtaleMelding {
     Instant sistEndret;
     Instant annullertTidspunkt;
     String annullertGrunn;
-    @Deprecated(since = "Ikke i bruk lenger - må koordinere endringene med konsumenter før fjerning")
-    boolean slettemerket;
     boolean opprettetAvArbeidsgiver;
     String enhetGeografisk;
     String enhetsnavnGeografisk;
     String enhetOppfolging;
     String enhetsnavnOppfolging;
     boolean godkjentForEtterregistrering;
-    Kvalifiseringsgruppe kvalifiseringsgruppe;
-    Formidlingsgruppe formidlingsgruppe;
+    Innsatsgruppe innsatsgruppe;
     SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
     boolean feilregistrert;
     Avtaleopphav opphav;
@@ -110,10 +106,6 @@ public class AvtaleMelding {
     Integer sumLonnsutgifter;
     Integer sumLonnstilskudd;
     Integer manedslonn100pst;
-    @Deprecated
-    Integer sumLønnstilskuddRedusert;
-    @Deprecated
-    LocalDate datoForRedusertProsent;
     Stillingstype stillingstype;
 
     List<Maal> maal = new ArrayList<>();
@@ -165,15 +157,13 @@ public class AvtaleMelding {
         avtaleMelding.setSistEndret(avtale.getSistEndret());
         avtaleMelding.setAnnullertTidspunkt(avtale.getAnnullertTidspunkt());
         avtaleMelding.setAnnullertGrunn(avtale.getAnnullertGrunn());
-        avtaleMelding.setSlettemerket(false);
         avtaleMelding.setOpprettetAvArbeidsgiver(Avtaleopphav.ARBEIDSGIVER.equals(avtale.getOpphav()));
         avtaleMelding.setEnhetGeografisk(avtale.getEnhetGeografisk());
         avtaleMelding.setEnhetsnavnGeografisk(avtale.getEnhetsnavnGeografisk());
         avtaleMelding.setEnhetOppfolging(avtale.getEnhetOppfolging());
         avtaleMelding.setEnhetsnavnOppfolging(avtale.getEnhetsnavnOppfolging());
         avtaleMelding.setGodkjentForEtterregistrering(avtale.isGodkjentForEtterregistrering());
-        avtaleMelding.setKvalifiseringsgruppe(avtale.getKvalifiseringsgruppe());
-        avtaleMelding.setFormidlingsgruppe(avtale.getFormidlingsgruppe());
+        avtaleMelding.setInnsatsgruppe(avtale.getInnsatsgruppe());
         avtaleMelding.setFeilregistrert(avtale.isFeilregistrert());
         avtaleMelding.setVersjon(avtaleInnhold.getVersjon());
         avtaleMelding.setDeltakerFornavn(avtaleInnhold.getDeltakerFornavn());
@@ -218,8 +208,6 @@ public class AvtaleMelding {
         avtaleMelding.setSumLonnsutgifter(avtaleInnhold.getSumLonnsutgifter());
         avtaleMelding.setSumLonnstilskudd(avtaleInnhold.getSumLonnstilskudd());
         avtaleMelding.setManedslonn100pst(avtaleInnhold.getManedslonn100pst());
-        avtaleMelding.setSumLønnstilskuddRedusert(null);
-        avtaleMelding.setDatoForRedusertProsent(null);
         avtaleMelding.setStillingstype(avtaleInnhold.getStillingstype());
         avtaleMelding.setInkluderingstilskuddBegrunnelse(avtaleInnhold.getInkluderingstilskuddBegrunnelse());
         avtaleMelding.setInkluderingstilskuddTotalBeløp(avtaleInnhold.inkluderingstilskuddTotalBeløp());

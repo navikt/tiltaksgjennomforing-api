@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Limit;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -31,6 +32,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -100,10 +102,10 @@ class PabegynteAvtalerRyddeServiceTest {
             mockAvtale(LocalDateTime.of(2025, 5, 19, 11, 20))
         );
 
-        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(avtaler);
+        stubAvtalerSomSkalRyddes(avtaler);
 
-        PabegynteAvtalerRyddeService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeService(
-            avtaleRepositoryMock,
+        PabegynteAvtalerRyddeJobbService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeJobbService(
+            new PabegynteAvtalerRyddeService(avtaleRepositoryMock),
             featureToggleServiceMock
         );
         pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
@@ -140,10 +142,10 @@ class PabegynteAvtalerRyddeServiceTest {
             mockAvtale(LocalDateTime.of(2024, 10, 20, 12, 0))
         );
 
-        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(avtaler);
+        stubAvtalerSomSkalRyddes(avtaler);
 
-        PabegynteAvtalerRyddeService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeService(
-            avtaleRepositoryMock,
+        PabegynteAvtalerRyddeJobbService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeJobbService(
+            new PabegynteAvtalerRyddeService(avtaleRepositoryMock),
             featureToggleServiceMock
         );
         pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
@@ -157,8 +159,8 @@ class PabegynteAvtalerRyddeServiceTest {
     @Test
     @Transactional
     void tar_bare_avtaler_som_er_pabegynt_eller_mangler_godkjenning() {
-        PabegynteAvtalerRyddeService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeService(
-            avtaleRepository,
+        PabegynteAvtalerRyddeJobbService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeJobbService(
+            new PabegynteAvtalerRyddeService(avtaleRepository),
             featureToggleServiceMock
         );
 
@@ -212,10 +214,10 @@ class PabegynteAvtalerRyddeServiceTest {
         Avtale vtaoAvtaleSomIkkeErFraArena = mockAvtale(sisteEndret10September2025, Tiltakstype.VTAO, Avtaleopphav.VEILEDER);
 
         List<Avtale> avtaler = List.of(vtaoAvtaleFraArena, vtaoAvtaleSomIkkeErFraArena);
-        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(avtaler);
+        stubAvtalerSomSkalRyddes(avtaler);
 
-        PabegynteAvtalerRyddeService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeService(
-            avtaleRepositoryMock,
+        PabegynteAvtalerRyddeJobbService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeJobbService(
+            new PabegynteAvtalerRyddeService(avtaleRepositoryMock),
             featureToggleServiceMock
         );
 
@@ -239,10 +241,10 @@ class PabegynteAvtalerRyddeServiceTest {
         var gammelSistEndret = LocalDateTime.of(2025, 1, 1, 12, 0);
         Avtale mentorAvtaleEndretAvArena = mockAvtale(gammelSistEndret, Tiltakstype.MENTOR, Avtaleopphav.VEILEDER, true);
 
-        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleEndretAvArena));
+        stubAvtalerSomSkalRyddes(List.of(mentorAvtaleEndretAvArena));
 
-        PabegynteAvtalerRyddeService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeService(
-            avtaleRepositoryMock,
+        PabegynteAvtalerRyddeJobbService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeJobbService(
+            new PabegynteAvtalerRyddeService(avtaleRepositoryMock),
             featureToggleServiceMock
         );
 
@@ -253,7 +255,7 @@ class PabegynteAvtalerRyddeServiceTest {
         verify(avtaleRepositoryMock, never()).save(any());
 
         clearInvocations(mentorAvtaleEndretAvArena, avtaleRepositoryMock);
-        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleEndretAvArena));
+        stubAvtalerSomSkalRyddes(List.of(mentorAvtaleEndretAvArena));
 
         Now.fixedDate(LocalDate.of(2026, 6, 9));
         pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
@@ -262,7 +264,7 @@ class PabegynteAvtalerRyddeServiceTest {
         verify(avtaleRepositoryMock, times(1)).save(mentorAvtaleEndretAvArena);
 
         clearInvocations(mentorAvtaleEndretAvArena, avtaleRepositoryMock);
-        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleEndretAvArena));
+        stubAvtalerSomSkalRyddes(List.of(mentorAvtaleEndretAvArena));
 
         Now.fixedDate(LocalDate.of(2026, 6, 15));
         pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
@@ -271,7 +273,7 @@ class PabegynteAvtalerRyddeServiceTest {
         verify(avtaleRepositoryMock, times(1)).save(mentorAvtaleEndretAvArena);
 
         clearInvocations(mentorAvtaleEndretAvArena, avtaleRepositoryMock);
-        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleEndretAvArena));
+        stubAvtalerSomSkalRyddes(List.of(mentorAvtaleEndretAvArena));
 
         Now.fixedDate(LocalDate.of(2026, 6, 16));
         pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
@@ -285,10 +287,10 @@ class PabegynteAvtalerRyddeServiceTest {
         var gammelSistEndret = LocalDateTime.of(2025, 1, 1, 12, 0);
         Avtale mentorAvtaleFraArena = mockAvtale(gammelSistEndret, Tiltakstype.MENTOR, Avtaleopphav.ARENA);
 
-        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleFraArena));
+        stubAvtalerSomSkalRyddes(List.of(mentorAvtaleFraArena));
 
-        PabegynteAvtalerRyddeService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeService(
-            avtaleRepositoryMock,
+        PabegynteAvtalerRyddeJobbService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeJobbService(
+            new PabegynteAvtalerRyddeService(avtaleRepositoryMock),
             featureToggleServiceMock
         );
 
@@ -299,7 +301,7 @@ class PabegynteAvtalerRyddeServiceTest {
         verify(avtaleRepositoryMock, never()).save(any());
 
         clearInvocations(mentorAvtaleFraArena, avtaleRepositoryMock);
-        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleFraArena));
+        stubAvtalerSomSkalRyddes(List.of(mentorAvtaleFraArena));
 
         Now.fixedDate(LocalDate.of(2026, 6, 15));
         pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
@@ -308,7 +310,7 @@ class PabegynteAvtalerRyddeServiceTest {
         verify(avtaleRepositoryMock, times(1)).save(mentorAvtaleFraArena);
 
         clearInvocations(mentorAvtaleFraArena, avtaleRepositoryMock);
-        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleFraArena));
+        stubAvtalerSomSkalRyddes(List.of(mentorAvtaleFraArena));
 
         Now.fixedDate(LocalDate.of(2026, 6, 16));
         pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
@@ -322,10 +324,10 @@ class PabegynteAvtalerRyddeServiceTest {
         var gammelSistEndret = LocalDateTime.of(2025, 1, 1, 12, 0);
         Avtale mentorAvtaleIkkeFraArena = mockAvtale(gammelSistEndret, Tiltakstype.MENTOR, Avtaleopphav.VEILEDER, false);
 
-        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(List.of(mentorAvtaleIkkeFraArena));
+        stubAvtalerSomSkalRyddes(List.of(mentorAvtaleIkkeFraArena));
 
-        PabegynteAvtalerRyddeService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeService(
-            avtaleRepositoryMock,
+        PabegynteAvtalerRyddeJobbService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeJobbService(
+            new PabegynteAvtalerRyddeService(avtaleRepositoryMock),
             featureToggleServiceMock
         );
 
@@ -334,6 +336,19 @@ class PabegynteAvtalerRyddeServiceTest {
 
         verify(mentorAvtaleIkkeFraArena, times(1)).utlop(AvtaleUtlopHandling.UTLOP);
         verify(avtaleRepositoryMock, times(1)).save(mentorAvtaleIkkeFraArena);
+    }
+
+    private void stubAvtalerSomSkalRyddes(List<Avtale> avtaler) {
+        List<UUID> ider = avtaler.stream()
+            .map(avtale -> {
+                UUID id = UUID.randomUUID();
+                when(avtale.getId()).thenReturn(id);
+                return id;
+            })
+            .toList();
+
+        when(avtaleRepositoryMock.finnAvtaleIderSomErPabegyntEllerManglerGodkjenning(any(UUID.class), any(Limit.class))).thenReturn(ider);
+        when(avtaleRepositoryMock.findAllById(any())).thenReturn(avtaler);
     }
 
     private static Avtale mockAvtale(LocalDateTime sistEndret) {

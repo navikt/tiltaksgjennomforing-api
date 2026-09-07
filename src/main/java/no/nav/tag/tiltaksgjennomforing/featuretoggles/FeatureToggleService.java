@@ -52,6 +52,9 @@ public class FeatureToggleService {
     }
 
     public boolean kanOppretteTiltak(Avtalerolle rolle, Tiltakstype tiltakstype) {
+        if (rolle == Avtalerolle.ARBEIDSGIVER && tiltakstype == Tiltakstype.VTAO) {
+            return false;
+        }
         if (!tiltakstype.isFirearigLonnstilskudd()) {
             return true;
         }

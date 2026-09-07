@@ -1,0 +1,12 @@
+name: Bygg PR
+
+on:
+  pull_request:
+
+jobs:
+  bygg:
+    permissions:
+      contents: read
+      id-token: write
+    name: Bygg PR
+    uses: ./.github/workflows/bygg.yml

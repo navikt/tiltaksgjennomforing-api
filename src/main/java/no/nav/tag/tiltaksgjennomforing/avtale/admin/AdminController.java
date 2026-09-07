@@ -171,7 +171,7 @@ public class AdminController {
 
     @PostMapping("/oppdater-gjeldende-tilskuddsperiode-for-avtaler")
     public void oppdaterGjeldendeTilskuddsperiode() {
-        gjeldendeTilskuddsperiodeJobbService.start();
+        gjeldendeTilskuddsperiodeJobbService.startAsynkront();
     }
 
     @PostMapping("/avtale/{id}/sjekk-tilgang")

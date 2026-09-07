@@ -16,7 +16,8 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleHolder;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -60,11 +61,15 @@ public class AvtaleTest {
     public void setup() {
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
         Now.resetClock();
+        FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
+        when(featureToggleService.isEnabled(FeatureToggle.VTAO_VEILEDER_TILGANG)).thenReturn(true);
+        new FeatureToggleHolder(featureToggleService);
     }
 
     @AfterEach
     public void tearDown() {
         FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
+        FeatureToggleHolder.reset();
     }
 
     @Test
@@ -815,6 +820,7 @@ public class AvtaleTest {
     @Test
     public void endreAvtale__startdato_og_sluttdato_satt_18mnd() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
+        avtale.setInnsatsgruppe(Innsatsgruppe.JOBBE_DELVIS);
         EndreAvtale endreAvtale = new EndreAvtale();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(18).minusDays(1);
@@ -834,7 +840,7 @@ public class AvtaleTest {
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         assertThatThrownBy(() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER)).isInstanceOf(
-            VarighetForLangArbeidstreningException.class);
+            FeilkodeException.class);
     }
 
     @Test
@@ -1691,6 +1697,18 @@ public class AvtaleTest {
         assertFeilkode(
             Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE,
             () -> avtale.godkjennTilskuddsperiode(avtale.getGjeldendeInnhold().getGodkjentAvNavIdent())
+        );
+    }
+
+    @Test
+    public void godkjenn_tilskuddsperiode_skal_ikke_gå_hvis_beslutter_er_veileder() {
+        Now.fixedDate(LocalDate.of(2021, 6, 1));
+        Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
+        avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent2());
+
+        assertFeilkode(
+            Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE,
+            () -> avtale.godkjennTilskuddsperiode(avtale.getVeilederNavIdent())
         );
     }
 

@@ -31,7 +31,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class AvtalestatusServiceTest {
 
     @Autowired
-    private AvtalestatusService avtalestatusService;
+    private AvtalestatusJobbService avtalestatusService;
 
     @Autowired
     private AvtaleRepository avtaleRepository;

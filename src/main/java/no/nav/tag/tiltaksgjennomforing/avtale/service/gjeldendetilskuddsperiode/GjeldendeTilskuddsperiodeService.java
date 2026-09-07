@@ -4,15 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -23,35 +22,34 @@ public class GjeldendeTilskuddsperiodeService {
         this.avtaleRepository = avtaleRepository;
     }
 
-    public Slice<Avtale> hentAvtaler(Pageable page) {
-        return avtaleRepository.finnAvtaleMedAktiveTilskuddsperioder(page);
-    }
-
     @Transactional
-    public SettGjeldendeTilskuddsperiodeRespons settGjeldendeTilskuddsperiode(Pageable pageable) {
-        AtomicInteger antallOppdatert = new AtomicInteger();
-        AtomicInteger antallIkkeOppdatert = new AtomicInteger();
-        Slice<Avtale> slice = hentAvtaler(pageable);
-        List<Avtale> avtaler = slice.getContent();
+    public SettGjeldendeTilskuddsperiodeRespons settGjeldendeTilskuddsperiode(UUID fraId, Limit limit) {
+        List<UUID> ider = avtaleRepository.finnAvtaleIderMedAktiveTilskuddsperioder(fraId, limit);
+        boolean harFlere = ider.size() == limit.max();
 
-        if (avtaler.isEmpty()) {
+        if (ider.isEmpty()) {
             log.debug("Ingen avtaler å behandle");
-            return new SettGjeldendeTilskuddsperiodeRespons(slice, antallOppdatert.get(), antallIkkeOppdatert.get());
+            return new SettGjeldendeTilskuddsperiodeRespons(fraId, false, 0, 0);
         }
+
+        UUID sisteId = ider.getLast();
+        List<Avtale> avtaler = avtaleRepository.findAllById(ider);
         log.debug("Behandler {} avtaler...", avtaler.size());
-        avtaler.forEach(avtale -> {
+
+        int antallOppdatert = 0;
+        int antallIkkeOppdatert = 0;
+        for (Avtale avtale : avtaler) {
             var utledetGjeldendePeriode = TilskuddPeriode.utledGjeldendeTilskuddsperiode(avtale);
             var nyGjeldende = utledetGjeldendePeriode.tilskuddPeriode();
             var gjeldendeTilskuddsperiode = avtale.getGjeldendeTilskuddsperiode();
 
-            var erLikGjeldende = Objects.equals(nyGjeldende, gjeldendeTilskuddsperiode);
-            if (erLikGjeldende) {
+            if (Objects.equals(nyGjeldende, gjeldendeTilskuddsperiode)) {
                 log.debug(
                     "Avtale med id: {} har allerede riktig gjeldende tilskuddsperiode: {}",
                     avtale.getId(),
                     Optional.ofNullable(nyGjeldende).map(TilskuddPeriode::getId).orElse(null)
                 );
-                antallIkkeOppdatert.getAndIncrement();
+                antallIkkeOppdatert++;
             } else {
                 log.info(
                     "Oppdaterer gjeldende tilskuddsperiode på avtale {} med status {} " +
@@ -69,9 +67,9 @@ public class GjeldendeTilskuddsperiodeService {
                 );
                 avtale.setGjeldendeTilskuddsperiode(nyGjeldende);
                 avtaleRepository.save(avtale);
-                antallOppdatert.getAndIncrement();
+                antallOppdatert++;
             }
-        });
-        return new SettGjeldendeTilskuddsperiodeRespons(slice, antallOppdatert.get(), antallIkkeOppdatert.get());
+        }
+        return new SettGjeldendeTilskuddsperiodeRespons(sisteId, harFlere, antallOppdatert, antallIkkeOppdatert);
     }
 }
