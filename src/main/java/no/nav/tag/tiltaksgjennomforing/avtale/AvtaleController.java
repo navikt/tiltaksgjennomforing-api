@@ -14,7 +14,7 @@ import no.nav.tag.tiltaksgjennomforing.pdfgen.PdfgenService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.OppfolgingstatusEndretException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.InnsatsgruppeEndretException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
@@ -343,7 +343,7 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/godkjenn")
     /** Dersom kvalifiseringsgruppen er endret på en avtale vil alle godkjenninger oppheves, og vil derfor ikke rulle tilbake for å lagre opphevingene. */
-    @Transactional(noRollbackFor = OppfolgingstatusEndretException.class)
+    @Transactional(noRollbackFor = InnsatsgruppeEndretException.class)
     public void godkjenn(
             @PathVariable("avtaleId") UUID avtaleId,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
@@ -720,7 +720,7 @@ public class AvtaleController {
     }
 
     @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av")
-    @Transactional(noRollbackFor = OppfolgingstatusEndretException.class)
+    @Transactional(noRollbackFor = InnsatsgruppeEndretException.class)
     public void godkjennPaVegneAv(
             @PathVariable("avtaleId") UUID avtaleId,
             @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn,
@@ -736,7 +736,7 @@ public class AvtaleController {
     }
 
     @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av-arbeidsgiver")
-    @Transactional(noRollbackFor = OppfolgingstatusEndretException.class)
+    @Transactional(noRollbackFor = InnsatsgruppeEndretException.class)
     public void godkjennPaVegneAvArbeidsgiver(
             @PathVariable("avtaleId") UUID avtaleId,
             @RequestBody GodkjentPaVegneAvArbeidsgiverGrunn paVegneAvGrunn,
@@ -752,7 +752,7 @@ public class AvtaleController {
     }
 
     @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av-deltaker-og-arbeidsgiver")
-    @Transactional(noRollbackFor = OppfolgingstatusEndretException.class)
+    @Transactional(noRollbackFor = InnsatsgruppeEndretException.class)
     public void godkjennPaVegneAvDeltakerOgArbeidsgiver(
             @PathVariable("avtaleId") UUID avtaleId,
             @RequestBody GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvGrunn,

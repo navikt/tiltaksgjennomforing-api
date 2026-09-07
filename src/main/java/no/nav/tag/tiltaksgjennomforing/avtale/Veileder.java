@@ -8,7 +8,6 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
-import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
@@ -20,7 +19,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.InnsatsgruppeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Kode6SperretForOpprettelseOgEndringException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.OppfolgingstatusEndretException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.InnsatsgruppeEndretException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
@@ -338,23 +337,37 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void sjekkOgOppdaterOppfølgningsstatusForAvtale(Avtale avtale) {
         Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
-        Innsatsgruppe innsatsgruppe = avtale.getInnsatsgruppe();
-        Boolean innsatsgruppeHarEndret = Optional.ofNullable(innsatsgruppe)
-            .map(gruppe -> gruppe != oppfølgingsstatus.getInnsatsgruppe())
-            .orElse(false);
-        settOppfølgingsStatus(avtale, oppfølgingsstatus);
+        Boolean innsatsgruppeHarEndret = harInnsatsgruppeHarEndret(avtale, oppfølgingsstatus);
 
-        if (innsatsgruppeHarEndret && !avtale.erAvtaleInngått() && avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD) {
-            log.info(
-                "Innsatsgruppe for avtale {} har endret seg fra {} til {}, oppdaterer avtale",
-                avtale.getId(),
-                innsatsgruppe,
-                oppfølgingsstatus.getInnsatsgruppe()
-            );
+        if (avtale.getTiltakstype() != Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || !innsatsgruppeHarEndret) {
+            settOppfølgingsStatus(avtale, oppfølgingsstatus);
+            return;
+        }
+
+        log.info(
+            "Innsatsgruppe for avtale {} har endret seg fra {} til {}",
+            avtale.getId(),
+            avtale.getInnsatsgruppe(),
+            oppfølgingsstatus.getInnsatsgruppe()
+        );
+
+        if (!avtale.erAvtaleInngått()) {
+            settOppfølgingsStatus(avtale, oppfølgingsstatus);
             avtale.opphevGodkjenningerSomVeileder();
             avtale.endreBeløpOgProsentITilskuddsperioder();
-            throw new OppfolgingstatusEndretException();
         }
+
+        throw new InnsatsgruppeEndretException();
+    }
+
+    private static boolean harInnsatsgruppeHarEndret(
+        Avtale avtale,
+        Oppfølgingsstatus oppfølgingsstatus
+    ) {
+        if (avtale.getInnsatsgruppe() == null && avtale.getKvalifiseringsgruppe() != null) {
+            return !avtale.getKvalifiseringsgruppe().isEqualToInnsatsgruppe(oppfølgingsstatus.getInnsatsgruppe());
+        }
+        return avtale.getInnsatsgruppe() != oppfølgingsstatus.getInnsatsgruppe();
     }
 
     private void sjekkOmBedriftErGyldigOgOppdaterNavn(Avtale avtale) {
