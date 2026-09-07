@@ -5,7 +5,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AltinnFeilException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.resilience.annotation.Retryable;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
@@ -28,7 +29,7 @@ public class AltinnTilgangsstyringKlient {
     }
 
     @Cacheable(CacheConfig.ALTINN_CACHE)
-    @Retryable(delayString = "${tiltaksgjennomforing.retry.delay}", maxDelayString = "${tiltaksgjennomforing.retry.max-delay}", multiplier = 2, maxRetries = 2)
+    @Retryable(backoff = @Backoff(delayExpression = "${tiltaksgjennomforing.retry.delay}", maxDelayExpression = "${tiltaksgjennomforing.retry.max-delay}", multiplier = 2))
     public AltinnTilgangerResponse kallAltinn3(Fnr fnrSomCacheParameter) {
         AltinnTilgangerResponse response;
         try {

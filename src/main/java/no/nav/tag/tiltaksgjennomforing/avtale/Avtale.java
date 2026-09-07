@@ -151,7 +151,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     private Instant opprettetTidspunkt;
 
     @Generated(event = EventType.INSERT)
-    @Column(insertable = false, updatable = false)
     private Integer avtaleNr;
 
     @OneToOne(cascade = CascadeType.ALL)

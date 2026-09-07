@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonStatus;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
@@ -31,7 +31,7 @@ class RefusjonEndretStatusTest {
     }
 
     @Test
-    public void skal_kunne_finne_riktig_tilskuddsperiode_og_lagre_status_uten_å_kaste_en_feil() throws JacksonException {
+    public void skal_kunne_finne_riktig_tilskuddsperiode_og_lagre_status_uten_å_kaste_en_feil() throws JsonProcessingException {
         TilskuddPeriodeRepository tilskuddPeriodeRepository = mock(TilskuddPeriodeRepository.class);
         TilskuddPeriode tilskuddPeriode = TestData.enTilskuddPeriode();
         when(tilskuddPeriodeRepository.findById(any())).thenReturn(Optional.of(tilskuddPeriode));

@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
-import tools.jackson.core.JacksonException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
@@ -53,7 +53,7 @@ public class SmsVarselProducerTest {
     }
 
     @Test
-    public void smsVarselOpprettet__skal_sendes_på_kafka_topic_med_riktige_felter() throws JSONException, JacksonException {
+    public void smsVarselOpprettet__skal_sendes_på_kafka_topic_med_riktige_felter() throws JSONException, JsonProcessingException {
         producer.sendSmsVarselMeldingTilKafka(Sms.nyttVarsel("tlf", new Identifikator("id"), "melding", HendelseType.AVTALE_INNGÅTT, UUID.randomUUID()));
 
         ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.TILTAK_SMS);

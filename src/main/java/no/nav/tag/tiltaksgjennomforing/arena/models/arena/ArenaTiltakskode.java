@@ -1,15 +1,15 @@
 package no.nav.tag.tiltaksgjennomforing.arena.models.arena;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.core.JsonParser;
-import tools.jackson.databind.DeserializationContext;
-import tools.jackson.databind.ValueDeserializer;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -50,9 +50,9 @@ public enum ArenaTiltakskode {
         return ArenaTiltakskode.UKJENT;
     }
 
-    public static class Deserializer extends ValueDeserializer<ArenaTiltakskode> {
+    public static class Deserializer extends JsonDeserializer<ArenaTiltakskode> {
         @Override
-        public ArenaTiltakskode deserialize(JsonParser p, DeserializationContext ctx) throws JacksonException {
+        public ArenaTiltakskode deserialize(JsonParser p, DeserializationContext ctx) throws IOException {
             return parse(p.getValueAsString());
         }
     }

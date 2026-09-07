@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.datadeling;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -215,7 +215,7 @@ public class AvtaleHendelseLytter {
             String meldingSomString = objectMapper.writeValueAsString(melding);
             AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(meldingId, avtale.getId(), tidspunkt, hendelseType, avtale.getStatus(), meldingSomString);
             avtaleMeldingEntitetRepository.save(entitet);
-        } catch (JacksonException e) {
+        } catch (JsonProcessingException e) {
             log.error("Feil ved parsing av AvtaleHendelseMelding til json for avtale med id: {}", avtale.getId());
             throw new RuntimeException(e);
         }

@@ -1,8 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
@@ -64,7 +64,7 @@ public class TilskuddsperiodeKafkaProducer {
         String meldingSomString;
         try {
             meldingSomString = objectMapper.writeValueAsString(melding);
-        } catch (JacksonException e) {
+        } catch (JsonProcessingException e) {
             log.error("Kunne ikke lage JSON for melding med id {} til topic {}", meldingId, topic);
             return;
         }
