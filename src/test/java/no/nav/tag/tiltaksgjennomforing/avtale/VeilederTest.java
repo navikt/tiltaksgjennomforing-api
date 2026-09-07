@@ -1210,7 +1210,7 @@ public class VeilederTest {
     }
 
     @Test
-    public void sjekkOgOppdaterOppfølgningsstatusForAvtale__oppdaterer_oppfølgingsstatus_selv_om_OppfolgingstatusEndretException_kastes_ved_inngatt_avtale() {
+    public void sjekkOgOppdaterOppfølgningsstatusForAvtale__oppdaterer_oppfølgingsstatus_selv_om_exception_kastes_ved_inngatt_avtale() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         assertThat(avtale.erAvtaleInngått()).isFalse();
 

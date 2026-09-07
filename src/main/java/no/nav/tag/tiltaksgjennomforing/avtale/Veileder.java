@@ -337,7 +337,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void sjekkOgOppdaterOppfølgningsstatusForAvtale(Avtale avtale) {
         Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
-        Boolean innsatsgruppeHarEndret = harInnsatsgruppeHarEndret(avtale, oppfølgingsstatus);
+        Boolean innsatsgruppeHarEndret = harInnsatsgruppeEndret(avtale, oppfølgingsstatus);
 
         if (avtale.getTiltakstype() != Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || !innsatsgruppeHarEndret) {
             settOppfølgingsStatus(avtale, oppfølgingsstatus);
@@ -360,7 +360,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         throw new InnsatsgruppeEndretException();
     }
 
-    private static boolean harInnsatsgruppeHarEndret(
+    private static boolean harInnsatsgruppeEndret(
         Avtale avtale,
         Oppfølgingsstatus oppfølgingsstatus
     ) {
