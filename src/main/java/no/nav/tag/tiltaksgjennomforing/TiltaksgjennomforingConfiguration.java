@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.client.RestTemplate;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.RestTemplateBuilders;
 
 import javax.sql.DataSource;
 import java.util.concurrent.Executor;
@@ -38,7 +39,7 @@ class TiltaksgjennomforingConfiguration {
 
     @Bean
     public RestTemplate noAuthRestTemplate(RestTemplateBuilder restTemplateBuilder) {
-        return restTemplateBuilder.build();
+        return RestTemplateBuilders.utenKomprimering(restTemplateBuilder).build();
     }
 
     @Bean

@@ -4,6 +4,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client;
 import no.nav.security.token.support.client.spring.oauth2.OAuth2ClientRequestInterceptor;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.RestTemplateBuilders;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +20,7 @@ public class SecurityAzureClientConfiguration {
         RestTemplateBuilder restTemplateBuilder,
         OAuth2ClientRequestInterceptor oAuth2ClientRequestInterceptor
     ) {
-        return restTemplateBuilder
+        return RestTemplateBuilders.utenKomprimering(restTemplateBuilder)
             .interceptors(oAuth2ClientRequestInterceptor)
             .build();
     }
