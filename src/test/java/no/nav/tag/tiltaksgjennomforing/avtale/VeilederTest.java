@@ -16,6 +16,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.InnsatsgruppeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.InnsatsgruppeEndretException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Kode6SperretForOpprettelseOgEndringException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
@@ -40,6 +41,7 @@ import java.util.Set;
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.featureToggleService;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
@@ -1130,12 +1132,15 @@ public class VeilederTest {
         VeilarbService veilarbService = mock(VeilarbService.class);
         when(veilarbService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(oppfølgingsstatus);
         Veileder veileder = TestData.enVeileder(avtale.getVeilederNavIdent(), veilarbService);
-        assertFeilkode(Feilkode.OPPFOLGINGSTATUS_ENDRET, () -> veileder.godkjennForAvtalepart(avtale));
+        assertFeilkode(Feilkode.INNSATSGRUPPE_ENDRET, () -> veileder.godkjennForAvtalepart(avtale));
     }
 
     @Test
-    public void forskjellig_kvalifiseringskode_ved_forlengelse_skal_ikke_kaste_exception() {
+    public void forskjellig_kvalifiseringskode_ved_forlengelse_av_inngått_avtale_skal_kaste_exception_og_ikke_oppdatere() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder();
+        assertThat(avtale.erAvtaleInngått()).isTrue();
+        Innsatsgruppe opprinneligInnsatsgruppe = avtale.getInnsatsgruppe();
+        LocalDate opprinneligSluttDato = avtale.getGjeldendeInnhold().getSluttDato();
 
         Oppfølgingsstatus annenOppfølgingsstatus = new Oppfølgingsstatus(
             Formidlingsgruppe.ARBEIDSSOKER,
@@ -1149,8 +1154,108 @@ public class VeilederTest {
 
         LocalDate nySluttDato = avtale.getGjeldendeInnhold().getSluttDato().plusMonths(1);
 
-        veileder.forlengAvtale(nySluttDato, avtale);
-        assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(nySluttDato);
+        assertThatThrownBy(() -> veileder.forlengAvtale(nySluttDato, avtale))
+            .isInstanceOf(InnsatsgruppeEndretException.class);
+
+        // Avtalen skal ikke forlenges eller oppdateres når innsatsgruppe har endret seg for en allerede inngått avtale
+        assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(opprinneligSluttDato);
+        assertThat(avtale.getInnsatsgruppe()).isEqualTo(opprinneligInnsatsgruppe);
+    }
+
+    @Test
+    public void sjekkOgOppdaterOppfølgningsstatusForAvtale__når_innsatsgruppe_er_null_brukes_kvalifiseringsgruppe_for_sammenligning_og_kaster_ikke_exception_hvis_lik() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setInnsatsgruppe(null);
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+
+        // SITUASJONSBESTEMT_INNSATS tilsvarer TRENGER_VEILEDNING, altså ingen reell endring
+        Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus(
+            Formidlingsgruppe.ARBEIDSSOKER,
+            Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS,
+            avtale.getEnhetOppfolging(),
+            Innsatsgruppe.TRENGER_VEILEDNING
+        );
+        VeilarbService veilarbService = mock(VeilarbService.class);
+        when(veilarbService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(oppfølgingsstatus);
+        Veileder veileder = TestData.enVeileder(avtale.getVeilederNavIdent(), veilarbService);
+
+        assertThatCode(() -> veileder.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale))
+            .doesNotThrowAnyException();
+        assertThat(avtale.getInnsatsgruppe()).isEqualTo(Innsatsgruppe.TRENGER_VEILEDNING);
+    }
+
+    @Test
+    public void sjekkOgOppdaterOppfølgningsstatusForAvtale__når_innsatsgruppe_er_null_og_ny_innsatsgruppe_avviker_fra_kvalifiseringsgruppe_kastes_exception() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setInnsatsgruppe(null);
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        assertThat(avtale.erAvtaleInngått()).isFalse();
+
+        // LITEN_MULIGHET_TIL_A_JOBBE tilsvarer ikke SITUASJONSBESTEMT_INNSATS
+        Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus(
+            Formidlingsgruppe.ARBEIDSSOKER,
+            Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
+            avtale.getEnhetOppfolging(),
+            Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
+        );
+        VeilarbService veilarbService = mock(VeilarbService.class);
+        when(veilarbService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(oppfølgingsstatus);
+        Veileder veileder = TestData.enVeileder(avtale.getVeilederNavIdent(), veilarbService);
+
+        assertThatThrownBy(() -> veileder.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale))
+            .isInstanceOf(InnsatsgruppeEndretException.class);
+
+        // Avtalen er ikke inngått, så oppfølgingsstatus skal likevel oppdateres selv om exception kastes
+        assertThat(avtale.getInnsatsgruppe()).isEqualTo(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
+    }
+
+    @Test
+    public void sjekkOgOppdaterOppfølgningsstatusForAvtale__oppdaterer_oppfølgingsstatus_selv_om_exception_kastes_ved_inngatt_avtale() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        assertThat(avtale.erAvtaleInngått()).isFalse();
+
+        Oppfølgingsstatus nyOppfølgingsstatus = new Oppfølgingsstatus(
+            Formidlingsgruppe.ARBEIDSSOKER,
+            Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
+            "0906",
+            Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
+        );
+        VeilarbService veilarbService = mock(VeilarbService.class);
+        when(veilarbService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(nyOppfølgingsstatus);
+        Veileder veileder = TestData.enVeileder(avtale.getVeilederNavIdent(), veilarbService);
+
+        assertThatThrownBy(() -> veileder.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale))
+            .isInstanceOf(InnsatsgruppeEndretException.class);
+
+        // settOppfølgingsStatus skal ha blitt kalt (og oppdatert avtalen) selv om exception kastes
+        assertThat(avtale.getInnsatsgruppe()).isEqualTo(nyOppfølgingsstatus.getInnsatsgruppe());
+        assertThat(avtale.getFormidlingsgruppe()).isEqualTo(nyOppfølgingsstatus.getFormidlingsgruppe());
+        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(nyOppfølgingsstatus.getKvalifiseringsgruppe());
+    }
+
+    @Test
+    public void sjekkOgOppdaterOppfølgningsstatusForAvtale__kaster_ikke_exception_for_andre_tiltakstyper_enn_midlertidig_lonnstilskudd() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        assertThat(avtale.erAvtaleInngått()).isFalse();
+        assertThat(avtale.getTiltakstype()).isNotEqualTo(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+
+        Oppfølgingsstatus nyOppfølgingsstatus = new Oppfølgingsstatus(
+            Formidlingsgruppe.ARBEIDSSOKER,
+            Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
+            "0906",
+            Innsatsgruppe.TRENGER_VEILEDNING
+        );
+        VeilarbService veilarbService = mock(VeilarbService.class);
+        when(veilarbService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(nyOppfølgingsstatus);
+        Veileder veileder = TestData.enVeileder(avtale.getVeilederNavIdent(), veilarbService);
+
+        assertThatCode(() -> veileder.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale))
+            .doesNotThrowAnyException();
+
+        // Oppfølgingsstatus skal likevel bli oppdatert på avtalen
+        assertThat(avtale.getInnsatsgruppe()).isEqualTo(nyOppfølgingsstatus.getInnsatsgruppe());
+        assertThat(avtale.getFormidlingsgruppe()).isEqualTo(nyOppfølgingsstatus.getFormidlingsgruppe());
+        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(nyOppfølgingsstatus.getKvalifiseringsgruppe());
     }
 
     private Veileder lagVeilederForGodkjenning(Avtale avtale, PostutsendelseService postutsendelseService) {
