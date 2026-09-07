@@ -8,8 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -29,7 +28,7 @@ class VeilarbvedtaksstotteClient {
         this.properties = properties;
     }
 
-    @Retryable(backoff = @Backoff(delayExpression = "${tiltaksgjennomforing.retry.delay}", maxDelayExpression = "${tiltaksgjennomforing.retry.max-delay}", multiplier = 2))
+    @Retryable(delayString = "${tiltaksgjennomforing.retry.delay}", maxDelayString = "${tiltaksgjennomforing.retry.max-delay}", multiplier = 2, maxRetries = 2)
     @Cacheable(CacheConfig.VEILARBVEDTAKSSTOTTE_CACHE)
     public Optional<Gjeldende14aVedtakRespons> hentGjeldende14aVedtak(Gjeldende14aVedtakRequest request) {
         HttpHeaders headers = new HttpHeaders();

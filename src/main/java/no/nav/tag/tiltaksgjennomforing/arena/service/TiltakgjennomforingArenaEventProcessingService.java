@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.arena.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakgjennomforing;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
@@ -29,7 +29,7 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
         this.tiltakgjennomforingRepository = tiltakgjennomforingRepository;
     }
 
-    public ArenaEventStatus process(ArenaEvent arenaEvent) throws JsonProcessingException {
+    public ArenaEventStatus process(ArenaEvent arenaEvent) throws JacksonException {
         ArenaTiltakgjennomforing tiltakgjennomforing = this.objectMapper.treeToValue(arenaEvent.getPayload(), ArenaTiltakgjennomforing.class);
         ArenaTiltakskode tiltakskode = tiltakgjennomforing.getTiltakskode();
 

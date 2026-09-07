@@ -41,9 +41,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -81,27 +81,27 @@ import static org.mockito.Mockito.when;
 @AutoConfigureMockMvc
 public class AvtaleControllerTest {
 
-    @MockBean
+    @MockitoBean
     VeilarbService veilarbService;
-    @MockBean
+    @MockitoBean
     Norg2Client norg2Client;
     @Autowired
     private AvtaleController avtaleController;
-    @MockBean
+    @MockitoBean
     private AvtaleRepository avtaleRepository;
-    @MockBean
+    @MockitoBean
     private TilgangskontrollService tilgangskontrollService;
-    @MockBean
+    @MockitoBean
     private InnloggingService innloggingService;
-    @MockBean
+    @MockitoBean
     private EregService eregService;
-    @MockBean
+    @MockitoBean
     private PersondataService persondataService;
-    @MockBean
+    @MockitoBean
     private KontoregisterService kontoregisterService;
-    @MockBean
+    @MockitoBean
     private FeatureToggleService featureToggleServiceMock;
-    @MockBean
+    @MockitoBean
     private PostutsendelseService postutsendelseService;
 
     private Pageable pageable = PageRequest.of(0, 100);
