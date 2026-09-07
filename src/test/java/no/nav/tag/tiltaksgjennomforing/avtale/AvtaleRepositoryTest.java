@@ -8,7 +8,6 @@ import no.nav.tag.tiltaksgjennomforing.metrikker.MetrikkRegistrering;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.ArbeidsgiverNotifikasjonRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,9 +61,6 @@ public class AvtaleRepositoryTest {
     @Autowired
     private AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
 
-    @Autowired
-    private ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
-
     @MockitoBean
     private MetrikkRegistrering metrikkRegistrering;
 
@@ -74,7 +70,6 @@ public class AvtaleRepositoryTest {
         varselRepository.deleteAll();
         smsRepository.deleteAll();
         avtaleInnholdRepository.deleteAll();
-        arbeidsgiverNotifikasjonRepository.deleteAll();
         dvhMeldingEntitetRepository.deleteAll();
         avtaleMeldingEntitetRepository.deleteAll();
         avtaleRepository.deleteAll();

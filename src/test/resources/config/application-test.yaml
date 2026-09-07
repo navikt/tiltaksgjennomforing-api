@@ -100,10 +100,6 @@ tiltaksgjennomforing:
       url: http://localhost:8090/norg2/api/v1/enhet/navkontor/
     enhet:
       url: http://localhost:8090/norg2/api/v1/enhet/
-  notifikasjoner:
-    uri: http://localhost:8090/api/graphql
-    lenke: http://localhost:3000/tiltaksgjennomforing/avtale/
-    enabled: false
   entraproxy:
     uri: http://localhost:8090/entraproxy
 

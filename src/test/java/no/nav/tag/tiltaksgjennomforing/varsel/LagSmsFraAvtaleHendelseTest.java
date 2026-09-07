@@ -1,17 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
-import tools.jackson.core.JacksonException;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
-import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
-import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.SmsProducer;
 import org.junit.jupiter.api.Test;
@@ -21,6 +18,7 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import tools.jackson.core.JacksonException;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -73,73 +71,6 @@ class LagSmsFraAvtaleHendelseTest {
         deltaker.godkjennAvtale(avtale);
         avtale = avtaleRepository.save(avtale);
         assertSmsOpprettetOgSendt(HendelseType.GODKJENT_AV_DELTAKER, avtale.getId(), avtale.getGjeldendeInnhold().getVeilederTlf(), FAGSYSTEMSONE_VARSELTEKST);
-    }
-
-    @Test
-    void refusjon_somerjobb_klar() throws JacksonException {
-        Avtale avtale = TestData.enSommerjobbAvtale();
-        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
-        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
-
-        // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
-        avtale.refusjonKlar(fristForGodkjenning);
-        avtaleRepository.save(avtale);
-
-        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Frist for å søke er %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen Nav.", avtale.getAvtaleNr(), fristForGodkjenning);
-        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KLAR, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
-    }
-
-    @Test
-    void refusjon_midlertidig_lonnstilskudd_klar() throws JacksonException {
-        Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
-        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
-        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
-        // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
-        avtale.refusjonKlar(fristForGodkjenning);
-        avtaleRepository.save(avtale);
-
-        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til midlertidig lønnstilskudd for avtale med nr: %s. Frist for å søke er %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen Nav.", avtale.getAvtaleNr(), fristForGodkjenning);
-        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KLAR, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
-    }
-
-    @Test
-    void refusjon_varig_lonnstilskudd_Klar() throws JacksonException {
-        Avtale avtale = TestData.enVarigLonnstilskuddsjobbAvtale();
-        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
-        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
-        // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
-        avtale.refusjonKlar(fristForGodkjenning);
-        avtaleRepository.save(avtale);
-
-        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til varig lønnstilskudd for avtale med nr: %s. Frist for å søke er %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen Nav.", avtale.getAvtaleNr(), fristForGodkjenning);
-        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KLAR, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
-    }
-
-    @Test
-    void refusjon_mentor_klar() throws JacksonException {
-        Avtale avtale = TestData.enMentorAvtaleUsignert();
-        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
-        LocalDate fristForGodkjenning = LocalDate.of(2022, 04, 05);
-        // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
-        avtale.refusjonKlar(fristForGodkjenning);
-        avtaleRepository.save(avtale);
-
-        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til mentor for avtale med nr: %s. Frist for å søke %s . Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen Nav.", avtale.getAvtaleNr(), fristForGodkjenning);
-        assertSmsIkkeOpprettetEllerSendt(HendelseType.REFUSJON_KLAR, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
-    }
-
-    @Test
-    void refusjon_arbeidstrening_klar() throws JacksonException {
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
-        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
-        // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
-        avtale.refusjonKlar(fristForGodkjenning);
-        avtaleRepository.save(avtale);
-
-        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til arbeidstrening for avtale med nr: %s. Frist for å søke %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen Nav.", avtale.getAvtaleNr(), fristForGodkjenning);
-        assertSmsIkkeOpprettetEllerSendt(HendelseType.REFUSJON_KLAR, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
-
     }
 
     @Test
@@ -312,7 +243,6 @@ class LagSmsFraAvtaleHendelseTest {
         String meldingstekst = String.format("Tidligere innsendt refusjon på avtale med nr %d er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen Nav.", avtale.getAvtaleNr());
         assertSmsIkkeOpprettetEllerSendt(HendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
     }
-
 
     @Test
     void refusjonKorrigertKontaktperson__begge_skal_få_sms() throws JacksonException {

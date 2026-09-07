@@ -26,14 +26,6 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
-      ag-notifikasjon-produsent-api:
-        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
-        grant-type: client_credentials
-        scope: api://prod-gcp.fager.notifikasjon-produsent-api/.default
-        authentication:
-          client-id: ${AZURE_APP_CLIENT_ID}
-          client-secret: ${AZURE_APP_CLIENT_SECRET}
-          client-auth-method: client_secret_basic
       sokos-kontoregister:
         token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
         grant-type: client_credentials
@@ -201,10 +193,6 @@ tiltaksgjennomforing:
       url: https://norg2.nais.adeo.no/norg2/api/v1/enhet/navkontor/
     enhet:
       url: https://norg2.nais.adeo.no/norg2/api/v1/enhet/
-  notifikasjoner:
-    uri: https://ag-notifikasjon-produsent-api.intern.nav.no/api/graphql
-    lenke: https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/
-    enabled: true
   arena:
     kafka:
       tiltakdeltaker-endret-topic: 'teamarenanais.aapen-arena-tiltakdeltakerendret-v1-p'

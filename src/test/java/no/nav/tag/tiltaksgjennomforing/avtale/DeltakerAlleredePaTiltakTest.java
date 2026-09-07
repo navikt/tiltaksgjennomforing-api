@@ -6,7 +6,6 @@ import no.nav.tag.tiltaksgjennomforing.datavarehus.DvhMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.ArbeidsgiverNotifikasjonRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,9 +38,6 @@ public class DeltakerAlleredePaTiltakTest {
     AvtaleInnholdRepository avtaleInnholdRepository;
 
     @Autowired
-    ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
-
-    @Autowired
     DvhMeldingEntitetRepository dvhMeldingEntitetRepository;
     @Autowired
     AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
@@ -55,7 +51,6 @@ public class DeltakerAlleredePaTiltakTest {
         varselRepository.deleteAll();
         smsRepository.deleteAll();
         avtaleInnholdRepository.deleteAll();
-        arbeidsgiverNotifikasjonRepository.deleteAll();
         dvhMeldingEntitetRepository.deleteAll();
         avtaleMeldingEntitetRepository.deleteAll();
         avtaleRepository.deleteAll();

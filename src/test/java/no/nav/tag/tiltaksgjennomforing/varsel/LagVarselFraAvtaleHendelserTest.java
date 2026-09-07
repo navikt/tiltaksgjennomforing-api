@@ -26,7 +26,6 @@ import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.datavarehus.DvhMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.ArbeidsgiverNotifikasjonRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,8 +69,6 @@ class LagVarselFraAvtaleHendelserTest {
     @Autowired
     VarselRepository varselRepository;
     @Autowired
-    ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
-    @Autowired
     DvhMeldingEntitetRepository dvhMeldingEntitetRepository;
     @Autowired
     AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
@@ -82,7 +79,6 @@ class LagVarselFraAvtaleHendelserTest {
     void setUp() {
         smsRepository.deleteAll();
         varselRepository.deleteAll();
-        arbeidsgiverNotifikasjonRepository.deleteAll();
         avtaleInnholdRepository.deleteAll();
         dvhMeldingEntitetRepository.deleteAll();
         avtaleMeldingEntitetRepository.deleteAll();

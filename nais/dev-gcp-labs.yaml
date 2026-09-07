@@ -17,10 +17,6 @@ spec:
       value: https://arbeidsgiver-q.nav.no
     - name: TILTAK_PDFGEN_URI
       value: http://tiltak-pdfgen
-    - name: NOTIFIKASJONER_URI
-      value: https://notifikasjon-fake-produsent-api.labs.nais.io
-    - name: NOTIFIKASJONER_LENKE
-      value: https://arbeidsgiver.labs.nais.io
   image: {{image}}
   port: 8080
   replicas:

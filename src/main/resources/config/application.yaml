@@ -64,9 +64,6 @@ tiltaksgjennomforing:
     enabled: true
   pdfgen:
     uri: http://tiltak-pdfgen/api/v1/genpdf
-  notifikasjoner:
-    uri: https://ag-notifikasjon-produsent-api.dev.intern.nav.no/api/graphql
-    lenke: https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/
 
 no.nav.security.jwt:
   client:
