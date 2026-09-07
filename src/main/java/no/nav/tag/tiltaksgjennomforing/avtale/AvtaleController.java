@@ -342,7 +342,7 @@ public class AvtaleController {
     }
 
     @PostMapping("/{avtaleId}/godkjenn")
-    /** Dersom kvalifiseringsgruppen er endret på en avtale vil alle godkjenninger oppheves, og vil derfor ikke rulle tilbake for å lagre opphevingene. */
+/** Dersom innsatsgruppen er endret på en avtale vil alle godkjenninger oppheves, og vil derfor ikke rulle tilbake for å lagre opphevingene. */
     @Transactional(noRollbackFor = InnsatsgruppeEndretException.class)
     public void godkjenn(
             @PathVariable("avtaleId") UUID avtaleId,
