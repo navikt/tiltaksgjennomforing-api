@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import no.nav.tag.tiltaksgjennomforing.varsel.Sms;
@@ -24,7 +24,7 @@ public class SmsProducer {
         this.objectMapper = objectMapper;
     }
 
-    public void sendSmsVarselMeldingTilKafka(Sms sms) throws JacksonException {
+    public void sendSmsVarselMeldingTilKafka(Sms sms) throws JsonProcessingException {
         String melding = objectMapper.writeValueAsString(sms);
         kafkaTemplate.send(Topics.TILTAK_SMS, sms.getSmsVarselId().toString(), melding).whenComplete((result, ex) -> {
             if (ex != null) {

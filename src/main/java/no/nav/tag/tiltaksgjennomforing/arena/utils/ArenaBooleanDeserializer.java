@@ -1,16 +1,17 @@
 package no.nav.tag.tiltaksgjennomforing.arena.utils;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.core.JsonParser;
-import tools.jackson.databind.DeserializationContext;
-import tools.jackson.databind.ValueDeserializer;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 
-public class ArenaBooleanDeserializer extends ValueDeserializer<Boolean> {
+import java.io.IOException;
+
+public class ArenaBooleanDeserializer extends JsonDeserializer<Boolean> {
     @Override
     public Boolean deserialize(
         JsonParser jsonParser,
         DeserializationContext deserializationContext
-    ) throws JacksonException {
+    ) throws IOException {
         return "J".equals(jsonParser.getText());
     }
 }

@@ -32,6 +32,7 @@ public class ArenaAgreementMigration {
     @Transient
     private Instant created;
     private Instant modified;
+    @Enumerated(EnumType.STRING)
     @Convert(converter = ArenaTiltakskode.Convert.class)
     private ArenaTiltakskode tiltakstype;
     private String error;

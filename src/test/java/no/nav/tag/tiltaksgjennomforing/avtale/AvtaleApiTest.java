@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
@@ -16,10 +16,10 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -60,7 +60,7 @@ public class AvtaleApiTest {
     MockMvc mockMvc;
     ObjectMapper mapper = new ObjectMapper();
 
-    @MockitoBean
+    @MockBean
     EntraproxyService entraproxyService;
     @Mock
     VeilarbService veilarbService;
@@ -70,13 +70,13 @@ public class AvtaleApiTest {
     Norg2Client norg2Client;
     @Autowired
     private AvtaleRepository avtaleRepository;
-    @MockitoBean
+    @MockBean
     private TilgangskontrollService tilgangskontrollService;
     @Mock
     private PersondataService persondataService;
-    @MockitoSpyBean
+    @SpyBean
     private AuditConsoleLogger auditConsoleLogger;
-    @MockitoBean
+    @MockBean
     private EregService eregService;
 
 
