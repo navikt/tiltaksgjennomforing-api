@@ -1523,6 +1523,18 @@ public class AvtaleTest {
     }
 
     @Test
+    public void forkort_feiler_naar_innsatsgruppe_mangler_og_ny_sluttdato_er_i_fremtiden() {
+        Avtale avtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        avtale.setInnsatsgruppe(null);
+        LocalDate nySluttDato = avtale.getGjeldendeInnhold().getSluttDato().minusDays(1);
+
+        assertFeilkode(
+            Feilkode.INNSATSGRUPPE_MANGLER,
+            () -> avtale.forkortAvtale(nySluttDato, ForkortetGrunn.av("grunn", ""), TestData.enNavIdent())
+        );
+    }
+
+    @Test
     public void forleng_kun_ved_inngått_avtale() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         assertFeilkode(

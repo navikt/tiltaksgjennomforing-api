@@ -1252,7 +1252,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (!nySluttDato.isBefore(gjeldendeInnhold.getSluttDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_ETTER_SLUTTDATO);
         }
-        if (innsatsgruppe == null) {
+        if (innsatsgruppe == null && !LocalDate.now().isAfter(nySluttDato)) {
             throw new FeilkodeException(Feilkode.INNSATSGRUPPE_MANGLER);
         }
         // Kan ikke forkorte før en utbetalt/sendtkrav tilskuddsperiode
