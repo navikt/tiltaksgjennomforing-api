@@ -3,7 +3,10 @@ package no.nav.tag.tiltaksgjennomforing;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -51,10 +54,26 @@ public class TestDataGenerator {
                         currAvtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
                         currAvtale.setDeltakerFnr(genererTilfeldigGyldigFnr());
                         currAvtale.oppdaterStatus();
+                        settOppfolgingKrevesForVtao(currAvtale);
                         avtaler.add(currAvtale);
                     });
         });
         return avtaler;
+    }
+
+    static void settOppfolgingKrevesForVtao(Avtale avtale) {
+        settOppfolgingKrevesForVtao(avtale, Now.localDate().minusDays(1));
+    }
+
+    static void settOppfolgingKrevesForVtao(Avtale avtale, LocalDate oppfolgingFom) {
+        if (
+            avtale.getTiltakstype() == Tiltakstype.VTAO
+                && avtale.getStatus() != Status.ANNULLERT
+                && avtale.getStatus() != Status.AVSLUTTET
+        ) {
+            avtale.setKreverOppfolgingFom(oppfolgingFom);
+            avtale.setOppfolgingVarselSendt(Now.instant());
+        }
     }
 
     private static Fnr genererTilfeldigGyldigFnr() {

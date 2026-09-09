@@ -186,6 +186,7 @@ public class TestData {
     public static Avtale enVtaoArenaAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.opprett(lagOpprettAvtale(Tiltakstype.VTAO), Avtaleopphav.ARENA, veilderNavIdent);
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         // OBS: Avtale må ha startdato satt fra Arena, fordi endreAvtale ikke tillater endringer på dette feltet
         // når avtalen er blitt opprettet av Arena.
         // TODO: Skal en avtale med opphav Arena bli generert på en mer realistisk måte, feks ved å kalle ArenaMigreringService.createAvtale(..)?
@@ -289,7 +290,9 @@ public class TestData {
     }
 
     public static Avtale enVtaoAvtaleMedAltUtfylt() {
-        return enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VTAO);
+        Avtale avtale = enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VTAO);
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
+        return avtale;
     }
 
     public static Avtale enSommerjobbLonnstilskuddAvtaleMedAltUtfylt(int lonnstilskuddProsent) {
@@ -596,6 +599,7 @@ public class TestData {
 
     public static Avtale enVtaoAvtaleGodkjentAvVeileder(){
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         setOppfølgingPåAvtale(avtale);
         EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
@@ -607,6 +611,7 @@ public class TestData {
 
     public static Avtale enVtaoAvtaleGodkjentAvVeilederAvslåttePerioderSomMåFølgesOpp(){
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         setOppfølgingPåAvtale(avtale);
         EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
@@ -626,6 +631,7 @@ public class TestData {
 
     public static Avtale enVtaoAvtaleGodkjentAvVeilederFraAnnentOmråde(){
         Avtale avtale = Avtale.opprett(new OpprettAvtale(new Fnr("27428318124"), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("A123456"));
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         avtale.setEnhetOppfolging("0904");
         avtale.setEnhetsnavnOppfolging("Vinstra");
         EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
@@ -639,6 +645,7 @@ public class TestData {
 
     public static Avtale enEtterRegistrerdVtaoAvtaleGodkjentAvVeileder(){
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         setOppfølgingPåAvtale(avtale);
         avtale.setGodkjentForEtterregistrering(true);
         EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
@@ -656,6 +663,7 @@ public class TestData {
     public static Avtale enVtaoAvtaleGodkjentAvArbeidsgiveruUtenEndringer() {
         Fnr fnr = Fnr.generer(1958, 1, 31);
         Avtale avtale = Avtale.opprett(new OpprettAvtale(fnr, new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         avtale.getGjeldendeInnhold().setDeltakerFornavn("Dagny");
         avtale.getGjeldendeInnhold().setDeltakerEtternavn("Deltaker");
         avtale.getGjeldendeInnhold().setDeltakerTlf("40000000");
@@ -683,6 +691,7 @@ public class TestData {
 
     public static Avtale enVtaoAvtaleGodkjentAvArbeidsgiver() {
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         setOppfølgingPåAvtale(avtale);
         EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
@@ -693,6 +702,7 @@ public class TestData {
 
     public static Avtale enVtaoAvtaleIKKEGodkjentAvArbeidsgiver() {
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO),Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
+        avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         setOppfølgingPåAvtale(avtale);
         EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
