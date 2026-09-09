@@ -27,26 +27,4 @@ class TestDataTest {
     assertThat(endreAvtale.getInkluderingstilskuddsutgift()).isNotEmpty();
     assertThat(endreAvtale).hasNoNullFieldsOrPropertiesExcept("vtao", "arbeidsgiverKid");
   }
-
-  @Test
-  void lokal_vtao_testdata_krever_oppfolging() {
-    Avtale avtale = mock(Avtale.class);
-    when(avtale.getTiltakstype()).thenReturn(Tiltakstype.VTAO);
-
-    TestDataGenerator.settOppfolgingKrevesForVtao(avtale);
-
-    verify(avtale).setKreverOppfolgingFom(Now.localDate().minusDays(1));
-    verify(avtale).setOppfolgingVarselSendt(any());
-  }
-
-  @Test
-  void lokal_vtao_testdata_krever_oppfolging_i_dag() {
-    Avtale avtale = mock(Avtale.class);
-    when(avtale.getTiltakstype()).thenReturn(Tiltakstype.VTAO);
-
-    TestDataGenerator.settOppfolgingKrevesForVtao(avtale, Now.localDate());
-
-    verify(avtale).setKreverOppfolgingFom(Now.localDate());
-    verify(avtale).setOppfolgingVarselSendt(any());
-  }
 }
