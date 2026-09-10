@@ -117,7 +117,7 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         }
 
         avtaler.add(TestData.enVtaoAvtaleGodkjentAvVeilederFraAnnentOmråde());
-        avtaler.add(TestData.enEtterRegistrerdVtaoAvtaleGodkjentAvVeileder());
+        avtaler.add(TestData.enEtterRegistrertVtaoAvtaleGodkjentAvVeileder());
         avtaler.add(TestData.enVtaoAvtaleGodkjentAvArbeidsgiver());
         avtaler.add(TestData.enVtaoAvtaleGodkjentAvArbeidsgiveruUtenEndringer());
 

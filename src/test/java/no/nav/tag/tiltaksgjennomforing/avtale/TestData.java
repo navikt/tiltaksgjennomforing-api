@@ -643,7 +643,7 @@ public class TestData {
         return avtale;
     }
 
-    public static Avtale enEtterRegistrerdVtaoAvtaleGodkjentAvVeileder(){
+    public static Avtale enEtterRegistrertVtaoAvtaleGodkjentAvVeileder(){
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
         setOppfølgingPåAvtale(avtale);
