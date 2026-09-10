@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.arena.configuration;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -26,7 +26,7 @@ public class ArenaKafkaConsumerConfig {
     }
 
     private ConsumerFactory<String, String> consumerFactory(KafkaProperties kafkaProperties) {
-        Map<String, Object> props = kafkaProperties.buildConsumerProperties(null);
+        Map<String, Object> props = kafkaProperties.buildConsumerProperties();
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "tiltaksgjennomforing-api-9");
         return new DefaultKafkaConsumerFactory<>(props);
     }

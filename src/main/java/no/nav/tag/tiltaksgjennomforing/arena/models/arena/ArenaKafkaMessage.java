@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.arena.models.arena;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 import java.time.LocalDateTime;
 

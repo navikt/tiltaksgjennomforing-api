@@ -9,7 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles(Miljø.TEST)
 public class DeltakerTest {
 
-    @MockBean
+    @MockitoBean
     private AvtaleRepository avtaleRepository;
 
     @Test
