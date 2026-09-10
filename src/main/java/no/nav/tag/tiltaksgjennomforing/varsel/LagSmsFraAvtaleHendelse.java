@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
-import tools.jackson.core.JacksonException;
 import io.getunleash.UnleashContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbe
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvDeltaker;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonFristForlenget;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlar;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlarRevarsel;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKorrigert;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
@@ -23,6 +21,7 @@ import no.nav.tag.tiltaksgjennomforing.varsel.kafka.SmsProducer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.JacksonException;
 
 @Component
 @RequiredArgsConstructor
@@ -64,15 +63,6 @@ public class LagSmsFraAvtaleHendelse {
     public void godkjenningerOpphevetAvArbeidsgiver(GodkjenningerOpphevetAvArbeidsgiver event) {
         var smsTilVeileder = smsTilVeileder(event.getAvtale(), HendelseType.OPPRETTET_AV_ARBEIDSGIVER);
         lagreOgSendKafkaMelding(smsTilVeileder);
-    }
-    @EventListener
-    public void refusjonKlar(RefusjonKlar event) {
-        if (featureToggleService.isEnabled(FeatureToggle.REFUSJON_KLAR_I_TILTAK_NOTIFIKASJON)) return;
-        if(event.getAvtale().getTiltakstype() == Tiltakstype.SOMMERJOBB || event.getAvtale().getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || event.getAvtale().getTiltakstype() == Tiltakstype.VARIG_LONNSTILSKUDD || event.getAvtale().getTiltakstype() == Tiltakstype.MENTOR){
-            String tiltakNavn = event.getAvtale().getTiltakstype().getBeskrivelse().toLowerCase();
-            String smsTekst = String.format("Dere kan nå søke om refusjon for tilskudd til %s for avtale med nr: %s. Frist for å søke er %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen Nav.", tiltakNavn, event.getAvtale().getAvtaleNr(), event.getFristForGodkjenning());
-            refusjonVarslingMedKontaktperson(event.getAvtale(), smsTekst, HendelseType.REFUSJON_KLAR);
-        }
     }
 
     @EventListener

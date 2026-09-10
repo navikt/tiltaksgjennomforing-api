@@ -121,10 +121,6 @@ tiltaksgjennomforing:
       url: http://localhost:8090/norg2/api/v1/enhet/
   pdfgen:
     uri: ${TILTAK_PDFGEN_URI:http://localhost:9001}/api/v1/genpdf
-  notifikasjoner:
-    uri: ${NOTIFIKASJONER_URI:http://localhost:8090}/api/graphql
-    lenke: ${NOTIFIKASJONER_LENKE:http://localhost:3000}/tiltaksgjennomforing/avtale/
-    enabled: false
   arena:
     kafka:
       tiltakdeltaker-endret-topic: 'teamarenanais.aapen-arena-tiltakdeltakerendret-v1'

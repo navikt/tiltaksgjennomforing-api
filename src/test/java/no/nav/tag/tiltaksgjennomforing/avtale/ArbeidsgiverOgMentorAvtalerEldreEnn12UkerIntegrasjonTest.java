@@ -8,7 +8,6 @@ import no.nav.tag.tiltaksgjennomforing.metrikker.MetrikkRegistrering;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.ArbeidsgiverNotifikasjonRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,9 +51,6 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
     private AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
 
     @MockitoBean
-    private ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
-
-    @MockitoBean
     private MetrikkRegistrering metrikkRegistrering;
 
     @BeforeEach
@@ -62,7 +58,6 @@ class ArbeidsgiverOgMentorAvtalerEldreEnn12UkerIntegrasjonTest {
         varselRepository.deleteAll();
         smsRepository.deleteAll();
         avtaleInnholdRepository.deleteAll();
-        arbeidsgiverNotifikasjonRepository.deleteAll();
         dvhMeldingEntitetRepository.deleteAll();
         avtaleMeldingEntitetRepository.deleteAll();
         avtaleRepository.deleteAll();
