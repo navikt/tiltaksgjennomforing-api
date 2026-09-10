@@ -70,9 +70,11 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaler.add(TestData.enVarigLonnstilskuddAvtaleMedBehandletIArenaPerioder());
         avtaler.add(TestData.enVtaoArenaAvtaleMedAltUtfylt());
         avtaler.add(TestData.enMentorArenaAvtaleMedAltUtfylt());
-        avtaler.add(TestData.enVtaoAvtaleGodkjentAvVeileder());
+        avtaler.add(TestData.enVtaoAvtaleMedKrevdOppfolgingIdag());
+        avtaler.add(TestData.enAvsluttetVtaoAvtale());
+        avtaler.add(TestData.enVtaoAvtaleMedOppfolgingUtfortTreManederSiden());
         avtaler.add(TestData.enVtaoAvtaleGodkjentAvVeilederFraAnnentOmråde());
-        avtaler.add(TestData.enEtterRegistrerdVtaoAvtaleGodkjentAvVeileder());
+        avtaler.add(TestData.enEtterregistrertVtaoAvtaleGodkjentAvVeileder());
         avtaler.add(TestData.enVtaoAvtaleGodkjentAvArbeidsgiver());
         avtaler.add(TestData.enVtaoAvtaleGodkjentAvArbeidsgiveruUtenEndringer());
 
