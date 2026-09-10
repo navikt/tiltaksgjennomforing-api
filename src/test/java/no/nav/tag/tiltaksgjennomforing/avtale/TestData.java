@@ -293,12 +293,8 @@ public class TestData {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.opprett(lagOpprettAvtale(Tiltakstype.VTAO), Avtaleopphav.VEILEDER, veilderNavIdent);
         avtale.setInnsatsgruppe(Innsatsgruppe.JOBBE_DELVIS);
-        avtale.getGjeldendeInnhold().setStartDato(Now.localDate());
-        avtale.endreAvtale(endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER);
-        avtale.setDeltakerFnr(new Fnr("17120276662"));
-        avtale.getGjeldendeInnhold().setDeltakerFornavn("Joakim");
-        avtale.getGjeldendeInnhold().setDeltakerEtternavn("Hansen");
-        avtale.setInnsatsgruppe(Innsatsgruppe.JOBBE_DELVIS);
+        setOppfølgingPåAvtale(avtale);
+        avtale.endreAvtale(endringPåAlleVTAOFelter(), Avtalerolle.VEILEDER);
         return avtale;
     }
 
