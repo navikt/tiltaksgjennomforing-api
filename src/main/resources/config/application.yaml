@@ -15,6 +15,10 @@ spring:
     type: caffeine
   jpa:
     open-in-view: true
+    properties:
+      hibernate:
+        type:
+          json_format_mapper: jackson3
   application:
     name: tiltaksgjennomforing-api
   main:
