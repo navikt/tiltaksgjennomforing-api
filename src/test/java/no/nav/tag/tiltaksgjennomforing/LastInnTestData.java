@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static no.nav.tag.tiltaksgjennomforing.TestDataGenerator.genererAvtaler;
-import static no.nav.tag.tiltaksgjennomforing.TestDataGenerator.settOppfolgingKrevesForVtao;
 
 @Component
 @RequiredArgsConstructor
@@ -71,53 +70,11 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaler.add(TestData.enVarigLonnstilskuddAvtaleMedBehandletIArenaPerioder());
         avtaler.add(TestData.enVtaoArenaAvtaleMedAltUtfylt());
         avtaler.add(TestData.enMentorArenaAvtaleMedAltUtfylt());
-        Avtale vtaoKreverOppfolging = TestData.enVtaoAvtaleGodkjentAvVeileder();
-        vtaoKreverOppfolging.godkjennTilskuddsperiode(TestData.enNavIdent2());
-        vtaoKreverOppfolging.getGjeldendeInnhold().setDeltakerFornavn("VTAO");
-        vtaoKreverOppfolging.getGjeldendeInnhold().setDeltakerEtternavn("Oppfølging kreves");
-        avtaler.add(vtaoKreverOppfolging);
-        Avtale vtaoKreverOppfolgingIdag = TestData.enVtaoAvtaleGodkjentAvVeileder();
-        vtaoKreverOppfolgingIdag.godkjennTilskuddsperiode(TestData.enNavIdent2());
-        vtaoKreverOppfolgingIdag.getGjeldendeInnhold().setDeltakerFornavn("VTAO");
-        vtaoKreverOppfolgingIdag.getGjeldendeInnhold().setDeltakerEtternavn("Oppfølging i dag");
-        avtaler.add(vtaoKreverOppfolgingIdag);
-
-        Avtale vtaoAnnullert = TestData.enVtaoAvtaleGodkjentAvVeileder();
-        vtaoAnnullert.godkjennTilskuddsperiode(TestData.enNavIdent2());
-        vtaoAnnullert.getGjeldendeInnhold().setDeltakerFornavn("VTAO");
-        vtaoAnnullert.getGjeldendeInnhold().setDeltakerEtternavn("Annullert avtale");
-        vtaoAnnullert.annuller("Testdata: annullert VTAO-avtale", vtaoAnnullert.getVeilederNavIdent());
-        avtaler.add(vtaoAnnullert);
-
-        Now.fixedDate(Now.localDate().minusYears(2));
-        try {
-            Avtale vtaoAvsluttet = TestData.enVtaoAvtaleGodkjentAvVeileder();
-            vtaoAvsluttet.godkjennTilskuddsperiode(TestData.enNavIdent2());
-            vtaoAvsluttet.getGjeldendeInnhold().setDeltakerFornavn("VTAO");
-            vtaoAvsluttet.getGjeldendeInnhold().setDeltakerEtternavn("Avsluttet avtale");
-            avtaler.add(vtaoAvsluttet);
-        } finally {
-            Now.resetClock();
-        }
-
-        Now.fixedDate(Now.localDate().minusMonths(3));
-        try {
-            Avtale vtaoOppfolgingUtfortTreManederSiden = TestData.enVtaoAvtaleGodkjentAvVeileder();
-            vtaoOppfolgingUtfortTreManederSiden.godkjennTilskuddsperiode(TestData.enNavIdent2());
-            vtaoOppfolgingUtfortTreManederSiden.getGjeldendeInnhold().setDeltakerFornavn("VTAO");
-            vtaoOppfolgingUtfortTreManederSiden.getGjeldendeInnhold().setDeltakerEtternavn("Oppfølging utført for 3 måneder siden");
-            settOppfolgingKrevesForVtao(vtaoOppfolgingUtfortTreManederSiden);
-            vtaoOppfolgingUtfortTreManederSiden.godkjennOppfolgingAvAvtale(
-                vtaoOppfolgingUtfortTreManederSiden.getVeilederNavIdent()
-            );
-            vtaoOppfolgingUtfortTreManederSiden.oppdaterStatus();
-            avtaleRepository.save(vtaoOppfolgingUtfortTreManederSiden);
-        } finally {
-            Now.resetClock();
-        }
-
+        avtaler.add(TestData.enVtaoAvtaleMedKrevdOppfolgingIdag());
+        avtaler.add(TestData.enAvsluttetVtaoAvtale());
+        avtaler.add(TestData.enVtaoAvtaleMedOppfolgingUtfortTreManederSiden());
         avtaler.add(TestData.enVtaoAvtaleGodkjentAvVeilederFraAnnentOmråde());
-        avtaler.add(TestData.enEtterRegistrertVtaoAvtaleGodkjentAvVeileder());
+        avtaler.add(TestData.enEtterregistrertVtaoAvtaleGodkjentAvVeileder());
         avtaler.add(TestData.enVtaoAvtaleGodkjentAvArbeidsgiver());
         avtaler.add(TestData.enVtaoAvtaleGodkjentAvArbeidsgiveruUtenEndringer());
 
@@ -163,11 +120,6 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaler.addAll(genererAvtaler(10));
         avtaler.forEach(avtale -> {
             avtale.oppdaterStatus();
-            if (avtale == vtaoKreverOppfolgingIdag) {
-                settOppfolgingKrevesForVtao(avtale, Now.localDate());
-            } else {
-                settOppfolgingKrevesForVtao(avtale);
-            }
             avtaleRepository.save(avtale);
         });
     }
