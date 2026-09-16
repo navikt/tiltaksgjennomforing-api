@@ -3,9 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.brev;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.brev.digitalkontaktinformasjon.DigitalKontaktinformasjonClient;
 import no.nav.tag.tiltaksgjennomforing.brev.postadresse.PostadresseClient;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,8 +10,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,16 +22,8 @@ public class PostutsendelseServiceTest {
     @Mock
     private DigitalKontaktinformasjonClient digitalKontaktinformasjonClient;
 
-    @Mock
-    private FeatureToggleService featureToggleService;
-
     @InjectMocks
     private PostutsendelseService postutsendelseService;
-
-    @BeforeEach
-    public void setup() {
-        when(featureToggleService.isEnabled(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST)).thenReturn(true);
-    }
 
     @Test
     public void kanPersonMottaPost__skal_returnere_true_nar_person_har_adresse_og_ikke_er_reservert() {
@@ -70,17 +57,7 @@ public class PostutsendelseServiceTest {
         assertThat(postutsendelseService.kanPersonMottaPost(FNR)).isTrue();
     }
 
-    @Test
-    public void kanPersonMottaPost__skal_returnere_true_og_ikke_sjekke_postutsendelse_nar_toggle_er_av() {
-        when(featureToggleService.isEnabled(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST)).thenReturn(false);
-
-        assertThat(postutsendelseService.kanPersonMottaPost(FNR)).isTrue();
-
-        verify(postadresseClient, never()).sjekkOmPersonErRegistrertMedAdresse(FNR);
-        verify(digitalKontaktinformasjonClient, never()).erPersonReservertMotDigitalKontakt(FNR);
-    }
 }
-
 
 
 

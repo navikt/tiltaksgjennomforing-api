@@ -640,10 +640,6 @@ public class AvtaleControllerTest {
         return veileder;
     }
 
-    private void skruPåPostutsendelseValidering() {
-        when(featureToggleServiceMock.isEnabled(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST)).thenReturn(true);
-    }
-
     @Test
     public void viser_ikke_navenheter_til_arbeidsgiver() {
         Avtale avtale = enArbeidstreningAvtale();
@@ -763,7 +759,6 @@ public class AvtaleControllerTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
-        skruPåPostutsendelseValidering();
         værInnloggetSom(enVeilederMedPostutsendelseService(avtale));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
 
@@ -800,7 +795,6 @@ public class AvtaleControllerTest {
         avtale.setVeilederNavIdent(null);
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
-        skruPåPostutsendelseValidering();
         værInnloggetSom(enVeilederMedPostutsendelseService(avtale));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
 
@@ -818,7 +812,6 @@ public class AvtaleControllerTest {
     @Test
     public void godkjennForAvtalepart__skal_ikke_validere_postutsendelse_nar_deltaker_godkjenner() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        skruPåPostutsendelseValidering();
         værInnloggetSom(TestData.enDeltaker(avtale));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
 
@@ -836,7 +829,6 @@ public class AvtaleControllerTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
-        skruPåPostutsendelseValidering();
         Veileder veileder = new Veileder(
             new NavIdent("Z333333"),
             null,
@@ -871,7 +863,6 @@ public class AvtaleControllerTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
-        skruPåPostutsendelseValidering();
         værInnloggetSom(enVeilederMedPostutsendelseService(avtale));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
 
