@@ -6,7 +6,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.brev.digitalkontaktinformasjon.DigitalKontaktinformasjonClient;
 import no.nav.tag.tiltaksgjennomforing.brev.postadresse.PostadresseClient;
 import org.springframework.stereotype.Service;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
 @Slf4j
