@@ -5,8 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.brev.digitalkontaktinformasjon.DigitalKontaktinformasjonClient;
 import no.nav.tag.tiltaksgjennomforing.brev.postadresse.PostadresseClient;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
@@ -16,12 +14,8 @@ import org.springframework.web.client.RestClientException;
 public class PostutsendelseService {
     private final PostadresseClient postadresseClient;
     private final DigitalKontaktinformasjonClient digitalKontaktinformasjonClient;
-    private final FeatureToggleService featureToggleService;
 
     public boolean kanPersonMottaPost(Fnr fnr) {
-        if (!featureToggleService.isEnabled(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST)) {
-            return true;
-        }
         boolean harAdresse = postadresseClient.sjekkOmPersonErRegistrertMedAdresse(fnr);
         boolean erReservertMotDigitalKommunikasjon = false;
 

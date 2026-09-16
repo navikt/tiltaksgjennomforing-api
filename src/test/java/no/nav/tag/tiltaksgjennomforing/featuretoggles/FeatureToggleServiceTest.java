@@ -31,22 +31,22 @@ public class FeatureToggleServiceTest {
 
     @Test
     public void hentFeatureToggles__skal_returnere_true_hvis_feature_er_på() {
-        when(unleash.isEnabled(eq(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST.getToggleNavn()), any(UnleashContext.class))).thenReturn(true);
-        Map<FeatureToggle, Boolean> toggles = featureToggleService.hentFeatureToggles(List.of(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST));
-        assertThat(toggles.get(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST)).isTrue();
+        when(unleash.isEnabled(eq(FeatureToggle.KODE_6_SPERRE.getToggleNavn()), any(UnleashContext.class))).thenReturn(true);
+        Map<FeatureToggle, Boolean> toggles = featureToggleService.hentFeatureToggles(List.of(FeatureToggle.KODE_6_SPERRE));
+        assertThat(toggles.get(FeatureToggle.KODE_6_SPERRE)).isTrue();
     }
 
     @Test
     public void hentFeatureToggles__skal_returnere_false_hvis_feature_er_av() {
-        when(unleash.isEnabled(eq(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST.getToggleNavn()), any(UnleashContext.class))).thenReturn(false);
-        Map<FeatureToggle, Boolean> toggles = featureToggleService.hentFeatureToggles(List.of(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST));
-        assertThat(toggles.get(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST)).isFalse();
+        when(unleash.isEnabled(eq(FeatureToggle.KODE_6_SPERRE.getToggleNavn()), any(UnleashContext.class))).thenReturn(false);
+        Map<FeatureToggle, Boolean> toggles = featureToggleService.hentFeatureToggles(List.of(FeatureToggle.KODE_6_SPERRE));
+        assertThat(toggles.get(FeatureToggle.KODE_6_SPERRE)).isFalse();
     }
 
     @Test
     public void hentFeatureToggles__skal_default_returnere_false() {
-        Map<FeatureToggle, Boolean> toggles = featureToggleService.hentFeatureToggles(List.of(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST));
-        assertThat(toggles.get(FeatureToggle.SJEKK_OM_DELTAKER_KAN_MOTTA_POST)).isFalse();
+        Map<FeatureToggle, Boolean> toggles = featureToggleService.hentFeatureToggles(List.of(FeatureToggle.KODE_6_SPERRE));
+        assertThat(toggles.get(FeatureToggle.KODE_6_SPERRE)).isFalse();
     }
 
     @Test
