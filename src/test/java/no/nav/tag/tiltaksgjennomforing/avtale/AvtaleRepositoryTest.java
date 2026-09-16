@@ -495,6 +495,33 @@ public class AvtaleRepositoryTest {
     }
 
     @Test
+    public void sokEtterAvtale_skal_finne_pabegynt_avtale_uten_sluttdato_ved_sok_pa_veileder() {
+        NavIdent veilederNavIdent = new NavIdent("A123456");
+
+        Avtale nyAvtale = TestData.enArbeidstreningAvtale();
+        nyAvtale.setVeilederNavIdent(veilederNavIdent);
+        assertThat(nyAvtale.getGjeldendeInnhold().getStartDato()).isNull();
+        assertThat(nyAvtale.getGjeldendeInnhold().getSluttDato()).isNull();
+        avtaleRepository.save(nyAvtale);
+
+        Page<Avtale> resultat = avtaleRepository.sokEtterAvtale(
+            veilederNavIdent,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            PageRequest.of(0, 10)
+        );
+
+        assertThat(resultat.getContent())
+            .extracting(Avtale::getId)
+            .containsExactly(nyAvtale.getId());
+    }
+
+    @Test
     public void sokEtterAvtale_finner_avtaler_ved_sok_pa_avtaleNr() {
         Avtale avtale1 = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet();
         avtaleRepository.save(avtale1);
