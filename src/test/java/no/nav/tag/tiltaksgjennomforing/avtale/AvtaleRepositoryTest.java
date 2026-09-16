@@ -440,6 +440,61 @@ public class AvtaleRepositoryTest {
     }
 
     @Test
+    public void sokEtterAvtale_skal_ikke_finne_avtaler_som_sluttet_for_over_12_uker_siden_ved_sok_pa_veileder() {
+        NavIdent veilederNavIdent = new NavIdent("A123456");
+
+        Avtale gammelAvtale = TestData.enInkluderingstilskuddAvtale();
+        gammelAvtale.setVeilederNavIdent(veilederNavIdent);
+        gammelAvtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(13));
+        avtaleRepository.save(gammelAvtale);
+
+        Avtale nyereAvtale = TestData.enInkluderingstilskuddAvtale();
+        nyereAvtale.setVeilederNavIdent(veilederNavIdent);
+        nyereAvtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(11));
+        avtaleRepository.save(nyereAvtale);
+
+        Page<Avtale> resultat = avtaleRepository.sokEtterAvtale(
+            veilederNavIdent,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            PageRequest.of(0, 10)
+        );
+
+        assertThat(resultat.getContent())
+            .extracting(Avtale::getId)
+            .containsExactly(nyereAvtale.getId());
+    }
+
+    @Test
+    public void sokEtterAvtale_skal_finne_avtaler_som_sluttet_for_over_12_uker_siden_uten_sok_pa_veileder() {
+        Avtale gammelAvtale = TestData.enInkluderingstilskuddAvtale();
+        gammelAvtale.setVeilederNavIdent(new NavIdent("A123456"));
+        gammelAvtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(13));
+        avtaleRepository.save(gammelAvtale);
+
+        Page<Avtale> resultat = avtaleRepository.sokEtterAvtale(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            PageRequest.of(0, 10)
+        );
+
+        assertThat(resultat.getContent())
+            .extracting(Avtale::getId)
+            .containsExactly(gammelAvtale.getId());
+    }
+
+    @Test
     public void sokEtterAvtale_finner_avtaler_ved_sok_pa_avtaleNr() {
         Avtale avtale1 = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet();
         avtaleRepository.save(avtale1);

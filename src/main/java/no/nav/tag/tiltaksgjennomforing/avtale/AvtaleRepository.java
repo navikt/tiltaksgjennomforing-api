@@ -239,6 +239,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             WHERE a.feilregistrert = FALSE AND
                   (:ufordelt = FALSE OR a.veilederNavIdent IS NULL) AND
                   (:ufordelt = TRUE OR :veilederNavIdent IS NULL OR a.veilederNavIdent = :veilederNavIdent) AND
+                  (:ufordelt = TRUE OR :veilederNavIdent IS NULL OR a.gjeldendeInnhold.sluttDato > current_date - 84 day) AND
                   (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr) AND
                   (:deltakerFnr IS NULL OR a.deltakerFnr = :deltakerFnr) AND
                   (:bedriftNr IS NULL OR a.bedriftNr = :bedriftNr) AND
@@ -252,6 +253,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             WHERE a.feilregistrert = FALSE AND
                   (:ufordelt = FALSE OR a.veilederNavIdent IS NULL) AND
                   (:ufordelt = TRUE OR :veilederNavIdent IS NULL OR a.veilederNavIdent = :veilederNavIdent) AND
+                  (:ufordelt = TRUE OR :veilederNavIdent IS NULL OR a.gjeldendeInnhold.sluttDato > current_date - 84 day) AND
                   (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr) AND
                   (:deltakerFnr IS NULL OR a.deltakerFnr = :deltakerFnr) AND
                   (:bedriftNr IS NULL OR a.bedriftNr = :bedriftNr) AND
