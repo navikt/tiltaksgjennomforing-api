@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -437,6 +437,149 @@ public class AvtaleRepositoryTest {
         Page<Avtale> resultat = avtaleRepository.sokEtterAvtale(avtale3.getVeilederNavIdent(), null, null, null, null, null, null, false, PageRequest.of(0, 10));
         assertThat(resultat.getContent()).hasSize(1);
         assertThat(resultat.getContent().getFirst().getId()).isEqualTo(avtale3.getId());
+    }
+
+    @Test
+    public void sokEtterAvtale_skal_kun_filtrere_pa_sluttdato_for_avsluttede_og_annullerte_avtaler_ved_sok_pa_veileder() {
+        NavIdent veilederNavIdent = new NavIdent("A123456");
+
+        Avtale gammelAvsluttetAvtale = TestData.enInkluderingstilskuddAvtale();
+        gammelAvsluttetAvtale.setVeilederNavIdent(veilederNavIdent);
+        gammelAvsluttetAvtale.setStatus(Status.AVSLUTTET);
+        gammelAvsluttetAvtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(13));
+        avtaleRepository.save(gammelAvsluttetAvtale);
+
+        Avtale gammelAnnullertAvtale = TestData.enInkluderingstilskuddAvtale();
+        gammelAnnullertAvtale.setVeilederNavIdent(veilederNavIdent);
+        gammelAnnullertAvtale.setStatus(Status.ANNULLERT);
+        gammelAnnullertAvtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(13));
+        avtaleRepository.save(gammelAnnullertAvtale);
+
+        Avtale gammelPabegyntAvtale = TestData.enInkluderingstilskuddAvtale();
+        gammelPabegyntAvtale.setVeilederNavIdent(veilederNavIdent);
+        gammelPabegyntAvtale.setStatus(Status.PÅBEGYNT);
+        gammelPabegyntAvtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(13));
+        avtaleRepository.save(gammelPabegyntAvtale);
+
+        Avtale nyereAvsluttetAvtale = TestData.enInkluderingstilskuddAvtale();
+        nyereAvsluttetAvtale.setVeilederNavIdent(veilederNavIdent);
+        nyereAvsluttetAvtale.setStatus(Status.AVSLUTTET);
+        nyereAvsluttetAvtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(11));
+        avtaleRepository.save(nyereAvsluttetAvtale);
+
+        Avtale nyereAnnullertAvtale = TestData.enInkluderingstilskuddAvtale();
+        nyereAnnullertAvtale.setVeilederNavIdent(veilederNavIdent);
+        nyereAnnullertAvtale.setStatus(Status.ANNULLERT);
+        nyereAnnullertAvtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(11));
+        avtaleRepository.save(nyereAnnullertAvtale);
+
+        Page<Avtale> resultat = avtaleRepository.sokEtterAvtale(
+            veilederNavIdent,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            PageRequest.of(0, 10)
+        );
+
+        assertThat(resultat.getContent())
+            .extracting(Avtale::getId)
+            .containsExactlyInAnyOrder(
+                gammelPabegyntAvtale.getId(),
+                nyereAvsluttetAvtale.getId(),
+                nyereAnnullertAvtale.getId()
+            );
+        assertThat(resultat.getTotalElements()).isEqualTo(3);
+    }
+
+    @Test
+    public void sokEtterAvtale_skal_finne_avtaler_som_sluttet_for_over_12_uker_siden_uten_sok_pa_veileder() {
+        Avtale gammelAvtale = TestData.enInkluderingstilskuddAvtale();
+        gammelAvtale.setVeilederNavIdent(new NavIdent("A123456"));
+        gammelAvtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusWeeks(13));
+        avtaleRepository.save(gammelAvtale);
+
+        Page<Avtale> resultat = avtaleRepository.sokEtterAvtale(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            PageRequest.of(0, 10)
+        );
+
+        assertThat(resultat.getContent())
+            .extracting(Avtale::getId)
+            .containsExactly(gammelAvtale.getId());
+    }
+
+    @Test
+    public void sokEtterAvtale_skal_bruke_sist_endret_nar_avsluttet_eller_annullert_avtale_mangler_sluttdato() {
+        NavIdent veilederNavIdent = new NavIdent("A123456");
+
+        Avtale gammelAvsluttetAvtale = TestData.enArbeidstreningAvtale();
+        gammelAvsluttetAvtale.setVeilederNavIdent(veilederNavIdent);
+        gammelAvsluttetAvtale.setStatus(Status.AVSLUTTET);
+        gammelAvsluttetAvtale.setSistEndret(Now.instant().minus(13 * 7, ChronoUnit.DAYS));
+        assertThat(gammelAvsluttetAvtale.getGjeldendeInnhold().getSluttDato()).isNull();
+        avtaleRepository.save(gammelAvsluttetAvtale);
+
+        Avtale nyereAnnullertAvtale = TestData.enArbeidstreningAvtale();
+        nyereAnnullertAvtale.setVeilederNavIdent(veilederNavIdent);
+        nyereAnnullertAvtale.setStatus(Status.ANNULLERT);
+        nyereAnnullertAvtale.setSistEndret(Now.instant().minus(11 * 7, ChronoUnit.DAYS));
+        assertThat(nyereAnnullertAvtale.getGjeldendeInnhold().getSluttDato()).isNull();
+        avtaleRepository.save(nyereAnnullertAvtale);
+
+        Page<Avtale> resultat = avtaleRepository.sokEtterAvtale(
+            veilederNavIdent,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            PageRequest.of(0, 10)
+        );
+
+        assertThat(resultat.getContent())
+            .extracting(Avtale::getId)
+            .containsExactly(nyereAnnullertAvtale.getId());
+        assertThat(resultat.getTotalElements()).isEqualTo(1);
+    }
+
+    @Test
+    public void sokEtterAvtale_skal_finne_pabegynt_avtale_uten_sluttdato_ved_sok_pa_veileder() {
+        NavIdent veilederNavIdent = new NavIdent("A123456");
+
+        Avtale nyAvtale = TestData.enArbeidstreningAvtale();
+        nyAvtale.setVeilederNavIdent(veilederNavIdent);
+        assertThat(nyAvtale.getGjeldendeInnhold().getStartDato()).isNull();
+        assertThat(nyAvtale.getGjeldendeInnhold().getSluttDato()).isNull();
+        avtaleRepository.save(nyAvtale);
+
+        Page<Avtale> resultat = avtaleRepository.sokEtterAvtale(
+            veilederNavIdent,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            PageRequest.of(0, 10)
+        );
+
+        assertThat(resultat.getContent())
+            .extracting(Avtale::getId)
+            .containsExactly(nyAvtale.getId());
     }
 
     @Test
