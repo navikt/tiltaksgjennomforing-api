@@ -239,7 +239,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             WHERE a.feilregistrert = FALSE AND
                   (:ufordelt = FALSE OR a.veilederNavIdent IS NULL) AND
                   (:ufordelt OR :veilederNavIdent IS NULL OR a.veilederNavIdent = :veilederNavIdent) AND
-                  (:ufordelt OR :veilederNavIdent IS NULL OR a.status NOT IN ('AVSLUTTET', 'ANNULLERT') OR COALESCE(a.gjeldendeInnhold.sluttDato, current_date) > current_date - 84 day) AND
+                  (:ufordelt OR :veilederNavIdent IS NULL OR a.status NOT IN ('AVSLUTTET', 'ANNULLERT') OR COALESCE(a.gjeldendeInnhold.sluttDato, a.sistEndret) > current_date - 84 day) AND
                   (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr) AND
                   (:deltakerFnr IS NULL OR a.deltakerFnr = :deltakerFnr) AND
                   (:bedriftNr IS NULL OR a.bedriftNr = :bedriftNr) AND
@@ -253,7 +253,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             WHERE a.feilregistrert = FALSE AND
                   (:ufordelt = FALSE OR a.veilederNavIdent IS NULL) AND
                   (:ufordelt OR :veilederNavIdent IS NULL OR a.veilederNavIdent = :veilederNavIdent) AND
-                  (:ufordelt OR :veilederNavIdent IS NULL OR a.status NOT IN ('AVSLUTTET', 'ANNULLERT') OR COALESCE(a.gjeldendeInnhold.sluttDato, current_date) > current_date - 84 day) AND
+                  (:ufordelt OR :veilederNavIdent IS NULL OR a.status NOT IN ('AVSLUTTET', 'ANNULLERT') OR COALESCE(a.gjeldendeInnhold.sluttDato, a.sistEndret) > current_date - 84 day) AND
                   (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr) AND
                   (:deltakerFnr IS NULL OR a.deltakerFnr = :deltakerFnr) AND
                   (:bedriftNr IS NULL OR a.bedriftNr = :bedriftNr) AND

@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -517,6 +517,42 @@ public class AvtaleRepositoryTest {
         assertThat(resultat.getContent())
             .extracting(Avtale::getId)
             .containsExactly(gammelAvtale.getId());
+    }
+
+    @Test
+    public void sokEtterAvtale_skal_bruke_sist_endret_nar_avsluttet_eller_annullert_avtale_mangler_sluttdato() {
+        NavIdent veilederNavIdent = new NavIdent("A123456");
+
+        Avtale gammelAvsluttetAvtale = TestData.enArbeidstreningAvtale();
+        gammelAvsluttetAvtale.setVeilederNavIdent(veilederNavIdent);
+        gammelAvsluttetAvtale.setStatus(Status.AVSLUTTET);
+        gammelAvsluttetAvtale.setSistEndret(Now.instant().minus(13 * 7, ChronoUnit.DAYS));
+        assertThat(gammelAvsluttetAvtale.getGjeldendeInnhold().getSluttDato()).isNull();
+        avtaleRepository.save(gammelAvsluttetAvtale);
+
+        Avtale nyereAnnullertAvtale = TestData.enArbeidstreningAvtale();
+        nyereAnnullertAvtale.setVeilederNavIdent(veilederNavIdent);
+        nyereAnnullertAvtale.setStatus(Status.ANNULLERT);
+        nyereAnnullertAvtale.setSistEndret(Now.instant().minus(11 * 7, ChronoUnit.DAYS));
+        assertThat(nyereAnnullertAvtale.getGjeldendeInnhold().getSluttDato()).isNull();
+        avtaleRepository.save(nyereAnnullertAvtale);
+
+        Page<Avtale> resultat = avtaleRepository.sokEtterAvtale(
+            veilederNavIdent,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            PageRequest.of(0, 10)
+        );
+
+        assertThat(resultat.getContent())
+            .extracting(Avtale::getId)
+            .containsExactly(nyereAnnullertAvtale.getId());
+        assertThat(resultat.getTotalElements()).isEqualTo(1);
     }
 
     @Test
