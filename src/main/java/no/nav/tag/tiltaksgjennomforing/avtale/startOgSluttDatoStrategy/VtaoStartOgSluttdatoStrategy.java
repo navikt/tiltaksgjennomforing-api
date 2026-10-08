@@ -9,6 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleHolder;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class VtaoStartOgSluttdatoStrategy extends StartOgSluttdatoStrategy {
     private static final LocalDate SISTE_MULIGE_STARTDATO = LocalDate.of(2026, 8, 31);
@@ -26,7 +27,9 @@ public class VtaoStartOgSluttdatoStrategy extends StartOgSluttdatoStrategy {
             throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
         }
         if (!avtale.erAvtaleInngått() && startDato != null && startDato.isAfter(SISTE_MULIGE_STARTDATO)) {
-            if (!FeatureToggleHolder.get().isEnabled(FeatureToggle.VTAO_VEILEDER_TILGANG)) {
+            // Sjekk om startdatoen er forsøkt endret; isåfall må vi kontrollere om de er en veileder med nødvendig tilgang
+            if (!Objects.equals(avtale.getGjeldendeInnhold().getStartDato(), startDato)
+                && !FeatureToggleHolder.get().isEnabled(FeatureToggle.VTAO_VEILEDER_TILGANG)) {
                 throw new FeilkodeException(Feilkode.FOR_SEN_STARTDATO_VTAO);
             }
         }
