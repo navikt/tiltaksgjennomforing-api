@@ -168,6 +168,8 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         kopi.avtale = this.avtale;
         kopi.aktiv = true;
         kopi.status = TilskuddPeriodeStatus.UBEHANDLET;
+        kopi.enhet = this.enhet;
+        kopi.enhetsnavn = this.enhetsnavn;
         return kopi;
     }
 
