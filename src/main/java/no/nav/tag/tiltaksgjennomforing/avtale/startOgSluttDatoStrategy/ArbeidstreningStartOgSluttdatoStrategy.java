@@ -32,6 +32,11 @@ public class ArbeidstreningStartOgSluttdatoStrategy extends StartOgSluttdatoStra
                 || innsatsgruppe == Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
                 || innsatsgruppe == Innsatsgruppe.JOBBE_DELVIS;
 
+        // temp skip for support sak
+        if (Integer.valueOf(240803).equals(avtale.getAvtaleNr())) {
+            return;
+        }
+
         if (harUtvidetVarighet && startDato.plusMonths(18).minusDays(1).isBefore(sluttDato)) {
             throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_ARBEIDSTRENING_18_MND);
         }
