@@ -70,6 +70,13 @@ Content-Type: application/json
 Accept: application/json
 Authorization: Bearer <TOKEN>
 
+### Annuller og generer ubehandlet tilskuddsperiode
+# Brukes i forbindelse med teknisk feil der vi tenker det er nødvendig at beslutter godkjenner på nytt selv
+# (for 'resend-tilskuddsperiode'-endepunktet kopierer vi godkjenningen over til resendingen)
+POST https://tiltaksgjennomforing-api.intern.nav.no/tiltaksgjennomforing-api/utvikler-admin/annuller-og-generer-tilskuddsperiode/<TILSKUDDSPERIODE_ID>
+Content-Type: application/json
+Authorization: Bearer <TOKEN>
+
 ### Resend tilskuddsperiode
 # Brukes når en tilskuddsperiode har feilet av ulike årsaker, og vi skal opprette ny tilskuddsperiode som vi også
 # godkjenner på beslutters vegne
