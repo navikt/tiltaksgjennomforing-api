@@ -118,7 +118,9 @@ src/test/resources/  application-{test,local,dockercompose} config, WireMock map
 - External services are mocked with WireMock (`IntegrasjonerMockServer`, JSON stubs in `src/test/resources/mappings/`).
 - Fixtures: `TestData` (domain objects) and `TestDataGenerator`. Reuse them instead of building new fixtures.
 - Use `utils/Now` for current time in production code, so tests can control the clock.
-- Thin or no test coverage: `arena/` (one test), `datadeling/`, `exceptions/`, `satser/`, `sporingslogg/`, `pdfgen/`, `kodeverk/`, `dev/`. Add tests when you change these areas.
+- Keep tests simple and readable. Do not overcomplicate tests.
+- Decouple test and implementation as much as possible. Structure tests so that code is still easy to modify and change in the future
+- Test the right things. DO NOT overproduce tests or write low-value tests just for test coverage. Only tests critical logic or business logic.
 
 ## Patterns
 
@@ -169,6 +171,7 @@ Use the existing solution for each concern. Do not introduce a parallel variant.
 - The frontend fetches toggles from `GET /feature?feature=...` (`FeatureToggleController`, no login required). `FeatureToggleConverter` throws on unknown toggle names, so the whole request fails, not just the unknown toggle. A toggle the frontend uses must exist here first, and it must not be removed until the frontend has stopped asking for it.
 - `FeatureToggleService.isTiltakSkrivebeskyttet(Tiltakstype)` makes agreements of some measure types read-only during migration. The frontend mirrors this with `useMigreringSkrivebeskyttet`.
 - Remove the toggle and its dead branch once it is fully rolled out, in step with the frontend.
+- Always ask an engineer to add or remove a feature toggle to Unleash.
 
 ### Logging
 
@@ -209,11 +212,12 @@ Use the existing solution for each concern. Do not introduce a parallel variant.
 
 ## Code Style
 
-- Java 21, not Kotlin. Follow the conventions of the surrounding code.
-- Domain names are Norwegian (often with æ/ø/å in class names), framework code is English. Keep this split.
+- Java 21 - Follow the conventions of the surrounding code.
+- Domain names are Norwegian (refrain from using æ/ø/å in class names and variables - use ASCII), framework code is English. Keep this split.
 - Lombok is used throughout (`@Data`, `@Value`, `@Builder`, `@RequiredArgsConstructor`, `@Slf4j`). Do not write manual getters, setters or constructors that Lombok already provides.
 - Use records or sealed interfaces for small value and result types (see `Tilgang`).
 - **Minimal Editing:** change only what the task requires. Do not reformat, reorder imports, rename or refactor unrelated code. Do not add comments that restate the code.
+- Optimize imports when needed. Never import with `*`.
 
 ## Git Workflow
 
