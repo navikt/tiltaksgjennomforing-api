@@ -41,7 +41,7 @@ The API is the security boundary. All access control is enforced here, never in 
 4. **Per-agreement access:** each `Avtalepart` subclass (`Deltaker`, `Arbeidsgiver`, `Mentor`, `Veileder`, `Beslutter`) implements `harTilgangTilAvtale(...)`, which returns `Tilgang` (sealed: `Tillat` / `Avvis`). Veileder and beslutter use POAO-tilgang (`autorisasjon/abac/TilgangskontrollService`). Arbeidsgiver uses Altinn (`autorisasjon/altinntilgangsstyring/AltinnTilgangsstyringService`). Field masking per role is done in `Avtalepart.maskerFelterForAvtalepart`.
 5. **Strengt fortrolig / fortrolig adresse:** handled via AD groups (`ad-grupper.*`) and Altinn address-protection rights.
 
-Frontend logic that hides elements by role is not access control. Every new endpoint must resolve the caller through `InnloggingService` and check `Tilgang` for the specific resource.
+Frontend logic that hides elements by role is not access control. Every new end-user endpoint must resolve the caller through `InnloggingService.hentAvtalepart(...)` and check `Tilgang` for the specific resource. System and admin endpoints use other checks (see Auth and HTTP clients under Patterns).
 
 ## Setup & Local Development
 
@@ -114,7 +114,7 @@ src/test/resources/  application-{test,local,dockercompose} config, WireMock map
 - Test method names use snake_case, for example `hentInnloggetBruker__er_nav_ansatt_og_beslutter` in older tests and pure snake_case in new tests.
 - **Unit tests** for domain logic need no Spring context (`AvtaleTest`, `VeilederTest`, `ArbeidsgiverTest`).
 - **Integration tests:** `@SpringBootTest`, `@ActiveProfiles({Miljø.TEST, Miljø.WIREMOCK})` when external calls are needed, `@EmbeddedKafka` for Kafka, and `@DirtiesContext`.
-- H2 in-memory DB is configured in `src/test/resources/config/application-test.yaml`. Flyway runs the same migrations as production, so migrations must work on both H2 (PostgreSQL mode) and PostgreSQL.
+- H2 in-memory DB is configured in `src/test/resources/config/application-test.yaml`. Migrations in `db/migration/common/` run on both H2 (PostgreSQL mode) and PostgreSQL and must support both. Migrations in `db/migration/postgresql/` run only on PostgreSQL and are not exercised by H2 tests.
 - External services are mocked with WireMock (`IntegrasjonerMockServer`, JSON stubs in `src/test/resources/mappings/`).
 - Fixtures: `TestData` (domain objects) and `TestDataGenerator`. Reuse them instead of building new fixtures.
 - Use `utils/Now` for current time in production code, so tests can control the clock.
@@ -156,7 +156,10 @@ Use the existing solution for each concern. Do not introduce a parallel variant.
 
 ### Auth and HTTP clients
 
-- New endpoints: `@Protected` (or `@ProtectedWithClaims` for admin/system), resolve the caller with `InnloggingService`, check `Tilgang`.
+- New endpoints: pick the check that matches the caller.
+  - End-user agreement endpoints (`tokenx`/`aad`): `@Protected`, resolve the party with `InnloggingService.hentAvtalepart(...)` and check `Tilgang`. `hentAvtalepart` only accepts tokenx/aad role combinations.
+  - System endpoints (`system` issuer): `@ProtectedWithClaims(issuer = "system")` plus `InnloggingService.validerSystembruker()` (see `journalfoering/InternalAvtaleController`).
+  - Admin endpoints (`azure-access-token`): `@ProtectedWithClaims` with issuer and AD group claims (see `avtale/admin/AdminController`). These do not use `hentAvtalepart`.
 - Mark endpoints that return personal data with `@AuditLogging` (`infrastruktur/auditing/`).
 - Outbound HTTP uses `RestTemplate` (one `RestClient`, in `PoaoTilgangHttpRetryKlient`), with tokens from `token-client-spring` registrations (`no.nav.security.jwt.client.registration`). Helpers are in `infrastruktur/RestTemplateBuilders.java`. Copy the setup of an existing client in the same area.
 
@@ -217,6 +220,7 @@ Use the existing solution for each concern. Do not introduce a parallel variant.
 - The main branch is `master`. Never commit or push directly to `master`; all changes go through a pull request.
 - Branch names: `type/short-description`, for example `fix/forleng-avtale` or `chore/fjerne-toggle`.
 - Commit messages: Conventional Commits in Norwegian, `type(scope): beskrivelse`, for example `fix(avtale): tillat forkorting uten innsatsgruppe`. Types: `feat`, `fix`, `chore`, `refactor`, `test`, `docs`.
+- The commit message should include a short title, but should also have a body that explains more in details what has been changed and why it was changed. If the reason for the changes are unclear just from the context of the code, please ask for more information to make the message descriptive enough for future readers.
 - Merging to `master` deploys to dev-fss and then prod-fss automatically.
 
 ## Boundaries
@@ -224,7 +228,7 @@ Use the existing solution for each concern. Do not introduce a parallel variant.
 ### ✅ Always
 
 - Run `mvn package -B -Dsurefire.useFile=false` (the same build as CI) before committing.
-- Resolve the caller through `InnloggingService` and check `Tilgang` for every endpoint that touches an agreement.
+- On end-user agreement endpoints (`tokenx`/`aad`), resolve the caller with `InnloggingService.hentAvtalepart(...)` and check `Tilgang`. System and admin endpoints use `validerSystembruker()` or issuer/group claims instead (see Auth and HTTP clients).
 - Use bound parameters in all queries.
 - Validate all external input (request bodies, query parameters, Kafka messages) in the API, even when the frontend already validates it.
 - Write new Flyway migrations instead of editing existing ones.
