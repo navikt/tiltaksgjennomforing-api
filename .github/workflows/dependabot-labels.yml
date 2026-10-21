@@ -1,0 +1,72 @@
+name: Merk Dependabot-PR
+
+# pull_request_target fordi Dependabot-utløste pull_request-kjøringer får skrivebeskyttet token.
+# Workflowen sjekker aldri ut eller kjører kode fra PR-en.
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+
+permissions: {}
+
+jobs:
+  merk:
+    name: Sett labels
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Hent Dependabot-metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
+
+      - name: Sett labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMMER: ${{ github.event.pull_request.number }}
+          UPDATE_TYPE: ${{ steps.metadata.outputs.update-type }}
+          GRUPPE: ${{ steps.metadata.outputs.dependency-group }}
+        run: |
+          set -euo pipefail
+
+          opprett_label() {
+            gh label create "$1" --color "$2" --description "$3" 2>/dev/null || true
+          }
+          opprett_label "semver:patch" "0e8a16" "Dependabot: patch-oppdatering"
+          opprett_label "semver:minor" "fbca04" "Dependabot: minor-oppdatering"
+          opprett_label "semver:major" "d93f0b" "Dependabot: major-oppdatering"
+          opprett_label "security" "b60205" "Dependabot: fikser kjent sårbarhet"
+
+          labels=()
+          semver_label=""
+          case "$UPDATE_TYPE" in
+            version-update:semver-patch) semver_label="semver:patch" ;;
+            version-update:semver-minor) semver_label="semver:minor" ;;
+            version-update:semver-major) semver_label="semver:major" ;;
+          esac
+          if [[ -n "$semver_label" ]]; then
+            labels+=("$semver_label")
+            existing_labels=$(gh pr view "$PR_NUMMER" --json labels --jq '.labels[].name')
+            while IFS= read -r label; do
+              case "$label" in
+                semver:patch|semver:minor|semver:major)
+                  if [[ "$label" != "$semver_label" ]]; then
+                    gh pr edit "$PR_NUMMER" --remove-label "$label"
+                  fi
+                  ;;
+              esac
+            done <<< "$existing_labels"
+          fi
+          if [[ "$GRUPPE" == *-security ]]; then
+            labels+=("security")
+          fi
+
+          if [[ ${#labels[@]} -eq 0 ]]; then
+            exit 0
+          fi
+          for label in "${labels[@]}"; do
+            gh pr edit "$PR_NUMMER" --add-label "$label"
+          done

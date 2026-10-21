@@ -1,0 +1,70 @@
+version: 2
+
+# Minor og patch samles i én ukentlig PR per økosystem.
+# Major-oppdateringer kommer som egne PR-er (Spring samlet).
+# Sikkerhetsoppdateringer kommer straks, samlet i en egen *-security-gruppe.
+# Gruppenavn som slutter på "-security" brukes av dependabot-labels.yml.
+updates:
+  - package-ecosystem: maven
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Oslo
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 3
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      maven-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      maven-minor-patch:
+        applies-to: version-updates
+        update-types: [minor, patch]
+      maven-major-spring:
+        applies-to: version-updates
+        patterns: ["org.springframework*"]
+        update-types: [major]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Oslo
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 3
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      github-actions-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      github-actions-minor-patch:
+        applies-to: version-updates
+        update-types: [minor, patch]
+
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Oslo
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 3
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      docker-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      docker-minor-patch:
+        applies-to: version-updates
+        update-types: [minor, patch]
