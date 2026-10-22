@@ -1,14 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import lombok.NoArgsConstructor;
-import lombok.Value;
+import lombok.Getter;
+import lombok.Setter;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Value
-@NoArgsConstructor
+@Getter
+@Setter
 public class EndreInkluderingstilskudd {
     List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift = new ArrayList<>();
 
