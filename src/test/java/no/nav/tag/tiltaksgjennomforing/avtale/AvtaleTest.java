@@ -23,6 +23,9 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
@@ -1519,6 +1522,36 @@ public class AvtaleTest {
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(2);
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
         assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(nySluttDato);
+    }
+
+    @Test
+    public void forkort_tilskuddsperioder_forkorter_annullerer_og_fjerner_med_riktige_hendelser() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        TilskuddPeriode forkortes = avtale.tilskuddsperiode(1);
+        TilskuddPeriode annulleres = avtale.tilskuddsperiode(2);
+        TilskuddPeriode annulleresMedUtgåttRefusjon = avtale.tilskuddsperiode(3);
+        TilskuddPeriode fjernes = avtale.tilskuddsperiode(4);
+        forkortes.setStatus(GODKJENT);
+        annulleres.setStatus(GODKJENT);
+        annulleresMedUtgåttRefusjon.setStatus(GODKJENT);
+        annulleresMedUtgåttRefusjon.setRefusjonStatus(RefusjonStatus.UTGÅTT);
+        LocalDate nySluttDato = forkortes.getStartDato().plusDays(1);
+        assertThat(forkortes.getSluttDato()).isAfter(nySluttDato);
+        ReflectionTestUtils.invokeMethod(avtale, "clearDomainEvents");
+
+        BeregningStrategy.create(avtale).forkort(nySluttDato);
+
+        assertThat(forkortes.getSluttDato()).isEqualTo(nySluttDato);
+        assertThat(forkortes.getStatus()).isEqualTo(GODKJENT);
+        assertThat(annulleres.getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);
+        assertThat(annulleresMedUtgåttRefusjon.getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);
+        assertThat(avtale.getTilskuddPeriode()).doesNotContain(fjernes);
+
+        Collection<Object> hendelser = ReflectionTestUtils.invokeMethod(avtale, "domainEvents");
+        assertThat(hendelser).containsExactlyInAnyOrder(
+            new TilskuddsperiodeForkortet(avtale, forkortes),
+            new TilskuddsperiodeAnnullert(avtale, annulleres)
+        );
     }
 
     @Test

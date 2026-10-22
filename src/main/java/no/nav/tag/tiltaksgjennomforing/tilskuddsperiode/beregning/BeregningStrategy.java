@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleHolder;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 
 import java.math.BigDecimal;
@@ -13,9 +14,10 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 
+import static no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle.INKLUDERINGSTILSKUDD_TILSKUDDSPERIODER;
 import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.convertBigDecimalToInt;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
@@ -28,7 +30,10 @@ public abstract class BeregningStrategy {
 
     public static BeregningStrategy create(Avtale avtale){
         return switch (avtale.getTiltakstype()) {
-            case ARBEIDSTRENING, INKLUDERINGSTILSKUDD -> new IkkeLonnstilskuddAvtaleBeregningStrategy(avtale);
+            case ARBEIDSTRENING -> new IkkeLonnstilskuddAvtaleBeregningStrategy(avtale);
+            case INKLUDERINGSTILSKUDD -> FeatureToggleHolder.get().isEnabled(INKLUDERINGSTILSKUDD_TILSKUDDSPERIODER)
+                ? new InkluderingstilskuddAvtaleBeregningStrategy(avtale)
+                : new IkkeLonnstilskuddAvtaleBeregningStrategy(avtale);
             case MENTOR -> new MentorBeregningStrategy(avtale);
             case MIDLERTIDIG_LONNSTILSKUDD -> new MidlertidigLonnstilskuddAvtaleBeregningStrategy(avtale);
             case VARIG_LONNSTILSKUDD -> new VarigLonnstilskuddAvtaleBeregningStrategy(avtale);
@@ -49,14 +54,17 @@ public abstract class BeregningStrategy {
         this.avtale = avtale;
     }
 
+    public boolean harNyeTilskuddsperioder(Set<TilskuddPeriode> a, List<TilskuddPeriode> b) {
+        return !a.equals(new TreeSet<>(b));
+    }
+
     public void forleng(LocalDate gammelSluttDato, LocalDate nySluttDato){
         Set<TilskuddPeriode> tilskuddPeriode = avtale.getTilskuddPeriode();
 
         if (tilskuddPeriode.isEmpty()) {
             return;
         }
-        Optional<TilskuddPeriode> periodeMedHøyestLøpenummer = tilskuddPeriode.stream().max(Comparator.comparing(TilskuddPeriode::getLøpenummer));
-        TilskuddPeriode sisteTilskuddsperiode = periodeMedHøyestLøpenummer.get();
+        TilskuddPeriode sisteTilskuddsperiode = tilskuddPeriode.stream().max(Comparator.comparing(TilskuddPeriode::getLøpenummer)).get();
         if (sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
             // Kan utvide siste tilskuddsperiode hvis den er ubehandlet
             tilskuddPeriode.remove(sisteTilskuddsperiode);
@@ -64,7 +72,7 @@ public abstract class BeregningStrategy {
             fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer());
             tilskuddPeriode.addAll(nyeTilskuddperioder);
         } else if (sisteTilskuddsperiode.getSluttDato().isBefore(sisteDatoIMnd(sisteTilskuddsperiode.getSluttDato())) && sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.GODKJENT && (!sisteTilskuddsperiode.erRefusjonGodkjent() && !sisteTilskuddsperiode.erUtbetalt())) {
-            avtale.annullerTilskuddsperiode(sisteTilskuddsperiode);
+            sisteTilskuddsperiode.annuller();
             List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioderForAvtale(sisteTilskuddsperiode.getStartDato(), nySluttDato);
             fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
             tilskuddPeriode.addAll(nyeTilskuddperioder);
@@ -73,6 +81,32 @@ public abstract class BeregningStrategy {
             List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioderForAvtale(gammelSluttDato.plusDays(1), nySluttDato);
             fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
             tilskuddPeriode.addAll(nyeTilskuddperioder);
+        }
+    }
+
+    public void forkort(LocalDate nySluttDato) {
+        Set<TilskuddPeriode> tilskuddPeriode = avtale.getTilskuddPeriode();
+        for (TilskuddPeriode tp : Set.copyOf(tilskuddPeriode)) {
+            TilskuddPeriodeStatus status = tp.getStatus();
+            if (tp.getStartDato().isAfter(nySluttDato)) {
+                if (status == TilskuddPeriodeStatus.UBEHANDLET) {
+                    tilskuddPeriode.remove(tp);
+                } else if (status == TilskuddPeriodeStatus.GODKJENT) {
+                    tilskuddPeriode.remove(tp);
+                    tp.annuller();
+                    tilskuddPeriode.add(tp);
+                }
+            } else if (tp.getSluttDato().isAfter(nySluttDato)) {
+                if (status == TilskuddPeriodeStatus.UBEHANDLET || status == TilskuddPeriodeStatus.GODKJENT) {
+                    Integer nyttBeløp = getBeløpForPeriode(
+                        avtale.getGjeldendeInnhold(),
+                        Periode.av(tp.getStartDato(), nySluttDato)
+                    );
+                    tilskuddPeriode.remove(tp);
+                    tp.forkort(nySluttDato, nyttBeløp);
+                    tilskuddPeriode.add(tp);
+                }
+            }
         }
     }
 

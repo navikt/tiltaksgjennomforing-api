@@ -11,6 +11,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -125,7 +127,12 @@ public class AvtaleInnhold {
     private List<Maal> maal = new ArrayList<>();
 
     // Inkluderingstilskudd
-    @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "avtale_innhold_inkluderingstilskuddsutgift",
+        joinColumns = @JoinColumn(name = "avtale_innhold_id"),
+        inverseJoinColumns = @JoinColumn(name = "inkluderingstilskuddsutgift_id")
+    )
     @Fetch(FetchMode.SUBSELECT)
     private List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift = new ArrayList<>();
     private String inkluderingstilskuddBegrunnelse;
@@ -186,22 +193,17 @@ public class AvtaleInnhold {
         AvtaleInnhold nyVersjon = toBuilder()
             .id(UUID.randomUUID())
             .maal(kopiAvMål())
-            .inkluderingstilskuddsutgift(kopiAvInkluderingstilskuddsutgifer())
+            .inkluderingstilskuddsutgift(new ArrayList<>(inkluderingstilskuddsutgift))
             .journalpostId(null)
             .versjon(versjon + 1)
             .innholdType(innholdType)
             .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
-        nyVersjon.getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(nyVersjon));
         return nyVersjon;
     }
 
     private List<Maal> kopiAvMål() {
         return maal.stream().map(Maal::new).collect(Collectors.toList());
-    }
-
-    private List<Inkluderingstilskuddsutgift> kopiAvInkluderingstilskuddsutgifer() {
-        return inkluderingstilskuddsutgift.stream().map(Inkluderingstilskuddsutgift::new).collect(Collectors.toList());
     }
 
     void endreAvtale(EndreAvtale nyAvtale) {

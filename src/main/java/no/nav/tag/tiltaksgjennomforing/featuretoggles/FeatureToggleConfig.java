@@ -6,15 +6,20 @@ import io.getunleash.Unleash;
 import io.getunleash.util.UnleashConfig;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.ByEnhetStrategy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 
 
 @Configuration
 public class FeatureToggleConfig {
+
+    @Autowired
+    private Environment environment;
 
     private static final String APP_NAME = "tiltaksgjennomforing-api";
 
@@ -42,16 +47,8 @@ public class FeatureToggleConfig {
     }
 
     @Bean
-    @Profile(Miljø.LOCAL)
+    @Profile({ Miljø.LOCAL, Miljø.TEST })
     public Unleash unleashMock() {
-        return new FakeUnleash();
-    }
-
-    @Bean
-    @Profile(Miljø.TEST)
-    public Unleash unleashTestMock() {
-        FakeUnleash fakeUnleash = new FakeUnleash(Miljø.TEST);
-        fakeUnleash.enable(FeatureToggle.SMS_TIL_MOBILNUMMER.getToggleNavn());
-        return fakeUnleash;
+        return new FakeUnleash(environment.getActiveProfiles());
     }
 }
