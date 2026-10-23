@@ -60,6 +60,11 @@ Applies to strings that reach users: SMS texts (`varsel/LagSmsFraAvtaleHendelse`
 - Write «Nav», never «NAV».
 - Avoid unnecessary anglicisms when a good Norwegian word exists.
 
+## Local Docker
+
+- The team runs Docker through Colima (`colima start`), not Docker Desktop. Flag documentation or scripts that assume Docker Desktop.
+- `docker-compose.yml` only starts Postgres for `DockerComposeTiltaksgjennomforingApplication`. Flag new services added without a clear local need.
+
 ## GitHub Actions
 
 - `actions/*` (immutable releases), `nais/*` (Nav) and `github/*` (GitHub) are trusted and may use version tags.
