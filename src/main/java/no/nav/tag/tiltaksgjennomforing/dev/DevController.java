@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-@Profile({Miljø.DEV_FSS, Miljø.LOCAL, Miljø.DOCKER_COMPOSE})
+@Profile({Miljø.DEV_FSS, Miljø.LOCAL})
 @RestController
 @RequestMapping("/dev/")
 // Controlleren er begrenset til testmiljøer, men som en ekstra sikring tillater vi kun
