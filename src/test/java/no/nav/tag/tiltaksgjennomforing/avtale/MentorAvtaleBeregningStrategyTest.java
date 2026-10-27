@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
@@ -9,7 +9,6 @@ import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentorBeregnin
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -21,20 +20,15 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SyntetiskFnr
 @SpringBootTest(properties = {
     "tiltaksgjennomforing.mentor-tilskuddsperioder.enabled=true"
 })
 @ActiveProfiles(Miljø.TEST)
 public class MentorAvtaleBeregningStrategyTest {
 
-    @BeforeEach
-    public void setup() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
-    }
-
     @AfterEach
     public void tearDown() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
         Now.resetClock();
     }
 

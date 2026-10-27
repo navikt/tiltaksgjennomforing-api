@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
-import no.bekk.bekkopen.person.FodselsnummerValidator;
+import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
@@ -9,7 +9,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +34,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@SyntetiskFnr
 @ExtendWith(MockitoExtension.class)
 public class InternalAvtaleControllerTest {
 
@@ -58,14 +58,8 @@ public class InternalAvtaleControllerTest {
 
     @BeforeEach
     public void setUp() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
         avtaleInnholdList = treAvtalerSomSkalJournalføres().stream().map(avtale -> avtale.getGjeldendeInnhold()).collect(Collectors.toList());
         avtaleInnholdListMedTilskuddsPerioder = enAvtaleMedTilskudsPerioderSomSkalJournalføres().stream().map(avtale -> avtale.getGjeldendeInnhold()).collect(Collectors.toList());
-    }
-
-    @AfterEach
-    public void tearDown() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
     }
 
     @Test

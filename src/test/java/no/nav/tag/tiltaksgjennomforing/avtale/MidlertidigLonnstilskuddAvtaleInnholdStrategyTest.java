@@ -1,15 +1,15 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.AssertFeilkode;
+import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SyntetiskFnr
 class MidlertidigLonnstilskuddAvtaleInnholdStrategyTest {
 
     private AvtaleInnhold avtaleInnhold;
@@ -17,17 +17,10 @@ class MidlertidigLonnstilskuddAvtaleInnholdStrategyTest {
 
     @BeforeEach
     public void setUp() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
         Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
         avtaleInnhold = avtale.getGjeldendeInnhold();
         strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, MIDLERTIDIG_LONNSTILSKUDD);
     }
-
-    @AfterEach
-    public void tearDown() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
-    }
-
     @Test
     void test_at_feil_når_familietilknytning_ikke_er_fylt_ut() {
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();

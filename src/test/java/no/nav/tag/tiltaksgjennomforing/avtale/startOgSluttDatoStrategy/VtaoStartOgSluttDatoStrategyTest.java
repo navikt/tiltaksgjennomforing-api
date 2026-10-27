@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy;
 
-import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
@@ -10,8 +9,8 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleHolder;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,19 +21,14 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.VTAO;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SyntetiskFnr
 class VtaoStartOgSluttDatoStrategyTest {
 
     @BeforeEach
     public void setup() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
         FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
         when(featureToggleService.isEnabled(FeatureToggle.VTAO_VEILEDER_TILGANG)).thenReturn(false);
         new FeatureToggleHolder(featureToggleService);
-    }
-
-    @AfterEach
-    public void tearDown() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
     }
 
     @Test

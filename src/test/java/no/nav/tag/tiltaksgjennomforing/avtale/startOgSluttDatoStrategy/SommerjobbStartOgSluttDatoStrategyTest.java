@@ -1,12 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy;
 
-import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,20 +17,15 @@ import java.time.LocalDate;
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.SOMMERJOBB;
 
+@SyntetiskFnr
 public class SommerjobbStartOgSluttDatoStrategyTest {
 
     private Avtale avtale;
 
     @BeforeEach
     public void setup() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
         avtale = Avtale.opprett(new OpprettAvtale(Fnr.generer(25), TestData.etBedriftNr(), SOMMERJOBB), Avtaleopphav.VEILEDER, TestData.enNavIdent());
         avtale.setGodkjentForEtterregistrering(true);
-    }
-
-    @AfterEach
-    public void tearDown() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
     }
 
     @Test

@@ -119,6 +119,7 @@ src/test/resources/  application-{test,local,dockercompose} config, WireMock map
 - H2 in-memory DB is configured in `src/test/resources/config/application-test.yaml`. Migrations in `db/migration/common/` run on both H2 (PostgreSQL mode) and PostgreSQL and must support both. Migrations in `db/migration/postgresql/` run only on PostgreSQL and are not exercised by H2 tests.
 - External services are mocked with WireMock (`IntegrasjonerMockServer`, JSON stubs in `src/test/resources/mappings/`).
 - Fixtures: `TestData` (domain objects) and `TestDataGenerator`. Reuse them instead of building new fixtures.
+- Tests that need synthetic fødselsnummer: annotate the class with `@SyntetiskFnr` instead of setting `FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS` in `@BeforeEach`/`@AfterEach`.
 - Use `utils/Now` for current time in production code, so tests can control the clock.
 - Keep tests simple and readable. Do not overcomplicate tests.
 - Decouple test and implementation as much as possible. Structure tests so that code is still easy to modify and change in the future
