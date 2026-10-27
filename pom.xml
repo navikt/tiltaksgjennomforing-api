@@ -19,7 +19,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>21</java.version>
 
-        <avro.version>1.11.4</avro.version>
+        <avro.version>1.12.1</avro.version>
         <commons-text.version>1.13.0</commons-text.version>
         <fnr-gen-test.version>2.0.0</fnr-gen-test.version>
         <jsonschema-generator.version>4.38.0</jsonschema-generator.version>
