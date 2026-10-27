@@ -9,7 +9,14 @@ allow_docker = true
 allow_jvm_attach = true
 
 [propose.allow]
-localhost = [8080, 2181, 5432, 6432, 8081, 9021, 9092]
+localhost = [
+    6432, # Postgres fra docker-compose.yml (DockerComposeTiltaksgjennomforingApplication)
+    8080, # Applikasjonen (tiltaksgjennomforing-api)
+    8081, # tiltak-refusjon lokalt, mottar fake-kafka fra TilskuddsperiodeFakeKafkaProducer (profil local)
+    8090, # WireMock for eksterne tjenester (IntegrasjonerMockServer, profil wiremock og tester)
+    9001, # Lokal kjøring av PDF-gen
+]
+
 
 ## Machine-specific — these belong in ~/.config/cplt/config.toml, not here.
 ## Copy the [section] headers too: keys pasted at the end of that file are

@@ -42,7 +42,7 @@ public class FeatureToggleConfig {
     }
 
     @Bean
-    @Profile({ Miljø.LOCAL, Miljø.DOCKER_COMPOSE })
+    @Profile(Miljø.LOCAL)
     public Unleash unleashMock() {
         return new FakeUnleash();
     }
