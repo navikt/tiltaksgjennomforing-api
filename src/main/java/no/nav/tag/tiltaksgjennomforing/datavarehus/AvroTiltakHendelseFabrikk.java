@@ -24,7 +24,17 @@ public class AvroTiltakHendelseFabrikk {
     static {
         ClassSecurityValidator.setGlobal(ClassSecurityValidator.composite(
                 ClassSecurityValidator.getGlobal(),
-                ClassSecurityValidator.builder().add(TiltakType.class).build()
+                ClassSecurityValidator.builder()
+                        .add(AvroTiltakHendelse.class)
+                        .add(TiltakType.class)
+                        .add(TiltakKodeArena.class)
+                        .add(MaalKategori.class)
+                        .add(StillingType.class)
+                        .add(LonnstilskuddFormaal.class)
+                        .add(InkluderingstilskuddsutgiftRecord.class)
+                        .add(InkluderingstilskuddsutgiftType.class)
+                        .add(TilskuddstrinnRecord.class)
+                        .build()
         ));
     }
 
