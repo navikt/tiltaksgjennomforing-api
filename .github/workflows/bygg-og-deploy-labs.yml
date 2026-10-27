@@ -53,7 +53,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Deploy til gcp
-        uses: nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@v3
         env:
           CLUSTER: dev-gcp
           RESOURCE: nais/dev-gcp-labs.yaml
