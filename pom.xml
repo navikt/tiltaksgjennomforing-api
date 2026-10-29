@@ -27,7 +27,7 @@
         <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
         <nocommons.version>0.17.0</nocommons.version>
         <poao-tilgang.version>2025.02.18_14.13-ac4265f31ef3</poao-tilgang.version>
-        <shedlock.version>6.3.1</shedlock.version>
+        <shedlock.version>7.10.1</shedlock.version>
         <tiltak-persondata.version>2026.04.28_07.58-d9e06b02d7f3</tiltak-persondata.version>
         <token-client-spring.version>6.0.12</token-client-spring.version>
         <token-validation-spring.version>6.0.12</token-validation-spring.version>
