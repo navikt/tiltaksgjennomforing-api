@@ -22,7 +22,7 @@
         <avro.version>1.12.2</avro.version>
         <commons-text.version>1.15.0</commons-text.version>
         <fnr-gen-test.version>2.0.0</fnr-gen-test.version>
-        <jsonschema-generator.version>4.38.0</jsonschema-generator.version>
+        <jsonschema-generator.version>5.0.0</jsonschema-generator.version>
         <kafka-avro-serializer.version>8.3.2</kafka-avro-serializer.version>
         <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
         <nocommons.version>0.17.0</nocommons.version>
