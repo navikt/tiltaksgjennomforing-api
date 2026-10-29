@@ -1245,7 +1245,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     public void forkortAvtale(LocalDate nySluttDato, ForkortetGrunn forkortetGrunn, NavIdent utførtAv) {
         sjekkAtIkkeAvtaleErAnnullert();
-        startOgSluttdatoStrategy().sjekkSluttdato(nySluttDato);
+        startOgSluttdatoStrategy().sjekkSluttdatoVedForkorting(nySluttDato);
 
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_IKKE_GODKJENT_AVTALE);
@@ -1293,7 +1293,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     public void forlengAvtale(LocalDate nySluttDato, NavIdent utførtAv) {
         sjekkAtIkkeAvtaleErAnnullert();
-        startOgSluttdatoStrategy().sjekkSluttdato(nySluttDato);
+        startOgSluttdatoStrategy().sjekkSluttdatoVedForlenging(nySluttDato);
 
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_IKKE_GODKJENT_AVTALE);

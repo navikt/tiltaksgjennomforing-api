@@ -28,7 +28,11 @@ public class StartOgSluttdatoStrategy {
         };
     }
 
-    public final void sjekkSluttdato(LocalDate sluttdato) {
+    public void sjekkSluttdatoVedForkorting(LocalDate sluttdato) {
+        sjekkStartOgSluttdato(avtale.getGjeldendeInnhold().getStartDato(), sluttdato);
+    }
+
+    public final void sjekkSluttdatoVedForlenging(LocalDate sluttdato) {
         sjekkStartOgSluttdato(avtale.getGjeldendeInnhold().getStartDato(), sluttdato);
     }
 
