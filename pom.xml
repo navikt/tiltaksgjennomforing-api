@@ -20,7 +20,6 @@
         <java.version>21</java.version>
 
         <avro.version>1.12.2</avro.version>
-        <avro.serializable-classes>no.nav.tag.tiltaksgjennomforing.datavarehus.AvroTiltakHendelse,no.nav.tag.tiltaksgjennomforing.datavarehus.TiltakType,no.nav.tag.tiltaksgjennomforing.datavarehus.TiltakKodeArena,no.nav.tag.tiltaksgjennomforing.datavarehus.MaalKategori,no.nav.tag.tiltaksgjennomforing.datavarehus.StillingType,no.nav.tag.tiltaksgjennomforing.datavarehus.LonnstilskuddFormaal,no.nav.tag.tiltaksgjennomforing.datavarehus.InkluderingstilskuddsutgiftRecord,no.nav.tag.tiltaksgjennomforing.datavarehus.InkluderingstilskuddsutgiftType,no.nav.tag.tiltaksgjennomforing.datavarehus.TilskuddstrinnRecord</avro.serializable-classes>
         <commons-text.version>1.15.0</commons-text.version>
         <fnr-gen-test.version>2.0.0</fnr-gen-test.version>
         <jsonschema-generator.version>4.38.0</jsonschema-generator.version>
@@ -237,15 +236,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <systemPropertyVariables>
-                        <org.apache.avro.SERIALIZABLE_CLASSES>${avro.serializable-classes}</org.apache.avro.SERIALIZABLE_CLASSES>
-                    </systemPropertyVariables>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.avro</groupId>

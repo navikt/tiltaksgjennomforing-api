@@ -10,7 +10,7 @@ spec:
     - name: MILJO
       value: dev-fss
     - name: JDK_JAVA_OPTIONS
-      value: "-XX:MaxRAMPercentage=80.0 -Dorg.apache.avro.SERIALIZABLE_CLASSES=no.nav.tag.tiltaksgjennomforing.datavarehus.AvroTiltakHendelse,no.nav.tag.tiltaksgjennomforing.datavarehus.TiltakType,no.nav.tag.tiltaksgjennomforing.datavarehus.TiltakKodeArena,no.nav.tag.tiltaksgjennomforing.datavarehus.MaalKategori,no.nav.tag.tiltaksgjennomforing.datavarehus.StillingType,no.nav.tag.tiltaksgjennomforing.datavarehus.LonnstilskuddFormaal,no.nav.tag.tiltaksgjennomforing.datavarehus.InkluderingstilskuddsutgiftRecord,no.nav.tag.tiltaksgjennomforing.datavarehus.InkluderingstilskuddsutgiftType,no.nav.tag.tiltaksgjennomforing.datavarehus.TilskuddstrinnRecord"
+      value: "-XX:MaxRAMPercentage=80.0"
   azure:
     application:
       enabled: true

@@ -9,8 +9,6 @@ spec:
   env:
     - name: MILJO
       value: dev-gcp-labs
-    - name: JDK_JAVA_OPTIONS
-      value: "-Dorg.apache.avro.SERIALIZABLE_CLASSES=no.nav.tag.tiltaksgjennomforing.datavarehus.AvroTiltakHendelse,no.nav.tag.tiltaksgjennomforing.datavarehus.TiltakType,no.nav.tag.tiltaksgjennomforing.datavarehus.TiltakKodeArena,no.nav.tag.tiltaksgjennomforing.datavarehus.MaalKategori,no.nav.tag.tiltaksgjennomforing.datavarehus.StillingType,no.nav.tag.tiltaksgjennomforing.datavarehus.LonnstilskuddFormaal,no.nav.tag.tiltaksgjennomforing.datavarehus.InkluderingstilskuddsutgiftRecord,no.nav.tag.tiltaksgjennomforing.datavarehus.InkluderingstilskuddsutgiftType,no.nav.tag.tiltaksgjennomforing.datavarehus.TilskuddstrinnRecord"
     - name: FAKE_LOGIN_URI
       value: http://tiltak-fakelogin
     - name: TILTAK_REFUSJON_URI
