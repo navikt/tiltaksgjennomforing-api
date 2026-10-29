@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy;
 
-import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
@@ -8,7 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import org.junit.jupiter.api.AfterEach;
+import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,6 +20,7 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.Fi
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
+@SyntetiskFnr
 class FirearigLonnstilskuddStartOgSluttDatoStrategyTest {
 
     private static final LocalDate OPPSTARTSDATO = LocalDate.of(2026, 8, 1);
@@ -31,7 +31,6 @@ class FirearigLonnstilskuddStartOgSluttDatoStrategyTest {
 
     @BeforeEach
     void setUp() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
         FirearigLonnstilskuddProperties props = new FirearigLonnstilskuddProperties();
         props.setDato(OPPSTARTSDATO);
         props.init();
@@ -41,11 +40,6 @@ class FirearigLonnstilskuddStartOgSluttDatoStrategyTest {
                 TestData.enNavIdent()
         );
         avtale.setGodkjentForEtterregistrering(true);
-    }
-
-    @AfterEach
-    void tearDown() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
     }
 
     private FirearigLonnstilskuddStartOgSluttdatoStrategy strategy() {

@@ -1,14 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
-import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -16,6 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SyntetiskFnr
 class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
     private static final int SUM_LONNSUTGIFTER = 15_000;
     private static final int PROSENT = 60;
@@ -51,18 +50,6 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
         avtale.getGjeldendeInnhold().setSumLonnsutgifter(SUM_LONNSUTGIFTER);
         return avtale;
     }
-
-
-    @BeforeEach
-    public void setup() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
-    }
-
-    @AfterEach
-    public void tearDown() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
-    }
-
     // -----------------------------------------------------------------------
     // Ingen reduksjon
     // -----------------------------------------------------------------------

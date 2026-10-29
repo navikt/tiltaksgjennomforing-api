@@ -1,12 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
-import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,18 +16,13 @@ import static no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.VarigLo
 import static no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.VarigLonnstilskuddAvtaleBeregningStrategy.TILSKUDDSPROSENT_REDUSERT_MAKS;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SyntetiskFnr
 class VarigLonnstilskuddAvtaleBeregningStrategyTest {
     private VarigLonnstilskuddAvtaleBeregningStrategy strategy;
 
     @BeforeEach
     void setup() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
         strategy = new VarigLonnstilskuddAvtaleBeregningStrategy(lagAvtale());
-    }
-
-    @AfterEach
-    void tearDown() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
     }
 
     private Avtale lagAvtale() {
