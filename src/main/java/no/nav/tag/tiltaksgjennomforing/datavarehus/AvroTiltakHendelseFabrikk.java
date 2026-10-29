@@ -7,7 +7,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.ForkortetGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.Inkluderingstilskuddsutgift;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.TilskuddstrinnDTO;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import org.apache.avro.util.ClassSecurityValidator;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -21,23 +20,6 @@ import java.util.stream.Collectors;
 
 @UtilityClass
 public class AvroTiltakHendelseFabrikk {
-    static {
-        ClassSecurityValidator.setGlobal(ClassSecurityValidator.composite(
-                ClassSecurityValidator.getGlobal(),
-                ClassSecurityValidator.builder()
-                        .add(AvroTiltakHendelse.class)
-                        .add(TiltakType.class)
-                        .add(TiltakKodeArena.class)
-                        .add(MaalKategori.class)
-                        .add(StillingType.class)
-                        .add(LonnstilskuddFormaal.class)
-                        .add(InkluderingstilskuddsutgiftRecord.class)
-                        .add(InkluderingstilskuddsutgiftType.class)
-                        .add(TilskuddstrinnRecord.class)
-                        .build()
-        ));
-    }
-
     public static AvroTiltakHendelse konstruer(Avtale avtale, DvhHendelseType hendelseType, String utførtAv) {
         return konstruer(avtale, hendelseType, utførtAv, null);
     }
