@@ -5,12 +5,27 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.time.LocalDate;
 
 public class ArbeidstreningStartOgSluttdatoStrategy extends StartOgSluttdatoStrategy {
     public ArbeidstreningStartOgSluttdatoStrategy(Avtale avtale) {
         super(avtale);
+    }
+
+    @Override
+    public void sjekkSluttdatoVedForkorting(LocalDate sluttdato) {
+        try {
+            super.sjekkSluttdatoVedForkorting(sluttdato);
+        } catch (FeilkodeException e) {
+            var varighetsbegreninsning = e.getFeilkode() == Feilkode.VARIGHET_FOR_LANG_ARBEIDSTRENING_18_MND ||
+                e.getFeilkode() == Feilkode.VARIGHET_FOR_LANG_ARBEIDSTRENING_12_MND;
+            if (avtale.erAvtaleInngått() && sluttdato.isBefore(Now.localDate()) && varighetsbegreninsning) {
+                return;
+            }
+            throw e;
+        }
     }
 
     @Override
