@@ -24,7 +24,7 @@
         <fnr-gen-test.version>2.0.0</fnr-gen-test.version>
         <jsonschema-generator.version>4.38.0</jsonschema-generator.version>
         <kafka-avro-serializer.version>8.3.2</kafka-avro-serializer.version>
-        <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
+        <logstash-logback-encoder.version>9.0</logstash-logback-encoder.version>
         <nocommons.version>0.17.0</nocommons.version>
         <poao-tilgang.version>2025.02.18_14.13-ac4265f31ef3</poao-tilgang.version>
         <shedlock.version>6.3.1</shedlock.version>
