@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.time.LocalDate;
 
@@ -15,6 +16,20 @@ public class MidlertidigLonnstilskuddStartOgSluttdatoStrategy extends StartOgSlu
 
     public MidlertidigLonnstilskuddStartOgSluttdatoStrategy(Avtale avtale) {
         super(avtale);
+    }
+
+    @Override
+    public void sjekkSluttdatoVedForkorting(LocalDate sluttdato) {
+        try {
+            super.sjekkSluttdatoVedForkorting(sluttdato);
+        } catch (FeilkodeException e) {
+            var erVarighetForLang = e.getFeilkode() == Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_12_MND;
+            if (erVarighetForLang && avtale.getInnsatsgruppe() == null &&
+                avtale.erAvtaleInngått() && sluttdato.isBefore(Now.localDate())) {
+                return;
+            }
+            throw e;
+        }
     }
 
     @Override
