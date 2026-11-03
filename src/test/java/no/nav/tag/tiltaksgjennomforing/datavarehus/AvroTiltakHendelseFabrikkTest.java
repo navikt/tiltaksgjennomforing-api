@@ -1,10 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.datavarehus;
 
+import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
-import no.bekk.bekkopen.person.FodselsnummerValidator;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -14,19 +12,10 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SyntetiskFnr
 class AvroTiltakHendelseFabrikkTest {
 
     private static final Instant FAST_TIDSPUNKT = Instant.parse("2024-01-01T10:00:00Z");
-
-    @BeforeEach
-    void setUp() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
-    }
-
-    @AfterEach
-    void tearDown() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
-    }
 
     @Test
     void konstruer_melding_id_er_hash_av_alt_innhold() {

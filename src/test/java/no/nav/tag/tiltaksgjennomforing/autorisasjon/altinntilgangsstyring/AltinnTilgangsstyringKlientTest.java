@@ -2,13 +2,12 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.stubbing.Scenario;
-import no.bekk.bekkopen.person.FodselsnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.IntegrasjonerMockServer;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AltinnFeilException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +22,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SyntetiskFnr
 @SpringBootTest
 @ActiveProfiles({Miljø.TEST, Miljø.WIREMOCK})
 @DirtiesContext
@@ -50,14 +50,8 @@ class AltinnTilgangsstyringKlientTest {
 
     @BeforeEach
     void setup() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = true;
         integrasjonerMockServer.getServer().resetAll();
         Objects.requireNonNull(cacheManager.getCache(CacheConfig.ALTINN_CACHE)).clear();
-    }
-
-    @AfterEach
-    void tearDown() {
-        FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS = false;
     }
 
     @Test

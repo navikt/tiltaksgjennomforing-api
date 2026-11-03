@@ -14,7 +14,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@Profile({ Miljø.LOCAL, Miljø.TEST, Miljø.DOCKER_COMPOSE })
+@Profile({ Miljø.LOCAL, Miljø.TEST })
 public class PoaoTilgangServiceFake implements PoaoTilgangService {
 
     @Override

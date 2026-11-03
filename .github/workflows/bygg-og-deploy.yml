@@ -31,7 +31,7 @@ jobs:
           persist-credentials: false
 
       - name: Deploy til dev-fss
-        uses: nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@v3
         env:
           CLUSTER: dev-fss
           RESOURCE: nais/dev-fss.yaml,nais/unleash-apitoken.yml
@@ -52,7 +52,7 @@ jobs:
           persist-credentials: false
 
       - name: Deploy til prod-fss
-        uses: nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@v3
         env:
           CLUSTER: prod-fss
           RESOURCE: nais/prod-fss.yaml,nais/alerterator.yaml,nais/unleash-apitoken.yml

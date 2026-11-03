@@ -52,8 +52,10 @@ The production entry point `TiltaksgjennomforingApplication` refuses to start wi
 | Mode | How to start | Profiles | Notes |
 |---|---|---|---|
 | Local (default) | Run `LokalTiltaksgjennomforingApplication` (in `src/test/java`) from the IDE | `local`, `wiremock`, `testdata` | H2 in memory (`MODE=PostgreSQL`), WireMock for external services, generated test data, Kafka disabled. H2 console at `/tiltaksgjennomforing-api/h2-console`. |
-| Docker Compose | `docker compose up`, then run `DockerComposeTiltaksgjennomforingApplication` | `dockercompose`, `testdata`, `wiremock` | Real Kafka, Schema Registry and Postgres (port 6432) from `docker-compose.yml`. |
+| Docker Compose | `colima start`, `docker-compose up -d`, then run `DockerComposeTiltaksgjennomforingApplication` | `local`, `wiremock`, `testdata`, `dockercompose` | Same as Local, but with Postgres (port 6432) from `docker-compose.yml` instead of H2. `dockercompose` is activated last and only overrides the datasource. |
 | Labs | Workflow `bygg-og-deploy-labs.yml` (weekday schedule or manual) | `local`, `wiremock`, `testdata` | Builds `DockerfileLabs`, which runs the local launcher with test classes on the loader path. Deployed to `dev-gcp` with `nais/dev-gcp-labs.yaml`. |
+
+Docker runs on [Colima](https://github.com/abiosoft/colima), not Docker Desktop. Start it with `colima start` before running `docker-compose`. The Docker socket is at `~/.colima/docker.sock` (via `DOCKER_HOST`).
 
 Local login uses [tiltak-fakelogin](https://github.com/navikt/tiltak-fakelogin) as issuer for `aad` and `tokenx` (`FAKE_LOGIN_URI`, see `src/test/resources/config/application-local.yaml`).
 
@@ -117,6 +119,7 @@ src/test/resources/  application-{test,local,dockercompose} config, WireMock map
 - H2 in-memory DB is configured in `src/test/resources/config/application-test.yaml`. Migrations in `db/migration/common/` run on both H2 (PostgreSQL mode) and PostgreSQL and must support both. Migrations in `db/migration/postgresql/` run only on PostgreSQL and are not exercised by H2 tests.
 - External services are mocked with WireMock (`IntegrasjonerMockServer`, JSON stubs in `src/test/resources/mappings/`).
 - Fixtures: `TestData` (domain objects) and `TestDataGenerator`. Reuse them instead of building new fixtures.
+- Tests that need synthetic fødselsnummer: annotate the class with `@SyntetiskFnr` instead of setting `FodselsnummerValidator.ALLOW_SYNTHETIC_NUMBERS` in `@BeforeEach`/`@AfterEach`.
 - Use `utils/Now` for current time in production code, so tests can control the clock.
 - Keep tests simple and readable. Do not overcomplicate tests.
 - Decouple test and implementation as much as possible. Structure tests so that code is still easy to modify and change in the future
