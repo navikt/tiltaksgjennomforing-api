@@ -21,7 +21,7 @@ public class Inkluderingstilskuddsutgift {
     @Id
     @GeneratedValue
     private UUID id;
-    private String name;
+    private String navn;
     private Integer beløp;
     private String beskrivelse;
     @Enumerated(EnumType.STRING)
@@ -36,7 +36,7 @@ public class Inkluderingstilskuddsutgift {
 
     public Inkluderingstilskuddsutgift(Inkluderingstilskuddsutgift utgift) {
         id = null;
-        name = utgift.name;
+        navn = utgift.navn;
         beløp = utgift.beløp;
         beskrivelse = utgift.beskrivelse;
         type = utgift.type;
