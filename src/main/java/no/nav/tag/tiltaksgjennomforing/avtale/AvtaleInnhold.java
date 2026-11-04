@@ -127,7 +127,7 @@ public class AvtaleInnhold {
     private List<Maal> maal = new ArrayList<>();
 
     // Inkluderingstilskudd
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
     @JoinTable(
         name = "avtale_innhold_inkluderingstilskuddsutgift",
         joinColumns = @JoinColumn(name = "avtale_innhold_id"),
