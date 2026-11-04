@@ -212,6 +212,34 @@ public class AvtaleRepositoryTest {
     }
 
     @Test
+    public void endreAvtale_skal_slette_inkluderingstilskuddsutgifter_som_fjernes() {
+        Avtale avtale = avtaleRepository.save(TestData.enInkluderingstilskuddAvtale());
+        List<Inkluderingstilskuddsutgift> lagrede = avtale.getGjeldendeInnhold().getInkluderingstilskuddsutgift();
+        UUID beholdtId = lagrede.get(0).getId();
+        UUID fjernetId = lagrede.get(1).getId();
+
+        Inkluderingstilskuddsutgift endret = new Inkluderingstilskuddsutgift();
+        endret.setId(beholdtId);
+        endret.setBeløp(1000);
+        endret.setType(InkluderingstilskuddsutgiftType.UTSTYR);
+        EndreAvtale endreAvtale = TestData.endringPåAlleInkluderingstilskuddFelter();
+        endreAvtale.setInkluderingstilskuddsutgift(List.of(
+            endret,
+            TestData.enInkluderingstilskuddsutgift(2000, InkluderingstilskuddsutgiftType.PROGRAMVARE)
+        ));
+
+        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
+        avtaleRepository.save(avtale);
+
+        List<UUID> lagredeIder = jdbcTemplate.queryForList("select id from inkluderingstilskuddsutgift", UUID.class);
+        assertThat(lagredeIder).hasSize(2).contains(beholdtId).doesNotContain(fjernetId);
+        assertThat(jdbcTemplate.queryForObject("select beløp from inkluderingstilskuddsutgift where id = ?", Integer.class, beholdtId))
+            .isEqualTo(1000);
+        assertThat(jdbcTemplate.queryForObject("select count(*) from avtale_innhold_inkluderingstilskuddsutgift", Integer.class))
+            .isEqualTo(2);
+    }
+
+    @Test
     public void godkjennForArbeidsgiver__skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         TestData.enArbeidsgiver(avtale).godkjennAvtale(avtale);
