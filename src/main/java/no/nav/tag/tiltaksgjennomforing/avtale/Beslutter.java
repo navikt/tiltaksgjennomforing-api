@@ -25,6 +25,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -162,14 +163,11 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
 
         Set<Tiltakstype> tiltakstyper = Optional.ofNullable(queryParametre.getTiltakstype())
             .map(Set::of)
-            .orElse(Set.of(
-                Tiltakstype.SOMMERJOBB,
-                Tiltakstype.VARIG_LONNSTILSKUDD,
-                Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
-                Tiltakstype.VTAO,
-                Tiltakstype.MENTOR,
-                Tiltakstype.FIREARIG_LONNSTILSKUDD
-            ));
+            .orElseGet(() ->
+                Arrays.stream(Tiltakstype.values())
+                    .filter(Tiltakstype::skalBesluttes)
+                    .collect(Collectors.toSet())
+            );
 
         Set<Status> avtaleStatus = queryParametre.getAvtaleNr() == null
             ? Set.of(Status.PÅBEGYNT, Status.GJENNOMFØRES, Status.MANGLER_GODKJENNING, Status.KLAR_FOR_OPPSTART, Status.AVSLUTTET)

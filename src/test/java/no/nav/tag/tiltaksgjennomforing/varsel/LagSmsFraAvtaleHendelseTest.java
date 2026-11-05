@@ -9,8 +9,11 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FakeUnleash;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.SmsProducer;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +26,7 @@ import tools.jackson.core.JacksonException;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import static no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle.SMS_TIL_MOBILNUMMER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
@@ -39,9 +43,21 @@ class LagSmsFraAvtaleHendelseTest {
     AvtaleRepository avtaleRepository;
     @MockitoSpyBean
     SmsProducer smsProducer;
+    @Autowired
+    FakeUnleash fakeUnleash;
 
     private static final String SELVBETJENINGSONE_VARSELTEKST = "Du har mottatt et nytt varsel på https://arbeidsgiver.nav.no/tiltaksgjennomforing";
     private static final String FAGSYSTEMSONE_VARSELTEKST = "Du har mottatt et nytt varsel på https://tiltaksgjennomforing.intern.nav.no/tiltaksgjennomforing";
+
+    @BeforeEach
+    public void setup() {
+        fakeUnleash.enable(SMS_TIL_MOBILNUMMER.getToggleNavn());
+    }
+
+    @AfterEach
+    public void tearDown() {
+        fakeUnleash.disable(SMS_TIL_MOBILNUMMER.getToggleNavn());
+    }
 
     @Test
     void avtaleDeltMedAvtalepart__skal_opprette_sms_til_riktig_mottaker() throws JacksonException {

@@ -107,7 +107,7 @@ public class AdminController {
         log.info("Annullerer tilskuddsperiode {}", id);
         TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
         Avtale avtale = tilskuddPeriode.getAvtale();
-        avtale.annullerTilskuddsperiode(tilskuddPeriode);
+        tilskuddPeriode.annuller();
         tilskuddPeriodeRepository.save(tilskuddPeriode);
         avtaleRepository.save(avtale);
     }
@@ -119,7 +119,7 @@ public class AdminController {
         TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
         Avtale avtale = tilskuddPeriode.getAvtale();
         if (tilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
-            avtale.annullerTilskuddsperiode(tilskuddPeriode);
+            tilskuddPeriode.annuller();
         }
         avtale.lagNyTilskuddsperiodeFraAnnullertPeriode(tilskuddPeriode);
         avtaleRepository.save(avtale);
@@ -134,7 +134,7 @@ public class AdminController {
         log.info("Fant {} tilskuddsperioder som skal annulleres og genereres på nytt med behandlet i arena status", tilskuddsperioder.size());
 
         tilskuddsperioder.stream().toList().forEach(tp -> {
-            avtale.annullerTilskuddsperiode(tp);
+            tp.annuller();
             avtale.lagNyBehandletIArenaTilskuddsperiodeFraAnnullertPeriode(tp);
         });
 
@@ -484,7 +484,7 @@ public class AdminController {
         // Annuller perioden hvis den ikke allerede er annullert
         if (tilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
             if (!dryRun) {
-                avtale.annullerTilskuddsperiode(tilskuddPeriode);
+                tilskuddPeriode.annuller();
             }
         }
 

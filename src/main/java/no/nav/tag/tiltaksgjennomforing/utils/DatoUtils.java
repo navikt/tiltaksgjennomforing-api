@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Optional;
 
 @UtilityClass
@@ -21,6 +23,12 @@ public class DatoUtils {
 
     public static LocalDate maksDato(LocalDate date1, LocalDate date2) {
         return date1.isAfter(date2) ? date1 : date2;
+    }
+
+    public static LocalDate minDato(LocalDate... date) {
+        return Arrays.stream(date)
+            .min(Comparator.naturalOrder())
+            .orElseThrow(() -> new IllegalArgumentException("Ingen gyldige datoer"));
     }
 
     public static Instant localDateTimeTilInstant(LocalDateTime localDateTime) {

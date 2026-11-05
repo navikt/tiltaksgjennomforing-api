@@ -1,12 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.ToString;
@@ -26,11 +27,10 @@ public class Inkluderingstilskuddsutgift {
     private String beskrivelse;
     @Enumerated(EnumType.STRING)
     private InkluderingstilskuddsutgiftType type;
-    @ManyToOne
-    @JoinColumn(name = "avtale_innhold_id")
     @JsonIgnore
     @ToString.Exclude
-    private AvtaleInnhold avtaleInnhold;
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    private TilskuddPeriode tilskuddperiode;
 
     public Inkluderingstilskuddsutgift() {}
 
@@ -40,6 +40,5 @@ public class Inkluderingstilskuddsutgift {
         beløp = utgift.beløp;
         beskrivelse = utgift.beskrivelse;
         type = utgift.type;
-        avtaleInnhold = null;
     }
 }

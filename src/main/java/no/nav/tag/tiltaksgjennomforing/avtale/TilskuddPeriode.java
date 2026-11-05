@@ -17,7 +17,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import lombok.ToString;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -36,6 +39,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Data
+@Slf4j
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode
@@ -283,6 +287,25 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
 
     public boolean erRefusjonGodkjent() {
         return refusjonStatus == RefusjonStatus.SENDT_KRAV || refusjonStatus == RefusjonStatus.GODKJENT_MINUSBELØP || refusjonStatus == RefusjonStatus.GODKJENT_NULLBELØP;
+    }
+
+    public void annuller() {
+        setStatus(TilskuddPeriodeStatus.ANNULLERT);
+        if (refusjonStatus == RefusjonStatus.UTGÅTT) {
+            log.atWarn()
+                .addKeyValue("avtaleId", avtale.getId().toString())
+                .log("Sender ikke annulleringsmelding for tilskuddsperiode {} med utgått refusjon.", id);
+        } else {
+            avtale.registrerHendelse(new TilskuddsperiodeAnnullert(avtale, this));
+        }
+    }
+
+    public void forkort(LocalDate nySluttDato, Integer nyttBeløp) {
+        setSluttDato(nySluttDato);
+        setBeløp(nyttBeløp);
+        if (status == TilskuddPeriodeStatus.GODKJENT) {
+            avtale.registrerHendelse(new TilskuddsperiodeForkortet(avtale, this));
+        }
     }
 
     public Periode getPeriode() {
