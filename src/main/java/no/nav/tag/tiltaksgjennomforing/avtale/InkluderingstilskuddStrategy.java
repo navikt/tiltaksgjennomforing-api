@@ -1,10 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.events.InkluderingstilskuddsutgifterFjernet;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -38,6 +40,13 @@ public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
 
         if (!gjeldendeUtgifter.containsAll(nyeUtgifter)) {
             throw new FeilkodeException(FANT_UTGIFTER_SOM_IKKE_TIDLIGERE_ER_LAGRET);
+        }
+
+        Set<UUID> fjernedeUtgifter = new HashSet<>(gjeldendeUtgifter);
+        fjernedeUtgifter.removeAll(nyeUtgifter);
+        if (!fjernedeUtgifter.isEmpty()) {
+            Avtale avtale = avtaleInnhold.getAvtale();
+            avtale.registrerHendelse(new InkluderingstilskuddsutgifterFjernet(avtale, fjernedeUtgifter));
         }
 
         avtaleInnhold.getInkluderingstilskuddsutgift().forEach(utgift -> utgift.setTilskuddperiode(null));
