@@ -37,6 +37,6 @@ public class EndreInkluderingstilskudd {
             .map(Inkluderingstilskuddsutgift::getBeløp)
             .reduce(0, Integer::sum);
 
-        return belop > InkluderingstilskuddStrategy.getInkluderingstilskuddSats(avtale.getGjeldendeInnhold().getSluttDato());
+        return belop > InkluderingstilskuddAvtaleInnholdStrategy.getInkluderingstilskuddSats(avtale.getGjeldendeInnhold().getSluttDato());
     }
 }

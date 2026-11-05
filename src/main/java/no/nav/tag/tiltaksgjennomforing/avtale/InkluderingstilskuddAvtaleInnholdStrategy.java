@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
 import static no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode.FANT_UTGIFTER_SOM_IKKE_TIDLIGERE_ER_LAGRET;
 import static no.nav.tag.tiltaksgjennomforing.satser.Sats.INKLUDERINGSTILSKUDD_SATS;
 
-public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
+public class InkluderingstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
 
-    public InkluderingstilskuddStrategy(AvtaleInnhold avtaleInnhold){
+    public InkluderingstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold){
         super(avtaleInnhold);
     }
 

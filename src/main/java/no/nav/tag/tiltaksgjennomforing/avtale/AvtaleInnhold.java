@@ -146,7 +146,7 @@ public class AvtaleInnhold {
 
     @JsonProperty
     public Integer inkluderingstilskuddSats() {
-        return InkluderingstilskuddStrategy.getInkluderingstilskuddSats(this.sluttDato);
+        return InkluderingstilskuddAvtaleInnholdStrategy.getInkluderingstilskuddSats(this.sluttDato);
     }
 
     // Godkjenning
