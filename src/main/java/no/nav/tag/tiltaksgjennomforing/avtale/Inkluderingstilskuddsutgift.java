@@ -8,6 +8,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.ToString;
@@ -27,6 +28,11 @@ public class Inkluderingstilskuddsutgift {
     private String beskrivelse;
     @Enumerated(EnumType.STRING)
     private InkluderingstilskuddsutgiftType type;
+    @ManyToOne
+    @JoinColumn(name = "avtale_innhold_id")
+    @JsonIgnore
+    @ToString.Exclude
+    private AvtaleInnhold avtaleInnhold;
     @JsonIgnore
     @ToString.Exclude
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
@@ -40,5 +46,6 @@ public class Inkluderingstilskuddsutgift {
         beløp = utgift.beløp;
         beskrivelse = utgift.beskrivelse;
         type = utgift.type;
+        tilskuddperiode = utgift.tilskuddperiode;
     }
 }

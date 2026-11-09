@@ -1,12 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.events.InkluderingstilskuddsutgifterFjernet;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -42,16 +40,11 @@ public class InkluderingstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnhold
             throw new FeilkodeException(FANT_UTGIFTER_SOM_IKKE_TIDLIGERE_ER_LAGRET);
         }
 
-        Set<UUID> fjernedeUtgifter = new HashSet<>(gjeldendeUtgifter);
-        fjernedeUtgifter.removeAll(nyeUtgifter);
-        if (!fjernedeUtgifter.isEmpty()) {
-            Avtale avtale = avtaleInnhold.getAvtale();
-            avtale.registrerHendelse(new InkluderingstilskuddsutgifterFjernet(avtale, fjernedeUtgifter));
-        }
-
         avtaleInnhold.getInkluderingstilskuddsutgift().forEach(utgift -> utgift.setTilskuddperiode(null));
         avtaleInnhold.getInkluderingstilskuddsutgift().clear();
+
         avtaleInnhold.getInkluderingstilskuddsutgift().addAll(nyAvtale.getInkluderingstilskuddsutgift());
+        avtaleInnhold.getInkluderingstilskuddsutgift().forEach(utgift -> utgift.setAvtaleInnhold(avtaleInnhold));
         avtaleInnhold.setInkluderingstilskuddBegrunnelse(nyAvtale.getInkluderingstilskuddBegrunnelse());
         avtaleInnhold.setHarFamilietilknytning(nyAvtale.getHarFamilietilknytning());
         avtaleInnhold.setFamilietilknytningForklaring(nyAvtale.getFamilietilknytningForklaring());

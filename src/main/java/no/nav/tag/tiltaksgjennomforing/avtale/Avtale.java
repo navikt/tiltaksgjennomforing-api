@@ -1464,6 +1464,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             .toList();
 
         getGjeldendeInnhold().getInkluderingstilskuddsutgift().addAll(nyeInkluderingstilskuddsutgifter);
+        getGjeldendeInnhold().getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(getGjeldendeInnhold()));
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
         tilskuddPeriode.addAll(beregningStrategi().beregnTilskuddsperioderForAvtale(null, null));
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();

@@ -9,8 +9,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -48,5 +51,28 @@ public class InkluderingstilskuddTest {
 
         EndreInkluderingstilskudd endreInkluderingstilskudd = TestData.endringMedNyeInkluderingstilskudd(eksisterendeUtgifter);
         avtale.endreInkluderingstilskudd(endreInkluderingstilskudd, TestData.enNavIdent());
+    }
+
+    @Test
+    public void endre_inkluderingstilskudd_beholder_lopenummer_paa_eksisterende_tilskuddsperioder() {
+        Avtale avtale = TestData.enInkluderingstilskuddAvtale();
+        avtale.godkjennForArbeidsgiver(TestData.enArbeidsgiver().getIdentifikator());
+        avtale.godkjennForVeilederOgDeltaker(TestData.enNavIdent(), TestData.enGodkjentPaVegneGrunn());
+        List<Inkluderingstilskuddsutgift> eksisterendeUtgifter = avtale.getGjeldendeInnhold().getInkluderingstilskuddsutgift();
+        eksisterendeUtgifter.forEach(x -> x.setId(UUID.randomUUID()));
+        Map<UUID, Integer> lopenummerFoer = avtale.getTilskuddPeriode().stream()
+            .collect(Collectors.toMap(TilskuddPeriode::getId, TilskuddPeriode::getLøpenummer));
+
+        avtale.endreInkluderingstilskudd(
+            TestData.endringMedNyeInkluderingstilskudd(eksisterendeUtgifter),
+            TestData.enNavIdent()
+        );
+
+        assertThat(lopenummerFoer).isNotEmpty();
+        assertThat(avtale.getTilskuddPeriode()).hasSizeGreaterThan(lopenummerFoer.size());
+        avtale.getTilskuddPeriode().stream()
+            .filter(periode -> lopenummerFoer.containsKey(periode.getId()))
+            .forEach(periode -> assertThat(periode.getLøpenummer()).isEqualTo(lopenummerFoer.get(periode.getId())));
+        assertThat(avtale.getTilskuddPeriode()).extracting(TilskuddPeriode::getLøpenummer).doesNotHaveDuplicates();
     }
 }

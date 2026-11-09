@@ -80,7 +80,7 @@ public class InkluderingstilskuddAvtaleBeregningStrategy extends BeregningStrate
         List<Inkluderingstilskuddsutgift> nyeUtgifter = avtale.getGjeldendeInnhold()
             .getInkluderingstilskuddsutgift()
             .stream()
-            .filter(utgift -> utgift.getId() == null)
+            .filter(utgift -> utgift.getTilskuddperiode() == null)
             .toList();
 
         int sisteLopenummer = avtale.getTilskuddPeriode()

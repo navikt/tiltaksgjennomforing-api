@@ -1,13 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import io.getunleash.FakeUnleash;
 import io.getunleash.Unleash;
 import jakarta.persistence.EntityManager;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.datavarehus.DvhMeldingEntitetRepository;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.metrikker.MetrikkRegistrering;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsRepository;
@@ -25,7 +23,6 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -33,8 +30,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_GEOGRAFISK;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_OPPFØLGING;
@@ -209,34 +204,6 @@ public class AvtaleRepositoryTest {
         avtale.endreAvtale(TestData.ingenEndring(), Avtalerolle.VEILEDER);
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).avtaleEndret(any());
-    }
-
-    @Test
-    public void endreAvtale_skal_slette_inkluderingstilskuddsutgifter_som_fjernes() {
-        Avtale avtale = avtaleRepository.save(TestData.enInkluderingstilskuddAvtale());
-        List<Inkluderingstilskuddsutgift> lagrede = avtale.getGjeldendeInnhold().getInkluderingstilskuddsutgift();
-        UUID beholdtId = lagrede.get(0).getId();
-        UUID fjernetId = lagrede.get(1).getId();
-
-        Inkluderingstilskuddsutgift endret = new Inkluderingstilskuddsutgift();
-        endret.setId(beholdtId);
-        endret.setBeløp(1000);
-        endret.setType(InkluderingstilskuddsutgiftType.UTSTYR);
-        EndreAvtale endreAvtale = TestData.endringPåAlleInkluderingstilskuddFelter();
-        endreAvtale.setInkluderingstilskuddsutgift(List.of(
-            endret,
-            TestData.enInkluderingstilskuddsutgift(2000, InkluderingstilskuddsutgiftType.PROGRAMVARE)
-        ));
-
-        avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
-        avtaleRepository.save(avtale);
-
-        List<UUID> lagredeIder = jdbcTemplate.queryForList("select id from inkluderingstilskuddsutgift", UUID.class);
-        assertThat(lagredeIder).hasSize(2).contains(beholdtId).doesNotContain(fjernetId);
-        assertThat(jdbcTemplate.queryForObject("select beløp from inkluderingstilskuddsutgift where id = ?", Integer.class, beholdtId))
-            .isEqualTo(1000);
-        assertThat(jdbcTemplate.queryForObject("select count(*) from avtale_innhold_inkluderingstilskuddsutgift", Integer.class))
-            .isEqualTo(2);
     }
 
     @Test
@@ -764,116 +731,5 @@ public class AvtaleRepositoryTest {
         Page<Avtale> resultat2 = avtaleRepository.sokEtterAvtale(avtale3.getVeilederNavIdent(), null, null, null, null, Tiltakstype.INKLUDERINGSTILSKUDD, null, false, PageRequest.of(0, 10));
         assertThat(resultat2.getContent()).hasSize(1);
         assertThat(resultat1.getContent().getFirst().getId()).isEqualTo(avtale3.getId());
-    }
-
-    @Test
-    @Transactional
-    public void inkluderingstilskuddsutgift_kan_deles_og_fjernes_uten_at_utgiften_slettes() {
-        Inkluderingstilskuddsutgift utgift = new Inkluderingstilskuddsutgift();
-        utgift.setBeløp(1000);
-        utgift.setType(InkluderingstilskuddsutgiftType.PROGRAMVARE);
-
-        AvtaleInnhold førsteInnhold = AvtaleInnhold.nyttTomtInnhold(Tiltakstype.INKLUDERINGSTILSKUDD);
-        førsteInnhold.getInkluderingstilskuddsutgift().add(utgift);
-        AvtaleInnhold andreInnhold = AvtaleInnhold.nyttTomtInnhold(Tiltakstype.INKLUDERINGSTILSKUDD);
-        andreInnhold.getInkluderingstilskuddsutgift().add(utgift);
-
-        entityManager.persist(førsteInnhold);
-        entityManager.persist(andreInnhold);
-        entityManager.flush();
-
-        var førsteInnholdId = førsteInnhold.getId();
-        var andreInnholdId = andreInnhold.getId();
-        var utgiftId = utgift.getId();
-        entityManager.clear();
-
-        AvtaleInnhold førsteLastet = avtaleInnholdRepository.findById(førsteInnholdId).orElseThrow();
-        AvtaleInnhold andreLastet = avtaleInnholdRepository.findById(andreInnholdId).orElseThrow();
-        assertThat(førsteLastet.getInkluderingstilskuddsutgift()).extracting(Inkluderingstilskuddsutgift::getId).containsExactly(utgiftId);
-        assertThat(andreLastet.getInkluderingstilskuddsutgift()).extracting(Inkluderingstilskuddsutgift::getId).containsExactly(utgiftId);
-
-        førsteLastet.getInkluderingstilskuddsutgift().clear();
-        avtaleInnholdRepository.save(førsteLastet);
-        entityManager.flush();
-        entityManager.clear();
-
-        assertThat(avtaleInnholdRepository.findById(førsteInnholdId).orElseThrow().getInkluderingstilskuddsutgift()).isEmpty();
-        assertThat(avtaleInnholdRepository.findById(andreInnholdId).orElseThrow().getInkluderingstilskuddsutgift())
-            .extracting(Inkluderingstilskuddsutgift::getId)
-            .containsExactly(utgiftId);
-        assertThat(entityManager.find(Inkluderingstilskuddsutgift.class, utgiftId)).isNotNull();
-
-        AvtaleInnhold andreLastetPåNytt = avtaleInnholdRepository.findById(andreInnholdId).orElseThrow();
-        andreLastetPåNytt.getInkluderingstilskuddsutgift().clear();
-        avtaleInnholdRepository.save(andreLastetPåNytt);
-        entityManager.flush();
-        entityManager.clear();
-
-        assertThat(avtaleInnholdRepository.findById(andreInnholdId).orElseThrow().getInkluderingstilskuddsutgift()).isEmpty();
-        assertThat(entityManager.find(Inkluderingstilskuddsutgift.class, utgiftId)).isNotNull();
-    }
-
-    @Test
-    @Transactional
-    public void inkluderingstilskuddsutgift_kaskaderer_persist_og_merge() {
-        Inkluderingstilskuddsutgift førsteUtgift = new Inkluderingstilskuddsutgift();
-        førsteUtgift.setBeløp(1000);
-        førsteUtgift.setType(InkluderingstilskuddsutgiftType.PROGRAMVARE);
-        AvtaleInnhold innhold = AvtaleInnhold.nyttTomtInnhold(Tiltakstype.INKLUDERINGSTILSKUDD);
-        innhold.getInkluderingstilskuddsutgift().add(førsteUtgift);
-
-        entityManager.persist(innhold);
-        entityManager.flush();
-        var innholdId = innhold.getId();
-        entityManager.clear();
-
-        AvtaleInnhold frakobletInnhold = avtaleInnholdRepository.findById(innholdId).orElseThrow();
-        entityManager.clear();
-        Inkluderingstilskuddsutgift nyUtgift = new Inkluderingstilskuddsutgift();
-        nyUtgift.setBeløp(2000);
-        nyUtgift.setType(InkluderingstilskuddsutgiftType.PROGRAMVARE);
-        frakobletInnhold.getInkluderingstilskuddsutgift().add(nyUtgift);
-
-        avtaleInnholdRepository.save(frakobletInnhold);
-        entityManager.flush();
-        entityManager.clear();
-
-        AvtaleInnhold lastetInnhold = avtaleInnholdRepository.findById(innholdId).orElseThrow();
-        assertThat(lastetInnhold.getInkluderingstilskuddsutgift()).hasSize(2);
-        assertThat(lastetInnhold.getInkluderingstilskuddsutgift()).allSatisfy(u -> assertThat(u.getId()).isNotNull());
-        assertThat(entityManager.createQuery("select count(u) from Inkluderingstilskuddsutgift u", Long.class).getSingleResult()).isEqualTo(2L);
-    }
-
-    @Test
-    @Transactional
-    public void inkluderingstilskudd_lagret_to_ganger_med_likt_innhold_gir_ikke_foreldrelose_tilskuddsperioder() {
-        FakeUnleash fakeUnleash = (FakeUnleash) unleash;
-        fakeUnleash.enable(FeatureToggle.INKLUDERINGSTILSKUDD_TILSKUDDSPERIODER.getToggleNavn());
-        Avtale avtale;
-        try {
-            avtale = avtaleRepository.save(TestData.enInkluderingstilskuddAvtale());
-            entityManager.flush();
-            entityManager.clear();
-
-            Avtale lastet = avtaleRepository.findById(avtale.getId()).orElseThrow();
-            lastet.endreAvtale(TestData.endringPåAlleInkluderingstilskuddFelter(), Avtalerolle.VEILEDER);
-            avtaleRepository.save(lastet);
-            entityManager.flush();
-            entityManager.clear();
-        } finally {
-            fakeUnleash.disable(FeatureToggle.INKLUDERINGSTILSKUDD_TILSKUDDSPERIODER.getToggleNavn());
-        }
-
-        Avtale lastetPåNytt = avtaleRepository.findById(avtale.getId()).orElseThrow();
-        Set<UUID> periodeIder = lastetPåNytt.getTilskuddPeriode().stream().map(TilskuddPeriode::getId).collect(Collectors.toSet());
-        Long antallPerioderIDatabasen = entityManager
-            .createQuery("select count(t) from TilskuddPeriode t where t.avtale.id = :avtaleId", Long.class)
-            .setParameter("avtaleId", avtale.getId())
-            .getSingleResult();
-
-        assertThat(antallPerioderIDatabasen).isEqualTo(periodeIder.size());
-        assertThat(lastetPåNytt.getGjeldendeInnhold().getInkluderingstilskuddsutgift())
-            .isNotEmpty()
-            .allSatisfy(utgift -> assertThat(periodeIder).contains(utgift.getTilskuddperiode().getId()));
     }
 }
