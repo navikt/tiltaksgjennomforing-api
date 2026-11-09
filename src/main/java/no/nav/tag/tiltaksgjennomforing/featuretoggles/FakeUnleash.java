@@ -53,7 +53,8 @@ public final class FakeUnleash extends io.getunleash.FakeUnleash {
 
         Optional<HttpServletRequest> requestOpt = resolveRequest();
         if (requestOpt.isEmpty()) {
-            this.disableAll();
+            this.enableAll();
+            this.disable(FeatureToggle.INKLUDERINGSTILSKUDD_TILSKUDDSPERIODER.name());
             return;
         }
 
