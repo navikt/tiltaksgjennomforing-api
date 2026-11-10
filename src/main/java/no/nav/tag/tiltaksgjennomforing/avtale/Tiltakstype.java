@@ -1,5 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleHolder;
+
+import static no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle.NY_INKLUDERINGSTILSKUDD;
+
 public enum Tiltakstype {
     ARBEIDSTRENING("Arbeidstrening", "ab0422", "ARBTREN"),
     MIDLERTIDIG_LONNSTILSKUDD("Midlertidig lønnstilskudd", "ab0336", "MIDLONTIL"),
@@ -68,7 +72,10 @@ public enum Tiltakstype {
 
     public boolean skalBesluttes() {
         switch (this) {
-            case ARBEIDSTRENING, INKLUDERINGSTILSKUDD -> {
+            case INKLUDERINGSTILSKUDD -> {
+                return FeatureToggleHolder.get().isEnabled(NY_INKLUDERINGSTILSKUDD);
+            }
+            case ARBEIDSTRENING -> {
                 return false;
             }
             case MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, VTAO, SOMMERJOBB, MENTOR, FIREARIG_LONNSTILSKUDD -> {

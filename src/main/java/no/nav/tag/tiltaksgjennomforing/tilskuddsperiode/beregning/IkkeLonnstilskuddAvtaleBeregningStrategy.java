@@ -3,8 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -29,12 +27,14 @@ public class IkkeLonnstilskuddAvtaleBeregningStrategy extends BeregningStrategy 
     public void forleng(LocalDate gammelSluttDato, LocalDate nySluttDato){}
 
     @Override
+    public void forkort(LocalDate nySluttDato) {}
+
+    @Override
     public List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(
         LocalDate startDato,
         LocalDate sluttDato
     ) {
-        log.error("Uventet feil i utregning av tilskuddsperioder med startdato: {}, sluttdato: {} avtaleId: {}", startDato, sluttDato, avtale.getId());
-        throw new FeilkodeException(Feilkode.FORLENG_MIDLERTIDIG_IKKE_TILGJENGELIG);
+        return Collections.emptyList();
     }
 
     @Override

@@ -1,5 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import io.getunleash.Unleash;
+import jakarta.persistence.EntityManager;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -61,6 +64,15 @@ public class AvtaleRepositoryTest {
     @Autowired
     private AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
 
+    @Autowired
+    private EntityManager entityManager;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private Unleash unleash;
+
     @MockitoBean
     private MetrikkRegistrering metrikkRegistrering;
 
@@ -70,6 +82,7 @@ public class AvtaleRepositoryTest {
         varselRepository.deleteAll();
         smsRepository.deleteAll();
         avtaleInnholdRepository.deleteAll();
+        jdbcTemplate.update("delete from inkluderingstilskuddsutgift");
         dvhMeldingEntitetRepository.deleteAll();
         avtaleMeldingEntitetRepository.deleteAll();
         avtaleRepository.deleteAll();

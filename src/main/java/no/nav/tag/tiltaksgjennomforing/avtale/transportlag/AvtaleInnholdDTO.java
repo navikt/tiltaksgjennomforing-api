@@ -6,7 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnholdType;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneAvArbeidsgiverGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
-import no.nav.tag.tiltaksgjennomforing.avtale.InkluderingstilskuddStrategy;
+import no.nav.tag.tiltaksgjennomforing.avtale.InkluderingstilskuddAvtaleInnholdStrategy;
 import no.nav.tag.tiltaksgjennomforing.avtale.Inkluderingstilskuddsutgift;
 import no.nav.tag.tiltaksgjennomforing.avtale.LonnstilskuddFormaal;
 import no.nav.tag.tiltaksgjennomforing.avtale.MentorValgtLonnstype;
@@ -194,6 +194,6 @@ public record AvtaleInnholdDTO(
 
     @JsonProperty
     public Integer inkluderingstilskuddSats() {
-        return InkluderingstilskuddStrategy.getInkluderingstilskuddSats(this.sluttDato);
+        return InkluderingstilskuddAvtaleInnholdStrategy.getInkluderingstilskuddSats(this.sluttDato);
     }
 }

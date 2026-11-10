@@ -53,7 +53,7 @@ public final class FakeUnleash extends io.getunleash.FakeUnleash {
 
         Optional<HttpServletRequest> requestOpt = resolveRequest();
         if (requestOpt.isEmpty()) {
-            this.enableAll();
+            this.enableAllExcept(FeatureToggle.NY_INKLUDERINGSTILSKUDD.getToggleNavn());
             return;
         }
 

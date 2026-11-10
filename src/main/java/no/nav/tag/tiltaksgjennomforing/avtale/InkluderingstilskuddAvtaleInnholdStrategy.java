@@ -6,12 +6,17 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
+import static no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode.FANT_UTGIFTER_SOM_IKKE_TIDLIGERE_ER_LAGRET;
 import static no.nav.tag.tiltaksgjennomforing.satser.Sats.INKLUDERINGSTILSKUDD_SATS;
 
-public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
+public class InkluderingstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
 
-    public InkluderingstilskuddStrategy(AvtaleInnhold avtaleInnhold){
+    public InkluderingstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold){
         super(avtaleInnhold);
     }
 
@@ -23,9 +28,23 @@ public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     public void endre(EndreAvtale nyAvtale) {
         sjekkTotalBeløp(nyAvtale);
 
+        Set<UUID> gjeldendeUtgifter = avtaleInnhold.getInkluderingstilskuddsutgift().stream()
+            .map(Inkluderingstilskuddsutgift::getId)
+            .collect(Collectors.toSet());
+        Set<UUID> nyeUtgifter = nyAvtale.getInkluderingstilskuddsutgift().stream()
+            .map(Inkluderingstilskuddsutgift::getId)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toSet());
+
+        if (!gjeldendeUtgifter.containsAll(nyeUtgifter)) {
+            throw new FeilkodeException(FANT_UTGIFTER_SOM_IKKE_TIDLIGERE_ER_LAGRET);
+        }
+
+        avtaleInnhold.getInkluderingstilskuddsutgift().forEach(utgift -> utgift.setTilskuddperiode(null));
         avtaleInnhold.getInkluderingstilskuddsutgift().clear();
+
         avtaleInnhold.getInkluderingstilskuddsutgift().addAll(nyAvtale.getInkluderingstilskuddsutgift());
-        avtaleInnhold.getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(avtaleInnhold));
+        avtaleInnhold.getInkluderingstilskuddsutgift().forEach(utgift -> utgift.setAvtaleInnhold(avtaleInnhold));
         avtaleInnhold.setInkluderingstilskuddBegrunnelse(nyAvtale.getInkluderingstilskuddBegrunnelse());
         avtaleInnhold.setHarFamilietilknytning(nyAvtale.getHarFamilietilknytning());
         avtaleInnhold.setFamilietilknytningForklaring(nyAvtale.getFamilietilknytningForklaring());
@@ -55,7 +74,7 @@ public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         Integer sum = avtale.getInkluderingstilskuddsutgift().stream().map(Inkluderingstilskuddsutgift::getBeløp).reduce(0, Integer::sum);
         if (sum > getInkluderingstilskuddSats(avtale.getSluttDato())) {
             throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_SUM_FOR_HØY);
-        } 
+        }
     }
 
 }

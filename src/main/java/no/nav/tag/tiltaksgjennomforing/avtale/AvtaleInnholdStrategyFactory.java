@@ -10,7 +10,7 @@ public class AvtaleInnholdStrategyFactory {
             case MIDLERTIDIG_LONNSTILSKUDD -> new MidlertidigLonnstilskuddAvtaleInnholdStrategy(avtaleInnhold);
             case VARIG_LONNSTILSKUDD -> new VarigLonnstilskuddAvtaleInnholdStrategy(avtaleInnhold);
             case MENTOR -> new MentorAvtaleInnholdStrategy(avtaleInnhold);
-            case INKLUDERINGSTILSKUDD -> new InkluderingstilskuddStrategy(avtaleInnhold);
+            case INKLUDERINGSTILSKUDD -> new InkluderingstilskuddAvtaleInnholdStrategy(avtaleInnhold);
             case SOMMERJOBB -> new SommerjobbAvtaleInnholdStrategy(avtaleInnhold);
             case VTAO -> new VtaoStrategy(avtaleInnhold);
             case FIREARIG_LONNSTILSKUDD -> new FirearigLonnstilskuddAvtaleInnholdStrategy(avtaleInnhold);
