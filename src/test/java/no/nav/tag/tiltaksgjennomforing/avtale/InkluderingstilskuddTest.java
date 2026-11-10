@@ -23,7 +23,7 @@ public class InkluderingstilskuddTest {
     @BeforeEach
     public void setup() {
         FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
-        when(featureToggleService.isEnabled(FeatureToggle.INKLUDERINGSTILSKUDD_TILSKUDDSPERIODER)).thenReturn(true);
+        when(featureToggleService.isEnabled(FeatureToggle.NY_INKLUDERINGSTILSKUDD)).thenReturn(true);
         new FeatureToggleHolder(featureToggleService);
     }
 

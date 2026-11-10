@@ -118,7 +118,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.ForkortetGrunn.AVSLUTTET_I_ARENA;
-import static no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle.INKLUDERINGSTILSKUDD_TILSKUDDSPERIODER;
+import static no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle.NY_INKLUDERINGSTILSKUDD;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
@@ -1448,7 +1448,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (endreInkluderingstilskudd.harMangler()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_INKLUDERINGSTILSKUDD_IKKE_BELOP_ELLER_TYPE);
         }
-        if (FeatureToggleHolder.get().isEnabled(INKLUDERINGSTILSKUDD_TILSKUDDSPERIODER) && Now.localDate().isAfter(getGjeldendeInnhold().getSluttDato())) {
+        if (FeatureToggleHolder.get().isEnabled(NY_INKLUDERINGSTILSKUDD) && Now.localDate().isAfter(getGjeldendeInnhold().getSluttDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_INKLUDERINGSTILSKUDD_ETTER_SLUTTDATO);
         }
         // Sjekk at det er like mange utgifter på forrige versjon som det er id'er i request. Hvis ikke er ikke frontend i sync

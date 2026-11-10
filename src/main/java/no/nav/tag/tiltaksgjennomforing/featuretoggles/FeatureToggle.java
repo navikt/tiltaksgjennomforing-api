@@ -17,7 +17,7 @@ public enum FeatureToggle {
     VTAO_VEILEDER_TILGANG("vtaoVeilederTilgang"),
     VIS_HVEM_HAR_GODKJENT("visHvemHarGodkjent"),
     VIS_NEDETID_BANNER("visNedetidBanner"),
-    INKLUDERINGSTILSKUDD_TILSKUDDSPERIODER("inkluderingstilskuddTilskuddsperioder");
+    NY_INKLUDERINGSTILSKUDD("inkluderingstilskuddAvtale");
 
     private String toggleNavn;
 

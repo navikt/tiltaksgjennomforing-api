@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle.INKLUDERINGSTILSKUDD_TILSKUDDSPERIODER;
+import static no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle.NY_INKLUDERINGSTILSKUDD;
 import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.convertBigDecimalToInt;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
@@ -31,7 +31,7 @@ public abstract class BeregningStrategy {
     public static BeregningStrategy create(Avtale avtale){
         return switch (avtale.getTiltakstype()) {
             case ARBEIDSTRENING -> new IkkeLonnstilskuddAvtaleBeregningStrategy(avtale);
-            case INKLUDERINGSTILSKUDD -> FeatureToggleHolder.get().isEnabled(INKLUDERINGSTILSKUDD_TILSKUDDSPERIODER)
+            case INKLUDERINGSTILSKUDD -> FeatureToggleHolder.get().isEnabled(NY_INKLUDERINGSTILSKUDD)
                 ? new InkluderingstilskuddAvtaleBeregningStrategy(avtale)
                 : new IkkeLonnstilskuddAvtaleBeregningStrategy(avtale);
             case MENTOR -> new MentorBeregningStrategy(avtale);

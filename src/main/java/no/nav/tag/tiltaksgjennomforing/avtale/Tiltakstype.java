@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleHolder;
 
-import static no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle.INKLUDERINGSTILSKUDD_TILSKUDDSPERIODER;
+import static no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle.NY_INKLUDERINGSTILSKUDD;
 
 public enum Tiltakstype {
     ARBEIDSTRENING("Arbeidstrening", "ab0422", "ARBTREN"),
@@ -73,7 +73,7 @@ public enum Tiltakstype {
     public boolean skalBesluttes() {
         switch (this) {
             case INKLUDERINGSTILSKUDD -> {
-                return FeatureToggleHolder.get().isEnabled(INKLUDERINGSTILSKUDD_TILSKUDDSPERIODER);
+                return FeatureToggleHolder.get().isEnabled(NY_INKLUDERINGSTILSKUDD);
             }
             case ARBEIDSTRENING -> {
                 return false;
