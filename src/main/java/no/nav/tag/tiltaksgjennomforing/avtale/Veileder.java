@@ -387,8 +387,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             avtale.setEnhetOppfolging(oppfolgingsenhet);
             hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
         }
-        avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
-        avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
         avtale.setInnsatsgruppe(oppfølgingsstatus.getInnsatsgruppe());
     }
 

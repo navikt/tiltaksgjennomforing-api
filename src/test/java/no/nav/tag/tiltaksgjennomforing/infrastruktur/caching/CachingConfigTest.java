@@ -14,8 +14,8 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.HentOppfolgingsstatusRequest;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.HentOppfolgingsstatusRespons;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.HentOppfolgingsenhetRequest;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.Oppfolgingsenhet;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -90,19 +90,19 @@ public class CachingConfigTest {
 
         Assertions.assertEquals(
             "0906",
-            getCacheValue(VEILARBOPPFOLGING_CACHE, new HentOppfolgingsstatusRequest(ETT_FNR_NR),
-            HentOppfolgingsstatusRespons.class
-        ).oppfolgingsenhet().enhetId());
+            getCacheValue(VEILARBOPPFOLGING_CACHE, new HentOppfolgingsenhetRequest(ETT_FNR_NR),
+            Oppfolgingsenhet.class
+        ).id());
         Assertions.assertEquals(
             "0904",
-            getCacheValue(VEILARBOPPFOLGING_CACHE, new HentOppfolgingsstatusRequest(ETT_FNR_NR2),
-            HentOppfolgingsstatusRespons.class
-        ).oppfolgingsenhet().enhetId());
+            getCacheValue(VEILARBOPPFOLGING_CACHE, new HentOppfolgingsenhetRequest(ETT_FNR_NR2),
+            Oppfolgingsenhet.class
+        ).id());
         Assertions.assertEquals(
             "0906",
-            getCacheValue(VEILARBOPPFOLGING_CACHE, new HentOppfolgingsstatusRequest(ETT_FNR_NR3),
-            HentOppfolgingsstatusRespons.class
-        ).oppfolgingsenhet().enhetId());
+            getCacheValue(VEILARBOPPFOLGING_CACHE, new HentOppfolgingsenhetRequest(ETT_FNR_NR3),
+            Oppfolgingsenhet.class
+        ).id());
     }
 
     @Test
@@ -192,10 +192,10 @@ public class CachingConfigTest {
                 geolokasjon,
                 Norg2GeoResponse.class
         );
-        HentOppfolgingsstatusRespons arenaCache = getCacheValue(
+        Oppfolgingsenhet arenaCache = getCacheValue(
             VEILARBOPPFOLGING_CACHE,
-            new HentOppfolgingsstatusRequest(avtale.getDeltakerFnr().asString()),
-            HentOppfolgingsstatusRespons.class
+            new HentOppfolgingsenhetRequest(avtale.getDeltakerFnr().asString()),
+            Oppfolgingsenhet.class
         );
 
         Assertions.assertEquals("NAV St. Hanshaugen", norggeoenhetCacheForGeoEnhet.getNavn());
@@ -204,6 +204,6 @@ public class CachingConfigTest {
         Assertions.assertEquals("NAV Agder", norgnavnCacheForEnhet.getNavn());
         Assertions.assertEquals("1000", norgnavnCacheForEnhet.getEnhetNr());
 
-        Assertions.assertEquals("0906", arenaCache.oppfolgingsenhet().enhetId());
+        Assertions.assertEquals("0906", arenaCache.id());
     }
 }

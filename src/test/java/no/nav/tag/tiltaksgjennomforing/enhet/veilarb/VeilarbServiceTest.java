@@ -19,8 +19,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SyntetiskFnr
 @SpringBootTest
@@ -50,8 +55,6 @@ class VeilarbServiceTest {
         avtale.setDeltakerFnr(new Fnr(fnr_har_riktig_kvalifisering_og_formidlingskode));
 
         Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
-        assertThat(oppfølgingsstatus.getFormidlingsgruppe().getKode()).isEqualTo(("ARBS"));
-        assertThat(oppfølgingsstatus.getKvalifiseringsgruppe().getKvalifiseringskode()).isEqualTo(("VARIG"));
         assertThat(oppfølgingsstatus.getOppfolgingsenhet()).isEqualTo(("0906"));
     }
 
@@ -75,9 +78,6 @@ class VeilarbServiceTest {
     @Test
     public void hent_oppfølging_status() {
         Oppfølgingsstatus oppfølgingStatus = veilarbService.hentOppfolging(Fnr.fraDb("24469412950"));
-
-        assertThat(oppfølgingStatus.getFormidlingsgruppe().getKode()).isEqualTo(("ARBS"));
-        assertThat(oppfølgingStatus.getKvalifiseringsgruppe().getKvalifiseringskode()).isEqualTo(("VARIG"));
         assertThat(oppfølgingStatus.getOppfolgingsenhet()).isEqualTo(("0906"));
     }
 
@@ -93,6 +93,22 @@ class VeilarbServiceTest {
         assertThatThrownBy(() -> veilarbService.hentOppfolging(fnr))
                 .isExactlyInstanceOf(FeilkodeException.class)
                 .hasMessage(Feilkode.FANT_IKKE_INNSATSBEHOV.name());
+    }
+
+    @Test
+    public void kaster_enhet_mangler_naar_oppfolgingsenhet_ikke_kommer_fra_arena() {
+        VeilarboppfolgingClient oppfolgingClient = mock(VeilarboppfolgingClient.class);
+        VeilarbvedtaksstotteClient vedtaksstotteClient = mock(VeilarbvedtaksstotteClient.class);
+        when(vedtaksstotteClient.hentGjeldende14aVedtak(any()))
+                .thenReturn(Optional.of(new Gjeldende14aVedtakRespons(Innsatsgruppe.GODE_MULIGHETER, null, null)));
+        when(oppfolgingClient.hentOppfolgingsenhet(any()))
+                .thenReturn(Optional.of(new Oppfolgingsenhet("0301", "Nav Oslo", "NORG")));
+
+        VeilarbService service = new VeilarbService(oppfolgingClient, vedtaksstotteClient);
+
+        assertThatThrownBy(() -> service.hentOppfolging(Fnr.generer(1990, 4, 12)))
+                .isExactlyInstanceOf(FeilkodeException.class)
+                .hasMessage(Feilkode.ENHET_MANGLER.name());
     }
 
 }

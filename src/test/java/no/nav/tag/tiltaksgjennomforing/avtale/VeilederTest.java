@@ -4,7 +4,6 @@ import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
-import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -80,8 +79,6 @@ public class VeilederTest {
         )).thenReturn(new Tilgang.Tillat());
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS,
             "0906",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
@@ -122,8 +119,6 @@ public class VeilederTest {
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS,
             "0906",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
@@ -243,8 +238,6 @@ public class VeilederTest {
         )).thenReturn(new Tilgang.Tillat());
         // NÅR
         when(veilarbService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
             "0906",
             Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
         ));
@@ -287,8 +280,6 @@ public class VeilederTest {
 
         // NÅR
         when(veilarbService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
             "0906",
             Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
         ));
@@ -332,8 +323,6 @@ public class VeilederTest {
 
         // NÅR
         when(veilarbService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
             "0906",
             Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
         ));
@@ -412,8 +401,6 @@ public class VeilederTest {
         )).thenReturn(new Tilgang.Tillat());
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS,
             "0906",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
@@ -481,8 +468,6 @@ public class VeilederTest {
             avtale.getDeltakerFnr()
         )).thenReturn(new Tilgang.Tillat());
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS,
             "0906",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
@@ -558,8 +543,6 @@ public class VeilederTest {
             avtale.getDeltakerFnr()
         )).thenReturn(new Tilgang.Tillat());
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS,
             "0906",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
@@ -598,8 +581,6 @@ public class VeilederTest {
         );
         when(tilgangskontrollService.hentSkrivetilgang(eq(veileder), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
         when(veilarbServiceMock.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS,
             "0906",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
@@ -674,8 +655,6 @@ public class VeilederTest {
 
         //SKal kunne endre oppfølgningsstatus på endre avtale
         Oppfølgingsstatus nyOppfølgingsstatusSomSkalSettes = new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
             "0906",
             Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE
         );
@@ -701,8 +680,6 @@ public class VeilederTest {
         VeilarbService veilarbService = mock(VeilarbService.class);
         when(veilarbService.hentOppfolging(any(Avtale.class)))
             .thenReturn(new Oppfølgingsstatus(
-                Formidlingsgruppe.ARBEIDSSOKER,
-                Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
                 nyEnhet,
                 Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
             ));
@@ -772,8 +749,6 @@ public class VeilederTest {
         )).thenReturn(new Tilgang.Tillat());
         when(veilarbService.hentOgSjekkOppfolgingstatus(any())).thenReturn(
             new Oppfølgingsstatus(
-                Formidlingsgruppe.ARBEIDSSOKER,
-                Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
                 "0906",
                 Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
             )
@@ -814,8 +789,6 @@ public class VeilederTest {
         )).thenReturn(new Tilgang.Tillat());
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(
             new Oppfølgingsstatus(
-                Formidlingsgruppe.ARBEIDSSOKER,
-                Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
                 "0906",
                 Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
             )
@@ -887,8 +860,6 @@ public class VeilederTest {
             ));
         when(veilarbService.hentOgSjekkOppfolgingstatus(any())).thenReturn(
             new Oppfølgingsstatus(
-                Formidlingsgruppe.ARBEIDSSOKER,
-                Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
                 "0906",
                 Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
             )
@@ -915,8 +886,6 @@ public class VeilederTest {
     public void opprettelse_av_tiltak_med_forskjellige_kvalifiseringskoder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.IKKE_VURDERT,
             "0906",
             Innsatsgruppe.UKJENT
         );
@@ -1113,8 +1082,6 @@ public class VeilederTest {
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         arbeidsgiver.godkjennAvtale(avtale);
         Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
             "0906",
             Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE
         );
@@ -1132,8 +1099,6 @@ public class VeilederTest {
         LocalDate opprinneligSluttDato = avtale.getGjeldendeInnhold().getSluttDato();
 
         Oppfølgingsstatus annenOppfølgingsstatus = new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
             avtale.getEnhetOppfolging(),
             Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE
         );
@@ -1159,8 +1124,6 @@ public class VeilederTest {
 
         // SITUASJONSBESTEMT_INNSATS tilsvarer TRENGER_VEILEDNING, altså ingen reell endring
         Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS,
             avtale.getEnhetOppfolging(),
             Innsatsgruppe.TRENGER_VEILEDNING
         );
@@ -1182,8 +1145,6 @@ public class VeilederTest {
 
         // LITEN_MULIGHET_TIL_A_JOBBE tilsvarer ikke SITUASJONSBESTEMT_INNSATS
         Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
             avtale.getEnhetOppfolging(),
             Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
         );
@@ -1204,8 +1165,6 @@ public class VeilederTest {
         assertThat(avtale.erAvtaleInngått()).isFalse();
 
         Oppfølgingsstatus nyOppfølgingsstatus = new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
             "0906",
             Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
         );
@@ -1218,8 +1177,6 @@ public class VeilederTest {
 
         // settOppfølgingsStatus skal ha blitt kalt (og oppdatert avtalen) selv om exception kastes
         assertThat(avtale.getInnsatsgruppe()).isEqualTo(nyOppfølgingsstatus.getInnsatsgruppe());
-        assertThat(avtale.getFormidlingsgruppe()).isEqualTo(nyOppfølgingsstatus.getFormidlingsgruppe());
-        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(nyOppfølgingsstatus.getKvalifiseringsgruppe());
     }
 
     @Test
@@ -1229,8 +1186,6 @@ public class VeilederTest {
         assertThat(avtale.getTiltakstype()).isNotEqualTo(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
 
         Oppfølgingsstatus nyOppfølgingsstatus = new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
             "0906",
             Innsatsgruppe.TRENGER_VEILEDNING
         );
@@ -1243,8 +1198,6 @@ public class VeilederTest {
 
         // Oppfølgingsstatus skal likevel bli oppdatert på avtalen
         assertThat(avtale.getInnsatsgruppe()).isEqualTo(nyOppfølgingsstatus.getInnsatsgruppe());
-        assertThat(avtale.getFormidlingsgruppe()).isEqualTo(nyOppfølgingsstatus.getFormidlingsgruppe());
-        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(nyOppfølgingsstatus.getKvalifiseringsgruppe());
     }
 
     private Veileder lagVeilederForGodkjenning(Avtale avtale, PostutsendelseService postutsendelseService) {
@@ -1273,8 +1226,6 @@ public class VeilederTest {
         )).thenReturn(new Tilgang.Tillat());
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS,
             "0906",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));

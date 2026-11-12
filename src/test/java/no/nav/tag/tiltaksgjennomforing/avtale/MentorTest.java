@@ -7,9 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
-import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
@@ -209,8 +207,6 @@ public class MentorTest {
             avtale.getDeltakerFnr()
         )).thenReturn(new Tilgang.Tillat());
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS,
             "0906",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
@@ -248,8 +244,6 @@ public class MentorTest {
             avtale.getDeltakerFnr()
         )).thenReturn(new Tilgang.Tillat());
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS,
             "0906",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));

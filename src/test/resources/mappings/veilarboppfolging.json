@@ -4,25 +4,28 @@
       "priority": 1,
       "request": {
         "method": "POST",
-        "urlPattern": "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus",
+        "urlPath": "/veilarboppfolging/api/graphql",
         "bodyPatterns": [
           {
-            "equalToJson": "{\"fnr\":\"07518815401\"}",
-            "ignoreArrayOrder": true
+            "matchesJsonPath": {
+              "expression": "$.variables.fnr",
+              "equalTo": "07518815401"
+            }
           }
         ]
       },
       "response": {
         "status": 200,
         "jsonBody": {
-          "oppfolgingsenhet": {
-            "navn": "NAV Test",
-            "enhetId": "0906"
-          },
-          "veilederId": "V123456",
-          "formidlingsgruppe": "ARBS",
-          "servicegruppe": "BFORM",
-          "hovedmaalkode": "NO"
+          "data": {
+            "oppfolgingsEnhet": {
+              "enhet": {
+                "id": "0906",
+                "navn": "NAV Test",
+                "kilde": "ARENA"
+              }
+            }
+          }
         },
         "headers": {
           "Content-Type": "application/json"
@@ -33,25 +36,28 @@
       "priority": 1,
       "request": {
         "method": "POST",
-        "urlPattern": "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus",
+        "urlPath": "/veilarboppfolging/api/graphql",
         "bodyPatterns": [
           {
-            "equalToJson": "{\"fnr\":\"10526244570\"}",
-            "ignoreArrayOrder": true
+            "matchesJsonPath": {
+              "expression": "$.variables.fnr",
+              "equalTo": "10526244570"
+            }
           }
         ]
       },
       "response": {
         "status": 200,
         "jsonBody": {
-          "oppfolgingsenhet": {
-            "navn": "NAV Test",
-            "enhetId": "0906"
-          },
-          "veilederId": "V123456",
-          "formidlingsgruppe": "ARBS",
-          "servicegruppe": "IVURD",
-          "hovedmaalkode": "NO"
+          "data": {
+            "oppfolgingsEnhet": {
+              "enhet": {
+                "id": "0906",
+                "navn": "NAV Test",
+                "kilde": "ARENA"
+              }
+            }
+          }
         },
         "headers": {
           "Content-Type": "application/json"
@@ -62,25 +68,28 @@
       "priority": 1,
       "request": {
         "method": "POST",
-        "urlPattern": "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus",
+        "urlPath": "/veilarboppfolging/api/graphql",
         "bodyPatterns": [
           {
-            "equalToJson": "{\"fnr\":\"14443543733\"}",
-            "ignoreArrayOrder": true
+            "matchesJsonPath": {
+              "expression": "$.variables.fnr",
+              "equalTo": "14443543733"
+            }
           }
         ]
       },
       "response": {
         "status": 200,
         "jsonBody": {
-          "oppfolgingsenhet": {
-            "navn": "NAV Test",
-            "enhetId": "0906"
-          },
-          "veilederId": "V123456",
-          "formidlingsgruppe": "IJOBS",
-          "servicegruppe": "IVURD",
-          "hovedmaalkode": "NO"
+          "data": {
+            "oppfolgingsEnhet": {
+              "enhet": {
+                "id": "0906",
+                "navn": "NAV Test",
+                "kilde": "ARENA"
+              }
+            }
+          }
         },
         "headers": {
           "Content-Type": "application/json"
@@ -91,25 +100,28 @@
       "priority": 1,
       "request": {
         "method": "POST",
-        "urlPattern": "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus",
+        "urlPath": "/veilarboppfolging/api/graphql",
         "bodyPatterns": [
           {
-            "equalToJson": "{\"fnr\":\"11111111111\"}",
-            "ignoreArrayOrder": true
+            "matchesJsonPath": {
+              "expression": "$.variables.fnr",
+              "equalTo": "11111111111"
+            }
           }
         ]
       },
       "response": {
         "status": 200,
         "jsonBody": {
-          "oppfolgingsenhet": {
-            "navn": "NAV Test",
-            "enhetId": "0904"
-          },
-          "veilederId": "V123456",
-          "formidlingsgruppe": "IJOBS",
-          "servicegruppe": "BFORM",
-          "hovedmaalkode": "NO"
+          "data": {
+            "oppfolgingsEnhet": {
+              "enhet": {
+                "id": "0904",
+                "navn": "NAV Test",
+                "kilde": "ARENA"
+              }
+            }
+          }
         },
         "headers": {
           "Content-Type": "application/json"
@@ -120,67 +132,104 @@
       "priority": 1,
       "request": {
         "method": "POST",
-        "urlPattern": "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus",
+        "urlPath": "/veilarboppfolging/api/graphql",
         "bodyPatterns": [
           {
-            "equalToJson": "{\"fnr\":\"22222222222\"}",
-            "ignoreArrayOrder": true
+            "matchesJsonPath": {
+              "expression": "$.variables.fnr",
+              "equalTo": "22222222222"
+            }
           }
         ]
       },
       "response": {
-        "status": 404
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "oppfolgingsEnhet": {
+              "enhet": null
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
       }
     },
     {
       "priority": 1,
       "request": {
         "method": "POST",
-        "urlPattern": "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus",
+        "urlPath": "/veilarboppfolging/api/graphql",
         "bodyPatterns": [
           {
-            "equalToJson": "{\"fnr\":\"33333333333\"}",
-            "ignoreArrayOrder": true
+            "matchesJsonPath": {
+              "expression": "$.variables.fnr",
+              "equalTo": "33333333333"
+            }
           }
         ]
       },
       "response": {
-        "status": 404
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "oppfolgingsEnhet": {
+              "enhet": null
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
       }
     },
     {
       "priority": 1,
       "request": {
         "method": "POST",
-        "urlPath": "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus",
+        "urlPath": "/veilarboppfolging/api/graphql",
         "bodyPatterns": [
           {
-            "equalToJson": "{\"fnr\":\"11427290672\"}",
-            "ignoreArrayOrder": true
+            "matchesJsonPath": {
+              "expression": "$.variables.fnr",
+              "equalTo": "11427290672"
+            }
           }
         ]
       },
       "response": {
-        "status": 404
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "oppfolgingsEnhet": {
+              "enhet": null
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
       }
     },
     {
       "priority": 2,
       "request": {
         "method": "POST",
-        "urlPattern": "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus"
+        "urlPath": "/veilarboppfolging/api/graphql"
       },
       "response": {
         "status": 200,
         "jsonBody": {
-          "oppfolgingsenhet": {
-            "navn": "NAV Test",
-            "enhetId": "0906"
-          },
-          "veilederId": "V123456",
-          "formidlingsgruppe": "ARBS",
-          "servicegruppe": "VARIG",
-          "hovedmaalkode": "NO"
+          "data": {
+            "oppfolgingsEnhet": {
+              "enhet": {
+                "id": "0906",
+                "navn": "NAV Test",
+                "kilde": "ARENA"
+              }
+            }
+          }
         },
         "headers": {
           "Content-Type": "application/json"

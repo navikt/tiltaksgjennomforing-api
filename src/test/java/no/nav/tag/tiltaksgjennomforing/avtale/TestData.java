@@ -10,9 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
-import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2EnhetStatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
@@ -1055,19 +1053,13 @@ public class TestData {
         return veileder;
     }
 
-    // Speiler avtalens eget innsatsgruppe/kvalifiseringsgruppe/oppfølgingsenhet-nivå slik at
+    // Speiler avtalens eget innsatsgruppe/oppfølgingsenhet-nivå slik at
     // TestData.enVeileder(Avtale) fungerer som et no-op-mock med mindre testen selv overstyrer det.
     private static Oppfølgingsstatus enOppfølgingsstatusForAvtale(Avtale avtale) {
-        Formidlingsgruppe formidlingsgruppe = avtale.getFormidlingsgruppe() != null
-            ? avtale.getFormidlingsgruppe()
-            : Formidlingsgruppe.ARBEIDSSOKER;
-        Kvalifiseringsgruppe kvalifiseringsgruppe = avtale.getKvalifiseringsgruppe() != null
-            ? avtale.getKvalifiseringsgruppe()
-            : Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS;
         Innsatsgruppe innsatsgruppe = avtale.getInnsatsgruppe() != null
             ? avtale.getInnsatsgruppe()
             : Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE;
-        return new Oppfølgingsstatus(formidlingsgruppe, kvalifiseringsgruppe, "0906", innsatsgruppe);
+        return new Oppfølgingsstatus("0906", innsatsgruppe);
     }
 
     public static Beslutter enBeslutter(Avtale avtale) {
@@ -1095,8 +1087,6 @@ public class TestData {
         when(norg2Client.hentOppfølgingsEnhet(eq("0906"))).thenReturn(new Norg2OppfølgingResponse(906, "0906", "Oslo", Norg2EnhetStatus.AKTIV));
         when(featureToggleService.harEnhetTilgangPaTiltak(any(), any())).thenReturn(true);
         when(veilarbService.hentOgSjekkOppfolgingstatus(any())).thenReturn(new Oppfølgingsstatus(
-            null,
-            Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
             "0000",
             Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE
         ));
@@ -1193,16 +1183,12 @@ public class TestData {
         VeilarbService veilarbService = mock(VeilarbService.class);
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(
             new Oppfølgingsstatus(
-                Formidlingsgruppe.ARBEIDSSOKER,
-                Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
                 "0906",
                 Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
             )
         );
         when(veilarbService.hentOppfolging(any(Avtale.class))).thenReturn(
             new Oppfølgingsstatus(
-                Formidlingsgruppe.ARBEIDSSOKER,
-                Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
                 "0906",
                 Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
             )

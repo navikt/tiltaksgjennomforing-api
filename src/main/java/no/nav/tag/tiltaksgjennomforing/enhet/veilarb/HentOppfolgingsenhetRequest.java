@@ -1,5 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.enhet.veilarb;
 
-public record HentOppfolgingsstatusRequest(
+public record HentOppfolgingsenhetRequest(
     String fnr
 ) {}
