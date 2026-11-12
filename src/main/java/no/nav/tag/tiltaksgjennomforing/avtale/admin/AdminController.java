@@ -217,14 +217,10 @@ public class AdminController {
                 Oppfølgingsstatus status = veilarbService.hentOppfolging(avtale);
                 return Map.of(
                     "avtaleOppfolginsstatus", Map.of(
-                        "formidlingsgruppe", avtale.getFormidlingsgruppe().name(),
-                        "kvalifiseringsgruppe", avtale.getKvalifiseringsgruppe().name(),
                         "innsatsgruppe", Optional.ofNullable(avtale.getInnsatsgruppe()).map(Enum::name).orElse(""),
-                        "oppfolginsenhet", avtale.getEnhetOppfolging()
+                        "oppfolginsenhet", Optional.ofNullable(avtale.getEnhetOppfolging()).orElse("")
                     ),
                     "veilarbOppfolginsstatus", Map.of(
-                        "formidlingsgruppe", status.getFormidlingsgruppe().name(),
-                        "kvalifiseringsgruppe", status.getKvalifiseringsgruppe().name(),
                         "innsatsgruppe", status.getInnsatsgruppe().name(),
                         "oppfolginsenhet", status.getOppfolgingsenhet()
                     )

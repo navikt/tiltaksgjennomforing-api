@@ -90,8 +90,6 @@ public class ArbeidsgiverTest {
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
         when(veilarboppfolgingService.hentOppfolging(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
-            null,
-            null,
             "0411",
             null
         ));
@@ -188,8 +186,6 @@ public class ArbeidsgiverTest {
 
         VeilarbService veilarbService = mock(VeilarbService.class);
         when(veilarbService.hentOppfolging(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
-            null,
-            null,
             "0411",
             null
         ));

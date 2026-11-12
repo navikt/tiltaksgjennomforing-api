@@ -5,9 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
-import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2EnhetStatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
@@ -79,14 +77,10 @@ public class CachingConfigMockTest {
             "0314"
     );
     private final Oppfølgingsstatus FØRSTE_OPPFØLGNING_ENHET_ARENA = new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS,
             "0906",
             Innsatsgruppe.TRENGER_VEILEDNING
     );
     private final Oppfølgingsstatus ANDRE_OPPFØLGNING_ENHET_ARENA = new Oppfølgingsstatus(
-            Formidlingsgruppe.ARBEIDSSOKER,
-            Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
             "0904",
             Innsatsgruppe.TRENGER_VEILEDNING
     );

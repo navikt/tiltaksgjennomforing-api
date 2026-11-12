@@ -331,8 +331,6 @@ public class ArenaAgreementProcessingService {
             agreementAggregate.getTiltakskode().getTiltakstype()
         ).ifPresent((status) -> {
             avtale.setEnhetOppfolging(status.getOppfolgingsenhet());
-            avtale.setKvalifiseringsgruppe(status.getKvalifiseringsgruppe());
-            avtale.setFormidlingsgruppe(status.getFormidlingsgruppe());
             avtale.setInnsatsgruppe(status.getInnsatsgruppe());
         });
 
