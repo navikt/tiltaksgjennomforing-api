@@ -85,10 +85,12 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         final String veilederEtternavn = "Veileder";
         final NavIdent beslutterNavIdent = new NavIdent("X234567");
 
-        final TilskuddsperiodeGodkjentMelding tilskuddMelding = new TilskuddsperiodeGodkjentMelding(avtaleId,
+        final TilskuddsperiodeGodkjentMelding tilskuddMelding = new TilskuddsperiodeGodkjentMelding.Lonnstilskudd(
+            new TilskuddsperiodeGodkjentMelding.Felles(avtaleId,
                 tilskuddPeriodeId, avtaleInnholdId, avtaleFom, avtaleTom, tiltakstype, deltakerFornavn, deltakerEtternavn,
-                deltakerFnr, arbeidsgiverFornavn, arbeidsgiverEtternavn, arbeidsgiverTlf, veilederNavIdent, bedriftNavn, bedriftnummer, tilskuddBeløp, tilskuddFraDato, tilskuddTilDato, 10.6, 0.02, 14.1, 60, avtaleNr, løpenummer, 0,
-            "4808", beslutterNavIdent, veilederFornavn, veilederEtternavn, Now.localDateTime(), null, null, null, null);
+                deltakerFnr, arbeidsgiverFornavn, arbeidsgiverEtternavn, arbeidsgiverTlf, veilederNavIdent, bedriftNavn, bedriftnummer, tilskuddBeløp, tilskuddFraDato, tilskuddTilDato, avtaleNr, løpenummer, 0,
+                "4808", beslutterNavIdent, veilederFornavn, veilederEtternavn, Now.localDateTime(), null, null),
+            10.6, 0.02, 14.1, 60);
 
         //NÅR
         tilskuddsperiodeKafkaProducer.publiserTilskuddsperiodeGodkjentMelding(tilskuddMelding);
