@@ -49,7 +49,7 @@ public class TilskuddsperiodeKafkaProducer {
     }
 
     public void publiserTilskuddsperiodeGodkjentMelding(TilskuddsperiodeGodkjentMelding melding) {
-        publiserMelding(Topics.TILSKUDDSPERIODE_GODKJENT, melding.getTilskuddsperiodeId().toString(), melding);
+        publiserMelding(Topics.TILSKUDDSPERIODE_GODKJENT, melding.felles().tilskuddsperiodeId().toString(), melding);
     }
 
     public void publiserTilskuddsperiodeAnnullertMelding(TilskuddsperiodeAnnullertMelding melding) {
