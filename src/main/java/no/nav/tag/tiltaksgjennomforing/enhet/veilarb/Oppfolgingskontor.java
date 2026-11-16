@@ -9,6 +9,6 @@ public record Oppfolgingskontor(String kontorId, String kontorNavn, KontorType k
     }
 
     public boolean erGyldigOppfolgingskontor() {
-        return kontorType == KontorType.ARBEIDSOPPFOLGING || kontorType == KontorType.ARENA;
+        return kontorType == KontorType.ARBEIDSOPPFOLGING;
     }
 }

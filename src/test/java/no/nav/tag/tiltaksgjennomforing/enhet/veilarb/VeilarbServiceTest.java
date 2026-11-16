@@ -97,15 +97,16 @@ class VeilarbServiceTest {
     }
 
     @Test
-    public void godtar_oppfolgingskontor_fra_arbeidsoppfolging_og_arena() {
+    public void godtar_oppfolgingskontor_fra_arbeidsoppfolging() {
         assertThat(hentOppfolgingMedKontortype(Oppfolgingskontor.KontorType.ARBEIDSOPPFOLGING).getOppfolgingsenhet())
-                .isEqualTo("0301");
-        assertThat(hentOppfolgingMedKontortype(Oppfolgingskontor.KontorType.ARENA).getOppfolgingsenhet())
                 .isEqualTo("0301");
     }
 
     @Test
-    public void kaster_enhet_mangler_naar_oppfolgingskontor_er_geografisk_tilknytning() {
+    public void kaster_enhet_mangler_naar_oppfolgingskontor_er_arena_eller_geografisk_tilknytning() {
+        assertThatThrownBy(() -> hentOppfolgingMedKontortype(Oppfolgingskontor.KontorType.ARENA))
+                .isExactlyInstanceOf(FeilkodeException.class)
+                .hasMessage(Feilkode.ENHET_MANGLER.name());
         assertThatThrownBy(() -> hentOppfolgingMedKontortype(Oppfolgingskontor.KontorType.GEOGRAFISK_TILKNYTNING))
                 .isExactlyInstanceOf(FeilkodeException.class)
                 .hasMessage(Feilkode.ENHET_MANGLER.name());
