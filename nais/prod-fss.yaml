@@ -58,7 +58,7 @@ spec:
     enabled: true
   webproxy: true
   strategy:
-    type: Recreate
+    type: RollingUpdate
   tokenx:
     enabled: true
   prometheus:
