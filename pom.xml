@@ -23,11 +23,11 @@
         <commons-text.version>1.15.0</commons-text.version>
         <fnr-gen-test.version>2.0.0</fnr-gen-test.version>
         <jsonschema-generator.version>5.0.0</jsonschema-generator.version>
-        <kafka-avro-serializer.version>8.4.0</kafka-avro-serializer.version>
+        <kafka-avro-serializer.version>8.4.1</kafka-avro-serializer.version>
         <logstash-logback-encoder.version>9.0</logstash-logback-encoder.version>
         <nocommons.version>0.17.0</nocommons.version>
         <poao-tilgang.version>2025.02.18_14.13-ac4265f31ef3</poao-tilgang.version>
-        <shedlock.version>7.10.1</shedlock.version>
+        <shedlock.version>7.11.0</shedlock.version>
         <tiltak-persondata.version>2026.04.28_07.58-d9e06b02d7f3</tiltak-persondata.version>
         <token-client-spring.version>6.0.12</token-client-spring.version>
         <token-validation-spring.version>6.0.12</token-validation-spring.version>
