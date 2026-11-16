@@ -23,7 +23,7 @@ Other inbound callers: `min-side-arbeidsgiver` (namespace `fager`) and `tiltak-p
 
 ### Integrations
 
-- **Outbound HTTP:** POAO-tilgang (Nav employee access), PDL (person data, via `tiltak-persondata`), arbeidsgiver-altinn-tilganger (employer access), Norg2, EREG, veilarb (oppfølging), KRR (digdir-krr-proxy), kontoregister, Oppgave (Gosys tasks), entraproxy, Arena ORDS, Unleash and `tiltak-pdfgen` (PDF). URLs are in `application-{dev,prod}-fss.yaml`.
+- **Outbound HTTP:** POAO-tilgang (Nav employee access), PDL (person data, via `tiltak-persondata`), arbeidsgiver-altinn-tilganger (employer access), Norg2, EREG, ao-oppfolgingskontor (oppfølgingskontor, GraphQL), veilarbvedtaksstotte (§ 14 a-vedtak), KRR (digdir-krr-proxy), kontoregister, Oppgave (Gosys tasks), entraproxy, Arena ORDS, Unleash and `tiltak-pdfgen` (PDF). URLs are in `application-{dev,prod}-fss.yaml`.
 - **Kafka produce:** subsidy periods, avtale events, SMS, data warehouse (Avro), audit. Topic names are constants in `infrastruktur/kafka/Topics.java`.
 - **Kafka consume:** `TILTAK_VARSEL`, `REFUSJON_ENDRET_STATUS` (from tiltak-refusjon) and Arena topics (configured in `tiltaksgjennomforing.arena.kafka.*`).
 

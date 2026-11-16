@@ -4,11 +4,11 @@
       "priority": 1,
       "request": {
         "method": "POST",
-        "urlPath": "/veilarboppfolging/api/graphql",
+        "urlPath": "/graphql",
         "bodyPatterns": [
           {
             "matchesJsonPath": {
-              "expression": "$.variables.fnr",
+              "expression": "$.variables.ident",
               "equalTo": "07518815401"
             }
           }
@@ -18,12 +18,10 @@
         "status": 200,
         "jsonBody": {
           "data": {
-            "oppfolgingsEnhet": {
-              "enhet": {
-                "id": "0906",
-                "navn": "NAV Test",
-                "kilde": "ARENA"
-              }
+            "kontorTilhorighet": {
+              "kontorId": "0906",
+              "kontorNavn": "NAV Test",
+              "kontorType": "ARBEIDSOPPFOLGING"
             }
           }
         },
@@ -36,11 +34,11 @@
       "priority": 1,
       "request": {
         "method": "POST",
-        "urlPath": "/veilarboppfolging/api/graphql",
+        "urlPath": "/graphql",
         "bodyPatterns": [
           {
             "matchesJsonPath": {
-              "expression": "$.variables.fnr",
+              "expression": "$.variables.ident",
               "equalTo": "10526244570"
             }
           }
@@ -50,12 +48,10 @@
         "status": 200,
         "jsonBody": {
           "data": {
-            "oppfolgingsEnhet": {
-              "enhet": {
-                "id": "0906",
-                "navn": "NAV Test",
-                "kilde": "ARENA"
-              }
+            "kontorTilhorighet": {
+              "kontorId": "0906",
+              "kontorNavn": "NAV Test",
+              "kontorType": "ARBEIDSOPPFOLGING"
             }
           }
         },
@@ -68,11 +64,11 @@
       "priority": 1,
       "request": {
         "method": "POST",
-        "urlPath": "/veilarboppfolging/api/graphql",
+        "urlPath": "/graphql",
         "bodyPatterns": [
           {
             "matchesJsonPath": {
-              "expression": "$.variables.fnr",
+              "expression": "$.variables.ident",
               "equalTo": "14443543733"
             }
           }
@@ -82,12 +78,10 @@
         "status": 200,
         "jsonBody": {
           "data": {
-            "oppfolgingsEnhet": {
-              "enhet": {
-                "id": "0906",
-                "navn": "NAV Test",
-                "kilde": "ARENA"
-              }
+            "kontorTilhorighet": {
+              "kontorId": "0906",
+              "kontorNavn": "NAV Test",
+              "kontorType": "ARBEIDSOPPFOLGING"
             }
           }
         },
@@ -100,11 +94,11 @@
       "priority": 1,
       "request": {
         "method": "POST",
-        "urlPath": "/veilarboppfolging/api/graphql",
+        "urlPath": "/graphql",
         "bodyPatterns": [
           {
             "matchesJsonPath": {
-              "expression": "$.variables.fnr",
+              "expression": "$.variables.ident",
               "equalTo": "11111111111"
             }
           }
@@ -114,12 +108,10 @@
         "status": 200,
         "jsonBody": {
           "data": {
-            "oppfolgingsEnhet": {
-              "enhet": {
-                "id": "0904",
-                "navn": "NAV Test",
-                "kilde": "ARENA"
-              }
+            "kontorTilhorighet": {
+              "kontorId": "0904",
+              "kontorNavn": "NAV Test",
+              "kontorType": "ARBEIDSOPPFOLGING"
             }
           }
         },
@@ -132,11 +124,11 @@
       "priority": 1,
       "request": {
         "method": "POST",
-        "urlPath": "/veilarboppfolging/api/graphql",
+        "urlPath": "/graphql",
         "bodyPatterns": [
           {
             "matchesJsonPath": {
-              "expression": "$.variables.fnr",
+              "expression": "$.variables.ident",
               "equalTo": "22222222222"
             }
           }
@@ -146,9 +138,7 @@
         "status": 200,
         "jsonBody": {
           "data": {
-            "oppfolgingsEnhet": {
-              "enhet": null
-            }
+            "kontorTilhorighet": null
           }
         },
         "headers": {
@@ -160,11 +150,11 @@
       "priority": 1,
       "request": {
         "method": "POST",
-        "urlPath": "/veilarboppfolging/api/graphql",
+        "urlPath": "/graphql",
         "bodyPatterns": [
           {
             "matchesJsonPath": {
-              "expression": "$.variables.fnr",
+              "expression": "$.variables.ident",
               "equalTo": "33333333333"
             }
           }
@@ -174,9 +164,7 @@
         "status": 200,
         "jsonBody": {
           "data": {
-            "oppfolgingsEnhet": {
-              "enhet": null
-            }
+            "kontorTilhorighet": null
           }
         },
         "headers": {
@@ -188,11 +176,11 @@
       "priority": 1,
       "request": {
         "method": "POST",
-        "urlPath": "/veilarboppfolging/api/graphql",
+        "urlPath": "/graphql",
         "bodyPatterns": [
           {
             "matchesJsonPath": {
-              "expression": "$.variables.fnr",
+              "expression": "$.variables.ident",
               "equalTo": "11427290672"
             }
           }
@@ -202,9 +190,7 @@
         "status": 200,
         "jsonBody": {
           "data": {
-            "oppfolgingsEnhet": {
-              "enhet": null
-            }
+            "kontorTilhorighet": null
           }
         },
         "headers": {
@@ -216,18 +202,16 @@
       "priority": 2,
       "request": {
         "method": "POST",
-        "urlPath": "/veilarboppfolging/api/graphql"
+        "urlPath": "/graphql"
       },
       "response": {
         "status": 200,
         "jsonBody": {
           "data": {
-            "oppfolgingsEnhet": {
-              "enhet": {
-                "id": "0906",
-                "navn": "NAV Test",
-                "kilde": "ARENA"
-              }
+            "kontorTilhorighet": {
+              "kontorId": "0906",
+              "kontorNavn": "NAV Test",
+              "kontorType": "ARBEIDSOPPFOLGING"
             }
           }
         },

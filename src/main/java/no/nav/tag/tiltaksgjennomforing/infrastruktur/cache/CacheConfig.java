@@ -16,7 +16,7 @@ public class CacheConfig {
     public static final String ENTRAPROXY_CACHE = "entraproxy_cache";
     public static final String NORGNAVN_CACHE = "norgnavn_cache";
     public static final String NORG_GEO_ENHET = "norggeoenhet_cache";
-    public static final String VEILARBOPPFOLGING_CACHE = "veilarboppfolging_cache";
+    public static final String AO_OPPFOLGINGSKONTOR_CACHE = "ao_oppfolgingskontor_cache";
     public static final String VEILARBVEDTAKSSTOTTE_CACHE = "veilarbvedtaksstotte_cache";
     public static final String ALTINN_CACHE = "altinn_cache";
 

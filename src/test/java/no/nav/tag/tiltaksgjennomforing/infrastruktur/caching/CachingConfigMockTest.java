@@ -109,7 +109,7 @@ public class CachingConfigMockTest {
         @Bean
         public CacheManager cacheManager() {
             return new ConcurrentMapCacheManager(
-                    CacheConfig.VEILARBOPPFOLGING_CACHE,
+                    CacheConfig.AO_OPPFOLGINGSKONTOR_CACHE,
                     CacheConfig.NORGNAVN_CACHE,
                     CacheConfig.NORG_GEO_ENHET,
                     CacheConfig.ENTRAPROXY_CACHE

@@ -8,7 +8,7 @@ import java.net.URI;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "tiltaksgjennomforing.veilarboppfolging")
-public class VeilarboppfolgingProperties {
+@ConfigurationProperties(prefix = "tiltaksgjennomforing.ao-oppfolgingskontor")
+public class AoOppfolgingskontorProperties {
     private URI url;
 }

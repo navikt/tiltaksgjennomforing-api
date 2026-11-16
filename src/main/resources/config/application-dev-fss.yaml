@@ -37,10 +37,10 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
-      veilarboppfolging:
+      ao-oppfolgingskontor:
         token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
         grant-type: client_credentials
-        scope: api://dev-gcp.poao.veilarboppfolging/.default
+        scope: api://dev-gcp.dab.ao-oppfolgingskontor/.default
         authentication:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
@@ -185,8 +185,8 @@ tiltaksgjennomforing:
   consumer:
     system:
       id: ${tiltaksgjennomforing.consumer.system}
-  veilarboppfolging:
-    url: https://veilarboppfolging.intern.dev.nav.no
+  ao-oppfolgingskontor:
+    url: https://ao-oppfolgingskontor.intern.dev.nav.no
   veilarbvedtaksstotte:
     url: https://veilarbvedtaksstotte.intern.dev.nav.no
   poao-tilgang:

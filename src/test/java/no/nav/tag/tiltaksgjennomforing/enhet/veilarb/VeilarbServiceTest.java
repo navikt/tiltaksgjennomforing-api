@@ -96,19 +96,29 @@ class VeilarbServiceTest {
     }
 
     @Test
-    public void kaster_enhet_mangler_naar_oppfolgingsenhet_ikke_kommer_fra_arena() {
-        VeilarboppfolgingClient oppfolgingClient = mock(VeilarboppfolgingClient.class);
+    public void godtar_oppfolgingskontor_fra_arbeidsoppfolging_og_arena() {
+        assertThat(hentOppfolgingMedKontortype(Oppfolgingskontor.KontorType.ARBEIDSOPPFOLGING).getOppfolgingsenhet())
+                .isEqualTo("0301");
+        assertThat(hentOppfolgingMedKontortype(Oppfolgingskontor.KontorType.ARENA).getOppfolgingsenhet())
+                .isEqualTo("0301");
+    }
+
+    @Test
+    public void kaster_enhet_mangler_naar_oppfolgingskontor_er_geografisk_tilknytning() {
+        assertThatThrownBy(() -> hentOppfolgingMedKontortype(Oppfolgingskontor.KontorType.GEOGRAFISK_TILKNYTNING))
+                .isExactlyInstanceOf(FeilkodeException.class)
+                .hasMessage(Feilkode.ENHET_MANGLER.name());
+    }
+
+    private static Oppfølgingsstatus hentOppfolgingMedKontortype(Oppfolgingskontor.KontorType kontorType) {
+        AoOppfolgingskontorClient oppfolgingskontorClient = mock(AoOppfolgingskontorClient.class);
         VeilarbvedtaksstotteClient vedtaksstotteClient = mock(VeilarbvedtaksstotteClient.class);
         when(vedtaksstotteClient.hentGjeldende14aVedtak(any()))
                 .thenReturn(Optional.of(new Gjeldende14aVedtakRespons(Innsatsgruppe.GODE_MULIGHETER, null, null)));
-        when(oppfolgingClient.hentOppfolgingsenhet(any()))
-                .thenReturn(Optional.of(new Oppfolgingsenhet("0301", "Nav Oslo", "NORG")));
+        when(oppfolgingskontorClient.hentOppfolgingskontor(any()))
+                .thenReturn(Optional.of(new Oppfolgingskontor("0301", "Nav Oslo", kontorType)));
 
-        VeilarbService service = new VeilarbService(oppfolgingClient, vedtaksstotteClient);
-
-        assertThatThrownBy(() -> service.hentOppfolging(Fnr.generer(1990, 4, 12)))
-                .isExactlyInstanceOf(FeilkodeException.class)
-                .hasMessage(Feilkode.ENHET_MANGLER.name());
+        return new VeilarbService(oppfolgingskontorClient, vedtaksstotteClient).hentOppfolging(Fnr.generer(1990, 4, 12));
     }
 
 }

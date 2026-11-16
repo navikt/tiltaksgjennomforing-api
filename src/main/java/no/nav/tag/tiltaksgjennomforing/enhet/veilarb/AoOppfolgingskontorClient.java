@@ -18,61 +18,59 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-class VeilarboppfolgingClient {
+class AoOppfolgingskontorClient {
     private static final TeamLogs teamLogs = TeamLogs.getLogger(log);
 
-    private static final String OPPFOLGINGSENHET_QUERY = """
-        query($fnr: String!) {
-            oppfolgingsEnhet(fnr: $fnr) {
-                enhet {
-                    id
-                    navn
-                    kilde
-                }
+    private static final String KONTOR_TILHORIGHET_QUERY = """
+        query($ident: String!) {
+            kontorTilhorighet(ident: $ident) {
+                kontorId
+                kontorNavn
+                kontorType
             }
         }
         """;
 
     private final RestTemplate restTemplate;
-    private final VeilarboppfolgingProperties properties;
+    private final AoOppfolgingskontorProperties properties;
 
-    public VeilarboppfolgingClient(
+    public AoOppfolgingskontorClient(
             RestTemplate azureRestTemplate,
-            VeilarboppfolgingProperties properties
+            AoOppfolgingskontorProperties properties
     ) {
         this.restTemplate = azureRestTemplate;
         this.properties = properties;
     }
 
     @Retryable(delayString = "${tiltaksgjennomforing.retry.delay}", maxDelayString = "${tiltaksgjennomforing.retry.max-delay}", multiplier = 2, maxRetries = 2)
-    @Cacheable(CacheConfig.VEILARBOPPFOLGING_CACHE)
-    public Optional<Oppfolgingsenhet> hentOppfolgingsenhet(HentOppfolgingsenhetRequest request) {
-        log.info("Henter oppfølgingsenhet fra veilarboppfolging");
+    @Cacheable(CacheConfig.AO_OPPFOLGINGSKONTOR_CACHE)
+    public Optional<Oppfolgingskontor> hentOppfolgingskontor(HentOppfolgingskontorRequest request) {
+        log.info("Henter oppfølgingskontor fra ao-oppfolgingskontor");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
         headers.set("Nav-Consumer-Id", "tiltaksgjennomforing-api");
 
-        GraphqlRequest body = new GraphqlRequest(OPPFOLGINGSENHET_QUERY, Map.of("fnr", request.fnr()));
+        GraphqlRequest body = new GraphqlRequest(KONTOR_TILHORIGHET_QUERY, Map.of("ident", request.fnr()));
 
-        ResponseEntity<OppfolgingsenhetGraphqlRespons> response = restTemplate.exchange(
-                properties.getUrl() + "/veilarboppfolging/api/graphql",
+        ResponseEntity<KontorTilhorighetGraphqlRespons> response = restTemplate.exchange(
+                properties.getUrl() + "/graphql",
                 HttpMethod.POST,
                 new HttpEntity<>(body, headers),
-                OppfolgingsenhetGraphqlRespons.class
+                KontorTilhorighetGraphqlRespons.class
         );
 
-        OppfolgingsenhetGraphqlRespons respons = response.getBody();
+        KontorTilhorighetGraphqlRespons respons = response.getBody();
         if (respons == null) {
             return Optional.empty();
         }
         if (respons.harFeil()) {
-            teamLogs.error("GraphQL-feil fra veilarboppfolging ved henting av oppfølgingsenhet: {}", respons.errors());
+            teamLogs.error("GraphQL-feil fra ao-oppfolgingskontor ved henting av kontortilhørighet: {}", respons.errors());
             throw new IllegalStateException(
-                "GraphQL-feil fra veilarboppfolging ved henting av oppfølgingsenhet (" + respons.errors().size() + " feil)"
+                "GraphQL-feil fra ao-oppfolgingskontor ved henting av kontortilhørighet (" + respons.errors().size() + " feil)"
             );
         }
-        return respons.enhet();
+        return respons.kontor();
     }
 }
