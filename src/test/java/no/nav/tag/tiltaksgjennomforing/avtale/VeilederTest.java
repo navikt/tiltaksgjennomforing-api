@@ -7,9 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2EnhetStatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
@@ -80,6 +78,7 @@ public class VeilederTest {
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
 
@@ -120,6 +119,7 @@ public class VeilederTest {
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
 
@@ -239,6 +239,7 @@ public class VeilederTest {
         // NÅR
         when(veilarbService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
         ));
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
@@ -281,6 +282,7 @@ public class VeilederTest {
         // NÅR
         when(veilarbService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
         ));
         GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn godkjentPaVegneAvDeltakerOgArbeidsgiverGrunn = TestData.enGodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn();
@@ -324,6 +326,7 @@ public class VeilederTest {
         // NÅR
         when(veilarbService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
         ));
         GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneAvArbeidsgiverGrunn();
@@ -402,6 +405,7 @@ public class VeilederTest {
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
 
@@ -469,6 +473,7 @@ public class VeilederTest {
         )).thenReturn(new Tilgang.Tillat());
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
@@ -544,6 +549,7 @@ public class VeilederTest {
         )).thenReturn(new Tilgang.Tillat());
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
         arbeidsgiver.godkjennAvtale(avtale);
@@ -582,6 +588,7 @@ public class VeilederTest {
         when(tilgangskontrollService.hentSkrivetilgang(eq(veileder), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
         when(veilarbServiceMock.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
 
@@ -656,6 +663,7 @@ public class VeilederTest {
         //SKal kunne endre oppfølgningsstatus på endre avtale
         Oppfølgingsstatus nyOppfølgingsstatusSomSkalSettes = new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE
         );
         Mockito.doReturn(nyOppfølgingsstatusSomSkalSettes).when(veilarbService)
@@ -673,14 +681,11 @@ public class VeilederTest {
         String nyEnhet = "1234";
         String nyttEnhetsnavn = "Nytt kontor";
 
-        Norg2Client norg2ClientMock = mock(Norg2Client.class);
-        when(norg2ClientMock.hentOppfølgingsEnhetFraCacheNorg2(nyEnhet))
-            .thenReturn(new Norg2OppfølgingResponse(1234, nyEnhet, nyttEnhetsnavn, Norg2EnhetStatus.AKTIV));
-
         VeilarbService veilarbService = mock(VeilarbService.class);
         when(veilarbService.hentOppfolging(any(Avtale.class)))
             .thenReturn(new Oppfølgingsstatus(
                 nyEnhet,
+                nyttEnhetsnavn,
                 Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
             ));
 
@@ -691,7 +696,7 @@ public class VeilederTest {
             null,
             tilgangskontrollService,
             persondataService,
-            norg2ClientMock,
+            mock(Norg2Client.class),
             Set.of(new NavEnhet("4802", "Trysil")),
             TestData.INGEN_AD_GRUPPER,
             veilarbService,
@@ -704,7 +709,6 @@ public class VeilederTest {
 
         assertThat(avtale.getEnhetOppfolging()).isEqualTo(nyEnhet);
         assertThat(avtale.getEnhetsnavnOppfolging()).isEqualTo(nyttEnhetsnavn);
-        verify(norg2ClientMock).hentOppfølgingsEnhetFraCacheNorg2(nyEnhet);
     }
 
     @Test
@@ -750,6 +754,7 @@ public class VeilederTest {
         when(veilarbService.hentOgSjekkOppfolgingstatus(any())).thenReturn(
             new Oppfølgingsstatus(
                 "0906",
+                "Nav Oslo",
                 Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
             )
         );
@@ -790,6 +795,7 @@ public class VeilederTest {
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(
             new Oppfølgingsstatus(
                 "0906",
+                "Nav Oslo",
                 Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
             )
         );
@@ -861,6 +867,7 @@ public class VeilederTest {
         when(veilarbService.hentOgSjekkOppfolgingstatus(any())).thenReturn(
             new Oppfølgingsstatus(
                 "0906",
+                "Nav Oslo",
                 Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
             )
         );
@@ -887,6 +894,7 @@ public class VeilederTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.UKJENT
         );
         VeilarbService veilarbService = Mockito.spy(new VeilarbService(null, null));
@@ -1083,6 +1091,7 @@ public class VeilederTest {
         arbeidsgiver.godkjennAvtale(avtale);
         Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE
         );
         VeilarbService veilarbService = mock(VeilarbService.class);
@@ -1100,6 +1109,7 @@ public class VeilederTest {
 
         Oppfølgingsstatus annenOppfølgingsstatus = new Oppfølgingsstatus(
             avtale.getEnhetOppfolging(),
+            avtale.getEnhetsnavnOppfolging(),
             Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE
         );
         VeilarbService veilarbService = mock(VeilarbService.class);
@@ -1125,6 +1135,7 @@ public class VeilederTest {
         // SITUASJONSBESTEMT_INNSATS tilsvarer TRENGER_VEILEDNING, altså ingen reell endring
         Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus(
             avtale.getEnhetOppfolging(),
+            avtale.getEnhetsnavnOppfolging(),
             Innsatsgruppe.TRENGER_VEILEDNING
         );
         VeilarbService veilarbService = mock(VeilarbService.class);
@@ -1146,6 +1157,7 @@ public class VeilederTest {
         // LITEN_MULIGHET_TIL_A_JOBBE tilsvarer ikke SITUASJONSBESTEMT_INNSATS
         Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus(
             avtale.getEnhetOppfolging(),
+            avtale.getEnhetsnavnOppfolging(),
             Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
         );
         VeilarbService veilarbService = mock(VeilarbService.class);
@@ -1166,6 +1178,7 @@ public class VeilederTest {
 
         Oppfølgingsstatus nyOppfølgingsstatus = new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
         );
         VeilarbService veilarbService = mock(VeilarbService.class);
@@ -1187,6 +1200,7 @@ public class VeilederTest {
 
         Oppfølgingsstatus nyOppfølgingsstatus = new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         );
         VeilarbService veilarbService = mock(VeilarbService.class);
@@ -1227,6 +1241,7 @@ public class VeilederTest {
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
         return veileder;

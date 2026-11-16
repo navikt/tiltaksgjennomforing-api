@@ -82,6 +82,7 @@ public class AvtalepartTest {
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
 
@@ -115,6 +116,7 @@ public class AvtalepartTest {
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
 
@@ -149,6 +151,7 @@ public class AvtalepartTest {
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
 
@@ -183,6 +186,7 @@ public class AvtalepartTest {
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
 
@@ -254,6 +258,7 @@ public class AvtalepartTest {
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
 
@@ -298,6 +303,7 @@ public class AvtalepartTest {
         when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();

@@ -286,13 +286,13 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     private void leggEnheterVedOpprettelseAvAvtale(Avtale avtale) {
         this.hentOppfolginsenhet(avtale);
         super.hentGeoEnhetFraNorg2(avtale, norg2Client, persondataService);
-        super.hentOppfølgingsenhetNavnFraNorg2(avtale, norg2Client);
     }
 
     private void hentOppfolginsenhet(Avtale avtale) {
         try {
             Oppfølgingsstatus status = veilarbService.hentOppfolging(avtale);
             avtale.setEnhetOppfolging(status.getOppfolgingsenhet());
+            avtale.setEnhetsnavnOppfolging(status.getOppfolgingsenhetNavn());
         } catch (FeilkodeException e) {
             if (e.getFeilkode() == Feilkode.FANT_IKKE_INNSATSBEHOV ||
                 e.getFeilkode() == Feilkode.HENTING_AV_INNSATSBEHOV_FEILET ||

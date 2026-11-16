@@ -353,6 +353,7 @@ public class AvtaleControllerTest {
                 .thenReturn(
                         new Oppfølgingsstatus(
                                 "0906",
+                                "Nav Oslo",
                                 Innsatsgruppe.TRENGER_VEILEDNING
                         )
                 );
@@ -617,6 +618,7 @@ public class AvtaleControllerTest {
         when(veilarbService.hentOgSjekkOppfolgingstatus(any()))
             .thenReturn(new Oppfølgingsstatus(
                 "0906",
+                "Nav Oslo",
                 Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
             ));
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));

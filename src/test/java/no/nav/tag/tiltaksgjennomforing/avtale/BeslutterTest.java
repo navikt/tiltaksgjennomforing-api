@@ -71,6 +71,7 @@ class BeslutterTest {
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
 

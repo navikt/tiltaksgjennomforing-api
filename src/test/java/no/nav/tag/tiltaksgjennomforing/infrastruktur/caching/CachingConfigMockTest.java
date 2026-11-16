@@ -78,10 +78,12 @@ public class CachingConfigMockTest {
     );
     private final Oppfølgingsstatus FØRSTE_OPPFØLGNING_ENHET_ARENA = new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
     );
     private final Oppfølgingsstatus ANDRE_OPPFØLGNING_ENHET_ARENA = new Oppfølgingsstatus(
             "0904",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
     );
 

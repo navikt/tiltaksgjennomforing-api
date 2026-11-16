@@ -357,10 +357,8 @@ public class AdminController {
                         oppfølgingsstatus.getOppfolgingsenhet()
                     );
                     avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
+                    avtale.setEnhetsnavnOppfolging(oppfølgingsstatus.getOppfolgingsenhetNavn());
                 });
-
-            Optional.ofNullable(norg2Client.hentOppfølgingsEnhet(avtale.getEnhetOppfolging()))
-                .ifPresent(enhet -> avtale.setEnhetsnavnOppfolging(enhet.getNavn()));
         });
 
         avtaleRepository.saveAll(avtaler);

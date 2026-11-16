@@ -5,5 +5,6 @@ import lombok.Value;
 @Value
 public class Oppfølgingsstatus {
     String oppfolgingsenhet;
+    String oppfolgingsenhetNavn;
     Innsatsgruppe innsatsgruppe;
 }

@@ -1787,6 +1787,7 @@ public class AvtaleTest {
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
 
@@ -1832,6 +1833,7 @@ public class AvtaleTest {
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
 
@@ -1893,6 +1895,7 @@ public class AvtaleTest {
         when(eregService.hentVirksomhet(any())).thenReturn(new Organisasjon(TestData.etBedriftNr(), "Arbeidsplass AS"));
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
 

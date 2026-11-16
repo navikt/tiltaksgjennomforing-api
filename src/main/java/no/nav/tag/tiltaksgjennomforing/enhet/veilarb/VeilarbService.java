@@ -56,7 +56,7 @@ public class VeilarbService {
         Gjeldende14aVedtakRespons vedtak = hentInnsatsgruppe(fnr);
         Oppfolgingskontor oppfolgingskontor = hentOppfolgingskontor(fnr);
 
-        return new Oppfølgingsstatus(oppfolgingskontor.kontorId(), vedtak.innsatsgruppe());
+        return new Oppfølgingsstatus(oppfolgingskontor.kontorId(), oppfolgingskontor.kontorNavn(), vedtak.innsatsgruppe());
     }
 
     private Gjeldende14aVedtakRespons hentInnsatsgruppe(Fnr fnr) {

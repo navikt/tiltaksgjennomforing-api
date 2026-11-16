@@ -1059,7 +1059,7 @@ public class TestData {
         Innsatsgruppe innsatsgruppe = avtale.getInnsatsgruppe() != null
             ? avtale.getInnsatsgruppe()
             : Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE;
-        return new Oppfølgingsstatus("0906", innsatsgruppe);
+        return new Oppfølgingsstatus("0906", "Nav Oslo", innsatsgruppe);
     }
 
     public static Beslutter enBeslutter(Avtale avtale) {
@@ -1088,6 +1088,7 @@ public class TestData {
         when(featureToggleService.harEnhetTilgangPaTiltak(any(), any())).thenReturn(true);
         when(veilarbService.hentOgSjekkOppfolgingstatus(any())).thenReturn(new Oppfølgingsstatus(
             "0000",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE
         ));
         return beslutter;
@@ -1184,12 +1185,14 @@ public class TestData {
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(
             new Oppfølgingsstatus(
                 "0906",
+                "Nav Oslo",
                 Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
             )
         );
         when(veilarbService.hentOppfolging(any(Avtale.class))).thenReturn(
             new Oppfølgingsstatus(
                 "0906",
+                "Nav Oslo",
                 Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE
             )
         );

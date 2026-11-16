@@ -208,6 +208,7 @@ public class MentorTest {
         )).thenReturn(new Tilgang.Tillat());
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
 
@@ -245,6 +246,7 @@ public class MentorTest {
         )).thenReturn(new Tilgang.Tillat());
         when(veilarbService.hentOgSjekkOppfolgingstatus(any(Avtale.class))).thenReturn(new Oppfølgingsstatus(
             "0906",
+            "Nav Oslo",
             Innsatsgruppe.TRENGER_VEILEDNING
         ));
 

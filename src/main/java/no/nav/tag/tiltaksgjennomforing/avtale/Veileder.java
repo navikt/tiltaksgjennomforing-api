@@ -10,7 +10,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
@@ -312,15 +311,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     private void leggTilEnheter(Avtale avtale) {
         super.hentGeoEnhetFraNorg2(avtale, norg2Client, persondataService);
         this.hentOppfølging(avtale, veilarbService);
-        this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
-    }
-
-    public void hentOppfolgingEnhetsnavnFraNorg2(Avtale avtale, Norg2Client norg2Client) {
-        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetFraCacheNorg2(avtale.getEnhetOppfolging());
-        if (response == null) {
-            return;
-        }
-        avtale.setEnhetsnavnOppfolging(response.getNavn());
     }
 
     void hentOppfølging(
@@ -385,7 +375,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         String oppfolgingsenhet = oppfølgingsstatus.getOppfolgingsenhet();
         if (!oppfolgingsenhet.equals(avtale.getEnhetOppfolging())) {
             avtale.setEnhetOppfolging(oppfolgingsenhet);
-            hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
+            avtale.setEnhetsnavnOppfolging(oppfølgingsstatus.getOppfolgingsenhetNavn());
         }
         avtale.setInnsatsgruppe(oppfølgingsstatus.getInnsatsgruppe());
     }
@@ -424,7 +414,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         // Oppfølgingsenhet
         Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOppfolging(avtale);
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
-        this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
+        avtale.setEnhetsnavnOppfolging(oppfølgingsstatus.getOppfolgingsenhetNavn());
     }
 
     public void oppdaterInnsatsgruppeEtterForesporsel(Avtale avtale) {

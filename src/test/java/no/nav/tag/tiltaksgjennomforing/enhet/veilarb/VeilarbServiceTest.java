@@ -56,6 +56,7 @@ class VeilarbServiceTest {
 
         Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
         assertThat(oppfølgingsstatus.getOppfolgingsenhet()).isEqualTo(("0906"));
+        assertThat(oppfølgingsstatus.getOppfolgingsenhetNavn()).isEqualTo("NAV Test");
     }
 
     @Test
