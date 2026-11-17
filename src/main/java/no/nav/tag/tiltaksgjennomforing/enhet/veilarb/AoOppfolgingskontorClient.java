@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.enhet.veilarb;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
 import no.nav.tag.tiltaksgjennomforing.logging.TeamLogs;
+import no.nav.tag.tiltaksgjennomforing.utils.GraphqlUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -21,15 +22,7 @@ import java.util.Optional;
 class AoOppfolgingskontorClient {
     private static final TeamLogs teamLogs = TeamLogs.getLogger(log);
 
-    private static final String KONTOR_TILHORIGHET_QUERY = """
-        query($ident: String!) {
-            kontorTilhorighet(ident: $ident) {
-                kontorId
-                kontorNavn
-                kontorType
-            }
-        }
-        """;
+    private static final String KONTOR_TILHORIGHET_QUERY = GraphqlUtils.lesQuery("graphql/kontorTilhorighet.graphql");
 
     private final RestTemplate restTemplate;
     private final AoOppfolgingskontorProperties properties;
@@ -50,7 +43,6 @@ class AoOppfolgingskontorClient {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
-        headers.set("Nav-Consumer-Id", "tiltaksgjennomforing-api");
 
         GraphqlRequest body = new GraphqlRequest(KONTOR_TILHORIGHET_QUERY, Map.of("ident", request.fnr()));
 

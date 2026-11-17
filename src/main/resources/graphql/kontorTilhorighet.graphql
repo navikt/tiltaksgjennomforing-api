@@ -1,0 +1,7 @@
+query($ident: String!) {
+    kontorTilhorighet(ident: $ident) {
+        kontorId
+        kontorNavn
+        kontorType
+    }
+}
