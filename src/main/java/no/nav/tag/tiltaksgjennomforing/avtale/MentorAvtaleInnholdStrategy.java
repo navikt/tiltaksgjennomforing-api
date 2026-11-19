@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.bekk.bekkopen.banking.KidnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold.Fields;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MentorBeregningStrategy;
@@ -20,7 +21,7 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
     }
 
     @Override
-    public void endre(EndreAvtale nyAvtale) {
+    public void endre(EndreAvtaleDTO nyAvtale) {
 
         avtaleInnhold.setMentorFornavn(nyAvtale.getMentorFornavn());
         avtaleInnhold.setMentorEtternavn(nyAvtale.getMentorEtternavn());

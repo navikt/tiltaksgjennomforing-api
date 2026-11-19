@@ -9,6 +9,8 @@ import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleInnholdDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreInkluderingstilskuddDTO;
 import no.nav.tag.tiltaksgjennomforing.pdfgen.PdfgenService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -26,7 +28,6 @@ import no.nav.tag.tiltaksgjennomforing.persondata.aktsomhet.Aktsomhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.aktsomhet.AktsomhetService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,7 +39,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -295,7 +295,7 @@ public class AvtaleController {
     @Transactional
     public ResponseEntity<?> endreAvtale(
             @PathVariable("avtaleId") UUID avtaleId,
-            @RequestBody EndreAvtale endreAvtale,
+            @RequestBody EndreAvtaleDTO endreAvtale,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret
     ) {
@@ -313,7 +313,7 @@ public class AvtaleController {
     @PutMapping("/{avtaleId}/dry-run")
     public AvtaleDTO endreAvtaleDryRun(
             @PathVariable("avtaleId") UUID avtaleId,
-            @RequestBody EndreAvtale endreAvtale,
+            @RequestBody EndreAvtaleDTO endreAvtale,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
@@ -582,7 +582,7 @@ public class AvtaleController {
     @Transactional
     public void endreInkluderingstilskudd(
             @PathVariable("avtaleId") UUID avtaleId,
-            @RequestBody EndreInkluderingstilskudd endreInkluderingstilskudd,
+            @RequestBody EndreInkluderingstilskuddDTO endreInkluderingstilskudd,
             @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret
     ) {
         Veileder veileder = innloggingService.hentVeileder();

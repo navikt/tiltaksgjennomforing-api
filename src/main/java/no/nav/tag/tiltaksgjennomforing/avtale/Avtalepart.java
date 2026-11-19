@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -154,14 +155,14 @@ public abstract class Avtalepart<T extends Identifikator> {
     }
 
     public void endreAvtale(
-        EndreAvtale endreAvtale,
+        EndreAvtaleDTO endreAvtale,
         Avtale avtale
     ) {
         endreAvtale(endreAvtale, avtale, () -> {});
     }
 
     public void endreAvtale(
-            EndreAvtale endreAvtale,
+            EndreAvtaleDTO endreAvtale,
             Avtale avtale,
             Runnable kjorForEndring
     ) {

@@ -1,10 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.InkluderingstilskuddsutgiftDTO;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -25,14 +28,15 @@ public class InkluderingstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnhold
     }
 
     @Override
-    public void endre(EndreAvtale nyAvtale) {
-        sjekkTotalBeløp(nyAvtale);
+    public void endre(EndreAvtaleDTO nyAvtale) {
+        List<Inkluderingstilskuddsutgift> utgifter = nyAvtale.getInkluderingstilskuddsutgift().stream().map(Inkluderingstilskuddsutgift::new).toList();
+        sjekkTotalBeløp(nyAvtale.getSluttDato(), utgifter);
 
         Set<UUID> gjeldendeUtgifter = avtaleInnhold.getInkluderingstilskuddsutgift().stream()
             .map(Inkluderingstilskuddsutgift::getId)
             .collect(Collectors.toSet());
         Set<UUID> nyeUtgifter = nyAvtale.getInkluderingstilskuddsutgift().stream()
-            .map(Inkluderingstilskuddsutgift::getId)
+            .map(InkluderingstilskuddsutgiftDTO::id)
             .filter(Objects::nonNull)
             .collect(Collectors.toSet());
 
@@ -42,8 +46,7 @@ public class InkluderingstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnhold
 
         avtaleInnhold.getInkluderingstilskuddsutgift().forEach(utgift -> utgift.setTilskuddperiode(null));
         avtaleInnhold.getInkluderingstilskuddsutgift().clear();
-
-        avtaleInnhold.getInkluderingstilskuddsutgift().addAll(nyAvtale.getInkluderingstilskuddsutgift());
+        avtaleInnhold.getInkluderingstilskuddsutgift().addAll(utgifter);
         avtaleInnhold.getInkluderingstilskuddsutgift().forEach(utgift -> utgift.setAvtaleInnhold(avtaleInnhold));
         avtaleInnhold.setInkluderingstilskuddBegrunnelse(nyAvtale.getInkluderingstilskuddBegrunnelse());
         avtaleInnhold.setHarFamilietilknytning(nyAvtale.getHarFamilietilknytning());
@@ -70,9 +73,9 @@ public class InkluderingstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnhold
      * Sjekker at summen av alle inkluderingstilskuddsbeløp ikke overstiger 143 900.
      * Beløpet er bestemt her: https://www.nav.no/arbeidsgiver/inkluderingstilskudd#hva
      */
-    private void sjekkTotalBeløp(EndreAvtale avtale) {
-        Integer sum = avtale.getInkluderingstilskuddsutgift().stream().map(Inkluderingstilskuddsutgift::getBeløp).reduce(0, Integer::sum);
-        if (sum > getInkluderingstilskuddSats(avtale.getSluttDato())) {
+    private static void sjekkTotalBeløp(LocalDate sluttdato, List<Inkluderingstilskuddsutgift> utgifter) {
+        Integer sum = utgifter.stream().map(Inkluderingstilskuddsutgift::getBeløp).reduce(0, Integer::sum);
+        if (sum > getInkluderingstilskuddSats(sluttdato)) {
             throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_SUM_FOR_HØY);
         }
     }

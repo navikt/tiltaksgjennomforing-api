@@ -35,10 +35,11 @@ public abstract class GenerellLonnstilskuddAvtaleBeregningStrategy extends Bereg
             return Collections.emptyList();
         }
 
-        List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioderForAvtale(
+        List<TilskuddPeriode> tilskuddsperioder = lagTilskuddsperioder(Periode.av(
             gjeldendeInnhold.getStartDato(),
             gjeldendeInnhold.getSluttDato()
-        );
+        ));
+
         if (avtale.getArenaRyddeAvtale() != null) {
             LocalDate standardMigreringsdato = LocalDate.of(2023, 2, 1);
             LocalDate migreringsdato = avtale.getArenaRyddeAvtale().getMigreringsdato() != null
@@ -100,21 +101,9 @@ public abstract class GenerellLonnstilskuddAvtaleBeregningStrategy extends Bereg
     }
 
     @Override
-    public List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(
-        LocalDate datoFraOgMed,
-        LocalDate datoTilOgMed
-    ) {
-        List<Periode> reduksjonsperioder = Periode.av(datoFraOgMed, datoTilOgMed)
-            .split(getDatoerForReduksjon(avtale.getGjeldendeInnhold()));
-
-        return reduksjonsperioder
-            .stream()
-            .flatMap(p -> p.splitPerMnd()
-                .stream()
-                .map(datoPar -> lagTilskuddsperiode(avtale, datoPar))
-            )
-            .toList();
-
+    public List<TilskuddPeriode> genererTilskuddsperioder(GenererTilskuddsperioder periode) {
+        GenererTilskuddsperioder.Dato dato = GenererTilskuddsperioder.konverterTilDatoer(periode);
+        return lagTilskuddsperioder(dato.periode());
     }
 
     @Override
@@ -180,7 +169,20 @@ public abstract class GenerellLonnstilskuddAvtaleBeregningStrategy extends Bereg
             .toList();
     }
 
-    TilskuddPeriode lagTilskuddsperiode(Avtale avtale, Periode periode) {
+    List<TilskuddPeriode> lagTilskuddsperioder(Periode periode) {
+        List<Periode> reduksjonsperioder = periode
+            .split(getDatoerForReduksjon(avtale.getGjeldendeInnhold()));
+
+        return reduksjonsperioder
+            .stream()
+            .flatMap(p -> p.splitPerMnd()
+                .stream()
+                .map(datoPar -> lagTilskuddsperioder(avtale, datoPar))
+            )
+            .toList();
+    }
+
+    TilskuddPeriode lagTilskuddsperioder(Avtale avtale, Periode periode) {
         Integer prosent = getProsentForPeriode(avtale.getGjeldendeInnhold(), periode);
         Integer beløp = getBeløpForPeriode(avtale.getGjeldendeInnhold(), prosent, periode);
         TilskuddPeriode tilskuddsperiode = new TilskuddPeriode(

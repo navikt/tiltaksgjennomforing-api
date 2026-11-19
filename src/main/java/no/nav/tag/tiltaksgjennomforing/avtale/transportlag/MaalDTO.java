@@ -4,6 +4,7 @@ import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
 import no.nav.tag.tiltaksgjennomforing.avtale.MaalKategori;
+import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,14 +13,18 @@ import java.util.UUID;
 public record MaalDTO(
     UUID id,
     MaalKategori kategori,
-    String beskrivelse) {
-
+    String beskrivelse
+) {
     public MaalDTO(Maal dbEntitet) {
         this(
             dbEntitet.getId(),
             dbEntitet.getKategori(),
             dbEntitet.getBeskrivelse()
         );
+    }
+
+    public void sjekkMaalLengde() {
+        Utils.sjekkAtTekstIkkeOverskrider1000Tegn(this.beskrivelse(), "Maks lengde for mål er 1000 tegn");
     }
 
     public static List<MaalDTO> map(AvtaleInnhold dbEntity) {

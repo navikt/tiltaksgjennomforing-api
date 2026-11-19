@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.VarigLonnstilskuddAvtaleBeregningStrategy;
 
@@ -21,7 +22,7 @@ public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtale
     }
 
     @Override
-    public void endre(EndreAvtale endreAvtale) {
+    public void endre(EndreAvtaleDTO endreAvtale) {
         Integer lonnstilskuddProsent = endreAvtale.getLonnstilskuddProsent();
 
         if (!erTilskuddsprosentGyldig(lonnstilskuddProsent)) {

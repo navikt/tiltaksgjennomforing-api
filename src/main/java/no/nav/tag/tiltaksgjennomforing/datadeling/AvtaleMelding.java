@@ -10,8 +10,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneAvArbeidsgiverGrunn
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
-import no.nav.tag.tiltaksgjennomforing.avtale.Inkluderingstilskuddsutgift;
-import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
@@ -108,10 +106,10 @@ public class AvtaleMelding {
     Integer manedslonn100pst;
     Stillingstype stillingstype;
 
-    List<Maal> maal = new ArrayList<>();
+    List<AvtaleMeldingMaal> maal = new ArrayList<>();
 
     // Inkluderingstilskudd
-    List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift = new ArrayList<>();
+    List<AvtaleMeldingInkluderingstilskuddsutgift> inkluderingstilskuddsutgift = new ArrayList<>();
     String inkluderingstilskuddBegrunnelse;
     Integer inkluderingstilskuddTotalBeløp;
 
@@ -234,8 +232,8 @@ public class AvtaleMelding {
 
         //Lister
         avtaleMelding.setTilskuddPeriode(Collections.emptySortedSet());
-        avtaleMelding.setMaal(avtaleInnhold.getMaal());
-        avtaleMelding.setInkluderingstilskuddsutgift(avtaleInnhold.getInkluderingstilskuddsutgift());
+        avtaleMelding.setMaal(AvtaleMeldingMaal.map(avtaleInnhold.getMaal()));
+        avtaleMelding.setInkluderingstilskuddsutgift(AvtaleMeldingInkluderingstilskuddsutgift.map(avtaleInnhold.getInkluderingstilskuddsutgift()));
 
         return avtaleMelding;
     }

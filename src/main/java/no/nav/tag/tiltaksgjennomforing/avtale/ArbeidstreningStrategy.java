@@ -1,5 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.MaalDTO;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,10 +13,10 @@ public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
     }
 
     @Override
-    public void endre(EndreAvtale nyAvtale) {
-        nyAvtale.getMaal().forEach(Maal::sjekkMaalLengde);
+    public void endre(EndreAvtaleDTO nyAvtale) {
+        nyAvtale.getMaal().forEach(MaalDTO::sjekkMaalLengde);
         avtaleInnhold.getMaal().clear();
-        avtaleInnhold.getMaal().addAll(nyAvtale.getMaal());
+        avtaleInnhold.getMaal().addAll(Maal.map(nyAvtale.getMaal()));
         avtaleInnhold.getMaal().forEach(m -> m.setAvtaleInnhold(avtaleInnhold));
         avtaleInnhold.setStillingstittel(nyAvtale.getStillingstittel());
         avtaleInnhold.setStillingStyrk08(nyAvtale.getStillingStyrk08());
