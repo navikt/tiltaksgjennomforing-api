@@ -6,7 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.oppfolging.OppfølgingVarsleJobb;
@@ -76,7 +76,7 @@ public class DevController {
     @PutMapping("/avtale/{avtaleNr}/familierelasjon")
     void familierelasjon(@PathVariable("avtaleNr") Integer avtaleNr) {
         Avtale avtale = avtaleRepository.findByAvtaleNr(avtaleNr).orElseThrow();
-        EndreAvtale endring = EndreAvtale.fraAvtale(avtale);
+        EndreAvtaleDTO endring = EndreAvtaleDTO.fraAvtale(avtale);
         endring.setFamilietilknytningForklaring(null);
         endring.setHarFamilietilknytning(false);
         avtale.endreAvtale(

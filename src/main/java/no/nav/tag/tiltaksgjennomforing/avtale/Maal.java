@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -11,8 +10,9 @@ import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
-import no.nav.tag.tiltaksgjennomforing.utils.Utils;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.MaalDTO;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -27,7 +27,6 @@ public class Maal {
     private String beskrivelse;
     @ManyToOne
     @JoinColumn(name = "avtale_innhold")
-    @JsonIgnore
     @ToString.Exclude
     private AvtaleInnhold avtaleInnhold;
 
@@ -38,8 +37,13 @@ public class Maal {
         beskrivelse = fra.beskrivelse;
     }
 
+    public Maal(MaalDTO dto) {
+        id = dto.id();
+        kategori = dto.kategori();
+        beskrivelse = dto.beskrivelse();
+    }
 
-    public void sjekkMaalLengde() {
-        Utils.sjekkAtTekstIkkeOverskrider1000Tegn(this.getBeskrivelse(), "Maks lengde for mål er 1000 tegn");
+    public static List<Maal> map(List<MaalDTO> dto) {
+        return dto.stream().map(Maal::new).toList();
     }
 }

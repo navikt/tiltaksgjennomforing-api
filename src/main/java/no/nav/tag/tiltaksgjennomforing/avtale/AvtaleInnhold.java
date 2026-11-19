@@ -20,6 +20,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -204,7 +205,7 @@ public class AvtaleInnhold {
         return inkluderingstilskuddsutgift.stream().map(Inkluderingstilskuddsutgift::new).collect(Collectors.toList());
     }
 
-    void endreAvtale(EndreAvtale nyAvtale) {
+    void endreAvtale(EndreAvtaleDTO nyAvtale) {
         innholdStrategi().endre(nyAvtale);
     }
 

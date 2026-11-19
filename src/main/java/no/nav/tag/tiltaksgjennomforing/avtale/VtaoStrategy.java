@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.bekk.bekkopen.banking.KidnummerValidator;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
@@ -13,7 +14,7 @@ public class VtaoStrategy extends BaseAvtaleInnholdStrategy {
     }
 
     @Override
-    public void endre(EndreAvtale nyAvtale) {
+    public void endre(EndreAvtaleDTO nyAvtale) {
         if (nyAvtale.getArbeidsgiverKid() != null && !KidnummerValidator.isValid(nyAvtale.getArbeidsgiverKid())) {
             throw new FeilkodeException(Feilkode.FEIL_KID_NUMMER);
         }

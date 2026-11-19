@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.bekk.bekkopen.banking.KidnummerValidator;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
@@ -22,7 +23,7 @@ public class LonnstilskuddAvtaleInnholdStrategy<T extends GenerellLonnstilskuddA
     }
 
     @Override
-    public void endre(EndreAvtale nyAvtale) {
+    public void endre(EndreAvtaleDTO nyAvtale) {
         if (nyAvtale.getOtpSats() != null && (nyAvtale.getOtpSats() > MAX_OTP_SATS || nyAvtale.getOtpSats() < MIN_OTP_SATS)) {
             throw new FeilkodeException(Feilkode.FEIL_OTP_SATS);
         }

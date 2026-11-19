@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,7 @@ class BeregningLonnstilskuddTest {
     @Test
     public void test_regn_ut_sumLonntilskudd_til_0_nar_lonnstilskudd_prosent_er_null() {
         // GIVEN
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreAvtale.setManedslonn(20000);
         endreAvtale.setFeriepengesats(new BigDecimal(0.102));
         endreAvtale.setArbeidsgiveravgift(new BigDecimal(0.064));
@@ -41,7 +42,7 @@ class BeregningLonnstilskuddTest {
     @Test
     public void test_regn_ut_sumLonntilskudd_nå_rotp_ikke_er_satt() {
         // GIVEN
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreAvtale.setManedslonn(20000);
         endreAvtale.setLonnstilskuddProsent(60);
         endreAvtale.setOtpSats(0.02);
@@ -58,7 +59,7 @@ class BeregningLonnstilskuddTest {
     @Test
     public void test_regn_ut_sumUtgifter() {
         // GIVEN
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreAvtale.setStillingprosent(BigDecimal.valueOf(40.0));
         endreAvtale.setManedslonn(16666);
         endreAvtale.setFeriepengesats(new BigDecimal(0.102));
@@ -75,7 +76,7 @@ class BeregningLonnstilskuddTest {
     @Test
     public void test_regn_ut_sumLonntilskudd() {
         // GIVEN
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreAvtale.setManedslonn(20000);
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setLonnstilskuddProsent(60);
@@ -92,7 +93,7 @@ class BeregningLonnstilskuddTest {
     @Test
     public void test_regn_ut_arbeidsgiveravgiftbelop() {
         // GIVEN
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreAvtale.setManedslonn(20000);
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setFeriepengesats(new BigDecimal(0.12));
@@ -108,7 +109,7 @@ class BeregningLonnstilskuddTest {
     @Test
     public void test_regn_ut_oblig_tjenstepensjon() {
         // GIVEN
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreAvtale.setManedslonn(20000);
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setFeriepengesats(new BigDecimal(0.12));
@@ -123,7 +124,7 @@ class BeregningLonnstilskuddTest {
     @Test
     public void test_regn_ut_oblig_tjenstepensjon_til_null_om_Feriepengersats_er_null() {
         // GIVEN
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
+        EndreAvtaleDTO endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setFeriepengesats(null);
 
         // WHEN
@@ -137,7 +138,7 @@ class BeregningLonnstilskuddTest {
     @Test
     public void test_regn_ut_oblig_tjenstepensjon_til_null_om_manedslonn_er_null() {
         // GIVEN
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
+        EndreAvtaleDTO endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setManedslonn(null);
 
         // WHEN
@@ -151,7 +152,7 @@ class BeregningLonnstilskuddTest {
     @Test
     public void test_regn_ut_feriepenger_belop() {
         // GIVEN
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreAvtale.setManedslonn(20000);
         endreAvtale.setFeriepengesats(new BigDecimal(0.12));
 
@@ -165,7 +166,7 @@ class BeregningLonnstilskuddTest {
     @Test
     public void test_regn_ut_lonn_ved_100_prosent() {
         // GIVEN
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreAvtale.setStillingprosent(BigDecimal.valueOf(50.0));
         endreAvtale.setManedslonn(10000);
         endreAvtale.setOtpSats(0.02);

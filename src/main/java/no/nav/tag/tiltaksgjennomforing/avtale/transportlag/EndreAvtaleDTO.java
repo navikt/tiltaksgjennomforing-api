@@ -1,8 +1,13 @@
-package no.nav.tag.tiltaksgjennomforing.avtale;
+package no.nav.tag.tiltaksgjennomforing.avtale.transportlag;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.LonnstilskuddFormaal;
+import no.nav.tag.tiltaksgjennomforing.avtale.MentorValgtLonnstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
+import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,7 +19,7 @@ import static java.util.Optional.ofNullable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EndreAvtale {
+public class EndreAvtaleDTO {
 
     private String deltakerFornavn;
     private String deltakerEtternavn;
@@ -45,10 +50,10 @@ public class EndreAvtale {
     private Boolean ønskerVarslingOmRefusjon;
 
     // Arbeidstreningsfelter
-    private List<Maal> maal = new ArrayList<>();
+    private List<MaalDTO> maal = new ArrayList<>();
 
     // Inkluderingstilskuddsfelter
-    private List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift = new ArrayList<>();
+    private List<InkluderingstilskuddsutgiftDTO> inkluderingstilskuddsutgift = new ArrayList<>();
     private String inkluderingstilskuddBegrunnelse;
 
     // Lønnstilskuddsfelter
@@ -93,10 +98,10 @@ public class EndreAvtale {
         this.ønskerVarslingOmRefusjon = refusjonKontaktperson.getØnskerVarslingOmRefusjon();
     }
 
-    public static EndreAvtale fraAvtale(Avtale avtale) {
+    public static EndreAvtaleDTO fraAvtale(Avtale avtale) {
         var innhold = avtale.getGjeldendeInnhold();
         var refusjonKontakt = ofNullable(innhold.getRefusjonKontaktperson());
-        return new EndreAvtale(
+        return new EndreAvtaleDTO(
                 innhold.getDeltakerFornavn(),
                 innhold.getDeltakerEtternavn(),
                 innhold.getDeltakerTlf(),
@@ -121,8 +126,8 @@ public class EndreAvtale {
                 refusjonKontakt.map(RefusjonKontaktperson::getRefusjonKontaktpersonEtternavn).orElse(null),
                 refusjonKontakt.map(RefusjonKontaktperson::getRefusjonKontaktpersonTlf).orElse(null),
                 refusjonKontakt.map(RefusjonKontaktperson::getØnskerVarslingOmRefusjon).orElse(null),
-                innhold.getMaal(),
-                innhold.getInkluderingstilskuddsutgift(),
+                MaalDTO.map(innhold.getMaal()),
+                InkluderingstilskuddsutgiftDTO.map(innhold.getInkluderingstilskuddsutgift()),
                 innhold.getInkluderingstilskuddBegrunnelse(),
                 innhold.getArbeidsgiverKontonummer(),
                 innhold.getArbeidsgiverKid(),

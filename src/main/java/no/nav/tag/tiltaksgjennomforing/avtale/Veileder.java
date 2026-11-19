@@ -7,6 +7,8 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreInkluderingstilskuddDTO;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
@@ -14,7 +16,6 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.InnsatsgruppeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Kode6SperretForOpprettelseOgEndringException;
@@ -251,7 +252,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     public void endreAvtale(
-        EndreAvtale endreAvtale,
+        EndreAvtaleDTO endreAvtale,
         Avtale avtale
     ) {
         super.endreAvtale(
@@ -385,7 +386,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.endreMål(endreMål, getIdentifikator());
     }
 
-    public void endreInkluderingstilskudd(EndreInkluderingstilskudd endreInkluderingstilskudd, Avtale avtale) {
+    public void endreInkluderingstilskudd(EndreInkluderingstilskuddDTO endreInkluderingstilskudd, Avtale avtale) {
         super.sjekkTilgang(avtale);
         avtale.endreInkluderingstilskudd(endreInkluderingstilskudd, getIdentifikator());
     }

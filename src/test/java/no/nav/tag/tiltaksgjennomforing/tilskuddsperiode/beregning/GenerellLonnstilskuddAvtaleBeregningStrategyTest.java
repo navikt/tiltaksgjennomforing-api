@@ -61,7 +61,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
         Avtale avtale = lagAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         var strategy = createStrategy(avtale);
 
-        List<TilskuddPeriode> perioder = strategy.beregnTilskuddsperioderForAvtale(fra, til);
+        List<TilskuddPeriode> perioder = strategy.genererTilskuddsperioder(GenererTilskuddsperioder.fra(fra, til));
 
         assertThat(perioder).hasSize(1);
         assertThat(perioder.get(0).getLonnstilskuddProsent()).isEqualTo(PROSENT);
@@ -76,7 +76,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
         Avtale avtale = lagAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         var strategy = createStrategy(avtale);
 
-        List<TilskuddPeriode> perioder = strategy.beregnTilskuddsperioderForAvtale(fra, til);
+        List<TilskuddPeriode> perioder = strategy.genererTilskuddsperioder(GenererTilskuddsperioder.fra(fra, til));
 
         assertThat(perioder).hasSize(3);
         assertThat(perioder).allMatch(p -> p.getLonnstilskuddProsent() == PROSENT);
@@ -90,7 +90,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
         Avtale avtale = lagAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         var strategy = createStrategy(avtale);
 
-        List<TilskuddPeriode> perioder = strategy.beregnTilskuddsperioderForAvtale(fra, til);
+        List<TilskuddPeriode> perioder = strategy.genererTilskuddsperioder(GenererTilskuddsperioder.fra(fra, til));
 
         assertThat(perioder).hasSize(1);
         assertThat(perioder.get(0).getBeløp()).isLessThan(SUM_LONNSTILSKUDD_PER_MANED);
@@ -108,7 +108,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
         Avtale avtale = lagAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         var strategy = createStrategy(avtale);
 
-        List<TilskuddPeriode> perioder = strategy.beregnTilskuddsperioderForAvtale(fra, til);
+        List<TilskuddPeriode> perioder = strategy.genererTilskuddsperioder(GenererTilskuddsperioder.fra(fra, til));
 
         assertThat(perioder).hasSize(2);
         int redusertProsent = strategy.getProsentForPeriode(avtale.getGjeldendeInnhold(), Periode.av(datoForRedusertProsent, til));
@@ -128,7 +128,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
         Avtale avtale = lagAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         var strategy = createStrategy(avtale);
 
-        List<TilskuddPeriode> perioder = strategy.beregnTilskuddsperioderForAvtale(fra, til);
+        List<TilskuddPeriode> perioder = strategy.genererTilskuddsperioder(GenererTilskuddsperioder.fra(fra, til));
 
         // Jan + Feb → full prosent; Mar + Apr → redusert prosent
         assertThat(perioder).hasSize(4);
@@ -158,7 +158,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
         Avtale avtale = lagAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         var strategy = createStrategy(avtale);
 
-        List<TilskuddPeriode> perioder = strategy.beregnTilskuddsperioderForAvtale(fra, til);
+        List<TilskuddPeriode> perioder = strategy.genererTilskuddsperioder(GenererTilskuddsperioder.fra(fra, til));
 
         int redusertProsent = strategy.getProsentForPeriode(avtale.getGjeldendeInnhold(), Periode.av(datoForRedusertProsent, til));
         assertThat(perioder).allMatch(p -> p.getLonnstilskuddProsent() == redusertProsent);
@@ -172,7 +172,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
         Avtale avtale = lagAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         var strategy = createStrategy(avtale);
 
-        List<TilskuddPeriode> perioder = strategy.beregnTilskuddsperioderForAvtale(fra, til);
+        List<TilskuddPeriode> perioder = strategy.genererTilskuddsperioder(GenererTilskuddsperioder.fra(fra, til));
 
         // Jan 1–31 og Feb 1–28 → full prosent (2 perioder), Feb 29–29 → redusert (1 periode)
         assertThat(perioder).hasSize(3);
@@ -205,7 +205,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
         avtale.getGjeldendeInnhold().setLonnstilskuddProsent(prosent);
         var strategy = createStrategy(avtale);
 
-        List<TilskuddPeriode> perioder = strategy.beregnTilskuddsperioderForAvtale(fra, til);
+        List<TilskuddPeriode> perioder = strategy.genererTilskuddsperioder(GenererTilskuddsperioder.fra(fra, til));
 
         List<TilskuddPeriode> etterReduksjon = perioder.stream()
                 .filter(p -> !p.getStartDato().isBefore(datoForRedusertProsent))
@@ -227,7 +227,7 @@ class GenerellLonnstilskuddAvtaleBeregningStrategyTest {
         Avtale avtale = lagAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         var strategy = createStrategy(avtale);
 
-        List<TilskuddPeriode> tilskuddPerioder = strategy.beregnTilskuddsperioderForAvtale(fra, til);
+        List<TilskuddPeriode> tilskuddPerioder = strategy.genererTilskuddsperioder(GenererTilskuddsperioder.fra(fra, til));
         assertThat(tilskuddPerioder.getFirst().getStartDato()).isEqualTo(fra);
         assertThat(tilskuddPerioder.getLast().getSluttDato()).isEqualTo(til);
     }

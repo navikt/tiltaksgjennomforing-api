@@ -2,9 +2,11 @@ package no.nav.tag.tiltaksgjennomforing.utils;
 
 import lombok.Value;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAmount;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
