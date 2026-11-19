@@ -103,7 +103,7 @@ caches:
     - name: norggeoenhet_cache
       expiryInMinutes: 60
       maximumSize: 1000
-    - name: veilarboppfolging_cache
+    - name: ao_oppfolgingskontor_cache
       expiryInMinutes: 5
       maximumSize: 1000
     - name: veilarbvedtaksstotte_cache

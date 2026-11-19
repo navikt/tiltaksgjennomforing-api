@@ -22,7 +22,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
@@ -331,12 +330,9 @@ public class ArenaAgreementProcessingService {
             agreementAggregate.getTiltakskode().getTiltakstype()
         ).ifPresent((status) -> {
             avtale.setEnhetOppfolging(status.getOppfolgingsenhet());
-            avtale.setKvalifiseringsgruppe(status.getKvalifiseringsgruppe());
-            avtale.setFormidlingsgruppe(status.getFormidlingsgruppe());
+            avtale.setEnhetsnavnOppfolging(status.getOppfolgingsenhetNavn());
             avtale.setInnsatsgruppe(status.getInnsatsgruppe());
         });
-
-        getOppfolgingsenhetnavnFromNorg2(avtale.getEnhetOppfolging()).ifPresent(avtale::setEnhetsnavnOppfolging);
 
         AvtaleInnhold avtaleinnhold = avtale.getGjeldendeInnhold();
         Optional.ofNullable(agreementAggregate.getRegDato())
@@ -401,11 +397,6 @@ public class ArenaAgreementProcessingService {
             );
             return Optional.empty();
         }
-    }
-
-    private Optional<String> getOppfolgingsenhetnavnFromNorg2(String oppfolgingsenhet) {
-        return Optional.ofNullable(oppfolgingsenhet != null ? norg2Client.hentOppfølgingsEnhet(oppfolgingsenhet) : null)
-            .map(Norg2OppfølgingResponse::getNavn);
     }
 
     private void transferAktivitetsplankort(UUID avtaleid, Integer deltakerId) {

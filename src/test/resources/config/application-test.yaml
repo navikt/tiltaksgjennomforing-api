@@ -91,7 +91,7 @@ tiltaksgjennomforing:
     uri: http://localhost:8090/digdir-krr-proxy
   oppgave:
     oppgave-uri: http://localhost:8090/api/v1/oppgave
-  veilarboppfolging:
+  ao-oppfolgingskontor:
     url: http://localhost:8090
   veilarbvedtaksstotte:
     url: http://localhost:8090

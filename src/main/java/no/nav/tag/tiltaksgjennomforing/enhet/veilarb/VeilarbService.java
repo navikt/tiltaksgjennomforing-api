@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
@@ -20,11 +18,11 @@ import java.util.Optional;
 public class VeilarbService {
     private static final TeamLogs teamLogs = TeamLogs.getLogger(log);
 
-    private final VeilarboppfolgingClient veilarboppfolgingClient;
+    private final AoOppfolgingskontorClient aoOppfolgingskontorClient;
     private final VeilarbvedtaksstotteClient veilarbvedtaksstotteClient;
 
-    public VeilarbService(VeilarboppfolgingClient veilarboppfolgingClient, VeilarbvedtaksstotteClient veilarbvedtaksstotteClient) {
-        this.veilarboppfolgingClient = veilarboppfolgingClient;
+    public VeilarbService(AoOppfolgingskontorClient aoOppfolgingskontorClient, VeilarbvedtaksstotteClient veilarbvedtaksstotteClient) {
+        this.aoOppfolgingskontorClient = aoOppfolgingskontorClient;
         this.veilarbvedtaksstotteClient = veilarbvedtaksstotteClient;
     }
 
@@ -56,19 +54,9 @@ public class VeilarbService {
 
     public Oppfølgingsstatus hentOppfolging(Fnr fnr) {
         Gjeldende14aVedtakRespons vedtak = hentInnsatsgruppe(fnr);
-        HentOppfolgingsstatusRespons oppfølgingsstatus = hentOppfølgingstatus(fnr);
+        Oppfolgingskontor oppfolgingskontor = hentOppfolgingskontor(fnr);
 
-        try {
-            return new Oppfølgingsstatus(
-                Formidlingsgruppe.parse(oppfølgingsstatus.formidlingsgruppe()),
-                Kvalifiseringsgruppe.parse(oppfølgingsstatus.servicegruppe()),
-                oppfølgingsstatus.oppfolgingsenhet().enhetId(),
-                vedtak.innsatsgruppe()
-            );
-        } catch (Exception e) {
-            log.error("Feil ved parsing av oppfølgingsstatus", e);
-            throw new FeilkodeException(Feilkode.HENTING_AV_INNSATSBEHOV_FEILET);
-        }
+        return new Oppfølgingsstatus(oppfolgingskontor.kontorId(), oppfolgingskontor.kontorNavn(), vedtak.innsatsgruppe());
     }
 
     private Gjeldende14aVedtakRespons hentInnsatsgruppe(Fnr fnr) {
@@ -89,35 +77,29 @@ public class VeilarbService {
         return responsOpt.get();
     }
 
-    private HentOppfolgingsstatusRespons hentOppfølgingstatus(Fnr fnr) {
-        Optional<HentOppfolgingsstatusRespons> responsOpt;
+    private Oppfolgingskontor hentOppfolgingskontor(Fnr fnr) {
+        Optional<Oppfolgingskontor> kontorOpt;
 
         try {
-            responsOpt = veilarboppfolgingClient.hentOppfolgingsstatus(new HentOppfolgingsstatusRequest(fnr.asString()));
+            kontorOpt = aoOppfolgingskontorClient.hentOppfolgingskontor(new HentOppfolgingskontorRequest(fnr.asString()));
         } catch (Exception e) {
-            log.error("Feil ved henting av oppfølgingsstatus fra veilarboppfolging", e);
+            log.error("Feil ved henting av oppfølgingskontor fra ao-oppfolgingskontor", e);
             throw new FeilkodeException(Feilkode.HENTING_AV_INNSATSBEHOV_FEILET);
         }
 
-        if (responsOpt.isEmpty()) {
-            teamLogs.info("Fant ikke oppfølgingsstatus for fnr {}", fnr);
-            throw new FeilkodeException(Feilkode.FANT_IKKE_INNSATSBEHOV);
-        }
-
-        HentOppfolgingsstatusRespons respons = responsOpt.get();
-
-        if (respons.oppfolgingsenhet() == null || respons.oppfolgingsenhet().enhetId() == null) {
-            log.info("Fant ingen enhet. Deltaker er sannsynligvis ikke under oppfølging.");
+        if (kontorOpt.isEmpty() || kontorOpt.get().kontorId() == null) {
+            log.info("Fant ikke oppfølgingskontor. Deltaker er sannsynligvis ikke under oppfølging.");
+            teamLogs.info("Fant ikke oppfølgingskontor for fnr {}", fnr);
             throw new FeilkodeException(Feilkode.ENHET_MANGLER);
         }
 
-        teamLogs.info(
-            "Hentet servicegruppe {} og formidlingsgruppe {} for fnr {}",
-            respons.servicegruppe(),
-            respons.formidlingsgruppe(),
-            fnr
-        );
+        Oppfolgingskontor kontor = kontorOpt.get();
 
-        return respons;
+        if (!kontor.erGyldigOppfolgingskontor()) {
+            log.info("Oppfølgingskontor har kontortype {}. Deltaker er sannsynligvis ikke under oppfølging.", kontor.kontorType());
+            throw new FeilkodeException(Feilkode.ENHET_MANGLER);
+        }
+
+        return kontor;
     }
 }

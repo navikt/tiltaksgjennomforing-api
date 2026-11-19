@@ -7,7 +7,6 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilAvtaleException;
@@ -211,17 +210,6 @@ public abstract class Avtalepart<T extends Identifikator> {
                 avtale.setEnhetGeografisk(enhet.getEnhetNr());
                 avtale.setEnhetsnavnGeografisk(enhet.getNavn());
             });
-    }
-
-    protected void hentOppfølgingsenhetNavnFraNorg2(Avtale avtale, Norg2Client norg2Client) {
-        if (avtale.getEnhetOppfolging() == null) return;
-        if (avtale.getEnhetOppfolging().equals(avtale.getEnhetGeografisk())) {
-            avtale.setEnhetsnavnOppfolging(avtale.getEnhetsnavnGeografisk());
-        } else {
-            final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhet(avtale.getEnhetOppfolging());
-            if (response == null) return;
-            avtale.setEnhetsnavnOppfolging(response.getNavn());
-        }
     }
 
     public void settLonntilskuddProsentsats(Avtale avtale) {

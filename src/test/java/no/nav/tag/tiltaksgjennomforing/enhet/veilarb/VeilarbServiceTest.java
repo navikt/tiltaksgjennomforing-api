@@ -19,8 +19,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SyntetiskFnr
 @SpringBootTest
@@ -50,9 +55,8 @@ class VeilarbServiceTest {
         avtale.setDeltakerFnr(new Fnr(fnr_har_riktig_kvalifisering_og_formidlingskode));
 
         Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
-        assertThat(oppfølgingsstatus.getFormidlingsgruppe().getKode()).isEqualTo(("ARBS"));
-        assertThat(oppfølgingsstatus.getKvalifiseringsgruppe().getKvalifiseringskode()).isEqualTo(("VARIG"));
         assertThat(oppfølgingsstatus.getOppfolgingsenhet()).isEqualTo(("0906"));
+        assertThat(oppfølgingsstatus.getOppfolgingsenhetNavn()).isEqualTo("NAV Test");
     }
 
     @Test
@@ -75,9 +79,6 @@ class VeilarbServiceTest {
     @Test
     public void hent_oppfølging_status() {
         Oppfølgingsstatus oppfølgingStatus = veilarbService.hentOppfolging(Fnr.fraDb("24469412950"));
-
-        assertThat(oppfølgingStatus.getFormidlingsgruppe().getKode()).isEqualTo(("ARBS"));
-        assertThat(oppfølgingStatus.getKvalifiseringsgruppe().getKvalifiseringskode()).isEqualTo(("VARIG"));
         assertThat(oppfølgingStatus.getOppfolgingsenhet()).isEqualTo(("0906"));
     }
 
@@ -93,6 +94,33 @@ class VeilarbServiceTest {
         assertThatThrownBy(() -> veilarbService.hentOppfolging(fnr))
                 .isExactlyInstanceOf(FeilkodeException.class)
                 .hasMessage(Feilkode.FANT_IKKE_INNSATSBEHOV.name());
+    }
+
+    @Test
+    public void godtar_oppfolgingskontor_fra_arbeidsoppfolging() {
+        assertThat(hentOppfolgingMedKontortype(Oppfolgingskontor.KontorType.ARBEIDSOPPFOLGING).getOppfolgingsenhet())
+                .isEqualTo("0301");
+    }
+
+    @Test
+    public void kaster_enhet_mangler_naar_oppfolgingskontor_er_arena_eller_geografisk_tilknytning() {
+        assertThatThrownBy(() -> hentOppfolgingMedKontortype(Oppfolgingskontor.KontorType.ARENA))
+                .isExactlyInstanceOf(FeilkodeException.class)
+                .hasMessage(Feilkode.ENHET_MANGLER.name());
+        assertThatThrownBy(() -> hentOppfolgingMedKontortype(Oppfolgingskontor.KontorType.GEOGRAFISK_TILKNYTNING))
+                .isExactlyInstanceOf(FeilkodeException.class)
+                .hasMessage(Feilkode.ENHET_MANGLER.name());
+    }
+
+    private static Oppfølgingsstatus hentOppfolgingMedKontortype(Oppfolgingskontor.KontorType kontorType) {
+        AoOppfolgingskontorClient oppfolgingskontorClient = mock(AoOppfolgingskontorClient.class);
+        VeilarbvedtaksstotteClient vedtaksstotteClient = mock(VeilarbvedtaksstotteClient.class);
+        when(vedtaksstotteClient.hentGjeldende14aVedtak(any()))
+                .thenReturn(Optional.of(new Gjeldende14aVedtakRespons(Innsatsgruppe.GODE_MULIGHETER, null, null)));
+        when(oppfolgingskontorClient.hentOppfolgingskontor(any()))
+                .thenReturn(Optional.of(new Oppfolgingskontor("0301", "Nav Oslo", kontorType)));
+
+        return new VeilarbService(oppfolgingskontorClient, vedtaksstotteClient).hentOppfolging(Fnr.generer(1990, 4, 12));
     }
 
 }

@@ -14,8 +14,8 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.HentOppfolgingsstatusRequest;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.HentOppfolgingsstatusRespons;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.HentOppfolgingskontorRequest;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.Oppfolgingskontor;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -35,7 +35,7 @@ import java.util.Set;
 
 import static no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig.NORGNAVN_CACHE;
 import static no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig.NORG_GEO_ENHET;
-import static no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig.VEILARBOPPFOLGING_CACHE;
+import static no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig.AO_OPPFOLGINGSKONTOR_CACHE;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -90,19 +90,19 @@ public class CachingConfigTest {
 
         Assertions.assertEquals(
             "0906",
-            getCacheValue(VEILARBOPPFOLGING_CACHE, new HentOppfolgingsstatusRequest(ETT_FNR_NR),
-            HentOppfolgingsstatusRespons.class
-        ).oppfolgingsenhet().enhetId());
+            getCacheValue(AO_OPPFOLGINGSKONTOR_CACHE, new HentOppfolgingskontorRequest(ETT_FNR_NR),
+            Oppfolgingskontor.class
+        ).kontorId());
         Assertions.assertEquals(
             "0904",
-            getCacheValue(VEILARBOPPFOLGING_CACHE, new HentOppfolgingsstatusRequest(ETT_FNR_NR2),
-            HentOppfolgingsstatusRespons.class
-        ).oppfolgingsenhet().enhetId());
+            getCacheValue(AO_OPPFOLGINGSKONTOR_CACHE, new HentOppfolgingskontorRequest(ETT_FNR_NR2),
+            Oppfolgingskontor.class
+        ).kontorId());
         Assertions.assertEquals(
             "0906",
-            getCacheValue(VEILARBOPPFOLGING_CACHE, new HentOppfolgingsstatusRequest(ETT_FNR_NR3),
-            HentOppfolgingsstatusRespons.class
-        ).oppfolgingsenhet().enhetId());
+            getCacheValue(AO_OPPFOLGINGSKONTOR_CACHE, new HentOppfolgingskontorRequest(ETT_FNR_NR3),
+            Oppfolgingskontor.class
+        ).kontorId());
     }
 
     @Test
@@ -192,10 +192,10 @@ public class CachingConfigTest {
                 geolokasjon,
                 Norg2GeoResponse.class
         );
-        HentOppfolgingsstatusRespons arenaCache = getCacheValue(
-            VEILARBOPPFOLGING_CACHE,
-            new HentOppfolgingsstatusRequest(avtale.getDeltakerFnr().asString()),
-            HentOppfolgingsstatusRespons.class
+        Oppfolgingskontor arenaCache = getCacheValue(
+            AO_OPPFOLGINGSKONTOR_CACHE,
+            new HentOppfolgingskontorRequest(avtale.getDeltakerFnr().asString()),
+            Oppfolgingskontor.class
         );
 
         Assertions.assertEquals("NAV St. Hanshaugen", norggeoenhetCacheForGeoEnhet.getNavn());
@@ -204,6 +204,6 @@ public class CachingConfigTest {
         Assertions.assertEquals("NAV Agder", norgnavnCacheForEnhet.getNavn());
         Assertions.assertEquals("1000", norgnavnCacheForEnhet.getEnhetNr());
 
-        Assertions.assertEquals("0906", arenaCache.oppfolgingsenhet().enhetId());
+        Assertions.assertEquals("0906", arenaCache.kontorId());
     }
 }

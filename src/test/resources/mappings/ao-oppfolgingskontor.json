@@ -1,0 +1,224 @@
+{
+  "mappings": [
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPath": "/graphql",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.variables.ident",
+              "equalTo": "07518815401"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "kontorTilhorighet": {
+              "kontorId": "0906",
+              "kontorNavn": "NAV Test",
+              "kontorType": "ARBEIDSOPPFOLGING"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPath": "/graphql",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.variables.ident",
+              "equalTo": "10526244570"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "kontorTilhorighet": {
+              "kontorId": "0906",
+              "kontorNavn": "NAV Test",
+              "kontorType": "ARBEIDSOPPFOLGING"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPath": "/graphql",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.variables.ident",
+              "equalTo": "14443543733"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "kontorTilhorighet": {
+              "kontorId": "0906",
+              "kontorNavn": "NAV Test",
+              "kontorType": "ARBEIDSOPPFOLGING"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPath": "/graphql",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.variables.ident",
+              "equalTo": "11111111111"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "kontorTilhorighet": {
+              "kontorId": "0904",
+              "kontorNavn": "NAV Test",
+              "kontorType": "ARBEIDSOPPFOLGING"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPath": "/graphql",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.variables.ident",
+              "equalTo": "22222222222"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "kontorTilhorighet": null
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPath": "/graphql",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.variables.ident",
+              "equalTo": "33333333333"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "kontorTilhorighet": null
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPath": "/graphql",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$.variables.ident",
+              "equalTo": "11427290672"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "kontorTilhorighet": null
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 2,
+      "request": {
+        "method": "POST",
+        "urlPath": "/graphql"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "data": {
+            "kontorTilhorighet": {
+              "kontorId": "0906",
+              "kontorNavn": "NAV Test",
+              "kontorType": "ARBEIDSOPPFOLGING"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

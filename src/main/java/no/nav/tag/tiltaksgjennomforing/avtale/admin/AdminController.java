@@ -217,14 +217,10 @@ public class AdminController {
                 Oppfølgingsstatus status = veilarbService.hentOppfolging(avtale);
                 return Map.of(
                     "avtaleOppfolginsstatus", Map.of(
-                        "formidlingsgruppe", avtale.getFormidlingsgruppe().name(),
-                        "kvalifiseringsgruppe", avtale.getKvalifiseringsgruppe().name(),
                         "innsatsgruppe", Optional.ofNullable(avtale.getInnsatsgruppe()).map(Enum::name).orElse(""),
-                        "oppfolginsenhet", avtale.getEnhetOppfolging()
+                        "oppfolginsenhet", Optional.ofNullable(avtale.getEnhetOppfolging()).orElse("")
                     ),
                     "veilarbOppfolginsstatus", Map.of(
-                        "formidlingsgruppe", status.getFormidlingsgruppe().name(),
-                        "kvalifiseringsgruppe", status.getKvalifiseringsgruppe().name(),
                         "innsatsgruppe", status.getInnsatsgruppe().name(),
                         "oppfolginsenhet", status.getOppfolgingsenhet()
                     )
@@ -361,10 +357,8 @@ public class AdminController {
                         oppfølgingsstatus.getOppfolgingsenhet()
                     );
                     avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
+                    avtale.setEnhetsnavnOppfolging(oppfølgingsstatus.getOppfolgingsenhetNavn());
                 });
-
-            Optional.ofNullable(norg2Client.hentOppfølgingsEnhet(avtale.getEnhetOppfolging()))
-                .ifPresent(enhet -> avtale.setEnhetsnavnOppfolging(enhet.getNavn()));
         });
 
         avtaleRepository.saveAll(avtaler);
