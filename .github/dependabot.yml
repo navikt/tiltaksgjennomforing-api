@@ -2,7 +2,7 @@ version: 2
 
 # Minor og patch samles i én ukentlig PR per økosystem.
 # Major-oppdateringer kommer som egne PR-er (Spring samlet).
-# Sikkerhetsoppdateringer kommer straks, samlet i en egen *-security-gruppe.
+# Maven og GitHub Actions har egne *-security-grupper uten cooldown.
 # Gruppenavn som slutter på "-security" brukes av dependabot-labels.yml.
 updates:
   - package-ecosystem: maven
@@ -23,6 +23,7 @@ updates:
         patterns: ["*"]
       maven-minor-patch:
         applies-to: version-updates
+        patterns: ["*"]
         update-types: [minor, patch]
       maven-major-spring:
         applies-to: version-updates
@@ -47,6 +48,7 @@ updates:
         patterns: ["*"]
       github-actions-minor-patch:
         applies-to: version-updates
+        patterns: ["*"]
         update-types: [minor, patch]
 
   - package-ecosystem: docker
@@ -62,9 +64,7 @@ updates:
     commit-message:
       prefix: "chore(deps)"
     groups:
-      docker-security:
-        applies-to: security-updates
-        patterns: ["*"]
       docker-minor-patch:
         applies-to: version-updates
+        patterns: ["*"]
         update-types: [minor, patch]
