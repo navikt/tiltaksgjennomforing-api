@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -111,15 +112,19 @@ public class InkluderingstilskuddAvtaleBeregningStrategy extends BeregningStrate
     }
 
     TilskuddPeriode lagTilskuddsperiode(Inkluderingstilskuddsutgift utgift) {
-        LocalDate start = utgift.getStartdato();
-        LocalDate slutt = utgift.getSluttdato();
+        LocalDate start = Optional.ofNullable(utgift.getGenererTilskuddsperiodeData())
+            .map(Inkluderingstilskuddsutgift.GenererTilskuddsperiodeData::startdato)
+            .orElse(null);
+        LocalDate slutt = Optional.ofNullable(utgift.getGenererTilskuddsperiodeData())
+            .map(Inkluderingstilskuddsutgift.GenererTilskuddsperiodeData::sluttdato)
+            .orElse(null);
 
         LocalDate avtaleStart = avtale.getGjeldendeInnhold().getStartDato();
         LocalDate avtaleSlutt = avtale.getGjeldendeInnhold().getSluttDato();
         if (avtaleStart == null || avtaleSlutt == null) {
             throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_PERIODE_AVTALE_MANGLER_DATO);
         }
-        if (utgift.getStartdato() == null || utgift.getSluttdato() == null) {
+        if (start == null || slutt == null) {
             throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_UTGIFT_MANGLER_DATO);
         }
         if (slutt.isBefore(start)) {

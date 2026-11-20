@@ -219,8 +219,7 @@ class InkluderingstilskuddAvtaleBeregningStrategyTest {
         );
         Set<TilskuddPeriode> eksisterende = Set.copyOf(avtale.getTilskuddPeriode());
         avtale.getGjeldendeInnhold().getInkluderingstilskuddsutgift().forEach(utgift -> {
-            utgift.setStartdato(null);
-            utgift.setSluttdato(null);
+            utgift.setGenererTilskuddsperiodeData(new Inkluderingstilskuddsutgift.GenererTilskuddsperiodeData(null, null));
         });
 
         InkluderingstilskuddAvtaleBeregningStrategy strategi = new InkluderingstilskuddAvtaleBeregningStrategy(avtale);
@@ -239,8 +238,7 @@ class InkluderingstilskuddAvtaleBeregningStrategyTest {
         );
         Inkluderingstilskuddsutgift lastetUtgift = avtale.getGjeldendeInnhold().getInkluderingstilskuddsutgift().getFirst();
         TilskuddPeriode eksisterendePeriode = lastetUtgift.getTilskuddperiode();
-        lastetUtgift.setStartdato(null);
-        lastetUtgift.setSluttdato(null);
+        lastetUtgift.setGenererTilskuddsperiodeData(new Inkluderingstilskuddsutgift.GenererTilskuddsperiodeData(null, null));
         Inkluderingstilskuddsutgift nyUtgift = new Inkluderingstilskuddsutgift(
             utgift(5_000, UTSTYR, LocalDate.of(2026, 5, 1), LocalDate.of(2026, 5, 31))
         );

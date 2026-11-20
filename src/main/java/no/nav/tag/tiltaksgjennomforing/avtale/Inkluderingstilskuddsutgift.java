@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -29,19 +30,26 @@ public class Inkluderingstilskuddsutgift {
     private String navn;
     private Integer beløp;
     private String beskrivelse;
-    @Transient
-    private LocalDate startdato;
-    @Transient
-    private LocalDate sluttdato;
     @Enumerated(EnumType.STRING)
     private InkluderingstilskuddsutgiftType type;
     @ManyToOne
     @JoinColumn(name = "avtale_innhold_id")
+    @JsonIgnore
     @ToString.Exclude
     private AvtaleInnhold avtaleInnhold;
+    @JsonIgnore
     @ToString.Exclude
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     private TilskuddPeriode tilskuddperiode;
+    @JsonIgnore
+    @ToString.Exclude
+    @Transient
+    private GenererTilskuddsperiodeData genererTilskuddsperiodeData;
+
+    public record GenererTilskuddsperiodeData(
+        LocalDate startdato,
+        LocalDate sluttdato
+    ) {}
 
     public Inkluderingstilskuddsutgift() {}
 
@@ -52,8 +60,6 @@ public class Inkluderingstilskuddsutgift {
         beskrivelse = utgift.beskrivelse;
         type = utgift.type;
         tilskuddperiode = utgift.tilskuddperiode;
-        startdato = utgift.startdato;
-        sluttdato = utgift.sluttdato;
     }
 
     public Inkluderingstilskuddsutgift(InkluderingstilskuddsutgiftDTO dto) {
@@ -62,8 +68,10 @@ public class Inkluderingstilskuddsutgift {
         beløp = dto.beløp();
         beskrivelse = dto.beskrivelse();
         type = dto.type();
-        startdato = dto.startdato();
-        sluttdato = dto.sluttdato();
+        genererTilskuddsperiodeData = new GenererTilskuddsperiodeData(
+            dto.startdato(),
+            dto.sluttdato()
+        );
     }
 
     public static List<Inkluderingstilskuddsutgift> map(List<InkluderingstilskuddsutgiftDTO> dto) {
