@@ -38,7 +38,7 @@ public class Maal {
     }
 
     public Maal(MaalDTO dto) {
-        id = dto.id();
+        id = dto.id() != null ? dto.id() : UUID.randomUUID();
         kategori = dto.kategori();
         beskrivelse = dto.beskrivelse();
     }
