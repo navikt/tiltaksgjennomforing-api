@@ -18,4 +18,6 @@ public interface AvtaleInnholdStrategy {
     void endreSluttDato(LocalDate nySluttDato);
 
     void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse);
+
+    default void sjekkGodkjenning() {}
 }

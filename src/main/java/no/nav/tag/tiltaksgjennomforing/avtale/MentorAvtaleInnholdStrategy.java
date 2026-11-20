@@ -102,4 +102,11 @@ public class MentorAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
 
         return alleFelter;
     }
+
+    @Override
+    public void sjekkGodkjenning() {
+        if (avtaleInnhold.getGodkjentTaushetserklæringAvMentor() == null) {
+            throw new FeilkodeException(Feilkode.MENTOR_MÅ_SIGNERE_TAUSHETSERKLÆRING);
+        }
+    }
 }

@@ -626,18 +626,18 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
         startOgSluttdatoStrategy().sjekkGjeldendeStartogSluttdato();
+        gjeldendeInnhold.sjekkGodkjenning();
+
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
         }
         if (erUfordelt()) {
             throw new AvtaleErIkkeFordeltException();
         }
-        if (this.getTiltakstype() == Tiltakstype.MENTOR && !erGodkjentTaushetserklæringAvMentor()) {
-            throw new FeilkodeException(Feilkode.MENTOR_MÅ_SIGNERE_TAUSHETSERKLÆRING);
-        }
         if (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker()) {
             throw new VeilederSkalGodkjenneSistException();
         }
+
 
         Instant tidspunkt = Now.instant();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
@@ -677,6 +677,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
         startOgSluttdatoStrategy().sjekkGjeldendeStartogSluttdato();
+        gjeldendeInnhold.sjekkGodkjenning();
+
         if (erGodkjentAvDeltaker()) {
             throw new DeltakerHarGodkjentException();
         }
@@ -685,10 +687,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
-        }
-
-        if (tiltakstype == Tiltakstype.MENTOR && !erGodkjentTaushetserklæringAvMentor()) {
-            throw new FeilkodeException(Feilkode.MENTOR_MÅ_SIGNERE_TAUSHETSERKLÆRING);
         }
 
         paVegneAvGrunn.valgtMinstEnGrunn();
@@ -710,6 +708,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
         startOgSluttdatoStrategy().sjekkGjeldendeStartogSluttdato();
+        gjeldendeInnhold.sjekkGodkjenning();
+
         if (Avtaleopphav.ARENA != opphav) {
             throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_OPPHAV);
         }
@@ -745,6 +745,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
         startOgSluttdatoStrategy().sjekkGjeldendeStartogSluttdato();
+        gjeldendeInnhold.sjekkGodkjenning();
+
         if (Avtaleopphav.ARENA != opphav) {
             throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_OPPHAV);
         }
