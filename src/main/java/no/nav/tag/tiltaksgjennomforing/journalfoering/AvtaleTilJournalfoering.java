@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.avtale.Inkluderingstilskuddsutgift;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
@@ -74,7 +73,7 @@ public class AvtaleTilJournalfoering {
     private Integer manedslonn100pst;
 
     // Inkluderingstilskudd
-    private List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift = new ArrayList<>();
+    private List<InkluderingstilskuddsutgiftTilJournalfoering> inkluderingstilskuddsutgift = new ArrayList<>();
     private String inkluderingstilskuddBegrunnelse;
 
     // mentor

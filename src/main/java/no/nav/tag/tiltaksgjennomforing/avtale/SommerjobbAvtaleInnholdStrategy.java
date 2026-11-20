@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.SommerjobbLonnstilskuddAvtaleBeregningStrategy;
 
@@ -22,7 +23,7 @@ public class SommerjobbAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdS
     }
 
     @Override
-    public void endre(EndreAvtale endreAvtale) {
+    public void endre(EndreAvtaleDTO endreAvtale) {
         Integer lonnstilskuddProsent = endreAvtale.getLonnstilskuddProsent();
         endreAvtale.setStillingstype(Stillingstype.MIDLERTIDIG);
 

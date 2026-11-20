@@ -4,6 +4,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
@@ -62,7 +63,7 @@ public class DeltakerTest {
                 Tiltakstype.VARIG_LONNSTILSKUDD
             ), Avtaleopphav.VEILEDER, TestData.enNavIdent()
         );
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(LocalDate.of(2021, 6, 1), LocalDate.of(2028, 1, 30));
+        EndreAvtaleDTO endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(LocalDate.of(2021, 6, 1), LocalDate.of(2028, 1, 30));
         assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
 
         Now.resetClock();
@@ -78,7 +79,7 @@ public class DeltakerTest {
                 Tiltakstype.VTAO
             ), Avtaleopphav.VEILEDER, TestData.enNavIdent()
         );
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(LocalDate.of(2025, 1, 9), LocalDate.of(2070, 3, 30));
+        EndreAvtaleDTO endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(LocalDate.of(2025, 1, 9), LocalDate.of(2070, 3, 30));
         assertFeilkode(Feilkode.DELTAKER_67_AAR, () -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER));
 
         Now.resetClock();

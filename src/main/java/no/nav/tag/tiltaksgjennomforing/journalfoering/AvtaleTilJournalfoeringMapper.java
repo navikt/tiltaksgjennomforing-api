@@ -7,10 +7,10 @@ import no.nav.tag.tiltaksgjennomforing.avtale.MentorValgtLonnstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.AvtaleInnholdDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.InkluderingstilskuddsutgiftDTO;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.MaalDTO;
 import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static no.nav.tag.tiltaksgjennomforing.satser.Sats.VTAO_SATS;
@@ -63,7 +63,7 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setSluttDato(avtaleInnhold.sluttDato());
         avtaleTilJournalfoering.setStillingprosent(avtale.gjeldendeInnhold().stillingprosent());
         avtaleTilJournalfoering.setAntallDagerPerUke(avtale.gjeldendeInnhold().antallDagerPerUke());
-        avtaleTilJournalfoering.setMaal(maalListToMaalTilJournalfoeringList(avtaleInnhold.maal()));
+        avtaleTilJournalfoering.setMaal(maal(avtaleInnhold.maal()));
         avtaleTilJournalfoering.setGodkjentPaVegneGrunn(godkjentPaVegneGrunn(avtaleInnhold.godkjentPaVegneGrunn()));
         avtaleTilJournalfoering.setGodkjentPaVegneAv(avtaleInnhold.godkjentPaVegneAv());
         avtaleTilJournalfoering.setVersjon(avtaleInnhold.versjon());
@@ -78,7 +78,7 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setStillingstype(avtaleInnhold.stillingstype());
         avtaleTilJournalfoering.setManedslonn100pst(avtaleInnhold.manedslonn100pst());
         avtaleTilJournalfoering.setRefusjonKontaktperson(avtaleInnhold.refusjonKontaktperson());
-        avtaleTilJournalfoering.setInkluderingstilskuddsutgift(avtaleInnhold.inkluderingstilskuddsutgift());
+        avtaleTilJournalfoering.setInkluderingstilskuddsutgift(inkluderingstilskuddsutgifter(avtaleInnhold.inkluderingstilskuddsutgift()));
         avtaleTilJournalfoering.setInkluderingstilskuddBegrunnelse(avtaleInnhold.inkluderingstilskuddBegrunnelse());
         avtaleTilJournalfoering.setTilskuddsPerioder(avtale.tilskuddPeriode().stream().toList());
 
@@ -113,29 +113,22 @@ public class AvtaleTilJournalfoeringMapper {
         );
     }
 
-
-    private static MaalTilJournalfoering maalToMaalTilJournalfoering(MaalDTO maal) {
+    private static List<MaalTilJournalfoering> maal(List<MaalDTO> maal) {
         if (maal == null) {
             return null;
         }
-
-        MaalTilJournalfoering maalTilJournalfoering = new MaalTilJournalfoering();
-
-        maalTilJournalfoering.setKategori(maal.kategori().getVerdi());
-        maalTilJournalfoering.setBeskrivelse(maal.beskrivelse());
-
-        return maalTilJournalfoering;
+        return maal.stream()
+            .map(m -> new MaalTilJournalfoering(m.kategori().getVerdi(), m.beskrivelse()))
+            .toList();
     }
 
-    private static List<MaalTilJournalfoering> maalListToMaalTilJournalfoeringList(List<MaalDTO> list) {
-        if (list == null) {
+    private static List<InkluderingstilskuddsutgiftTilJournalfoering> inkluderingstilskuddsutgifter(List<InkluderingstilskuddsutgiftDTO> utgifter) {
+        if (utgifter == null) {
             return null;
         }
-        List<MaalTilJournalfoering> list1 = new ArrayList<>(list.size());
-        for (MaalDTO maal : list) {
-            list1.add(maalToMaalTilJournalfoering(maal));
-        }
-        return list1;
+        return utgifter.stream()
+            .map(u -> new InkluderingstilskuddsutgiftTilJournalfoering(u.id(), u.navn(), u.beløp(), u.beskrivelse(), u.type()))
+            .toList();
     }
 
     private static String mentorValgtLonnstypeTekst(MentorValgtLonnstype mentorValgtLonnstype) {

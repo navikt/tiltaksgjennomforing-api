@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -18,7 +19,7 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
     }
 
     @Override
-    public void endre(EndreAvtale nyAvtale) {
+    public void endre(EndreAvtaleDTO nyAvtale) {
         final Avtale avtale = avtaleInnhold.getAvtale();
 
         if (avtale.erOpprettetEllerEndretAvArena()

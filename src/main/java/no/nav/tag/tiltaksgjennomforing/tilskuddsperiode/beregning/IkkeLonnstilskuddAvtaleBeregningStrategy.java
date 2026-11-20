@@ -30,10 +30,7 @@ public class IkkeLonnstilskuddAvtaleBeregningStrategy extends BeregningStrategy 
     public void forkort(LocalDate nySluttDato) {}
 
     @Override
-    public List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(
-        LocalDate startDato,
-        LocalDate sluttDato
-    ) {
+    public List<TilskuddPeriode> genererTilskuddsperioder(GenererTilskuddsperioder periode) {
         return Collections.emptyList();
     }
 

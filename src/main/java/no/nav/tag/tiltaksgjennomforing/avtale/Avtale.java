@@ -71,6 +71,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsberegningEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAvslått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttdatoStrategy;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreInkluderingstilskuddDTO;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAv;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
@@ -91,6 +93,7 @@ import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.satser.Sats;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.GenererTilskuddsperioder;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
@@ -280,7 +283,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void endreAvtale(
-        EndreAvtale nyAvtale,
+        EndreAvtaleDTO nyAvtale,
         Avtalerolle utfortAvRolle,
         Identifikator identifikator
     ) {
@@ -288,7 +291,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void endreAvtale(
-        EndreAvtale nyAvtale,
+        EndreAvtaleDTO nyAvtale,
         AvtaleHendelseUtførtAv.Rolle utfortAvRolle,
         Identifikator identifikator
     ) {
@@ -335,7 +338,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void endreAvtale(
-        EndreAvtale nyAvtale,
+        EndreAvtaleDTO nyAvtale,
         Avtalerolle utfortAv
     ) {
         endreAvtale(nyAvtale, utfortAv, null);
@@ -623,18 +626,18 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
         startOgSluttdatoStrategy().sjekkGjeldendeStartogSluttdato();
+        gjeldendeInnhold.sjekkGodkjenning();
+
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
         }
         if (erUfordelt()) {
             throw new AvtaleErIkkeFordeltException();
         }
-        if (this.getTiltakstype() == Tiltakstype.MENTOR && !erGodkjentTaushetserklæringAvMentor()) {
-            throw new FeilkodeException(Feilkode.MENTOR_MÅ_SIGNERE_TAUSHETSERKLÆRING);
-        }
         if (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker()) {
             throw new VeilederSkalGodkjenneSistException();
         }
+
 
         Instant tidspunkt = Now.instant();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
@@ -674,6 +677,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
         startOgSluttdatoStrategy().sjekkGjeldendeStartogSluttdato();
+        gjeldendeInnhold.sjekkGodkjenning();
+
         if (erGodkjentAvDeltaker()) {
             throw new DeltakerHarGodkjentException();
         }
@@ -682,10 +687,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
-        }
-
-        if (tiltakstype == Tiltakstype.MENTOR && !erGodkjentTaushetserklæringAvMentor()) {
-            throw new FeilkodeException(Feilkode.MENTOR_MÅ_SIGNERE_TAUSHETSERKLÆRING);
         }
 
         paVegneAvGrunn.valgtMinstEnGrunn();
@@ -707,6 +708,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
         startOgSluttdatoStrategy().sjekkGjeldendeStartogSluttdato();
+        gjeldendeInnhold.sjekkGodkjenning();
+
         if (Avtaleopphav.ARENA != opphav) {
             throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_OPPHAV);
         }
@@ -742,6 +745,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         sjekkAtIkkeAvtaleErAnnullert();
         sjekkOmAltErKlarTilGodkjenning();
         startOgSluttdatoStrategy().sjekkGjeldendeStartogSluttdato();
+        gjeldendeInnhold.sjekkGodkjenning();
+
         if (Avtaleopphav.ARENA != opphav) {
             throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_OPPHAV);
         }
@@ -1109,9 +1114,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
                 }
             }
 
-            List<TilskuddPeriode> tilskuddsperioder = beregningStrategi().beregnTilskuddsperioderForAvtale(
-                gjeldendeInnhold.getStartDato(),
-                gjeldendeInnhold.getSluttDato()
+            List<TilskuddPeriode> tilskuddsperioder = beregningStrategi().genererTilskuddsperioder(
+                GenererTilskuddsperioder.fra(
+                    gjeldendeInnhold.getStartDato(),
+                    gjeldendeInnhold.getSluttDato()
+                )
             );
 
             BeregningStrategy.settBehandletIArena(migreringsDato, tilskuddsperioder);
@@ -1432,7 +1439,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         utforEndring(new MålEndret(this, utførtAv));
     }
 
-    public void endreInkluderingstilskudd(EndreInkluderingstilskudd endreInkluderingstilskudd, NavIdent utførtAv) {
+    public void endreInkluderingstilskudd(EndreInkluderingstilskuddDTO endreInkluderingstilskudd, NavIdent utførtAv) {
         sjekkAtIkkeAvtaleErAnnullert();
         krevEnAvTiltakstyper(Tiltakstype.INKLUDERINGSTILSKUDD);
 
@@ -1445,10 +1452,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (endreInkluderingstilskudd.overskriderMaksbelop(this)) {
             throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_SUM_FOR_HØY);
         }
-        if (endreInkluderingstilskudd.harMangler()) {
+        Boolean nyInkluderingstilskudd = FeatureToggleHolder.get().isEnabled(NY_INKLUDERINGSTILSKUDD);
+        if (endreInkluderingstilskudd.harMangler(nyInkluderingstilskudd)) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_INKLUDERINGSTILSKUDD_IKKE_BELOP_ELLER_TYPE);
         }
-        if (FeatureToggleHolder.get().isEnabled(NY_INKLUDERINGSTILSKUDD) && Now.localDate().isAfter(getGjeldendeInnhold().getSluttDato())) {
+        if (nyInkluderingstilskudd && Now.localDate().isAfter(getGjeldendeInnhold().getSluttDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_INKLUDERINGSTILSKUDD_ETTER_SLUTTDATO);
         }
         // Sjekk at det er like mange utgifter på forrige versjon som det er id'er i request. Hvis ikke er ikke frontend i sync
@@ -1459,14 +1467,17 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
         List<Inkluderingstilskuddsutgift> nyeInkluderingstilskuddsutgifter = endreInkluderingstilskudd.getInkluderingstilskuddsutgift()
             .stream()
-            .filter(e -> e.getId() == null)
+            .filter(e -> e.id() == null)
             .map(Inkluderingstilskuddsutgift::new)
             .toList();
 
         getGjeldendeInnhold().getInkluderingstilskuddsutgift().addAll(nyeInkluderingstilskuddsutgifter);
         getGjeldendeInnhold().getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(getGjeldendeInnhold()));
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.instant());
-        tilskuddPeriode.addAll(beregningStrategi().beregnTilskuddsperioderForAvtale(null, null));
+        List<TilskuddPeriode> nyeTilskuddsperioder = beregningStrategi().genererTilskuddsperioder(
+            GenererTilskuddsperioder.fra(nyeInkluderingstilskuddsutgifter)
+        );
+        tilskuddPeriode.addAll(nyeTilskuddsperioder);
         reaktiverTilskuddsperiodeOgSendTilbakeTilBeslutter();
         utforEndring(new InkluderingstilskuddEndret(this, utførtAv));
     }

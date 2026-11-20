@@ -4,7 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
@@ -65,13 +65,13 @@ class VeilarbServiceTest {
 
         Oppfølgingsstatus oppfølgingsstatus = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
         avtale.setInnsatsgruppe(oppfølgingsstatus.getInnsatsgruppe());
-        avtale.endreAvtale(new EndreAvtale(), Avtalerolle.VEILEDER);
+        avtale.endreAvtale(new EndreAvtaleDTO(), Avtalerolle.VEILEDER);
 
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isNotNull();
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(60);
 
         avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING);
-        avtale.endreAvtale(new EndreAvtale(), Avtalerolle.VEILEDER);
+        avtale.endreAvtale(new EndreAvtaleDTO(), Avtalerolle.VEILEDER);
 
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(40);
     }

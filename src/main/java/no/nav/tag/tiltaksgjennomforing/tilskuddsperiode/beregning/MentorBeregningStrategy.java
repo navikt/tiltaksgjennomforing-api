@@ -85,26 +85,9 @@ public class MentorBeregningStrategy extends BeregningStrategy {
     }
 
     @Override
-    public List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(
-        LocalDate startDato,
-        LocalDate sluttDato
-    ) {
-        List<TilskuddPeriode> perioder = Periode.av(startDato, sluttDato).splitPerMnd().stream().map(datoPar -> {
-                Integer beløp = BeregningStrategy.beløpForPeriode(
-                    datoPar,
-                    avtale.getGjeldendeInnhold().getSumLonnsutgifter()
-                );
-                return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), 100);
-            })
-            .collect(Collectors.toList());
-
-        AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
-        perioder.forEach(p -> {
-            p.setAvtale(avtale);
-            p.setEnhet(innhold.getEnhetKostnadssted());
-            p.setEnhetsnavn(innhold.getEnhetsnavnKostnadssted());
-        });
-        return perioder;
+    public List<TilskuddPeriode> genererTilskuddsperioder(GenererTilskuddsperioder periode) {
+        GenererTilskuddsperioder.Dato dato = GenererTilskuddsperioder.konverterTilDatoer(periode);
+        return lagTilskuddsperioder(dato.periode());
     }
 
 
@@ -121,7 +104,7 @@ public class MentorBeregningStrategy extends BeregningStrategy {
         LocalDate start = innhold.getStartDato();
         LocalDate slutt = innhold.getSluttDato();
 
-        List<TilskuddPeriode> perioder = beregnTilskuddsperioderForAvtale(start, slutt);
+        List<TilskuddPeriode> perioder = lagTilskuddsperioder(Periode.av(start, slutt));
         // Etterregistreringer skal håndteres i vårt system, så vi skal kun sette behandlet i arena på avtaler hvor
         // avtalen har opphav=ARENA eller om det eksisterer en avtaleversjon med innholdstype = ENDRET_AV_ARENA
         if (avtale.harArenaOpphavEllerHistoriskEndretAvArena()) {
@@ -159,5 +142,24 @@ public class MentorBeregningStrategy extends BeregningStrategy {
         }
 
         return BeregningStrategy.beløpForPeriode(periode, avtaleInnhold.getSumLonnsutgifter());
+    }
+
+    List<TilskuddPeriode> lagTilskuddsperioder(Periode periode) {
+        List<TilskuddPeriode> perioder = periode.splitPerMnd().stream().map(datoPar -> {
+                Integer beløp = BeregningStrategy.beløpForPeriode(
+                    datoPar,
+                    avtale.getGjeldendeInnhold().getSumLonnsutgifter()
+                );
+                return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), 100);
+            })
+            .collect(Collectors.toList());
+
+        AvtaleInnhold innhold = avtale.getGjeldendeInnhold();
+        perioder.forEach(p -> {
+            p.setAvtale(avtale);
+            p.setEnhet(innhold.getEnhetKostnadssted());
+            p.setEnhetsnavn(innhold.getEnhetsnavnKostnadssted());
+        });
+        return perioder;
     }
 }

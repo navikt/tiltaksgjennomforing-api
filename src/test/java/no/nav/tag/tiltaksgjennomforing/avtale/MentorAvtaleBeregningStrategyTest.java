@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.BeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
@@ -42,7 +43,7 @@ public class MentorAvtaleBeregningStrategyTest {
         final int arbeidsgiverAvgiftBelop = 438;
         final int forventetBeløpForPeriode = 9020;
         Avtale avtale = TestData.enMentorAvtaleUsignert();
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(fra, til);
+        EndreAvtaleDTO endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(fra, til);
         endreAvtale.setStillingprosent(BigDecimal.valueOf(50.7));
         endreAvtale.setMentorValgtLonnstype(MentorValgtLonnstype.ÅRSLØNN);
         endreAvtale.setMentorValgtLonnstypeBelop(875000);
@@ -133,7 +134,7 @@ public class MentorAvtaleBeregningStrategyTest {
     @Test
     public void reberegnTotal_nullstiller_beregningsfelter_når_otpSats_mangler() {
         Avtale avtale = TestData.enMentorAvtaleUsignert();
-        EndreAvtale endreAvtale = TestData.endrePåAlleMentorFelter();
+        EndreAvtaleDTO endreAvtale = TestData.endrePåAlleMentorFelter();
         endreAvtale.setOtpSats(null);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
 
@@ -147,7 +148,7 @@ public class MentorAvtaleBeregningStrategyTest {
     @Test
     public void reberegnTotal_nullstiller_beregningsfelter_når_feriepengesats_mangler() {
         Avtale avtale = TestData.enMentorAvtaleUsignert();
-        EndreAvtale endreAvtale = TestData.endrePåAlleMentorFelter();
+        EndreAvtaleDTO endreAvtale = TestData.endrePåAlleMentorFelter();
         endreAvtale.setFeriepengesats(null);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
 
@@ -161,7 +162,7 @@ public class MentorAvtaleBeregningStrategyTest {
     @Test
     public void reberegnTotal_nullstiller_beregningsfelter_når_arbeidsgiveravgift_mangler() {
         Avtale avtale = TestData.enMentorAvtaleUsignert();
-        EndreAvtale endreAvtale = TestData.endrePåAlleMentorFelter();
+        EndreAvtaleDTO endreAvtale = TestData.endrePåAlleMentorFelter();
         endreAvtale.setArbeidsgiveravgift(null);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
 
@@ -175,7 +176,7 @@ public class MentorAvtaleBeregningStrategyTest {
     @Test
     public void reberegnTotal_nullstiller_beregningsfelter_når_mentorAntallTimer_mangler() {
         Avtale avtale = TestData.enMentorAvtaleUsignert();
-        EndreAvtale endreAvtale = TestData.endrePåAlleMentorFelter();
+        EndreAvtaleDTO endreAvtale = TestData.endrePåAlleMentorFelter();
         endreAvtale.setMentorAntallTimer(null);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
 
@@ -189,7 +190,7 @@ public class MentorAvtaleBeregningStrategyTest {
     @Test
     public void reberegnTotal_beregner_korrekt_når_alle_nødvendige_felter_er_utfylt() {
         Avtale avtale = TestData.enMentorAvtaleUsignert();
-        EndreAvtale endreAvtale = TestData.endrePåAlleMentorFelter();
+        EndreAvtaleDTO endreAvtale = TestData.endrePåAlleMentorFelter();
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
 
         assertThat(avtale.getGjeldendeInnhold().getFeriepengerBelop()).isNotNull().isPositive();
@@ -201,7 +202,7 @@ public class MentorAvtaleBeregningStrategyTest {
     @Test
     public void nødvendigeFelterErUtfyltForBeregning_returnerer_false_når_ett_felt_mangler() {
         Avtale avtale = TestData.enMentorAvtaleUsignert();
-        EndreAvtale endreAvtale = TestData.endrePåAlleMentorFelter();
+        EndreAvtaleDTO endreAvtale = TestData.endrePåAlleMentorFelter();
         endreAvtale.setOtpSats(null);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
 
@@ -211,7 +212,7 @@ public class MentorAvtaleBeregningStrategyTest {
     @Test
     public void nødvendigeFelterErUtfyltForBeregning_returnerer_true_når_alle_felt_er_satt() {
         Avtale avtale = TestData.enMentorAvtaleUsignert();
-        EndreAvtale endreAvtale = TestData.endrePåAlleMentorFelter();
+        EndreAvtaleDTO endreAvtale = TestData.endrePåAlleMentorFelter();
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
 
         assertThat(new MentorBeregningStrategy(avtale).nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp()).isTrue();

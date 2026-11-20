@@ -11,7 +11,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
@@ -419,7 +419,7 @@ public class AdminController {
         nyAvtale.setOpprettetTidspunkt(avtale.getOpprettetTidspunkt());
 
         // Omgå vaildering av start og sluttdato
-        EndreAvtale endreAvtale = EndreAvtale.fraAvtale(avtale);
+        EndreAvtaleDTO endreAvtale = EndreAvtaleDTO.fraAvtale(avtale);
         endreAvtale.setSluttDato(null);
         endreAvtale.setStartDato(null);
         nyAvtale.endreAvtale(endreAvtale, AvtaleHendelseUtførtAv.Rolle.SYSTEM, Identifikator.SYSTEM);

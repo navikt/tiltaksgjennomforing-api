@@ -56,9 +56,11 @@ public class VTAOAvtaleBeregningStrategy extends BeregningStrategy {
         if (!nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder()) {
             return Collections.emptyList();
         }
-        List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioderForAvtale(
-            avtale.getGjeldendeInnhold().getStartDato(),
-            avtale.getGjeldendeInnhold().getSluttDato()
+        List<TilskuddPeriode> tilskuddsperioder = genererTilskuddsperioder(
+            GenererTilskuddsperioder.fra(
+                avtale.getGjeldendeInnhold().getStartDato(),
+                avtale.getGjeldendeInnhold().getSluttDato()
+            )
         );
         if (avtale.getArenaRyddeAvtale() != null || Avtaleopphav.ARENA.equals(avtale.getOpphav())) {
             LocalDate migreringsdato;
@@ -75,19 +77,9 @@ public class VTAOAvtaleBeregningStrategy extends BeregningStrategy {
     }
 
     @Override
-    public List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(
-        LocalDate startDato,
-        LocalDate sluttDato
-    ) {
-        return Periode.av(startDato, sluttDato).splitPerMnd().stream().map(datoPar -> {
-            var sats = VTAO_SATS.hentGjeldendeSats(datoPar.getStart());
-            Integer beløp = sats != null ? BeregningStrategy.beløpForPeriode(datoPar, sats) : null;
-            TilskuddPeriode tilskuddPeriode = new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt());
-            tilskuddPeriode.setAvtale(avtale);
-            tilskuddPeriode.setEnhet(avtale.getGjeldendeInnhold().getEnhetKostnadssted());
-            tilskuddPeriode.setEnhetsnavn(avtale.getGjeldendeInnhold().getEnhetsnavnKostnadssted());
-            return tilskuddPeriode;
-        }).toList();
+    public List<TilskuddPeriode> genererTilskuddsperioder(GenererTilskuddsperioder periode) {
+        GenererTilskuddsperioder.Dato dato = GenererTilskuddsperioder.konverterTilDatoer(periode);
+        return lagTilskuddsperioder(dato.periode());
     }
 
     @Override
@@ -97,5 +89,17 @@ public class VTAOAvtaleBeregningStrategy extends BeregningStrategy {
             return null;
         }
         return BeregningStrategy.beløpForPeriode(periode, vtaoSats);
+    }
+
+    List<TilskuddPeriode> lagTilskuddsperioder(Periode periode) {
+        return periode.splitPerMnd().stream().map(datoPar -> {
+            var sats = VTAO_SATS.hentGjeldendeSats(datoPar.getStart());
+            Integer beløp = sats != null ? BeregningStrategy.beløpForPeriode(datoPar, sats) : null;
+            TilskuddPeriode tilskuddPeriode = new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt());
+            tilskuddPeriode.setAvtale(avtale);
+            tilskuddPeriode.setEnhet(avtale.getGjeldendeInnhold().getEnhetKostnadssted());
+            tilskuddPeriode.setEnhetsnavn(avtale.getGjeldendeInnhold().getEnhetsnavnKostnadssted());
+            return tilskuddPeriode;
+        }).toList();
     }
 }

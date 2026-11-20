@@ -4,6 +4,8 @@ import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.MaalDTO;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -77,7 +79,7 @@ public class AvtaleTest {
         Now.fixedDate(LocalDate.of(2024, 7, 29));
         Avtale avtale = enVarigLonnstilskuddsjobbAvtale();
         setOppfølgingPåAvtale(avtale);
-        EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelterForSommerjobb(75);
+        EndreAvtaleDTO endreAvtale = endringPåAlleLønnstilskuddFelterForSommerjobb(75);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
         avtale.getGjeldendeInnhold().setDeltakerFornavn("Lilly");
@@ -90,7 +92,7 @@ public class AvtaleTest {
         avtale.getGjeldendeInnhold().setJournalpostId("1");
         avtale.getGjeldendeInnhold().setMaal(List.of());
         assertThat(avtale.getGjeldendeInnhold().getSumLonnstilskudd()).isEqualTo(30600);
-        endreAvtale = new EndreAvtale();
+        endreAvtale = new EndreAvtaleDTO();
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
@@ -121,7 +123,7 @@ public class AvtaleTest {
         Now.fixedDate(LocalDate.of(2024, 6, 21));
         Avtale avtale = enSommerjobbAvtale();
         setOppfølgingPåAvtale(avtale);
-        EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelterForSommerjobb(50);
+        EndreAvtaleDTO endreAvtale = endringPåAlleLønnstilskuddFelterForSommerjobb(50);
         endreAvtale.setStartDato(LocalDate.of(2024, 6, 23));
         endreAvtale.setSluttDato(LocalDate.of(2024, 7, 20));
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
@@ -163,7 +165,7 @@ public class AvtaleTest {
             24480,
             22520
         ));
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
@@ -284,7 +286,7 @@ public class AvtaleTest {
             22520
         ));
 
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
@@ -346,7 +348,7 @@ public class AvtaleTest {
         assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(
             forventedeBelop);
         avtale.opphevGodkjenningerSomVeileder();
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
@@ -751,7 +753,7 @@ public class AvtaleTest {
     @Test
     public void endreAvtaleSkalOppdatereRiktigeFelt() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        EndreAvtale endreAvtale = TestData.endringPåAlleArbeidstreningFelter();
+        EndreAvtaleDTO endreAvtale = TestData.endringPåAlleArbeidstreningFelter();
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
 
         SoftAssertions.assertSoftly(softly -> {
@@ -779,7 +781,6 @@ public class AvtaleTest {
             softly.assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(endreAvtale.getSluttDato());
             softly.assertThat(avtale.getGjeldendeInnhold().getStillingprosent())
                 .isEqualTo(endreAvtale.getStillingprosent());
-            softly.assertThat(avtale.getGjeldendeInnhold().getMaal()).isEqualTo(endreAvtale.getMaal());
             softly.assertThat(avtale.getGjeldendeInnhold().getStillingstittel())
                 .isEqualTo(endreAvtale.getStillingstittel());
         });
@@ -788,10 +789,10 @@ public class AvtaleTest {
     @Test
     public void endreAvtale__for_langt_maal_skal_feile() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        Maal etMaal = TestData.etMaal();
-        etMaal.setBeskrivelse(
-            "Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.");
-        EndreAvtale endreAvtale = new EndreAvtale();
+        MaalDTO etMaal = TestData.etMaal(
+            "Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn."
+        );
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreAvtale.setMaal(List.of(etMaal));
         assertThatThrownBy(() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER)).isInstanceOf(
             TiltaksgjennomforingException.class);
@@ -800,7 +801,7 @@ public class AvtaleTest {
     @Test
     public void endreAvtale__startdato_satt_men_ikke_sluttdato() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         LocalDate startDato = Now.localDate();
         endreAvtale.setStartDato(startDato);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
@@ -810,7 +811,7 @@ public class AvtaleTest {
     @Test
     public void endreAvtale__sluttdato_satt_men_ikke_startdato() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         LocalDate sluttDato = Now.localDate();
         endreAvtale.setSluttDato(sluttDato);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
@@ -821,7 +822,7 @@ public class AvtaleTest {
     public void endreAvtale__startdato_og_sluttdato_satt_18mnd() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.setInnsatsgruppe(Innsatsgruppe.JOBBE_DELVIS);
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(18).minusDays(1);
         endreAvtale.setStartDato(startDato);
@@ -834,7 +835,7 @@ public class AvtaleTest {
     @Test
     public void endreAvtale__startdato_og_sluttdato_satt_over_18mnd() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(18);
         endreAvtale.setStartDato(startDato);
@@ -846,7 +847,7 @@ public class AvtaleTest {
     @Test
     public void endreAvtale__startdato_er_etter_sluttdato() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.minusDays(1);
         endreAvtale.setStartDato(startDato);
@@ -1011,7 +1012,7 @@ public class AvtaleTest {
         Tiltakstype tiltakstype
     ) {
         for (String felt : felterSomKrevesForTiltakstype) {
-            EndreAvtale endreAvtale = endringPåAltUtenom(felt, tiltakstype);
+            EndreAvtaleDTO endreAvtale = endringPåAltUtenom(felt, tiltakstype);
             avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
             assertThat(avtale.felterSomIkkeErFyltUt()).containsOnly(felt);
             assertFeilkode(
@@ -1025,8 +1026,8 @@ public class AvtaleTest {
         assertThat(avtale.felterSomIkkeErFyltUt()).containsExactlyInAnyOrderElementsOf(arbeidstreningsfelter);
     }
 
-    private static EndreAvtale endringPåAltUtenom(String felt, Tiltakstype tiltakstype) {
-        EndreAvtale endreAvtale =
+    private static EndreAvtaleDTO endringPåAltUtenom(String felt, Tiltakstype tiltakstype) {
+        EndreAvtaleDTO endreAvtale =
             switch (tiltakstype) {
                 case ARBEIDSTRENING -> TestData.endringPåAlleArbeidstreningFelter();
                 case MENTOR -> TestData.endrePåAlleMentorFelter();
@@ -1397,7 +1398,7 @@ public class AvtaleTest {
             Avtaleopphav.VEILEDER,
             new NavIdent("Z123456")
         );
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
+        EndreAvtaleDTO endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(-1);
         assertThatThrownBy(() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER))
             .isInstanceOf(FeilLonnstilskuddsprosentException.class);
@@ -1410,7 +1411,7 @@ public class AvtaleTest {
             Avtaleopphav.VEILEDER,
             new NavIdent("Z123456")
         );
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
+        EndreAvtaleDTO endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(100);
         assertThatThrownBy(() -> avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER))
             .isInstanceOf(FeilLonnstilskuddsprosentException.class);
@@ -1718,7 +1719,7 @@ public class AvtaleTest {
         assertThat(avtale.getTilskuddPeriode()).isEmpty();
 
         Veileder veileder = TestData.enVeileder(avtale);
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
+        EndreAvtaleDTO endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         veileder.endreAvtale(endreAvtale, avtale);
         assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
     }
@@ -1939,7 +1940,7 @@ public class AvtaleTest {
         );
         avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING);
         avtale.setGodkjentForEtterregistrering(true);
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
+        EndreAvtaleDTO endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(40);
     }
@@ -1955,7 +1956,7 @@ public class AvtaleTest {
             ), Avtaleopphav.VEILEDER, TestData.enNavIdent()
         );
         avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE);
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
+        EndreAvtaleDTO endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(60);
     }
@@ -1971,7 +1972,7 @@ public class AvtaleTest {
                 Tiltakstype.SOMMERJOBB
             ), Avtaleopphav.VEILEDER, TestData.enNavIdent()
         );
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
+        EndreAvtaleDTO endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
         endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
@@ -1989,7 +1990,7 @@ public class AvtaleTest {
                 Tiltakstype.SOMMERJOBB
             ), Avtaleopphav.VEILEDER, TestData.enNavIdent()
         );
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(
+        EndreAvtaleDTO endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(
             LocalDate.of(2021, 6, 1),
             LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1)
         );
@@ -2033,7 +2034,7 @@ public class AvtaleTest {
             ), Avtaleopphav.VEILEDER, TestData.enNavIdent()
         );
         avtale.togglegodkjennEtterregistrering(TestData.enNavIdent());
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(
+        EndreAvtaleDTO endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(
             LocalDate.of(2021, 12, 12),
             LocalDate.of(2021, 12, 1).plusYears(1)
         );
@@ -2053,7 +2054,7 @@ public class AvtaleTest {
                 Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD
             ), Avtaleopphav.VEILEDER, TestData.enNavIdent()
         );
-        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(
+        EndreAvtaleDTO endreAvtale = TestData.endringPåAlleLønnstilskuddFelter(
             LocalDate.of(2021, 12, 12),
             LocalDate.of(2021, 12, 1).plusYears(1)
         );

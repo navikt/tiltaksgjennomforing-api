@@ -9,6 +9,10 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangerDto;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreInkluderingstilskuddDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.InkluderingstilskuddsutgiftDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.MaalDTO;
 import no.nav.tag.tiltaksgjennomforing.brev.PostutsendelseService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Innsatsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -29,10 +33,13 @@ import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -110,7 +117,7 @@ public class TestData {
 
     public static Avtale enMentorAvtaleUsignert() {
         Avtale avtale = enMentorAvtale();
-        EndreAvtale endreAvtale = endrePåAlleMentorFelter();
+        EndreAvtaleDTO endreAvtale = endrePåAlleMentorFelter();
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER, null);
         return avtale;
     }
@@ -118,7 +125,7 @@ public class TestData {
     public static Avtale enMentorAvtaleSignert() {
         Avtale avtale = enMentorAvtale();
         avtale.setInnsatsgruppe(Innsatsgruppe.TRENGER_VEILEDNING);
-        EndreAvtale endreAvtale = endrePåAlleMentorFelter();
+        EndreAvtaleDTO endreAvtale = endrePåAlleMentorFelter();
         avtale.godkjennForMentor(avtale.getMentorFnr());
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         return avtale;
@@ -126,7 +133,7 @@ public class TestData {
 
     public static Avtale enMentorAvtaleSignertAvAlle() {
         Avtale avtale = enMentorAvtale();
-        EndreAvtale endreAvtale = endrePåAlleMentorFelter();
+        EndreAvtaleDTO endreAvtale = endrePåAlleMentorFelter();
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         avtale.godkjennForMentor(avtale.getMentorFnr());
         avtale.godkjennForDeltaker(avtale.getDeltakerFnr());
@@ -203,7 +210,7 @@ public class TestData {
         avtale.getGjeldendeInnhold().setDeltakerEtternavn("Opphav2");
         // Kan ikke endre startdato på arena-avtale, så endringen i endreAvtale feiler uten denne
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate());
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreKontaktInfo(endreAvtale);
         endreMentorInfo(endreAvtale);
         endreAvtale.setMentorValgtLonnstype(MentorValgtLonnstype.ÅRSLØNN);
@@ -246,7 +253,7 @@ public class TestData {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         setOppfølgingOgGeografiskPåAvtale(avtale);
         avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
-        EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
+        EndreAvtaleDTO endring = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         avtale.setGodkjentForEtterregistrering(true);
         avtale.endreAvtale(endring, Avtalerolle.VEILEDER);
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
@@ -260,7 +267,7 @@ public class TestData {
         avtale.setArenaRyddeAvtale(new ArenaRyddeAvtale());
         setOppfølgingOgGeografiskPåAvtale(avtale);
         avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
-        EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
+        EndreAvtaleDTO endring = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         avtale.setGodkjentForEtterregistrering(true);
         avtale.endreAvtale(endring, Avtalerolle.VEILEDER);
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
@@ -274,7 +281,7 @@ public class TestData {
         avtale.setArenaRyddeAvtale(new ArenaRyddeAvtale());
         setOppfølgingOgGeografiskPåAvtale(avtale);
         avtale.setInnsatsgruppe(Innsatsgruppe.LITEN_MULIGHET_TIL_A_JOBBE);
-        EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
+        EndreAvtaleDTO endring = TestData.endringPåAlleLønnstilskuddFelter(startDato, sluttDato);
         avtale.setGodkjentForEtterregistrering(true);
         avtale.endreAvtale(endring, Avtalerolle.VEILEDER);
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
@@ -409,7 +416,7 @@ public class TestData {
         Avtale avtale = Avtale.opprett(lagOpprettAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, veilderNavIdent);
         setOppfølgingPåAvtale(avtale);
         avtale.setInnsatsgruppe(Innsatsgruppe.JOBBE_DELVIS);
-        EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter();
+        EndreAvtaleDTO endreAvtale = endringPåAlleLønnstilskuddFelter();
         endreAvtale.setSluttDato(Now.localDate().plusMonths(23).minusDays(2));
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
@@ -526,7 +533,7 @@ public class TestData {
     public static Avtale enSommerjobbAvtaleGodkjentAvVeileder() {
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         setOppfølgingPåAvtale(avtale);
-        EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter(LocalDate.of(2021, 6, 1), LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
+        EndreAvtaleDTO endreAvtale = endringPåAlleLønnstilskuddFelter(LocalDate.of(2021, 6, 1), LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         endreAvtale.setLonnstilskuddProsent(50);
         endreAvtale.setFeriepengesats(new BigDecimal("0.12"));
         endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
@@ -544,7 +551,7 @@ public class TestData {
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         setOppfølgingPåAvtale(avtale);
         avtale.setAvtaleNr(1);
-        EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter(LocalDate.of(2021, 6, 1), LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
+        EndreAvtaleDTO endreAvtale = endringPåAlleLønnstilskuddFelter(LocalDate.of(2021, 6, 1), LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         endreAvtale.setLonnstilskuddProsent(50);
         endreAvtale.setFeriepengesats(new BigDecimal("0.12"));
         endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
@@ -563,7 +570,7 @@ public class TestData {
     public static Avtale enSommerjobbAvtaleGodkjentAvArbeidsgiver() {
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         setOppfølgingPåAvtale(avtale);
-        EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter(LocalDate.of(2021, 6, 1), LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
+        EndreAvtaleDTO endreAvtale = endringPåAlleLønnstilskuddFelter(LocalDate.of(2021, 6, 1), LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         endreAvtale.setLonnstilskuddProsent(50);
         endreAvtale.setFeriepengesats(new BigDecimal("0.12"));
         endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
@@ -577,7 +584,7 @@ public class TestData {
         Avtale avtale = enAvtaleMedAltUtfylt();
         avtale.setTiltakstype(Tiltakstype.MENTOR);
         avtale.setMentorFnr(new Fnr("00000000000"));
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreMentorInfo(endreAvtale);
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         avtale.getGjeldendeInnhold().setVersjon(1);
@@ -602,7 +609,7 @@ public class TestData {
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         avtale.setInnsatsgruppe(Innsatsgruppe.JOBBE_DELVIS);
         setOppfølgingPåAvtale(avtale);
-        EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
+        EndreAvtaleDTO endreAvtale = endringPåAlleVTAOFelter();
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
@@ -658,7 +665,7 @@ public class TestData {
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         avtale.setInnsatsgruppe(Innsatsgruppe.JOBBE_DELVIS);
         setOppfølgingPåAvtale(avtale);
-        EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
+        EndreAvtaleDTO endreAvtale = endringPåAlleVTAOFelter();
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
@@ -679,7 +686,7 @@ public class TestData {
         avtale.setInnsatsgruppe(Innsatsgruppe.JOBBE_DELVIS);
         avtale.setEnhetOppfolging("0904");
         avtale.setEnhetsnavnOppfolging("Vinstra");
-        EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
+        EndreAvtaleDTO endreAvtale = endringPåAlleVTAOFelter();
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
@@ -693,7 +700,7 @@ public class TestData {
         avtale.setInnsatsgruppe(Innsatsgruppe.JOBBE_DELVIS);
         setOppfølgingPåAvtale(avtale);
         avtale.setGodkjentForEtterregistrering(true);
-        EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
+        EndreAvtaleDTO endreAvtale = endringPåAlleVTAOFelter();
         endreAvtale.setDeltakerFornavn("Test");
         endreAvtale.setDeltakerEtternavn("Testesen");
         endreAvtale.setStartDato(Now.localDate().minusMonths(12));
@@ -738,7 +745,7 @@ public class TestData {
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         avtale.setInnsatsgruppe(Innsatsgruppe.JOBBE_DELVIS);
         setOppfølgingPåAvtale(avtale);
-        EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
+        EndreAvtaleDTO endreAvtale = endringPåAlleVTAOFelter();
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.instant());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.instant());
@@ -749,13 +756,13 @@ public class TestData {
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO),Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         avtale.setInnsatsgruppe(Innsatsgruppe.JOBBE_DELVIS);
         setOppfølgingPåAvtale(avtale);
-        EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
+        EndreAvtaleDTO endreAvtale = endringPåAlleVTAOFelter();
         avtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         return avtale;
     }
 
-    public static EndreAvtale endringPåAlleVTAOFelter() {
-        EndreAvtale endreAvtale = new EndreAvtale();
+    public static EndreAvtaleDTO endringPåAlleVTAOFelter() {
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreKontaktInfo(endreAvtale);
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
@@ -775,7 +782,7 @@ public class TestData {
     public static Avtale enLonnstilskuddAvtaleMedAltUtfyltMedGodkjentForEtterregistrering(LocalDate avtaleStart, LocalDate avtaleSlutt) {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setInnsatsgruppe(Innsatsgruppe.JOBBE_DELVIS);
-        EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter(avtaleStart, avtaleSlutt);
+        EndreAvtaleDTO endring = TestData.endringPåAlleLønnstilskuddFelter(avtaleStart, avtaleSlutt);
         avtale.setGodkjentForEtterregistrering(true);
         avtale.endreAvtale(endring, Avtalerolle.VEILEDER);
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
@@ -797,26 +804,26 @@ public class TestData {
         return new OpprettMentorAvtale(deltakerFnr, mentorFnr, bedriftNr, tiltakstype, Avtalerolle.VEILEDER);
     }
 
-    public static EndreAvtale ingenEndring() {
-        return new EndreAvtale();
+    public static EndreAvtaleDTO ingenEndring() {
+        return new EndreAvtaleDTO();
     }
 
-    public static EndreInkluderingstilskudd endringMedNyeInkluderingstilskudd(List<Inkluderingstilskuddsutgift> eksisterendeUtgifter) {
-        EndreInkluderingstilskudd endreInkluderingstilskudd = new EndreInkluderingstilskudd();
+    public static EndreInkluderingstilskuddDTO endringMedNyeInkluderingstilskudd(List<InkluderingstilskuddsutgiftDTO> eksisterendeUtgifter) {
+        EndreInkluderingstilskuddDTO endreInkluderingstilskudd = new EndreInkluderingstilskuddDTO();
         endreInkluderingstilskudd.getInkluderingstilskuddsutgift().addAll(eksisterendeUtgifter);
-        endreInkluderingstilskudd.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift(13337, InkluderingstilskuddsutgiftType.PROGRAMVARE));
+        endreInkluderingstilskudd.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgiftDto(13337, InkluderingstilskuddsutgiftType.PROGRAMVARE));
         return endreInkluderingstilskudd;
     }
 
-    public static EndreAvtale endreInkluderingstilskuddInfo(EndreAvtale endreAvtale) {
-        endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift(13337, InkluderingstilskuddsutgiftType.PROGRAMVARE));
-        endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift(25697, InkluderingstilskuddsutgiftType.OPPLÆRING));
-        endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift(7195, InkluderingstilskuddsutgiftType.UTSTYR));
+    public static EndreAvtaleDTO endreInkluderingstilskuddInfo(EndreAvtaleDTO endreAvtale) {
+        endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgiftDto(13337, InkluderingstilskuddsutgiftType.PROGRAMVARE));
+        endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgiftDto(25697, InkluderingstilskuddsutgiftType.OPPLÆRING));
+        endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgiftDto(7195, InkluderingstilskuddsutgiftType.UTSTYR));
         endreAvtale.setInkluderingstilskuddBegrunnelse("Behov for tilskudd til dyre programvarelisenser og opplæring i disse.");
         return endreAvtale;
     }
 
-    public static EndreAvtale endreKontaktInfo(EndreAvtale endreAvtale) {
+    public static EndreAvtaleDTO endreKontaktInfo(EndreAvtaleDTO endreAvtale) {
         endreAvtale.setDeltakerFornavn("Dagny");
         endreAvtale.setDeltakerEtternavn("Deltaker");
         endreAvtale.setDeltakerTlf("40000000");
@@ -832,12 +839,12 @@ public class TestData {
         return endreAvtale;
     }
 
-    public static EndreAvtale endreMaalInfo(EndreAvtale endreAvtale) {
+    public static EndreAvtaleDTO endreMaalInfo(EndreAvtaleDTO endreAvtale) {
         endreAvtale.getMaal().add(TestData.etMaal());
         return endreAvtale;
     }
 
-    public static EndreAvtale endreMentorInfo(EndreAvtale endreAvtale) {
+    public static EndreAvtaleDTO endreMentorInfo(EndreAvtaleDTO endreAvtale) {
         endreAvtale.setMentorFornavn("Mentor");
         endreAvtale.setMentorEtternavn("Mentorsen");
         endreAvtale.setMentorOppgaver("Mentoroppgaver");
@@ -847,8 +854,8 @@ public class TestData {
         return endreAvtale;
     }
 
-    public static EndreAvtale endringPåAlleArbeidstreningFelter() {
-        EndreAvtale endreAvtale = new EndreAvtale();
+    public static EndreAvtaleDTO endringPåAlleArbeidstreningFelter() {
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreKontaktInfo(endreAvtale);
         endreAvtale.setStillingstittel("Butikkbetjent");
         endreAvtale.setStillingStyrk08(5223);
@@ -864,8 +871,8 @@ public class TestData {
         return endreAvtale;
     }
 
-    public static EndreAvtale endringPåAlleInkluderingstilskuddFelter() {
-        EndreAvtale endreAvtale = new EndreAvtale();
+    public static EndreAvtaleDTO endringPåAlleInkluderingstilskuddFelter() {
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreKontaktInfo(endreAvtale);
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
@@ -875,12 +882,12 @@ public class TestData {
         return endreAvtale;
     }
 
-    public static EndreAvtale endringPåAlleLønnstilskuddFelter() {
+    public static EndreAvtaleDTO endringPåAlleLønnstilskuddFelter() {
         return endringPåAlleLønnstilskuddFelter(Now.localDate(), Now.localDate().plusMonths(12).minusDays(1));
     }
 
-    public static EndreAvtale endringPåAlleLønnstilskuddFelter(LocalDate start, LocalDate slutt) {
-        EndreAvtale endreAvtale = new EndreAvtale();
+    public static EndreAvtaleDTO endringPåAlleLønnstilskuddFelter(LocalDate start, LocalDate slutt) {
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreKontaktInfo(endreAvtale);
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
@@ -904,15 +911,15 @@ public class TestData {
         return endreAvtale;
     }
 
-    public static EndreAvtale endringPåAlleLønnstilskuddFelterForSommerjobb(int prosentLonnstilskudd) {
-        EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter();
+    public static EndreAvtaleDTO endringPåAlleLønnstilskuddFelterForSommerjobb(int prosentLonnstilskudd) {
+        EndreAvtaleDTO endreAvtale = endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(prosentLonnstilskudd);
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusWeeks(4).minusDays(1));
         return endreAvtale;
     }
 
-    public static EndreAvtale endringPåAlleMentorFelterUtenBeregning() {
-        EndreAvtale endreAvtale = new EndreAvtale();
+    public static EndreAvtaleDTO endringPåAlleMentorFelterUtenBeregning() {
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreKontaktInfo(endreAvtale);
         endreAvtale.setArbeidsgiverKontonummer("83726282929");
         endreAvtale.setArbeidsoppgaver("arbeidsoppgaver");
@@ -929,8 +936,8 @@ public class TestData {
         return endreAvtale;
     }
 
-    public static EndreAvtale endrePåAlleMentorFelter() {
-        EndreAvtale endreAvtale = endringPåAlleMentorFelterUtenBeregning();
+    public static EndreAvtaleDTO endrePåAlleMentorFelter() {
+        EndreAvtaleDTO endreAvtale = endringPåAlleMentorFelterUtenBeregning();
         endreAvtale.setMentorTimelonn(100);
         endreAvtale.setMentorAntallTimer(10.0);
         endreAvtale.setManedslonn(null);
@@ -1094,11 +1101,31 @@ public class TestData {
         return beslutter;
     }
 
-    public static Maal etMaal() {
-        Maal maal = new Maal();
-        maal.setKategori(MaalKategori.FÅ_JOBB_I_BEDRIFTEN);
-        maal.setBeskrivelse("Lære butikkarbeid");
-        return maal;
+    public static MaalDTO etMaal() {
+        return etMaal(null);
+    }
+
+    public static MaalDTO etMaal(String beskrivelse) {
+        return new MaalDTO(
+            null,
+            MaalKategori.FÅ_JOBB_I_BEDRIFTEN,
+            Optional.ofNullable(beskrivelse).orElse("Lære butikkarbeid")
+        );
+    }
+
+    public static InkluderingstilskuddsutgiftDTO enInkluderingstilskuddsutgiftDto(Integer beløp, InkluderingstilskuddsutgiftType type) {
+        LocalDate start = Now.localDate();
+        LocalDate slutt = Collections.min(List.of(start.plusWeeks(2), start.with(TemporalAdjusters.lastDayOfYear())));
+        return enInkluderingstilskuddsutgiftDto(beløp, type, start, slutt);
+    }
+
+    public static InkluderingstilskuddsutgiftDTO enInkluderingstilskuddsutgiftDto(
+        Integer beløp,
+        InkluderingstilskuddsutgiftType type,
+        LocalDate startdato,
+        LocalDate sluttdato
+    ) {
+        return new InkluderingstilskuddsutgiftDTO(null, null, beløp, null, type, startdato, sluttdato);
     }
 
     public static Inkluderingstilskuddsutgift enInkluderingstilskuddsutgift(Integer beløp, InkluderingstilskuddsutgiftType type) {

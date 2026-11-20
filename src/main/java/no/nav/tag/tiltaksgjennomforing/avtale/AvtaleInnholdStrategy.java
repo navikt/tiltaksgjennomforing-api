@@ -1,12 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 
 import java.time.LocalDate;
 import java.util.Map;
 
 public interface AvtaleInnholdStrategy {
-    void endre(EndreAvtale endreAvtale);
+    void endre(EndreAvtaleDTO endreAvtale);
 
     default void endreTilskuddsberegning(EndreTilskuddsberegning endreTilskuddsberegning) {
         throw new RuntimeException("Ikke implementert");
@@ -17,4 +18,6 @@ public interface AvtaleInnholdStrategy {
     void endreSluttDato(LocalDate nySluttDato);
 
     void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse);
+
+    default void sjekkGodkjenning() {}
 }

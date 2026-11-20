@@ -3,20 +3,22 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Inkluderingstilskuddsutgift;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
-import static no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode.KAN_IKKE_ENDRE_INKLUDERINGSTILSKUDD_ETTER_SLUTTDATO;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
 public class InkluderingstilskuddAvtaleBeregningStrategy extends BeregningStrategy {
@@ -33,64 +35,64 @@ public class InkluderingstilskuddAvtaleBeregningStrategy extends BeregningStrate
     public void reberegnTotal() {}
 
     @Override
-    public boolean harNyeTilskuddsperioder(Set<TilskuddPeriode> a, List<TilskuddPeriode> b) {
-        // Alltid lag nye perioder siden utgifter er koblet til tilskudd og blir overskrevet ved generering av nye perioder.
-        return true;
+    public boolean harNyeTilskuddsperioder(Set<TilskuddPeriode> eksisterende, List<TilskuddPeriode> nye) {
+        // Utgifter kobles til de nye periodeinstansene, så likhet på innhold er ikke nok. Behold kun hvis det er de samme instansene.
+        Set<TilskuddPeriode> eksisterendeInstanser = Collections.newSetFromMap(new IdentityHashMap<>());
+        eksisterendeInstanser.addAll(eksisterende);
+        return eksisterendeInstanser.size() != nye.size() || !eksisterendeInstanser.containsAll(nye);
     }
 
     @Override
     public boolean nødvendigeFelterErUtfyltForBeregningAvTilskuddsbeløp() {
-        var gjeldendeInnhold = avtale.getGjeldendeInnhold();
-        return Utils.erIkkeTomme(
-            gjeldendeInnhold.getInkluderingstilskuddsutgift(),
-            gjeldendeInnhold.getStartDato(),
-            gjeldendeInnhold.getSluttDato()
-        );
+        return nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder();
     }
 
     @Override
     public boolean nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder() {
-        var gjeldendeInnhold = avtale.getGjeldendeInnhold();
-        return Utils.erIkkeTomme(
-            gjeldendeInnhold.getInkluderingstilskuddsutgift(),
-            gjeldendeInnhold.getStartDato(),
-            gjeldendeInnhold.getSluttDato()
-        );
+        return Utils.erIkkeTomme(avtale.getGjeldendeInnhold().getInkluderingstilskuddsutgift());
     }
 
     @Override
     public List<TilskuddPeriode> genererNyeTilskuddsperioder() {
         if (avtale.erAvtaleInngått()) {
-            return Collections.emptyList();
+            return avtale.getTilskuddPeriode().stream().toList();
         }
         if (!nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder()) {
             return Collections.emptyList();
         }
-
         List<Inkluderingstilskuddsutgift> utgifter = avtale.getGjeldendeInnhold().getInkluderingstilskuddsutgift();
-        return lagTilskuddsperioder(utgifter, 1);
-    }
-
-    @Override
-    public List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(LocalDate start, LocalDate slutt) {
-        if (!nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder()) {
-            return Collections.emptyList();
-        }
-
-        List<Inkluderingstilskuddsutgift> nyeUtgifter = avtale.getGjeldendeInnhold()
-            .getInkluderingstilskuddsutgift()
-            .stream()
+        List<TilskuddPeriode> eksisterende = utgifter.stream()
+            .map(Inkluderingstilskuddsutgift::getTilskuddperiode)
+            .filter(Objects::nonNull)
+            .toList();
+        List<Inkluderingstilskuddsutgift> utgifterUtenPeriode = utgifter.stream()
             .filter(utgift -> utgift.getTilskuddperiode() == null)
             .toList();
 
-        int sisteLopenummer = avtale.getTilskuddPeriode()
-            .stream()
+        if (utgifterUtenPeriode.isEmpty()) {
+            return eksisterende;
+        }
+
+        List<TilskuddPeriode> nye = lagTilskuddsperioder(utgifterUtenPeriode, sisteLøpenummer(eksisterende) + 1);
+        return Stream.concat(eksisterende.stream(), nye.stream()).toList();
+    }
+
+    @Override
+    public List<TilskuddPeriode> genererTilskuddsperioder(GenererTilskuddsperioder periode) {
+        if (!nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder()) {
+            return Collections.emptyList();
+        }
+
+        List<Inkluderingstilskuddsutgift> utgifter = GenererTilskuddsperioder.konverterTilUtgifter(periode).utgifter();
+        return lagTilskuddsperioder(utgifter, sisteLøpenummer(avtale.getTilskuddPeriode()) + 1);
+    }
+
+    private static int sisteLøpenummer(Collection<TilskuddPeriode> perioder) {
+        return perioder.stream()
             .map(TilskuddPeriode::getLøpenummer)
             .filter(Objects::nonNull)
             .max(Integer::compareTo)
             .orElse(0);
-
-        return lagTilskuddsperioder(nyeUtgifter, sisteLopenummer + 1);
     }
 
     List<TilskuddPeriode> lagTilskuddsperioder(List<Inkluderingstilskuddsutgift> utgifter, int lopenummer) {
@@ -98,13 +100,8 @@ public class InkluderingstilskuddAvtaleBeregningStrategy extends BeregningStrate
             return Collections.emptyList();
         }
 
-        LocalDate avtaleStartdato = avtale.getGjeldendeInnhold().getStartDato();
-        LocalDate avtaleSluttdato = avtale.getGjeldendeInnhold().getSluttDato();
         List<TilskuddPeriode> perioder = utgifter.stream().map(utgift -> {
-            if (utgift.getTilskuddperiode() != null) {
-                return utgift.getTilskuddperiode();
-            }
-            TilskuddPeriode tilskuddsperiode = lagTilskuddsperiode(utgift, avtaleStartdato, avtaleSluttdato);
+            TilskuddPeriode tilskuddsperiode = lagTilskuddsperiode(utgift);
             utgift.setTilskuddperiode(tilskuddsperiode);
             return tilskuddsperiode;
         }).toList();
@@ -114,17 +111,40 @@ public class InkluderingstilskuddAvtaleBeregningStrategy extends BeregningStrate
         return perioder;
     }
 
-    TilskuddPeriode lagTilskuddsperiode(Inkluderingstilskuddsutgift utgift, LocalDate avtaleStartdato, LocalDate avtaleSluttdato) {
-        LocalDate sistedagIAaret = avtaleStartdato.with(TemporalAdjusters.lastDayOfYear());
+    TilskuddPeriode lagTilskuddsperiode(Inkluderingstilskuddsutgift utgift) {
+        LocalDate start = Optional.ofNullable(utgift.getGenererTilskuddsperiodeData())
+            .map(Inkluderingstilskuddsutgift.GenererTilskuddsperiodeData::startdato)
+            .orElse(null);
+        LocalDate slutt = Optional.ofNullable(utgift.getGenererTilskuddsperiodeData())
+            .map(Inkluderingstilskuddsutgift.GenererTilskuddsperiodeData::sluttdato)
+            .orElse(null);
 
-        LocalDate startdato = DatoUtils.maksDato(avtaleStartdato, Now.localDate());
-        LocalDate sluttdato = DatoUtils.minDato(avtaleSluttdato, startdato.plusMonths(3), sistedagIAaret);
-
-        if (startdato.getYear() != sistedagIAaret.getYear()) {
-            throw new FeilkodeException(KAN_IKKE_ENDRE_INKLUDERINGSTILSKUDD_ETTER_SLUTTDATO);
+        LocalDate avtaleStart = avtale.getGjeldendeInnhold().getStartDato();
+        LocalDate avtaleSlutt = avtale.getGjeldendeInnhold().getSluttDato();
+        if (avtaleStart == null || avtaleSlutt == null) {
+            throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_PERIODE_AVTALE_MANGLER_DATO);
+        }
+        if (start == null || slutt == null) {
+            throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_UTGIFT_MANGLER_DATO);
+        }
+        if (slutt.isBefore(start)) {
+            throw new FeilkodeException(Feilkode.START_ETTER_SLUTT);
+        }
+        if (start.isBefore(avtaleStart)) {
+            throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_PERIODE_FOR_TIDLIG_STARTDATO);
+        }
+        if (slutt.isAfter(avtaleSlutt)) {
+            throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_PERIODE_FOR_SEN_SLUTTDATO);
+        }
+        if (!slutt.isBefore(start.plusMonths(3))) {
+            throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_PERIODE_FOR_LANG);
+        }
+        LocalDate sistedagIAaret = start.with(TemporalAdjusters.lastDayOfYear());
+        if (slutt.isAfter(sistedagIAaret)) {
+            throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_PERIODE_PAA_TVERS_AV_AAR);
         }
 
-        TilskuddPeriode tilskuddsperiode = new TilskuddPeriode(utgift.getBeløp(), startdato, sluttdato);
+        TilskuddPeriode tilskuddsperiode = new TilskuddPeriode(utgift.getBeløp(), start, slutt);
         tilskuddsperiode.setAvtale(avtale);
         tilskuddsperiode.setEnhet(avtale.getGjeldendeInnhold().getEnhetKostnadssted());
         tilskuddsperiode.setEnhetsnavn(avtale.getGjeldendeInnhold().getEnhetsnavnKostnadssted());
