@@ -23,7 +23,10 @@ public class EndreInkluderingstilskuddDTO {
         return inkluderingstilskuddsutgift.isEmpty();
     }
 
-    public boolean harMangler() {
+    public boolean harMangler(boolean toggle) {
+        if (toggle) {
+            return inkluderingstilskuddsutgift.stream().anyMatch(i -> Utils.erNoenTomme(i.beløp(), i.type(), i.startdato(), i.sluttdato()));
+        }
         return inkluderingstilskuddsutgift.stream().anyMatch(i -> Utils.erNoenTomme(i.beløp(), i.type()));
     }
 

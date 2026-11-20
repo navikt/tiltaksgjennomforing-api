@@ -1450,10 +1450,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (endreInkluderingstilskudd.overskriderMaksbelop(this)) {
             throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_SUM_FOR_HØY);
         }
-        if (endreInkluderingstilskudd.harMangler()) {
+        Boolean nyInkluderingstilskudd = FeatureToggleHolder.get().isEnabled(NY_INKLUDERINGSTILSKUDD);
+        if (endreInkluderingstilskudd.harMangler(nyInkluderingstilskudd)) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_INKLUDERINGSTILSKUDD_IKKE_BELOP_ELLER_TYPE);
         }
-        if (FeatureToggleHolder.get().isEnabled(NY_INKLUDERINGSTILSKUDD) && Now.localDate().isAfter(getGjeldendeInnhold().getSluttDato())) {
+        if (nyInkluderingstilskudd && Now.localDate().isAfter(getGjeldendeInnhold().getSluttDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_INKLUDERINGSTILSKUDD_ETTER_SLUTTDATO);
         }
         // Sjekk at det er like mange utgifter på forrige versjon som det er id'er i request. Hvis ikke er ikke frontend i sync

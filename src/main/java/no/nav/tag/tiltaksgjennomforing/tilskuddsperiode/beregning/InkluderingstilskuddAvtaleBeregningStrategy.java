@@ -67,6 +67,11 @@ public class InkluderingstilskuddAvtaleBeregningStrategy extends BeregningStrate
         List<Inkluderingstilskuddsutgift> utgifterUtenPeriode = utgifter.stream()
             .filter(utgift -> utgift.getTilskuddperiode() == null)
             .toList();
+
+        if (utgifterUtenPeriode.isEmpty()) {
+            return eksisterende;
+        }
+
         List<TilskuddPeriode> nye = lagTilskuddsperioder(utgifterUtenPeriode, sisteLøpenummer(eksisterende) + 1);
         return Stream.concat(eksisterende.stream(), nye.stream()).toList();
     }
@@ -94,9 +99,7 @@ public class InkluderingstilskuddAvtaleBeregningStrategy extends BeregningStrate
             return Collections.emptyList();
         }
 
-        List<TilskuddPeriode> perioder = utgifter.stream()
-            .filter(utgift -> utgift.getStartdato() != null && utgift.getSluttdato() != null)
-            .map(utgift -> {
+        List<TilskuddPeriode> perioder = utgifter.stream().map(utgift -> {
             TilskuddPeriode tilskuddsperiode = lagTilskuddsperiode(utgift);
             utgift.setTilskuddperiode(tilskuddsperiode);
             return tilskuddsperiode;
@@ -115,6 +118,9 @@ public class InkluderingstilskuddAvtaleBeregningStrategy extends BeregningStrate
         LocalDate avtaleSlutt = avtale.getGjeldendeInnhold().getSluttDato();
         if (avtaleStart == null || avtaleSlutt == null) {
             throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_PERIODE_AVTALE_MANGLER_DATO);
+        }
+        if (utgift.getStartdato() == null || utgift.getSluttdato() == null) {
+            throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_UTGIFT_MANGLER_DATO);
         }
         if (slutt.isBefore(start)) {
             throw new FeilkodeException(Feilkode.START_ETTER_SLUTT);
