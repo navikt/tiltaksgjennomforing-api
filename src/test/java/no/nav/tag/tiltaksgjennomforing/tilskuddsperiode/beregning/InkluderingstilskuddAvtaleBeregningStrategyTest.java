@@ -180,14 +180,17 @@ class InkluderingstilskuddAvtaleBeregningStrategyTest {
     }
 
     @Test
-    void lager_ikke_tilskuddsperiode_for_utgift_uten_datoer() {
+    void feiler_når_utgift_mangler_datoer() {
         Avtale avtale = avtaleMedUtgifter(
             AVTALE_START,
             AVTALE_SLUTT,
             utgift(10_000, PROGRAMVARE, AVTALE_START, AVTALE_START.plusMonths(1))
         );
 
-        assertThat(genererFor(avtale, utgift(5_000, UTSTYR, null, null))).isEmpty();
+        assertThatThrownBy(() -> genererFor(avtale, utgift(5_000, UTSTYR, null, null)))
+            .isInstanceOf(FeilkodeException.class)
+            .extracting("feilkode")
+            .isEqualTo(Feilkode.INKLUDERINGSTILSKUDD_UTGIFT_MANGLER_DATO);
     }
 
     @Test
@@ -199,10 +202,11 @@ class InkluderingstilskuddAvtaleBeregningStrategyTest {
     }
 
     @Test
-    void godtar_utgift_uten_datoer_når_avtalen_mangler_datoer() {
-        Avtale avtale = avtaleMedUtgifter(null, null, utgift(10_000, PROGRAMVARE, null, null));
-
-        assertThat(avtale.getTilskuddPeriode()).isEmpty();
+    void feiler_når_både_avtalen_og_utgiften_mangler_datoer() {
+        assertThatThrownBy(() -> avtaleMedUtgifter(null, null, utgift(10_000, PROGRAMVARE, null, null)))
+            .isInstanceOf(FeilkodeException.class)
+            .extracting("feilkode")
+            .isEqualTo(Feilkode.INKLUDERINGSTILSKUDD_PERIODE_AVTALE_MANGLER_DATO);
     }
 
     @Test
@@ -211,7 +215,7 @@ class InkluderingstilskuddAvtaleBeregningStrategyTest {
             AVTALE_START,
             AVTALE_SLUTT,
             utgift(10_000, PROGRAMVARE, AVTALE_START, AVTALE_START.plusMonths(1)),
-            utgift(20_000, OPPLÆRING, null, null)
+            utgift(20_000, OPPLÆRING, AVTALE_START, AVTALE_START.plusMonths(2))
         );
         Set<TilskuddPeriode> eksisterende = Set.copyOf(avtale.getTilskuddPeriode());
         avtale.getGjeldendeInnhold().getInkluderingstilskuddsutgift().forEach(utgift -> {
@@ -222,7 +226,7 @@ class InkluderingstilskuddAvtaleBeregningStrategyTest {
         InkluderingstilskuddAvtaleBeregningStrategy strategi = new InkluderingstilskuddAvtaleBeregningStrategy(avtale);
         List<TilskuddPeriode> perioder = strategi.genererNyeTilskuddsperioder();
 
-        assertThat(perioder).hasSize(1).allMatch(eksisterende::contains);
+        assertThat(perioder).hasSize(2).allMatch(eksisterende::contains);
         assertThat(strategi.harNyeTilskuddsperioder(avtale.getTilskuddPeriode(), perioder)).isFalse();
     }
 

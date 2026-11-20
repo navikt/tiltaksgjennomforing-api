@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreInkluderingstilskuddDTO;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.InkluderingstilskuddsutgiftDTO;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleHolder;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.Mockito.mock;
@@ -22,11 +24,12 @@ import static org.mockito.Mockito.when;
 
 @SyntetiskFnr
 public class InkluderingstilskuddTest {
+    private FeatureToggleService featureToggleService;
 
     @BeforeEach
     public void setup() {
         Now.fixedDate(LocalDate.of(2027, 1, 1));
-        FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
+        featureToggleService = mock(FeatureToggleService.class);
         when(featureToggleService.isEnabled(FeatureToggle.NY_INKLUDERINGSTILSKUDD)).thenReturn(true);
         new FeatureToggleHolder(featureToggleService);
     }
@@ -77,5 +80,23 @@ public class InkluderingstilskuddTest {
             .extracting(TilskuddPeriode::getBeløp)
             .isEqualTo(13337);
         assertThat(avtale.getGjeldendeInnhold().getInkluderingstilskuddsutgift()).hasSize(4);
+    }
+
+    @Test
+    public void endreInkluderingstilskudd_avvises_for_avtale_godkjent_før_ny_inkluderingstilskudd() {
+        when(featureToggleService.isEnabled(FeatureToggle.NY_INKLUDERINGSTILSKUDD)).thenReturn(false);
+        Avtale avtale = TestData.enInkluderingstilskuddAvtale();
+        avtale.godkjennForArbeidsgiver(TestData.enArbeidsgiver().getIdentifikator());
+        avtale.godkjennForVeilederOgDeltaker(TestData.enNavIdent(), TestData.enGodkjentPaVegneGrunn());
+        avtale.getGjeldendeInnhold().getInkluderingstilskuddsutgift().forEach(utgift -> utgift.setId(UUID.randomUUID()));
+        List<InkluderingstilskuddsutgiftDTO> eksisterendeUtgifter = InkluderingstilskuddsutgiftDTO.map(avtale.getGjeldendeInnhold().getInkluderingstilskuddsutgift());
+
+        when(featureToggleService.isEnabled(FeatureToggle.NY_INKLUDERINGSTILSKUDD)).thenReturn(true);
+        EndreInkluderingstilskuddDTO endreInkluderingstilskudd = TestData.endringMedNyeInkluderingstilskudd(eksisterendeUtgifter);
+
+        assertFeilkode(
+            Feilkode.KAN_IKKE_ENDRE_INKLUDERINGSTILSKUDD_IKKE_BELOP_ELLER_TYPE,
+            () -> avtale.endreInkluderingstilskudd(endreInkluderingstilskudd, TestData.enNavIdent())
+        );
     }
 }
