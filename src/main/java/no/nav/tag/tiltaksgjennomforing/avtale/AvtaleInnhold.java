@@ -205,6 +205,10 @@ public class AvtaleInnhold {
         return inkluderingstilskuddsutgift.stream().map(Inkluderingstilskuddsutgift::new).collect(Collectors.toList());
     }
 
+    void sjekkGodkjenning() {
+        innholdStrategi().sjekkGodkjenning();
+    }
+
     void endreAvtale(EndreAvtaleDTO nyAvtale) {
         innholdStrategi().endre(nyAvtale);
     }

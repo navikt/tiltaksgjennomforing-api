@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.InkluderingstilskuddsutgiftDTO;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleHolder;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode.FANT_UTGIFTER_SOM_IKKE_TIDLIGERE_ER_LAGRET;
+import static no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle.NY_INKLUDERINGSTILSKUDD;
 import static no.nav.tag.tiltaksgjennomforing.satser.Sats.INKLUDERINGSTILSKUDD_SATS;
 
 public class InkluderingstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
@@ -80,4 +82,10 @@ public class InkluderingstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnhold
         }
     }
 
+    @Override
+    public void sjekkGodkjenning() {
+        if (FeatureToggleHolder.get().isEnabled(NY_INKLUDERINGSTILSKUDD) && avtaleInnhold.getInkluderingstilskuddsutgift().stream().anyMatch(i -> i.getTilskuddperiode() == null)) {
+            throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_UTGIFT_MANGLER_TILSKUDDSPERIODE);
+        }
+    }
 }
