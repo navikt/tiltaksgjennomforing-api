@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -36,10 +35,8 @@ public class InkluderingstilskuddAvtaleBeregningStrategy extends BeregningStrate
 
     @Override
     public boolean harNyeTilskuddsperioder(Set<TilskuddPeriode> eksisterende, List<TilskuddPeriode> nye) {
-        // Utgifter kobles til de nye periodeinstansene, så likhet på innhold er ikke nok. Behold kun hvis det er de samme instansene.
-        Set<TilskuddPeriode> eksisterendeInstanser = Collections.newSetFromMap(new IdentityHashMap<>());
-        eksisterendeInstanser.addAll(eksisterende);
-        return eksisterendeInstanser.size() != nye.size() || !eksisterendeInstanser.containsAll(nye);
+        // Utgifter kobles til de nye periodeinstansene, så alle må tilskuddsperioder må erstattes.
+        return true;
     }
 
     @Override
@@ -125,10 +122,10 @@ public class InkluderingstilskuddAvtaleBeregningStrategy extends BeregningStrate
             throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_PERIODE_AVTALE_MANGLER_DATO);
         }
         if (start == null || slutt == null) {
-            throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_UTGIFT_MANGLER_DATO);
+            throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_PERIODE_UTGIFT_MANGLER_DATO);
         }
         if (slutt.isBefore(start)) {
-            throw new FeilkodeException(Feilkode.START_ETTER_SLUTT);
+            throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_PERIODE_AVTALE_START_ETTER_SLUTT);
         }
         if (start.isBefore(avtaleStart)) {
             throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_PERIODE_FOR_TIDLIG_STARTDATO);
