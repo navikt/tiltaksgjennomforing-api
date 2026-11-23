@@ -4,10 +4,12 @@ import no.nav.tag.tiltaksgjennomforing.SyntetiskFnr;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleHolder;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -22,6 +24,7 @@ public class InkluderingstilskuddTest {
 
     @BeforeEach
     public void setup() {
+        Now.fixedDate(LocalDate.of(2027, 1, 1));
         FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
         when(featureToggleService.isEnabled(FeatureToggle.NY_INKLUDERINGSTILSKUDD)).thenReturn(true);
         new FeatureToggleHolder(featureToggleService);
@@ -30,6 +33,7 @@ public class InkluderingstilskuddTest {
     @AfterEach
     public void tearDown() {
         FeatureToggleHolder.reset();
+        Now.resetClock();
     }
 
     @Test
