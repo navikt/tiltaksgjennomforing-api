@@ -39,7 +39,7 @@ jobs:
 
       - name: Push docker image to GAR
         if: inputs.push-image
-        uses: nais/docker-build-push@v0
+        uses: nais/docker-build-push@v1
         id: docker-build-push
         with:
           byosbom: target/classes/META-INF/sbom/application.cdx.json
