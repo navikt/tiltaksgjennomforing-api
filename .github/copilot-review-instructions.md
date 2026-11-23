@@ -1,6 +1,6 @@
 # Code review instructions: tiltaksgjennomforing-api
 
-Java 21 / Spring Boot backend with JPA, Flyway, Kafka and token-support. There is no frontend code in this repository. Background, patterns and terms are in [`AGENTS.md`](../AGENTS.md).
+Java 25 / Spring Boot backend with JPA, Flyway, Kafka and token-support. There is no frontend code in this repository. Background, patterns and terms are in [`AGENTS.md`](../AGENTS.md).
 
 Report real bugs, security problems and breaks with established patterns. Skip pure style preferences.
 
