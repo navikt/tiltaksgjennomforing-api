@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -34,14 +33,11 @@ public class Inkluderingstilskuddsutgift {
     private InkluderingstilskuddsutgiftType type;
     @ManyToOne
     @JoinColumn(name = "avtale_innhold_id")
-    @JsonIgnore
     @ToString.Exclude
     private AvtaleInnhold avtaleInnhold;
-    @JsonIgnore
     @ToString.Exclude
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     private TilskuddPeriode tilskuddperiode;
-    @JsonIgnore
     @ToString.Exclude
     @Transient
     private GenererTilskuddsperiodeData genererTilskuddsperiodeData;

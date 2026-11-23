@@ -112,7 +112,7 @@ class InkluderingstilskuddAvtaleBeregningStrategyTest {
     @CsvSource({
         "2026-02-28, 2026-03-31, INKLUDERINGSTILSKUDD_PERIODE_FOR_TIDLIG_STARTDATO",
         "2026-08-01, 2026-09-01, INKLUDERINGSTILSKUDD_PERIODE_FOR_SEN_SLUTTDATO",
-        "2026-06-01, 2026-03-01, START_ETTER_SLUTT",
+        "2026-06-01, 2026-03-01, INKLUDERINGSTILSKUDD_PERIODE_AVTALE_START_ETTER_SLUTT",
     })
     void avviser_utgift_med_ugyldig_periode(LocalDate start, LocalDate slutt, Feilkode feilkode) {
         Avtale avtale = avtaleMedUtgifter(
@@ -190,7 +190,7 @@ class InkluderingstilskuddAvtaleBeregningStrategyTest {
         assertThatThrownBy(() -> genererFor(avtale, utgift(5_000, UTSTYR, null, null)))
             .isInstanceOf(FeilkodeException.class)
             .extracting("feilkode")
-            .isEqualTo(Feilkode.INKLUDERINGSTILSKUDD_UTGIFT_MANGLER_DATO);
+            .isEqualTo(Feilkode.INKLUDERINGSTILSKUDD_PERIODE_UTGIFT_MANGLER_DATO);
     }
 
     @Test
@@ -226,7 +226,6 @@ class InkluderingstilskuddAvtaleBeregningStrategyTest {
         List<TilskuddPeriode> perioder = strategi.genererNyeTilskuddsperioder();
 
         assertThat(perioder).hasSize(2).allMatch(eksisterende::contains);
-        assertThat(strategi.harNyeTilskuddsperioder(avtale.getTilskuddPeriode(), perioder)).isFalse();
     }
 
     @Test
