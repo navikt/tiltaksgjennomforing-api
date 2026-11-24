@@ -88,24 +88,29 @@ public abstract class BeregningStrategy {
         Set<TilskuddPeriode> tilskuddPeriode = avtale.getTilskuddPeriode();
         for (TilskuddPeriode tp : Set.copyOf(tilskuddPeriode)) {
             TilskuddPeriodeStatus status = tp.getStatus();
-            if (tp.getStartDato().isAfter(nySluttDato)) {
-                if (status == TilskuddPeriodeStatus.UBEHANDLET) {
-                    tilskuddPeriode.remove(tp);
-                } else if (status == TilskuddPeriodeStatus.GODKJENT) {
-                    tilskuddPeriode.remove(tp);
+            if (!status.erUbehandletEllerGodkjent()) {
+                continue;
+            }
+
+            boolean skalFjernes = tp.getStartDato().isAfter(nySluttDato);
+            if (skalFjernes) {
+                tilskuddPeriode.remove(tp);
+                if (status.erGodkjent()) {
                     tp.annuller();
                     tilskuddPeriode.add(tp);
                 }
-            } else if (tp.getSluttDato().isAfter(nySluttDato)) {
-                if (status == TilskuddPeriodeStatus.UBEHANDLET || status == TilskuddPeriodeStatus.GODKJENT) {
-                    Integer nyttBeløp = getBeløpForPeriode(
-                        avtale.getGjeldendeInnhold(),
-                        Periode.av(tp.getStartDato(), nySluttDato)
-                    );
-                    tilskuddPeriode.remove(tp);
-                    tp.forkort(nySluttDato, nyttBeløp);
-                    tilskuddPeriode.add(tp);
-                }
+                continue;
+            }
+
+            boolean skalForkortes = tp.getSluttDato().isAfter(nySluttDato);
+            if (skalForkortes) {
+                Integer nyttBeløp = getBeløpForPeriode(
+                    avtale.getGjeldendeInnhold(),
+                    Periode.av(tp.getStartDato(), nySluttDato)
+                );
+                tilskuddPeriode.remove(tp);
+                tp.forkort(nySluttDato, nyttBeløp);
+                tilskuddPeriode.add(tp);
             }
         }
     }

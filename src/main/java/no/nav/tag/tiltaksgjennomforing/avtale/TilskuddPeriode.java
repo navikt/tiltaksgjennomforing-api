@@ -300,9 +300,16 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         }
     }
 
+    public void forkort(LocalDate nySluttDato) {
+        setSluttDato(nySluttDato);
+        if (status == TilskuddPeriodeStatus.GODKJENT) {
+            avtale.registrerHendelse(new TilskuddsperiodeForkortet(avtale, this));
+        }
+    }
+
     public void forkort(LocalDate nySluttDato, Integer nyttBeløp) {
         setSluttDato(nySluttDato);
-        setBeløp(nyttBeløp);
+        setBeløp (nyttBeløp);
         if (status == TilskuddPeriodeStatus.GODKJENT) {
             avtale.registrerHendelse(new TilskuddsperiodeForkortet(avtale, this));
         }

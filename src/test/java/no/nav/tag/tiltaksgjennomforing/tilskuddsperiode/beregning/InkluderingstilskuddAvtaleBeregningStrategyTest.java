@@ -5,8 +5,12 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.Inkluderingstilskuddsutgift;
 import no.nav.tag.tiltaksgjennomforing.avtale.InkluderingstilskuddsutgiftType;
+import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonStatus;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.InkluderingstilskuddsutgiftDTO;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -20,8 +24,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -272,6 +279,287 @@ class InkluderingstilskuddAvtaleBeregningStrategyTest {
             .doesNotContain(gammelPeriode)
             .extracting(TilskuddPeriode::getBeløp)
             .containsExactly(15_000);
+    }
+
+    @Test
+    void forleng_rorer_ikke_tilskuddsperioder() {
+        // forleng er bevisst ikke implementert for inkluderingstilskudd fordi veileder selv velger
+        // datoer per utgift, så eksisterende tilskuddsperioder skal ikke endres når avtalen forlenges.
+        Avtale avtale = avtaleMedUtgifter(
+            AVTALE_START,
+            AVTALE_SLUTT,
+            utgift(10_000, PROGRAMVARE, LocalDate.of(2026, 3, 1), LocalDate.of(2026, 5, 31)),
+            utgift(20_000, OPPLÆRING, LocalDate.of(2026, 6, 1), AVTALE_SLUTT)
+        );
+        TilskuddPeriode godkjentPeriode = avtale.tilskuddsperiode(0);
+        TilskuddPeriode ubehandletPeriode = avtale.tilskuddsperiode(1);
+        godkjentPeriode.setStatus(TilskuddPeriodeStatus.GODKJENT);
+        tomHendelser(avtale);
+
+        new InkluderingstilskuddAvtaleBeregningStrategy(avtale).forleng(AVTALE_SLUTT, AVTALE_SLUTT.plusMonths(3));
+
+        assertThat(avtale.getTilskuddPeriode())
+            .containsExactly(godkjentPeriode, ubehandletPeriode)
+            .extracting(
+                TilskuddPeriode::getLøpenummer,
+                TilskuddPeriode::getStartDato,
+                TilskuddPeriode::getSluttDato,
+                TilskuddPeriode::getBeløp,
+                TilskuddPeriode::getStatus
+            )
+            .containsExactly(
+                tuple(1, LocalDate.of(2026, 3, 1), LocalDate.of(2026, 5, 31), 10_000, TilskuddPeriodeStatus.GODKJENT),
+                tuple(2, LocalDate.of(2026, 6, 1), AVTALE_SLUTT, 20_000, TilskuddPeriodeStatus.UBEHANDLET)
+            );
+        assertThat(hentHendelser(avtale)).isEmpty();
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = TilskuddPeriodeStatus.class, names = {"UBEHANDLET", "GODKJENT"})
+    void forkort_beholder_perioder_som_slutter_for_eller_pa_ny_sluttdato(TilskuddPeriodeStatus status) {
+        Avtale avtale = avtaleMedUtgifter(
+            AVTALE_START,
+            AVTALE_SLUTT,
+            utgift(10_000, PROGRAMVARE, LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 31)),
+            utgift(15_000, OPPLÆRING, LocalDate.of(2026, 4, 1), LocalDate.of(2026, 4, 30))
+        );
+        TilskuddPeriode forNySlutt = avtale.tilskuddsperiode(0);
+        TilskuddPeriode paNySlutt = avtale.tilskuddsperiode(1);
+        forNySlutt.setStatus(status);
+        paNySlutt.setStatus(status);
+        LocalDate nySluttDato = LocalDate.of(2026, 4, 30);
+        tomHendelser(avtale);
+
+        new InkluderingstilskuddAvtaleBeregningStrategy(avtale).forkort(nySluttDato);
+
+        assertThat(avtale.getTilskuddPeriode()).containsExactly(forNySlutt, paNySlutt);
+        assertThat(forNySlutt.getSluttDato()).isEqualTo(LocalDate.of(2026, 3, 31));
+        assertThat(forNySlutt.getBeløp()).isEqualTo(10_000);
+        assertThat(forNySlutt.getStatus()).isEqualTo(status);
+        assertThat(paNySlutt.getSluttDato()).isEqualTo(nySluttDato);
+        assertThat(paNySlutt.getBeløp()).isEqualTo(15_000);
+        assertThat(paNySlutt.getStatus()).isEqualTo(status);
+        assertThat(hentHendelser(avtale)).isEmpty();
+    }
+
+    @Test
+    void forkort_forkorter_kryssende_ubehandlet_periode_med_uendret_belop_uten_hendelse() {
+        Avtale avtale = avtaleMedUtgifter(
+            AVTALE_START,
+            AVTALE_SLUTT,
+            utgift(10_000, PROGRAMVARE, LocalDate.of(2026, 4, 1), LocalDate.of(2026, 5, 31))
+        );
+        TilskuddPeriode periode = avtale.tilskuddsperiode(0);
+        LocalDate nySluttDato = LocalDate.of(2026, 4, 15);
+        tomHendelser(avtale);
+
+        new InkluderingstilskuddAvtaleBeregningStrategy(avtale).forkort(nySluttDato);
+
+        assertThat(avtale.getTilskuddPeriode()).containsExactly(periode);
+        assertThat(periode.getSluttDato()).isEqualTo(nySluttDato);
+        assertThat(periode.getBeløp()).isEqualTo(10_000);
+        assertThat(periode.getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET);
+        assertThat(hentHendelser(avtale)).isEmpty();
+    }
+
+    @Test
+    void forkort_forkorter_kryssende_godkjent_periode_med_uendret_belop_og_hendelse() {
+        Avtale avtale = avtaleMedUtgifter(
+            AVTALE_START,
+            AVTALE_SLUTT,
+            utgift(10_000, PROGRAMVARE, LocalDate.of(2026, 4, 1), LocalDate.of(2026, 5, 31))
+        );
+        TilskuddPeriode periode = avtale.tilskuddsperiode(0);
+        periode.setStatus(TilskuddPeriodeStatus.GODKJENT);
+        LocalDate nySluttDato = LocalDate.of(2026, 4, 15);
+        tomHendelser(avtale);
+
+        new InkluderingstilskuddAvtaleBeregningStrategy(avtale).forkort(nySluttDato);
+
+        assertThat(avtale.getTilskuddPeriode()).containsExactly(periode);
+        assertThat(periode.getSluttDato()).isEqualTo(nySluttDato);
+        assertThat(periode.getBeløp()).isEqualTo(10_000);
+        assertThat(periode.getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
+        assertThat(hentHendelser(avtale)).containsExactly(new TilskuddsperiodeForkortet(avtale, periode));
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = TilskuddPeriodeStatus.class, names = {"UBEHANDLET", "GODKJENT"})
+    void forkort_til_startdato_av_periode_gir_endagsperiode_med_uendret_belop(TilskuddPeriodeStatus status) {
+        Avtale avtale = avtaleMedUtgifter(
+            AVTALE_START,
+            AVTALE_SLUTT,
+            utgift(10_000, PROGRAMVARE, LocalDate.of(2026, 4, 1), LocalDate.of(2026, 5, 31))
+        );
+        TilskuddPeriode periode = avtale.tilskuddsperiode(0);
+        periode.setStatus(status);
+        LocalDate nySluttDato = LocalDate.of(2026, 4, 1);
+        tomHendelser(avtale);
+
+        new InkluderingstilskuddAvtaleBeregningStrategy(avtale).forkort(nySluttDato);
+
+        assertThat(avtale.getTilskuddPeriode()).containsExactly(periode);
+        assertThat(periode.getStartDato()).isEqualTo(nySluttDato);
+        assertThat(periode.getSluttDato()).isEqualTo(nySluttDato);
+        assertThat(periode.getBeløp()).isEqualTo(10_000);
+        assertThat(periode.getStatus()).isEqualTo(status);
+        if (status == TilskuddPeriodeStatus.GODKJENT) {
+            assertThat(hentHendelser(avtale)).containsExactly(new TilskuddsperiodeForkortet(avtale, periode));
+        } else {
+            assertThat(hentHendelser(avtale)).isEmpty();
+        }
+    }
+
+    @Test
+    void forkort_fjerner_ubehandlet_periode_etter_ny_sluttdato_uten_hendelse() {
+        Avtale avtale = avtaleMedUtgifter(
+            AVTALE_START,
+            AVTALE_SLUTT,
+            utgift(10_000, PROGRAMVARE, LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 31)),
+            utgift(20_000, OPPLÆRING, LocalDate.of(2026, 5, 1), LocalDate.of(2026, 6, 30))
+        );
+        TilskuddPeriode beholdes = avtale.tilskuddsperiode(0);
+        TilskuddPeriode fjernes = avtale.tilskuddsperiode(1);
+        tomHendelser(avtale);
+
+        new InkluderingstilskuddAvtaleBeregningStrategy(avtale).forkort(LocalDate.of(2026, 4, 30));
+
+        assertThat(avtale.getTilskuddPeriode()).containsExactly(beholdes).doesNotContain(fjernes);
+        assertThat(hentHendelser(avtale)).isEmpty();
+    }
+
+    @Test
+    void forkort_annullerer_godkjent_periode_etter_ny_sluttdato_med_hendelse() {
+        Avtale avtale = avtaleMedUtgifter(
+            AVTALE_START,
+            AVTALE_SLUTT,
+            utgift(10_000, PROGRAMVARE, LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 31)),
+            utgift(20_000, OPPLÆRING, LocalDate.of(2026, 5, 1), LocalDate.of(2026, 6, 30))
+        );
+        TilskuddPeriode beholdes = avtale.tilskuddsperiode(0);
+        TilskuddPeriode annulleres = avtale.tilskuddsperiode(1);
+        annulleres.setStatus(TilskuddPeriodeStatus.GODKJENT);
+        tomHendelser(avtale);
+
+        new InkluderingstilskuddAvtaleBeregningStrategy(avtale).forkort(LocalDate.of(2026, 4, 30));
+
+        assertThat(avtale.getTilskuddPeriode()).containsExactly(beholdes, annulleres);
+        assertThat(annulleres.getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);
+        assertThat(annulleres.getSluttDato()).isEqualTo(LocalDate.of(2026, 6, 30));
+        assertThat(annulleres.getBeløp()).isEqualTo(20_000);
+        assertThat(hentHendelser(avtale)).containsExactly(new TilskuddsperiodeAnnullert(avtale, annulleres));
+    }
+
+    @Test
+    void forkort_annullerer_godkjent_periode_med_utgatt_refusjon_etter_ny_sluttdato_uten_hendelse() {
+        Avtale avtale = avtaleMedUtgifter(
+            AVTALE_START,
+            AVTALE_SLUTT,
+            utgift(10_000, PROGRAMVARE, LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 31)),
+            utgift(20_000, OPPLÆRING, LocalDate.of(2026, 5, 1), LocalDate.of(2026, 6, 30))
+        );
+        TilskuddPeriode beholdes = avtale.tilskuddsperiode(0);
+        TilskuddPeriode annulleresMedUtgattRefusjon = avtale.tilskuddsperiode(1);
+        annulleresMedUtgattRefusjon.setStatus(TilskuddPeriodeStatus.GODKJENT);
+        annulleresMedUtgattRefusjon.setRefusjonStatus(RefusjonStatus.UTGÅTT);
+        tomHendelser(avtale);
+
+        new InkluderingstilskuddAvtaleBeregningStrategy(avtale).forkort(LocalDate.of(2026, 4, 30));
+
+        assertThat(avtale.getTilskuddPeriode()).containsExactly(beholdes, annulleresMedUtgattRefusjon);
+        assertThat(annulleresMedUtgattRefusjon.getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);
+        assertThat(hentHendelser(avtale)).isEmpty();
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = TilskuddPeriodeStatus.class, names = {"AVSLÅTT", "ANNULLERT", "BEHANDLET_I_ARENA"})
+    void forkort_lar_perioder_med_andre_statuser_vaere_urort(TilskuddPeriodeStatus status) {
+        Avtale avtale = avtaleMedUtgifter(
+            AVTALE_START,
+            AVTALE_SLUTT,
+            utgift(10_000, PROGRAMVARE, LocalDate.of(2026, 4, 1), LocalDate.of(2026, 5, 31)),
+            utgift(20_000, OPPLÆRING, LocalDate.of(2026, 6, 1), LocalDate.of(2026, 7, 31))
+        );
+        TilskuddPeriode kryssende = avtale.tilskuddsperiode(0);
+        TilskuddPeriode etter = avtale.tilskuddsperiode(1);
+        kryssende.setStatus(status);
+        etter.setStatus(status);
+        tomHendelser(avtale);
+
+        new InkluderingstilskuddAvtaleBeregningStrategy(avtale).forkort(LocalDate.of(2026, 4, 15));
+
+        assertThat(avtale.getTilskuddPeriode()).containsExactly(kryssende, etter);
+        assertThat(kryssende.getStatus()).isEqualTo(status);
+        assertThat(kryssende.getSluttDato()).isEqualTo(LocalDate.of(2026, 5, 31));
+        assertThat(kryssende.getBeløp()).isEqualTo(10_000);
+        assertThat(etter.getStatus()).isEqualTo(status);
+        assertThat(etter.getSluttDato()).isEqualTo(LocalDate.of(2026, 7, 31));
+        assertThat(etter.getBeløp()).isEqualTo(20_000);
+        assertThat(hentHendelser(avtale)).isEmpty();
+    }
+
+    @Test
+    void forkort_handterer_flere_overlappende_og_senere_perioder_samtidig() {
+        Avtale avtale = avtaleMedUtgifter(
+            AVTALE_START,
+            AVTALE_SLUTT,
+            utgift(5_000, PROGRAMVARE, LocalDate.of(2026, 3, 1), LocalDate.of(2026, 3, 31)),
+            utgift(10_000, OPPLÆRING, LocalDate.of(2026, 4, 1), LocalDate.of(2026, 5, 31)),
+            utgift(12_000, UTSTYR, LocalDate.of(2026, 4, 1), LocalDate.of(2026, 6, 15)),
+            utgift(15_000, PROGRAMVARE, LocalDate.of(2026, 5, 1), LocalDate.of(2026, 6, 30)),
+            utgift(18_000, OPPLÆRING, LocalDate.of(2026, 5, 1), LocalDate.of(2026, 6, 30)),
+            utgift(20_000, UTSTYR, LocalDate.of(2026, 6, 1), LocalDate.of(2026, 7, 31)),
+            utgift(25_000, PROGRAMVARE, LocalDate.of(2026, 6, 1), LocalDate.of(2026, 7, 31))
+        );
+        TilskuddPeriode forNySlutt = avtale.tilskuddsperiode(0);
+        TilskuddPeriode godkjentKryssende = avtale.tilskuddsperiode(1);
+        TilskuddPeriode ubehandletKryssende = avtale.tilskuddsperiode(2);
+        TilskuddPeriode godkjentEtter = avtale.tilskuddsperiode(3);
+        TilskuddPeriode godkjentUtgattEtter = avtale.tilskuddsperiode(4);
+        TilskuddPeriode ubehandletEtter = avtale.tilskuddsperiode(5);
+        TilskuddPeriode avslattEtter = avtale.tilskuddsperiode(6);
+
+        forNySlutt.setStatus(TilskuddPeriodeStatus.GODKJENT);
+        godkjentKryssende.setStatus(TilskuddPeriodeStatus.GODKJENT);
+        godkjentEtter.setStatus(TilskuddPeriodeStatus.GODKJENT);
+        godkjentUtgattEtter.setStatus(TilskuddPeriodeStatus.GODKJENT);
+        godkjentUtgattEtter.setRefusjonStatus(RefusjonStatus.UTGÅTT);
+        avslattEtter.setStatus(TilskuddPeriodeStatus.AVSLÅTT);
+
+        LocalDate nySluttDato = LocalDate.of(2026, 4, 15);
+        tomHendelser(avtale);
+
+        new InkluderingstilskuddAvtaleBeregningStrategy(avtale).forkort(nySluttDato);
+
+        assertThat(avtale.getTilskuddPeriode()).containsExactlyInAnyOrder(
+            forNySlutt,
+            godkjentKryssende,
+            ubehandletKryssende,
+            godkjentEtter,
+            godkjentUtgattEtter,
+            avslattEtter
+        );
+        assertThat(avtale.getTilskuddPeriode()).doesNotContain(ubehandletEtter);
+        assertThat(forNySlutt.getSluttDato()).isEqualTo(LocalDate.of(2026, 3, 31));
+        assertThat(godkjentKryssende.getSluttDato()).isEqualTo(nySluttDato);
+        assertThat(godkjentKryssende.getBeløp()).isEqualTo(10_000);
+        assertThat(ubehandletKryssende.getSluttDato()).isEqualTo(nySluttDato);
+        assertThat(ubehandletKryssende.getBeløp()).isEqualTo(12_000);
+        assertThat(godkjentEtter.getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);
+        assertThat(godkjentUtgattEtter.getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);
+        assertThat(avslattEtter.getStatus()).isEqualTo(TilskuddPeriodeStatus.AVSLÅTT);
+        assertThat(hentHendelser(avtale)).containsExactlyInAnyOrder(
+            new TilskuddsperiodeForkortet(avtale, godkjentKryssende),
+            new TilskuddsperiodeAnnullert(avtale, godkjentEtter)
+        );
+    }
+
+    private static void tomHendelser(Avtale avtale) {
+        ReflectionTestUtils.invokeMethod(avtale, "clearDomainEvents");
+    }
+
+    private static Collection<Object> hentHendelser(Avtale avtale) {
+        return ReflectionTestUtils.invokeMethod(avtale, "domainEvents");
     }
 
     private static List<TilskuddPeriode> genererFor(Avtale avtale, InkluderingstilskuddsutgiftDTO utgift) {
