@@ -45,7 +45,7 @@ Frontend logic that hides elements by role is not access control. Every new end-
 
 ## Setup & Local Development
 
-Requirements: JDK 21 and Maven. All dependencies resolve from public repositories or Nav's GitHub package mirror (`github-package-registry-mirror.gc.nav.no`) declared in `pom.xml`. No `settings.xml` or token is needed.
+Requirements: JDK 25 and Maven. All dependencies resolve from public repositories or Nav's GitHub package mirror (`github-package-registry-mirror.gc.nav.no`) declared in `pom.xml`. No `settings.xml` or token is needed.
 
 The production entry point `TiltaksgjennomforingApplication` refuses to start without the `MILJO` environment variable, which selects the Spring profile.
 
@@ -215,7 +215,7 @@ Use the existing solution for each concern. Do not introduce a parallel variant.
 
 ## Code Style
 
-- Java 21 - Follow the conventions of the surrounding code.
+- Java 25 - Follow the conventions of the surrounding code.
 - Domain names are Norwegian (refrain from using æ/ø/å in class names and variables - use ASCII), framework code is English. Keep this split.
 - Lombok is used throughout (`@Data`, `@Value`, `@Builder`, `@RequiredArgsConstructor`, `@Slf4j`). Do not write manual getters, setters or constructors that Lombok already provides.
 - Use records or sealed interfaces for small value and result types (see `Tilgang`).
