@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Inkluderingstilskuddsutgift;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
@@ -47,6 +48,39 @@ public class InkluderingstilskuddAvtaleBeregningStrategy extends BeregningStrate
     @Override
     public boolean nødvendigeFelterErUtfyltForÅGenerereTilskuddsperioder() {
         return Utils.erIkkeTomme(avtale.getGjeldendeInnhold().getInkluderingstilskuddsutgift());
+    }
+
+    @Override
+    public void forleng(LocalDate gammelSluttDato, LocalDate nySluttDato) {
+        // Ikke gjør noe ved forlengig
+    }
+
+    @Override
+    public void forkort(LocalDate nySluttDato) {
+        Set<TilskuddPeriode> tilskuddPeriode = avtale.getTilskuddPeriode();
+        for (TilskuddPeriode tp : Set.copyOf(tilskuddPeriode)) {
+            TilskuddPeriodeStatus status = tp.getStatus();
+            if (!status.erUbehandletEllerGodkjent()) {
+                continue;
+            }
+
+            boolean skalFjernes = tp.getStartDato().isAfter(nySluttDato);
+            if (skalFjernes) {
+                tilskuddPeriode.remove(tp);
+                if (status.erGodkjent()) {
+                    tp.annuller();
+                    tilskuddPeriode.add(tp);
+                }
+                continue;
+            }
+
+            boolean skalForkortes = tp.getSluttDato().isAfter(nySluttDato);
+            if (skalForkortes) {
+                tilskuddPeriode.remove(tp);
+                tp.forkort(nySluttDato);
+                tilskuddPeriode.add(tp);
+            }
+        }
     }
 
     @Override
