@@ -125,7 +125,7 @@ public class InkluderingstilskuddAvtaleBeregningStrategy extends BeregningStrate
             throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_PERIODE_UTGIFT_MANGLER_DATO);
         }
         if (slutt.isBefore(start)) {
-            throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_PERIODE_AVTALE_START_ETTER_SLUTT);
+            throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_PERIODE_START_ETTER_SLUTT);
         }
         if (start.isBefore(avtaleStart)) {
             throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_PERIODE_FOR_TIDLIG_STARTDATO);
