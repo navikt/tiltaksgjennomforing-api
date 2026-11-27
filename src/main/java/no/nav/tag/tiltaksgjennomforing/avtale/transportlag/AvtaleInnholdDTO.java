@@ -7,7 +7,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnholdType;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneAvArbeidsgiverGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.InkluderingstilskuddAvtaleInnholdStrategy;
-import no.nav.tag.tiltaksgjennomforing.avtale.Inkluderingstilskuddsutgift;
 import no.nav.tag.tiltaksgjennomforing.avtale.LonnstilskuddFormaal;
 import no.nav.tag.tiltaksgjennomforing.avtale.MentorValgtLonnstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
@@ -85,7 +84,7 @@ public record AvtaleInnholdDTO(
     List<MaalDTO> maal,
 
     // Inkluderingstilskudd
-    List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift,
+    List<InkluderingstilskuddsutgiftDTO> inkluderingstilskuddsutgift,
     String inkluderingstilskuddBegrunnelse,
     Instant godkjentAvDeltaker,
     Instant godkjentTaushetserklæringAvMentor,
@@ -164,7 +163,7 @@ public record AvtaleInnholdDTO(
             dbEntitet.getLonnstilskuddFormaal(),
             TilskuddstrinnDTO.map(dbEntitet),
             MaalDTO.map(dbEntitet),
-            dbEntitet.getInkluderingstilskuddsutgift(),
+            InkluderingstilskuddsutgiftDTO.map(dbEntitet.getInkluderingstilskuddsutgift()),
             dbEntitet.getInkluderingstilskuddBegrunnelse(),
             dbEntitet.getGodkjentAvDeltaker(),
             dbEntitet.getGodkjentTaushetserklæringAvMentor(),
@@ -188,7 +187,7 @@ public record AvtaleInnholdDTO(
     @JsonProperty
     public Integer inkluderingstilskuddTotalBeløp() {
         return inkluderingstilskuddsutgift.stream()
-            .map(Inkluderingstilskuddsutgift::getBeløp)
+            .map(InkluderingstilskuddsutgiftDTO::beløp)
             .reduce(0, Integer::sum);
     }
 

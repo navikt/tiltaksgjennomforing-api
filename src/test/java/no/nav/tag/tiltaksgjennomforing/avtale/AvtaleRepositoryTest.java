@@ -4,6 +4,8 @@ import io.getunleash.Unleash;
 import jakarta.persistence.EntityManager;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.MaalDTO;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.datavarehus.DvhMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.metrikker.MetrikkRegistrering;
@@ -102,8 +104,8 @@ public class AvtaleRepositoryTest {
         Avtale lagretAvtale = avtaleRepository.save(TestData.enArbeidstreningAvtale());
 
         // Lagre maal skal fungere
-        EndreAvtale endreAvtale = new EndreAvtale();
-        Maal maal = TestData.etMaal();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
+        MaalDTO maal = TestData.etMaal();
         endreAvtale.setMaal(List.of(maal));
         lagretAvtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         avtaleRepository.save(lagretAvtale);
@@ -112,8 +114,8 @@ public class AvtaleRepositoryTest {
         Avtale lagretAvtale2 = avtaleRepository.save(TestData.enArbeidstreningAvtale());
 
         // Lagre maal skal enda fungere
-        EndreAvtale endreAvtale2 = new EndreAvtale();
-        Maal maal2 = TestData.etMaal();
+        EndreAvtaleDTO endreAvtale2 = new EndreAvtaleDTO();
+        MaalDTO maal2 = TestData.etMaal();
         endreAvtale2.setMaal(List.of(maal2));
         lagretAvtale2.endreAvtale(endreAvtale2, Avtalerolle.VEILEDER);
         avtaleRepository.save(lagretAvtale2);
@@ -125,7 +127,7 @@ public class AvtaleRepositoryTest {
         Avtale lagretAvtale = avtaleRepository.save(TestData.enArbeidstreningAvtale());
 
         // Lagre maal skal fungere
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         lagretAvtale.endreAvtale(endreAvtale, Avtalerolle.VEILEDER);
         avtaleRepository.save(lagretAvtale);
 
@@ -133,7 +135,7 @@ public class AvtaleRepositoryTest {
         Avtale lagretAvtale2 = avtaleRepository.save(TestData.enArbeidstreningAvtale());
 
         // Lagre maal skal enda fungere
-        EndreAvtale endreAvtale2 = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale2 = new EndreAvtaleDTO();
         lagretAvtale2.endreAvtale(endreAvtale2, Avtalerolle.VEILEDER);
         avtaleRepository.save(lagretAvtale2);
     }
@@ -146,7 +148,7 @@ public class AvtaleRepositoryTest {
         lagretAvtale = avtaleRepository.save(lagretAvtale);
 
         // Lagre tilskuddsperiode skal fungere
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreAvtale.setStartDato(lagretAvtale.getGjeldendeInnhold().getStartDato());
         endreAvtale.setSluttDato(lagretAvtale.getGjeldendeInnhold().getSluttDato());
         endreAvtale.setManedslonn(20000);

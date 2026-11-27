@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.FirearigLonnstilskuddBeregningStrategy;
@@ -19,7 +20,7 @@ public class FirearigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvt
     }
 
     @Override
-    public void endre(EndreAvtale endreAvtale) {
+    public void endre(EndreAvtaleDTO endreAvtale) {
         if (LonnstilskuddFormaal.BEHOLDE_ARBEID.equals(endreAvtale.getLonnstilskuddFormaal())) {
             throw new FeilkodeException(Feilkode.FIREARIG_LONNSTILSKUDD_KAN_IKKE_BRUKES_TIL_A_BEHOLDE_ARBEID);
         }

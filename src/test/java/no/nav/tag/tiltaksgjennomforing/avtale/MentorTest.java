@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
@@ -73,7 +74,7 @@ public class MentorTest {
                 Tiltakstype.MENTOR
             ), Avtaleopphav.VEILEDER, TestData.enNavIdent()
         );
-        EndreAvtale endring = TestData.endrePåAlleMentorFelter();
+        EndreAvtaleDTO endring = TestData.endrePåAlleMentorFelter();
 
         avtale.endreAvtale(endring, Avtalerolle.VEILEDER);
 
@@ -91,7 +92,7 @@ public class MentorTest {
 
         // NÅR
         var startDato_2_maaneder_frem = LocalDate.now().plusMonths(2);
-        EndreAvtale endreAvtale = new EndreAvtale();
+        EndreAvtaleDTO endreAvtale = new EndreAvtaleDTO();
         endreAvtale.setStartDato(startDato_2_maaneder_frem);
         // SÅ
         assertFeilkode(

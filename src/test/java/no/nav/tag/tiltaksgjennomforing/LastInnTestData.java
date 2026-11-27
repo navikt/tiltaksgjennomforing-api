@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -111,7 +111,7 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
             avtaleEldreEnn12Uker.getGjeldendeInnhold().setDeltakerEtternavn("12uker " + index);
             avtaleEldreEnn12Uker.getGjeldendeInnhold().setStartDato(LocalDate.now().minusWeeks(14));
             avtaleEldreEnn12Uker.getGjeldendeInnhold().setSluttDato(LocalDate.now().minusWeeks(13));
-            avtaleEldreEnn12Uker.endreAvtale(EndreAvtale.fraAvtale(avtaleEldreEnn12Uker), Avtalerolle.VEILEDER);
+            avtaleEldreEnn12Uker.endreAvtale(EndreAvtaleDTO.fraAvtale(avtaleEldreEnn12Uker), Avtalerolle.VEILEDER);
             avtaleEldreEnn12Uker.godkjennForDeltaker(avtaleEldreEnn12Uker.getDeltakerFnr());
             avtaleEldreEnn12Uker.godkjennForArbeidsgiver(avtaleEldreEnn12Uker.getBedriftNr());
             avtaleEldreEnn12Uker.godkjennForVeileder(avtaleEldreEnn12Uker.getVeilederNavIdent());

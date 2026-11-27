@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.transportlag.EndreAvtaleDTO;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.MidlertidigLonnstilskuddAvtaleBeregningStrategy;
 
 import java.util.Map;
@@ -17,7 +18,7 @@ public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends Lonnstilskudd
     }
 
     @Override
-    public void endre(EndreAvtale endreAvtale) {
+    public void endre(EndreAvtaleDTO endreAvtale) {
         Integer lonnstilskuddprosentVedStart = beregningStrategy.getProsentForForstePeriode();
         avtaleInnhold.setLonnstilskuddProsent(lonnstilskuddprosentVedStart);
         avtaleInnhold.setLonnstilskuddFormaal(endreAvtale.getLonnstilskuddFormaal());
