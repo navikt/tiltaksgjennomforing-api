@@ -19,6 +19,7 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -37,6 +38,15 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
+    private static final Set<Feilkode> FEILKODER_SOM_KAN_BEKREFTES = EnumSet.of(
+        Feilkode.FANT_IKKE_INNSATSBEHOV,
+        Feilkode.INNSATSGRUPPE_IKKE_RETTIGHET,
+        Feilkode.INNSATSGRUPPE_MIDLERTIDIG_LONNTILSKUDD_OG_SOMMERJOBB_FEIL,
+        Feilkode.INNSATSGRUPPE_VARIG_LONNTILSKUDD_FEIL,
+        Feilkode.INNSATSGRUPPE_VTAO_FEIL,
+        Feilkode.INNSATSGRUPPE_FIREARIG_LONNTILSKUDD_FOR_UNGE_FEIL
+    );
+
     private final Norg2Client norg2Client;
     private final TilgangskontrollService tilgangskontrollService;
     private final UUID azureOid;
@@ -72,32 +82,46 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     public void godkjennTilskuddsperiode(Avtale avtale, String enhet) {
+        godkjennTilskuddsperiode(avtale, enhet, null);
+    }
+
+    public void godkjennTilskuddsperiode(Avtale avtale, String enhet, Feilkode bekreftetFeilkode) {
         sjekkTilgang(avtale);
 
         if (enhet == null || !enhet.matches("^\\d{4}$")) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER);
         }
 
+        Oppfølgingsstatus status = null;
         Tiltakstype tiltakstype = avtale.getTiltakstype();
-        try {
-            Oppfølgingsstatus status = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
-            if (avtale.getInnsatsgruppe() == null) {
-                throw new FeilkodeException(Feilkode.INNSATSGRUPPE_MANGLER);
-            }
-            boolean harOppfolgingsenhetTilgangPaTiltak = featureToggleService.harEnhetTilgangPaTiltak(
-                tiltakstype,
-                status.getOppfolgingsenhet()
-            );
-            if (!harOppfolgingsenhetTilgangPaTiltak) {
-                throw new FeilkodeException(Feilkode.ENHET_IKKE_TILGANG_PA_TILTAK);
-            }
+        TilskuddPeriode tilskuddPeriode = avtale.getGjeldendeTilskuddsperiode();
+        if (tilskuddPeriode == null) {
+            throw new IllegalStateException("Avtale mangler gjeldende tilskuddsperiode - dette skal ikke skje");
+        }
+        if (avtale.getInnsatsgruppe() == null) {
+            throw new FeilkodeException(Feilkode.INNSATSGRUPPE_MANGLER);
+        }
 
-            eregService.hentVirksomhet(avtale.getBedriftNr());
+        try {
+            status = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
         } catch (FeilkodeException e) {
-            if (!Feilkode.HENTING_AV_INNSATSBEHOV_FEILET.equals(e.getFeilkode())) {
+            boolean erBekreftetFeilmeldingGyldig = FEILKODER_SOM_KAN_BEKREFTES.contains(bekreftetFeilkode) && e.getFeilkode().equals(bekreftetFeilkode);
+            boolean erTilskuddsperiodenIFortiden = Now.localDate().isAfter(tilskuddPeriode.getSluttDato());
+
+            if (!erBekreftetFeilmeldingGyldig || !erTilskuddsperiodenIFortiden) {
                 throw e;
             }
         }
+
+        boolean harOppfolgingsenhetTilgangPaTiltak = featureToggleService.harEnhetTilgangPaTiltak(
+            tiltakstype,
+            Optional.ofNullable(status).map(Oppfølgingsstatus::getOppfolgingsenhet).orElseGet(() -> veilarbService.hentOppfolgingskontor(avtale).kontorId())
+        );
+        if (!harOppfolgingsenhetTilgangPaTiltak) {
+            throw new FeilkodeException(Feilkode.ENHET_IKKE_TILGANG_PA_TILTAK);
+        }
+
+        eregService.hentVirksomhet(avtale.getBedriftNr());
 
         Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhet(enhet);
         if (response == null) {
