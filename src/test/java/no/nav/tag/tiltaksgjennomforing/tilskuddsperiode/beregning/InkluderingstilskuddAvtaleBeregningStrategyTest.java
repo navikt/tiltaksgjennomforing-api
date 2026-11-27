@@ -112,7 +112,7 @@ class InkluderingstilskuddAvtaleBeregningStrategyTest {
     @CsvSource({
         "2026-02-28, 2026-03-31, INKLUDERINGSTILSKUDD_PERIODE_FOR_TIDLIG_STARTDATO",
         "2026-08-01, 2026-09-01, INKLUDERINGSTILSKUDD_PERIODE_FOR_SEN_SLUTTDATO",
-        "2026-06-01, 2026-03-01, INKLUDERINGSTILSKUDD_PERIODE_AVTALE_START_ETTER_SLUTT",
+        "2026-06-01, 2026-03-01, INKLUDERINGSTILSKUDD_PERIODE_START_ETTER_SLUTT",
     })
     void avviser_utgift_med_ugyldig_periode(LocalDate start, LocalDate slutt, Feilkode feilkode) {
         Avtale avtale = avtaleMedUtgifter(
@@ -169,9 +169,11 @@ class InkluderingstilskuddAvtaleBeregningStrategyTest {
         Now.fixedDate(LocalDate.of(2026, 11, 1));
         Avtale avtale = avtaleMedUtgifter(
             LocalDate.of(2026, 11, 1),
-            LocalDate.of(2027, 4, 30),
+            LocalDate.of(2026, 12, 31),
             utgift(10_000, PROGRAMVARE, LocalDate.of(2026, 11, 1), LocalDate.of(2026, 11, 30))
         );
+
+        avtale.getGjeldendeInnhold().setSluttDato(LocalDate.of(2027, 1, 31));
 
         assertThatThrownBy(() -> genererFor(avtale, utgift(5_000, UTSTYR, LocalDate.of(2026, 12, 15), LocalDate.of(2027, 1, 15))))
             .isInstanceOf(FeilkodeException.class)
