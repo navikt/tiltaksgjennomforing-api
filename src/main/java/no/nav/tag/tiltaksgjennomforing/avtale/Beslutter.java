@@ -44,8 +44,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         Feilkode.INNSATSGRUPPE_MIDLERTIDIG_LONNTILSKUDD_OG_SOMMERJOBB_FEIL,
         Feilkode.INNSATSGRUPPE_VARIG_LONNTILSKUDD_FEIL,
         Feilkode.INNSATSGRUPPE_VTAO_FEIL,
-        Feilkode.INNSATSGRUPPE_FIREARIG_LONNTILSKUDD_FOR_UNGE_FEIL,
-        Feilkode.INNSATSGRUPPE_MANGLER
+        Feilkode.INNSATSGRUPPE_FIREARIG_LONNTILSKUDD_FOR_UNGE_FEIL
     );
 
     private final Norg2Client norg2Client;
@@ -99,12 +98,12 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         if (tilskuddPeriode == null) {
             throw new IllegalStateException("Avtale mangler gjeldende tilskuddsperiode - dette skal ikke skje");
         }
+        if (avtale.getInnsatsgruppe() == null) {
+            throw new FeilkodeException(Feilkode.INNSATSGRUPPE_MANGLER);
+        }
 
         try {
             status = veilarbService.hentOgSjekkOppfolgingstatus(avtale);
-            if (avtale.getInnsatsgruppe() == null) {
-                throw new FeilkodeException(Feilkode.INNSATSGRUPPE_MANGLER);
-            }
         } catch (FeilkodeException e) {
             boolean erBekreftetFeilmeldingGyldig = FEILKODER_SOM_KAN_BEKREFTES.contains(bekreftetFeilkode) && e.getFeilkode().equals(bekreftetFeilkode);
             boolean erTilskuddsperiodenIFortiden = Now.localDate().isAfter(tilskuddPeriode.getSluttDato());

@@ -124,7 +124,7 @@ class BeslutterTest {
     }
 
     @Test
-    public void godkjenner_tilskuddsperiode_i_fortiden_nar_innsatsgruppe_mangler_er_bekreftet() {
+    public void kan_ikke_bekrefte_innsatsgruppe_mangler_selv_i_fortiden_eller_ved_annen_bekreftet_feilkode() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder();
         avtale.setInnsatsgruppe(null);
         TilskuddPeriode periode = avtale.getGjeldendeTilskuddsperiode();
@@ -132,16 +132,22 @@ class BeslutterTest {
 
         VeilarbService veilarbService = mock(VeilarbService.class);
         when(veilarbService.hentOgSjekkOppfolgingstatus(avtale))
-            .thenReturn(new Oppfølgingsstatus("0906", "Nav Oslo", Innsatsgruppe.TRENGER_VEILEDNING));
+            .thenThrow(new FeilkodeException(Feilkode.FANT_IKKE_INNSATSBEHOV));
         Beslutter beslutter = enBeslutterMedMocks(avtale, veilarbService, true);
 
         assertFeilkode(
             Feilkode.INNSATSGRUPPE_MANGLER,
             () -> beslutter.godkjennTilskuddsperiode(avtale, "0906", null)
         );
-
-        beslutter.godkjennTilskuddsperiode(avtale, "0906", Feilkode.INNSATSGRUPPE_MANGLER);
-        assertThat(periode.getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
+        assertFeilkode(
+            Feilkode.INNSATSGRUPPE_MANGLER,
+            () -> beslutter.godkjennTilskuddsperiode(avtale, "0906", Feilkode.INNSATSGRUPPE_MANGLER)
+        );
+        assertFeilkode(
+            Feilkode.INNSATSGRUPPE_MANGLER,
+            () -> beslutter.godkjennTilskuddsperiode(avtale, "0906", Feilkode.FANT_IKKE_INNSATSBEHOV)
+        );
+        assertThat(periode.getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET);
     }
 
     @Test
@@ -175,7 +181,7 @@ class BeslutterTest {
             .when(veilarbService).hentOgSjekkOppfolgingstatus(avtale);
         assertFeilkode(
             Feilkode.FANT_IKKE_INNSATSBEHOV,
-            () -> beslutter.godkjennTilskuddsperiode(avtale, "0906", Feilkode.INNSATSGRUPPE_MANGLER)
+            () -> beslutter.godkjennTilskuddsperiode(avtale, "0906", Feilkode.INNSATSGRUPPE_IKKE_RETTIGHET)
         );
 
         doThrow(new FeilkodeException(Feilkode.ENHET_MANGLER))
