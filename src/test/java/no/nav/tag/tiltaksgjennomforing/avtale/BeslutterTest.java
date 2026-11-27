@@ -9,6 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2EnhetStatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.Oppfolgingskontor;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarb.VeilarbService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
@@ -66,17 +67,17 @@ class BeslutterTest {
         VeilarbService veilarboppfolgingService = mock(VeilarbService.class);
 
         Veileder veileder = new Veileder(
-                avtale.getVeilederNavIdent(),
-                null,
-                tilgangskontrollService,
-                persondataService,
-                mock(Norg2Client.class),
-                Set.of(new NavEnhet("4802", "Trysil")),
-                TestData.INGEN_AD_GRUPPER,
-                veilarboppfolgingService,
-                featureToggleServiceMock,
-                mock(EregService.class),
-                mock(PostutsendelseService.class)
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            mock(Norg2Client.class),
+            Set.of(new NavEnhet("4802", "Trysil")),
+            TestData.INGEN_AD_GRUPPER,
+            veilarboppfolgingService,
+            featureToggleServiceMock,
+            mock(EregService.class),
+            mock(PostutsendelseService.class)
         );
 
         when(tilgangskontrollService.hentSkrivetilgang(eq(veileder), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
@@ -88,16 +89,16 @@ class BeslutterTest {
         ));
 
         avtale.endreAvtale(
-                TestData.endringPåAlleLønnstilskuddFelter(),
-                Avtalerolle.VEILEDER
+            TestData.endringPåAlleLønnstilskuddFelter(),
+            Avtalerolle.VEILEDER
         );
         arbeidsgiver.godkjennAvtale(avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
         assertThat(avtale.erAvtaleInngått()).isFalse();
         Beslutter beslutter = TestData.enBeslutter(avtale);
         assertFeilkode(
-                Feilkode.ENHET_FINNES_IKKE,
-                () -> beslutter.godkjennTilskuddsperiode(avtale, "9999")
+            Feilkode.ENHET_FINNES_IKKE,
+            () -> beslutter.godkjennTilskuddsperiode(avtale, "9999")
         );
         assertThat(avtale.erAvtaleInngått()).isFalse();
     }
@@ -220,6 +221,26 @@ class BeslutterTest {
     }
 
     @Test
+    public void sjekker_fortsatt_oppfolgingskontor_nar_feilkode_er_bekreftet() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder();
+        TilskuddPeriode periode = avtale.getGjeldendeTilskuddsperiode();
+        Now.fixedDate(periode.getSluttDato().plusDays(1));
+
+        VeilarbService veilarbService = mock(VeilarbService.class);
+        Beslutter beslutter = enBeslutterMedMocks(avtale, veilarbService, true);
+        when(veilarbService.hentOgSjekkOppfolgingstatus(avtale))
+            .thenThrow(new FeilkodeException(Feilkode.FANT_IKKE_INNSATSBEHOV));
+        when(veilarbService.hentOppfolgingskontor(avtale))
+            .thenThrow(new FeilkodeException(Feilkode.ENHET_MANGLER));
+
+        assertFeilkode(
+            Feilkode.ENHET_MANGLER,
+            () -> beslutter.godkjennTilskuddsperiode(avtale, "0906", Feilkode.FANT_IKKE_INNSATSBEHOV)
+        );
+        assertThat(periode.getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET);
+    }
+
+    @Test
     public void kaster_exception_nar_avtale_mangler_gjeldende_tilskuddsperiode() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
         Beslutter beslutter = enBeslutterMedMocks(avtale, mock(VeilarbService.class), true);
@@ -250,6 +271,8 @@ class BeslutterTest {
             .thenReturn(new Tilgang.Tillat());
         when(norg2Client.hentOppfølgingsEnhet("0906"))
             .thenReturn(new Norg2OppfølgingResponse(906, "0906", "Oslo", Norg2EnhetStatus.AKTIV));
+        when(veilarbService.hentOppfolgingskontor(avtale))
+            .thenReturn(new Oppfolgingskontor("0906", "Nav Oslo", Oppfolgingskontor.KontorType.ARBEIDSOPPFOLGING));
         when(featureToggleService.harEnhetTilgangPaTiltak(eq(avtale.getTiltakstype()), any()))
             .thenReturn(harEnhetTilgang);
 

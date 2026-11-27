@@ -77,6 +77,10 @@ public class VeilarbService {
         return responsOpt.get();
     }
 
+    public Oppfolgingskontor hentOppfolgingskontor(Avtale avtale) {
+        return hentOppfolgingskontor(avtale.getDeltakerFnr());
+    }
+
     private Oppfolgingskontor hentOppfolgingskontor(Fnr fnr) {
         Optional<Oppfolgingskontor> kontorOpt;
 

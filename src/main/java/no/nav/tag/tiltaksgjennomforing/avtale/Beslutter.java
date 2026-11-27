@@ -115,7 +115,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
 
         boolean harOppfolgingsenhetTilgangPaTiltak = featureToggleService.harEnhetTilgangPaTiltak(
             tiltakstype,
-            Optional.ofNullable(status).map(Oppfølgingsstatus::getOppfolgingsenhet).orElse(avtale.getEnhetOppfolging())
+            Optional.ofNullable(status).map(Oppfølgingsstatus::getOppfolgingsenhet).orElseGet(() -> veilarbService.hentOppfolgingskontor(avtale).kontorId())
         );
         if (!harOppfolgingsenhetTilgangPaTiltak) {
             throw new FeilkodeException(Feilkode.ENHET_IKKE_TILGANG_PA_TILTAK);
